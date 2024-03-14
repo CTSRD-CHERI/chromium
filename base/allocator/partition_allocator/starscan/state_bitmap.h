@@ -70,6 +70,9 @@ class StateBitmap final {
   static constexpr size_t kBitsPerCell = sizeof(CellType) * CHAR_BIT;
   static constexpr size_t kBitsNeededForAllocation =
       base::bits::Log2Floor(static_cast<size_t>(State::kNumOfStates));
+#if defined(__CHERI_PURE_CAPABILITY__)
+  __attribute__((cheri_no_provenance))
+#endif // defined(__CHERI_PURE_CAPABILITY__)
   static constexpr CellType kStateMask = (1 << kBitsNeededForAllocation) - 1;
 
   static constexpr size_t kBitmapSize =
@@ -251,8 +254,14 @@ StateBitmap<PageSize, PageAlignment, AllocationAlignment>::
   auto [cell_index, object_bit] = AllocationIndexAndBit(address);
   const CellType clear_mask =
       ~(static_cast<CellType>(State::kAlloced) << object_bit);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  __attribute__((cheri_no_provenance))
+#endif //defined(__CHERI_PURE_CAPABILITY__)
   const CellType set_mask_old = static_cast<CellType>(quarantine_state_old)
                                 << object_bit;
+#if defined(__CHERI_PURE_CAPABILITY__)
+  __attribute__((cheri_no_provenance))
+#endif //defined(__CHERI_PURE_CAPABILITY__)
   const CellType xor_mask = static_cast<CellType>(0b11) << object_bit;
   auto& cell = AsAtomicCell(cell_index);
   CellType expected =

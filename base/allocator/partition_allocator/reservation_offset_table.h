@@ -233,6 +233,9 @@ PA_ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
 PA_ALWAYS_INLINE uintptr_t
 GetDirectMapReservationStart(uintptr_t address,
                              pool_handle pool,
+#if defined(__CHERI_PURE_CAPABILITY__)
+			     __attribute__((cheri_no_provenance))
+#endif // defined(__CHERI_PURE_CAPABILITY__)
                              uintptr_t offset_in_pool) {
   PA_DCHECK(AddressPoolManager::GetInstance().GetPoolBaseAddress(pool) +
                 offset_in_pool ==

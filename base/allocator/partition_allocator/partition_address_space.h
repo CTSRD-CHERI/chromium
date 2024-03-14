@@ -127,6 +127,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
   // Returns false for nullptr.
   PA_ALWAYS_INLINE static bool IsInRegularPool(uintptr_t address) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    __attribute__((cheri_no_provenance))
+#endif // defined(__CHERI_PURE_CAPABILITY__)
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
     const uintptr_t regular_pool_base_mask = setup_.regular_pool_base_mask_;
 #else
@@ -142,6 +145,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
   // Returns false for nullptr.
   PA_ALWAYS_INLINE static bool IsInBRPPool(uintptr_t address) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    __attribute__((cheri_no_provenance))
+#endif // defined(__CHERI_PURE_CAPABILITY__)
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
     const uintptr_t brp_pool_base_mask = setup_.brp_pool_base_mask_;
 #else
@@ -335,6 +341,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
       uintptr_t core_pools_base_mask_ = 0;
 #endif
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
+#if defined(__CHERI_PURE_CAPABILITY__)
+    __attribute__((cheri_no_provenance))
+#endif // defined(__CHERI_PURE_CAPABILITY__)
       uintptr_t configurable_pool_base_mask_ = 0;
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
       ThreadIsolationOption thread_isolation_;

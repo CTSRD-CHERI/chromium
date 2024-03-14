@@ -406,6 +406,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // not aligned, and too low. Also, checking !(ptr & kTombstoneMask) checks for
   // nullptr and kTombstone at the same time.
   static constexpr uintptr_t kTombstone = 0x1;
+#if defined(__CHERI_PURE_CAPABILITY__)
+__attribute__((cheri_no_provenance))
+#endif //defined(__CHERI_PURE_CAPABILITY__)
   static constexpr uintptr_t kTombstoneMask = ~kTombstone;
 
   static uint8_t global_limits_[kBucketCount];

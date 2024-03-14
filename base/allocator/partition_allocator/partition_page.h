@@ -477,6 +477,9 @@ ReservedStateBitmapSize() {
 
 #endif  // BUILDFLAG(USE_STARSCAN)
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+__attribute__((cheri_no_provenance))
+#endif //defined(__CHERI_PURE_CAPABILITY__)
 PA_ALWAYS_INLINE uintptr_t
 SuperPagePayloadStartOffset(bool is_managed_by_normal_buckets,
                             bool with_quarantine) {
@@ -493,6 +496,9 @@ PA_ALWAYS_INLINE uintptr_t SuperPagePayloadBegin(uintptr_t super_page,
                                      with_quarantine);
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+__attribute__((cheri_no_provenance))
+#endif //defined(__CHERI_PURE_CAPABILITY__)
 PA_ALWAYS_INLINE uintptr_t SuperPagePayloadEndOffset() {
   return kSuperPageSize - PartitionPageSize();
 }
@@ -598,6 +604,9 @@ PA_ALWAYS_INLINE uintptr_t SlotSpanMetadata<thread_safe>::ToSlotSpanStart(
   PA_DCHECK(super_page_offset <
             SystemPageSize() +
                 (NumPartitionPagesPerSuperPage() * kPageMetadataSize));
+#if defined(__CHERI_PURE_CAPABILITY__)
+  __attribute__((cheri_no_provenance))
+#endif //defined(__CHERI_PURE_CAPABILITY__)
   uintptr_t partition_page_index =
       (super_page_offset - SystemPageSize()) >> kPageMetadataShift;
   // Index 0 is invalid because it is the super page extent metadata and the
