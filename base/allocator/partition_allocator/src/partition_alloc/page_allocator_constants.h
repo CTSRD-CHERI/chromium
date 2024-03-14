@@ -210,7 +210,11 @@ SystemPageBaseMask() {
   return ~SystemPageOffsetMask();
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+constexpr size_t kPageMetadataShift = 6;  // 64 bytes per partition page.
+#else // defined(__CHERI_PURE_CAPABILITY__)
 constexpr size_t kPageMetadataShift = 5;  // 32 bytes per partition page.
+#endif // defined(__CHERI_PURE_CAPABILITY__)
 constexpr size_t kPageMetadataSize = 1 << kPageMetadataShift;
 
 }  // namespace internal
