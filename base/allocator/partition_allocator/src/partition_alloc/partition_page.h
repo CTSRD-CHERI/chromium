@@ -466,7 +466,7 @@ PA_ALWAYS_INLINE uintptr_t SuperPagePayloadBegin(uintptr_t super_page) {
   return super_page + SuperPagePayloadStartOffset();
 }
 
-PA_ALWAYS_INLINE uintptr_t SuperPagePayloadEndOffset() {
+PA_ALWAYS_INLINE size_t SuperPagePayloadEndOffset() {
   return kSuperPageSize - PartitionPageSize();
 }
 
@@ -573,7 +573,7 @@ SlotSpanMetadata::ToSlotSpanStart(const SlotSpanMetadata* slot_span,
   PA_DCHECK(super_page_offset <
             SystemPageSize() +
                 (NumPartitionPagesPerSuperPage() * kPageMetadataSize));
-  uintptr_t partition_page_index =
+  size_t partition_page_index =
       (super_page_offset - SystemPageSize()) >> kPageMetadataShift;
   // Index 0 is invalid because it is the super page extent metadata and the
   // last index is invalid because the whole PartitionPage is set as guard

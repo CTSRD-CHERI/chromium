@@ -210,9 +210,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // Returns false for nullptr.
   PA_ALWAYS_INLINE static bool IsInRegularPool(uintptr_t address) {
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-    const uintptr_t regular_pool_base_mask = setup_.core_pool_base_mask_;
+    const size_t regular_pool_base_mask = setup_.core_pool_base_mask_;
 #else
-    constexpr uintptr_t regular_pool_base_mask = kCorePoolBaseMask;
+    constexpr size_t regular_pool_base_mask = kCorePoolBaseMask;
 #endif
     return (address & regular_pool_base_mask) ==
            setup_.regular_pool_base_address_;
@@ -225,9 +225,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // Returns false for nullptr.
   PA_ALWAYS_INLINE static bool IsInBRPPool(uintptr_t address) {
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-    const uintptr_t brp_pool_base_mask = setup_.core_pool_base_mask_;
+    const size_t brp_pool_base_mask = setup_.core_pool_base_mask_;
 #else
-    constexpr uintptr_t brp_pool_base_mask = kCorePoolBaseMask;
+    constexpr size_t brp_pool_base_mask = kCorePoolBaseMask;
 #endif
     return (address & brp_pool_base_mask) == setup_.brp_pool_base_address_;
   }
@@ -465,7 +465,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     uintptr_t core_pool_base_mask_ = 0;
     uintptr_t glued_pools_base_mask_ = 0;
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-    uintptr_t configurable_pool_base_mask_ = 0;
+    size_t configurable_pool_base_mask_ = 0;
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
     ThreadIsolationOption thread_isolation_;
 #endif

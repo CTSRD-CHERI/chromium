@@ -414,7 +414,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // not aligned, and too low. Also, checking !(ptr & kTombstoneMask) checks for
   // nullptr and kTombstone at the same time.
   static constexpr uintptr_t kTombstone = 0x1;
-  static constexpr uintptr_t kTombstoneMask = ~kTombstone;
+  static constexpr size_t kTombstoneMask = ~kTombstone;
 
   static uint8_t global_limits_[kBucketCount];
   // Index of the largest active bucket. Not all processes/platforms will use
