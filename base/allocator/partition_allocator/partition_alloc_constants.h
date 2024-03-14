@@ -423,7 +423,7 @@ PA_ALWAYS_INLINE constexpr size_t MaxDirectMapped() {
 // starts with guard pages & metadata.
 constexpr size_t kMaxSupportedAlignment = kSuperPageSize / 2;
 
-constexpr size_t kBitsPerSizeT = sizeof(void*) * CHAR_BIT;
+constexpr size_t kBitsPerSizeT = sizeof(size_t) * CHAR_BIT;
 
 // When a SlotSpan becomes empty, the allocator tries to avoid re-using it
 // immediately, to help with fragmentation. At this point, it becomes dirty
