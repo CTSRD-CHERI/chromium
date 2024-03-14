@@ -50,6 +50,8 @@ gclient_gn_args = [
 
 
 vars = {
+  'checkout_clang': False,
+
   # Variable that can be used to support multiple build scenarios, like having
   # Chromium specific targets in a client project's GN file or sync dependencies
   # conditionally etc.
@@ -4617,7 +4619,7 @@ hooks = [
     # Note: On Win, this should run after win_toolchain, as it may use it.
     'name': 'clang',
     'pattern': '.',
-    'condition': 'not llvm_force_head_revision',
+    'condition': 'not llvm_force_head_revision and checkout_clang',
     'action': ['python3', 'src/tools/clang/scripts/update.py'],
   },
   {
@@ -4632,7 +4634,7 @@ hooks = [
     # Note: On Win, this should run after win_toolchain, as it may use it.
     'name': 'clang_tot',
     'pattern': '.',
-    'condition': 'llvm_force_head_revision',
+    'condition': 'llvm_force_head_revision and checkout_clang',
     'action': ['python3', 'src/tools/clang/scripts/build.py',
                '--llvm-force-head-revision',
                '--with-android={checkout_android}',
@@ -4670,7 +4672,7 @@ hooks = [
     # dump-static-initializers.py on linux.
     'name': 'objdump',
     'pattern': '.',
-    'condition': 'checkout_linux or checkout_mac or checkout_android and host_os != "mac"',
+    'condition': '(checkout_linux or checkout_mac or checkout_android) and host_os != "mac" and host_os != "freebsd"',
     'action': ['python3', 'src/tools/clang/scripts/update.py',
                '--package=objdump'],
   },
