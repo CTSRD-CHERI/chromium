@@ -187,7 +187,7 @@ ScreenAILibraryWrapper::PerformOcr(const SkBitmap& image) {
 
   // TODO(crbug.com/1278245): Remove this after fixing the crash issue on Linux
   // official.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
   free_library_allocated_char_array_(library_buffer.release());
 #endif
 
@@ -219,7 +219,7 @@ ScreenAILibraryWrapper::ExtractLayout(const SkBitmap& image) {
 
   // TODO(crbug.com/1278245): Remove this after fixing the crash issue on Linux
   // official.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
   free_library_allocated_char_array_(library_buffer.release());
 #endif
 
@@ -253,7 +253,7 @@ absl::optional<std::vector<int32_t>> ScreenAILibraryWrapper::ExtractMainContent(
 
   // TODO(crbug.com/1278245): Remove this after fixing the crash issue on Linux
   // official.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
   free_library_allocated_int32_array_(library_buffer.release());
 #endif
 

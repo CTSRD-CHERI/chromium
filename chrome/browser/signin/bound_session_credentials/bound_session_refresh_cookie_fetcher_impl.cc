@@ -103,6 +103,6 @@ void BoundSessionRefreshCookieFetcherImpl::OnURLLoaderComplete(
   net::Error net_error = static_cast<net::Error>(url_loader_->NetError());
 
   std::move(callback_).Run(
-      Result(net_error, headers ? absl::optional<int>(headers->response_code())
-                                : absl::nullopt));
+      Result({net_error, headers ? absl::optional<int>(headers->response_code())
+                                : absl::nullopt}));
 }

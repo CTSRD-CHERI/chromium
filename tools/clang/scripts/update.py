@@ -302,6 +302,7 @@ def GetDefaultHostOs():
   _PLATFORM_HOST_OS_MAP = {
       'darwin': 'mac',
       'cygwin': 'win',
+      'freebsd14': 'freebsd',
       'linux2': 'linux',
       'win32': 'win',
   }

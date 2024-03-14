@@ -31,7 +31,7 @@ std::unique_ptr<BackgroundModeOptimizer> BackgroundModeOptimizer::Create() {
     return nullptr;
   }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
   if (base::FeatureList::IsEnabled(features::kBackgroundModeAllowRestart)) {
     return base::WrapUnique(new BackgroundModeOptimizer());
   }

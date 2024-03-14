@@ -264,6 +264,10 @@ source_set("maldoca-public-headers") {
     ":maldoca_chromium_config",
     ":maldoca_flags",
   ]
+
+  if (is_bsd) {
+    libs = [ "iconv" ]
+  }
 }
 
 static_library("maldoca") {

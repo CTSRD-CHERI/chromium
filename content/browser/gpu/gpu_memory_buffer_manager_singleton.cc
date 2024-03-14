@@ -53,7 +53,7 @@ scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
 #endif
 }
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
 bool IsGpuMemoryBufferNV12Supported() {
   static bool is_computed = false;
   static bool supported = false;
@@ -116,7 +116,7 @@ void GpuMemoryBufferManagerSingleton::OnGpuExtraInfoUpdate() {
     SetNativeConfigurations(std::move(configs));
   }
 #endif
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
   // Dynamic check whether the NV12 format is supported as it may be
   // inconsistent between the system GBM (Generic Buffer Management) and
   // chromium miniGBM.
