@@ -30,7 +30,13 @@
 // Assert that the heuristic in partition_alloc.gni is accurate on supported
 // configurations.
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#if defined(__CHERI_PURE_CAPABILITY__)
+#include <stdint.h>
+static_assert(sizeof(ptraddr_t) == 8, "");
+static_assert(sizeof(void*) == 16, "");
+#else // defined(__CHERI_PURE_CAPABILITY__)
 static_assert(sizeof(void*) == 8, "");
+#endif // defined(__CHERI_PURE_CAPABILITY__)
 #else
 static_assert(sizeof(void*) != 8, "");
 #endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
