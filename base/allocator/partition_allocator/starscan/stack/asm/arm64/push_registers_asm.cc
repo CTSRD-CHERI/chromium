@@ -28,6 +28,14 @@ asm(
     ".p2align 2                                           \n"
     "PAPushAllRegistersAndIterateStack:                   \n"
 #endif  // !defined(__APPLE__)
+#if defined(__CHERI_PURE_CAPABILITY__)
+    "  stp c19, c20, [csp, #-32]!                         \n"
+    "  stp c21, c22, [csp, #-32]!                         \n"
+    "  stp c23, c24, [csp, #-32]!                         \n"
+    "  stp c25, c26, [csp, #-32]!                         \n"
+    "  stp c27, c28, [csp, #-32]!                         \n"
+    "  stp fp, lr,   [csp, #-32]!                         \n"
+#else // defined(__CHERI_PURE_CAPABILITY__)
     // x19-x29 are callee-saved.
     "  stp x19, x20, [sp, #-16]!                          \n"
     "  stp x21, x22, [sp, #-16]!                          \n"
@@ -35,17 +43,33 @@ asm(
     "  stp x25, x26, [sp, #-16]!                          \n"
     "  stp x27, x28, [sp, #-16]!                          \n"
     "  stp fp, lr,   [sp, #-16]!                          \n"
+#endif // defined(__CHERI_PURE_CAPABILITY__)
     // Maintain frame pointer.
     "  mov fp, sp                                         \n"
     // Pass 1st parameter (x0) unchanged (Stack*).
     // Pass 2nd parameter (x1) unchanged (StackVisitor*).
     // Save 3rd parameter (x2; IterateStackCallback)
+#if defined(__CHERI_PURE_CAPABILITY__)
+    "  mov c7, c2                                         \n"
+    // Pass 3rd parameter as sp (stack pointer).
+    "  mov c2, csp                                        \n"
+    "  blr c7                                             \n"
+#else // defined(__CHERI_PURE_CAPABILITY__)
     "  mov x7, x2                                         \n"
     // Pass 3rd parameter as sp (stack pointer).
     "  mov x2, sp                                         \n"
     "  blr x7                                             \n"
+#endif // defined(__CHERI_PURE_CAPABILITY__)
     // Load return address and frame pointer.
+#if defined(__CHERI_PURE_CAPABILITY__)
+    "  ldp fp, lr, [csp], #16                             \n"
+#else // defined(__CHERI_PURE_CAPABILITY__)
     "  ldp fp, lr, [sp], #16                              \n"
+#endif // defined(__CHERI_PURE_CAPABILITY__)
     // Drop all callee-saved registers.
+#if defined(__CHERI_PURE_CAPABILITY__)
+    "  add csp, csp, #100                                 \n"
+#else // defined(__CHERI_PURE_CAPABILITY__)
     "  add sp, sp, #80                                    \n"
+#endif // defined(__CHERI_PURE_CAPABILITY__)
     "  ret                                                \n");
