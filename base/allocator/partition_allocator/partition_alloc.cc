@@ -66,7 +66,11 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
       "maximum direct mapped allocation");
 
   // Check that some of our zanier calculations worked out as expected.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static_assert(internal::kSmallestBucket % internal::kAlignment == 0,
+#else // defined(__CHERI_PURE_CAPABILITY__)
   static_assert(internal::kSmallestBucket == internal::kAlignment,
+#endif // (__CHERI_PURE_CAPABILITY__)
                 "generic smallest bucket");
   static_assert(internal::kMaxBucketed == 983040, "generic max bucketed");
   STATIC_ASSERT_OR_PA_CHECK(

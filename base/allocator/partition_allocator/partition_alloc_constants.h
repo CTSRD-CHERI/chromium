@@ -387,7 +387,11 @@ DirectMapAllocationGranularityOffsetMask() {
 //
 // Keep in sync with //tools/memory/partition_allocator/objects_per_size_py.
 constexpr size_t kMinBucketedOrder =
+#if defined(__CHERI_PURE_CAPABILITY__)
+    kAlignment == 16 ? 6 : 5;  // 2^(order - 1), that is 32  or 16.
+#else // defined(__CHERI_PURE_CAPABILITY__)
     kAlignment == 16 ? 5 : 4;  // 2^(order - 1), that is 16 or 8.
+#endif // (__CHERI_PURE_CAPABILITY__)
 // The largest bucketed order is 1 << (20 - 1), storing [512 KiB, 1 MiB):
 constexpr size_t kMaxBucketedOrder = 20;
 constexpr size_t kNumBucketedOrders =

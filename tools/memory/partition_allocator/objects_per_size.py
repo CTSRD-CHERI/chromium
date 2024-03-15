@@ -17,7 +17,7 @@ def _BucketSizes(alignment: int) -> list[int]:
   """Returns the bucket sizes for a given alignment."""
   # Adapted from partition_alloc_constants.h.
   _ALIGNMENT = alignment
-  _MIN_BUCKETED_ORDER = 5 if _ALIGNMENT == 16 else 4
+  _MIN_BUCKETED_ORDER = 6 if _ALIGNMENT == 16 else 5
   _MAX_BUCKETETD_ORDER = 20
   _NUM_BUCKETED_ORDERS = (_MAX_BUCKETETD_ORDER - _MIN_BUCKETED_ORDER) + 1
   _NUM_BUCKETS_PER_ORDER_BITS = 2
