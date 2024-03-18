@@ -42,10 +42,6 @@
 #include <windows.h>
 #endif
 
-#ifdef __linux__
-#include <sys/prctl.h>
-#endif
-
 #include <string.h>
 #include <algorithm>
 #include <atomic>
@@ -66,6 +62,10 @@
 #endif  // !MAP_ANONYMOUS
 #endif  // __APPLE__
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+#include <cheri/cheric.h>
+#endif
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace base_internal {
@@ -81,10 +81,14 @@ struct AllocList {
   struct Header {
     // Size of entire region, including this field. Must be
     // first. Valid in both allocated and unallocated blocks.
-    uintptr_t size;
+    size_t size;
 
     // kMagicAllocated or kMagicUnallocated xor this.
+#ifdef __CHERI_PURE_CAPABILITY__
+    ptraddr_t magic;
+#else
     uintptr_t magic;
+#endif
 
     // Pointer to parent arena.
     LowLevelAlloc::Arena *arena;
@@ -277,8 +281,13 @@ LowLevelAlloc::Arena *LowLevelAlloc::DefaultArena() {
 }
 
 // magic numbers to identify allocated and unallocated blocks
+#ifdef __CHERI_PURE_CAPABILITY__
+static const ptraddr_t kMagicAllocated = 0x4c833e95U;
+static const ptraddr_t kMagicUnallocated = ~kMagicAllocated;
+#else
 static const uintptr_t kMagicAllocated = 0x4c833e95U;
 static const uintptr_t kMagicUnallocated = ~kMagicAllocated;
+#endif
 
 namespace {
 class ABSL_SCOPED_LOCKABLE ArenaLock {
@@ -323,9 +332,15 @@ class ABSL_SCOPED_LOCKABLE ArenaLock {
 
 // create an appropriate magic number for an object at "ptr"
 // "magic" should be kMagicAllocated or kMagicUnallocated
+#ifdef __CHERI_PURE_CAPABILITY__
+inline static ptraddr_t Magic(ptraddr_t magic, AllocList::Header *ptr) {
+  return magic ^ reinterpret_cast<ptraddr_t>(ptr);
+}
+#else
 inline static uintptr_t Magic(uintptr_t magic, AllocList::Header *ptr) {
   return magic ^ reinterpret_cast<uintptr_t>(ptr);
 }
+#endif
 
 namespace {
 size_t GetPageSize() {
@@ -336,16 +351,25 @@ size_t GetPageSize() {
 #elif defined(__wasm__) || defined(__asmjs__)
   return getpagesize();
 #else
-  return static_cast<size_t>(sysconf(_SC_PAGESIZE));
+  return sysconf(_SC_PAGESIZE);
 #endif
 }
 
 size_t RoundedUpBlockSize() {
   // Round up block sizes to a power of two close to the header size.
   size_t round_up = 16;
+#if defined(__CHERI_PURE_CAPABILITY__)
+  while (round_up < offsetof(AllocList, next) + sizeof(void *)) {
+    round_up += round_up;
+  }
+  ABSL_RAW_CHECK(round_up >= offsetof(AllocList, next) + sizeof(void *),
+                 "block roundup size not big enough to fit at least one "
+                 "skiplist level");
+#else
   while (round_up < sizeof(AllocList::Header)) {
     round_up += round_up;
   }
+#endif
   return round_up;
 }
 
@@ -368,7 +392,7 @@ LowLevelAlloc::Arena::Arena(uint32_t flags_value)
 }
 
 // L < meta_data_arena->mu
-LowLevelAlloc::Arena *LowLevelAlloc::NewArena(uint32_t flags) {
+LowLevelAlloc::Arena *LowLevelAlloc::NewArena(int32_t flags) {
   Arena *meta_data_arena = DefaultArena();
 #ifndef ABSL_LOW_LEVEL_ALLOC_ASYNC_SIGNAL_SAFE_MISSING
   if ((flags & LowLevelAlloc::kAsyncSignalSafe) != 0) {
@@ -437,17 +461,35 @@ bool LowLevelAlloc::DeleteArena(Arena *arena) {
 
 // Addition, checking for overflow.  The intent is to die if an external client
 // manages to push through a request that would cause arithmetic to fail.
+#ifdef __CHERI_PURE_CAPABILITY__
+template<typename T>
+static inline T CheckedAdd(T a, size_t b) {
+  T sum = a + b;
+  ABSL_RAW_CHECK(sum >= a, "LowLevelAlloc arithmetic overflow");
+  return sum;
+}
+#else
 static inline uintptr_t CheckedAdd(uintptr_t a, uintptr_t b) {
   uintptr_t sum = a + b;
   ABSL_RAW_CHECK(sum >= a, "LowLevelAlloc arithmetic overflow");
   return sum;
 }
+#endif
 
 // Return value rounded up to next multiple of align.
 // align must be a power of two.
+#ifdef __CHERI_PURE_CAPABILITY__
+template<typename T>
+static inline T RoundUp(T value, size_t align) {
+  T rval = __builtin_align_up(value, align);
+  ABSL_RAW_CHECK(rval >= value, "LowLevelAlloc arithmetic overflow");
+  return rval;
+}
+#else
 static inline uintptr_t RoundUp(uintptr_t addr, uintptr_t align) {
   return CheckedAdd(addr, align - 1) & ~(align - 1);
 }
+#endif
 
 // Equivalent to "return prev->next[i]" but with sanity checking
 // that the freelist is in the correct order, that it
@@ -464,9 +506,13 @@ static AllocList *Next(int i, AllocList *prev, LowLevelAlloc::Arena *arena) {
     ABSL_RAW_CHECK(next->header.arena == arena, "bad arena pointer in Next()");
     if (prev != &arena->freelist) {
       ABSL_RAW_CHECK(prev < next, "unordered freelist");
+#if !defined(__CHERI_PURE_CAPABILITY__)
+      // XXX-AM: This must be allowed for the time being as we can not coalesce
+      // disjointed capabilities.
       ABSL_RAW_CHECK(reinterpret_cast<char *>(prev) + prev->header.size <
                          reinterpret_cast<char *>(next),
                      "malformed freelist");
+#endif
     }
   }
   return next;
@@ -477,6 +523,17 @@ static void Coalesce(AllocList *a) {
   AllocList *n = a->next[0];
   if (n != nullptr && reinterpret_cast<char *>(a) + a->header.size ==
                           reinterpret_cast<char *>(n)) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    // XXX-AM: Prevent coalescing of allocations if the block
+    // capability does not allow it.
+    // This is a workaround that will cause fragmentation, we shoud find a
+    // way to re-derive capabilities, as long as they don't belong to
+    // different reservations.
+    if (cheri_gettop(a) < static_cast<ptraddr_t>(reinterpret_cast<intptr_t>(n) +
+                                                 n->header.size)) {
+      return;
+    }
+#endif
     LowLevelAlloc::Arena *arena = a->header.arena;
     a->header.size += n->header.size;
     n->header.magic = 0;
@@ -554,7 +611,7 @@ static void *DoAllocWithArena(size_t request, LowLevelAlloc::Arena *arena) {
       size_t new_pages_size = RoundUp(req_rnd, arena->pagesize * 16);
       void *new_pages;
 #ifdef _WIN32
-      new_pages = VirtualAlloc(nullptr, new_pages_size,
+      new_pages = VirtualAlloc(0, new_pages_size,
                                MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
       ABSL_RAW_CHECK(new_pages != nullptr, "VirtualAlloc failed");
 #else
@@ -574,18 +631,6 @@ static void *DoAllocWithArena(size_t request, LowLevelAlloc::Arena *arena) {
         ABSL_RAW_LOG(FATAL, "mmap error: %d", errno);
       }
 
-#ifdef __linux__
-#if defined(PR_SET_VMA) && defined(PR_SET_VMA_ANON_NAME)
-      // Attempt to name the allocated address range in /proc/$PID/smaps on
-      // Linux.
-      //
-      // This invocation of prctl() may fail if the Linux kernel was not
-      // configured with the CONFIG_ANON_VMA_NAME option.  This is OK since
-      // the naming of arenas is primarily a debugging aid.
-      prctl(PR_SET_VMA, PR_SET_VMA_ANON_NAME, new_pages, new_pages_size,
-            "absl");
-#endif
-#endif  // __linux__
 #endif  // _WIN32
       arena->mu.Lock();
       s = reinterpret_cast<AllocList *>(new_pages);

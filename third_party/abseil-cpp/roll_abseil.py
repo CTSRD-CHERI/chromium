@@ -10,7 +10,7 @@ import subprocess
 import tempfile
 from datetime import datetime
 
-ABSL_URI = 'https://github.com/chromium-cheri/abseil-cpp.git@cbe41a9924f1fb95ac622eb26d5a97cd75e20954'
+ABSL_URI = 'https://github.com/chromium-cheri/abseil-cpp.git'
 
 def _PullAbseil(abseil_dir):
   logging.info('Updating abseil...')
@@ -84,9 +84,9 @@ def _Commit(chromium_dir, hash_diff):
   desc="""Roll abseil_revision {0}
 
 Change Log:
-https://chromium.googlesource.com/external/github.com/abseil/abseil-cpp/+log/{0}
+https://github.com/chromium-cheri/abseil-cpp/+log/{0}
 Full diff:
-https://chromium.googlesource.com/external/github.com/abseil/abseil-cpp/+/{0}
+https://github.com/chromium-cheri/abseil-cpp/+/{0}
 Bug: None""".format(hash_diff)
 
   subprocess.check_call(['git', 'add', 'third_party/abseil-cpp'], cwd=chromium_dir)
@@ -99,7 +99,7 @@ Bug: None""".format(hash_diff)
 def _Roll():
   chromium_dir = os.getcwd()
   abseil_in_chromium_dir = os.path.join(chromium_dir, 'third_party', 'abseil-cpp')
-  _SyncChromium(chromium_dir)
+  ##_SyncChromium(chromium_dir)
 
   branch_name = datetime.today().strftime('rolling-absl-%Y%m%d')
   logging.info('Creating branch ' + branch_name + ' for the roll...')

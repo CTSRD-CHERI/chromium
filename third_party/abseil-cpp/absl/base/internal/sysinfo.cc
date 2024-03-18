@@ -30,7 +30,7 @@
 #include <sys/syscall.h>
 #endif
 
-#if defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__)
+#if defined(__APPLE__) || defined(__FreeBSD__)
 #include <sys/sysctl.h>
 #endif
 
@@ -117,7 +117,7 @@ int Win32NumCPUs() {
     }
   }
   free(info);
-  return static_cast<int>(logicalProcessorCount);
+  return logicalProcessorCount;
 }
 
 #endif
@@ -128,7 +128,7 @@ static int GetNumCPUs() {
 #if defined(__myriad2__)
   return 1;
 #elif defined(_WIN32)
-  const int hardware_concurrency = Win32NumCPUs();
+  const unsigned hardware_concurrency = Win32NumCPUs();
   return hardware_concurrency ? hardware_concurrency : 1;
 #elif defined(_AIX)
   return sysconf(_SC_NPROCESSORS_ONLN);
@@ -136,7 +136,7 @@ static int GetNumCPUs() {
   // Other possibilities:
   //  - Read /sys/devices/system/cpu/online and use cpumask_parse()
   //  - sysconf(_SC_NPROCESSORS_ONLN)
-  return static_cast<int>(std::thread::hardware_concurrency());
+  return std::thread::hardware_concurrency();
 #endif
 }
 
@@ -159,7 +159,7 @@ static double GetNominalCPUFrequency() {
     DWORD type = 0;
     DWORD data = 0;
     DWORD data_size = sizeof(data);
-    auto result = RegQueryValueExA(key, "~MHz", nullptr, &type,
+    auto result = RegQueryValueExA(key, "~MHz", 0, &type,
                                    reinterpret_cast<LPBYTE>(&data), &data_size);
     RegCloseKey(key);
     if (result == ERROR_SUCCESS && type == REG_DWORD &&
@@ -189,15 +189,12 @@ static double GetNominalCPUFrequency() {
 // and the memory location pointed to by value is set to the value read.
 static bool ReadLongFromFile(const char *file, long *value) {
   bool ret = false;
-  int fd = open(file, O_RDONLY | O_CLOEXEC);
+  int fd = open(file, O_RDONLY);
   if (fd != -1) {
     char line[1024];
     char *err;
     memset(line, '\0', sizeof(line));
-    ssize_t len;
-    do {
-      len = read(fd, line, sizeof(line) - 1);
-    } while (len < 0 && errno == EINTR);
+    int len = read(fd, line, sizeof(line) - 1);
     if (len <= 0) {
       ret = false;
     } else {
@@ -310,11 +307,9 @@ static double GetNominalCPUFrequency() {
   // a new mode (turbo mode). Essentially, those frequencies cannot
   // always be relied upon. The same reasons apply to /proc/cpuinfo as
   // well.
-#if !defined(__OpenBSD__) && !defined(__FreeBSD__) // pledge violation
   if (ReadLongFromFile("/sys/devices/system/cpu/cpu0/tsc_freq_khz", &freq)) {
     return freq * 1e3;  // Value is kHz.
   }
-#endif
 
 #if defined(ABSL_INTERNAL_UNSCALED_CYCLECLOCK_FREQUENCY_IS_CPU_FREQUENCY)
   // On these platforms, the TSC frequency is the nominal CPU
@@ -381,7 +376,7 @@ pid_t GetTID() {
 #endif
 
 pid_t GetTID() {
-  return static_cast<pid_t>(syscall(SYS_gettid));
+  return syscall(SYS_gettid);
 }
 
 #elif defined(__akaros__)
@@ -433,12 +428,12 @@ static constexpr int kBitsPerWord = 32;  // tid_array is uint32_t.
 
 // Returns the TID to tid_array.
 static void FreeTID(void *v) {
-  intptr_t tid = reinterpret_cast<intptr_t>(v);
-  intptr_t word = tid / kBitsPerWord;
+  size_t tid = reinterpret_cast<size_t>(v);
+  int word = tid / kBitsPerWord;
   uint32_t mask = ~(1u << (tid % kBitsPerWord));
   absl::base_internal::SpinLockHolder lock(&tid_lock);
   assert(0 <= word && static_cast<size_t>(word) < tid_array->size());
-  (*tid_array)[static_cast<size_t>(word)] &= mask;
+  (*tid_array)[word] &= mask;
 }
 
 static void InitGetTID() {
@@ -458,9 +453,9 @@ static void InitGetTID() {
 pid_t GetTID() {
   absl::call_once(tid_once, InitGetTID);
 
-  intptr_t tid = reinterpret_cast<intptr_t>(pthread_getspecific(tid_key));
+  size_t tid = reinterpret_cast<size_t>(pthread_getspecific(tid_key));
   if (tid != 0) {
-    return static_cast<pid_t>(tid);
+    return tid;
   }
 
   int bit;  // tid_array[word] = 1u << bit;
@@ -481,12 +476,12 @@ pid_t GetTID() {
     while (bit < kBitsPerWord && (((*tid_array)[word] >> bit) & 1) != 0) {
       ++bit;
     }
-    tid =
-        static_cast<intptr_t>((word * kBitsPerWord) + static_cast<size_t>(bit));
+    tid = (word * kBitsPerWord) + bit;
     (*tid_array)[word] |= 1u << bit;  // Mark the TID as allocated.
   }
 
-  if (pthread_setspecific(tid_key, reinterpret_cast<void *>(tid)) != 0) {
+  if (pthread_setspecific(tid_key, reinterpret_cast<void *>(
+          static_cast<uintptr_t>(tid))) != 0) {
     perror("pthread_setspecific failed");
     abort();
   }

@@ -44,8 +44,20 @@ const char* StrErrorAdaptor(int errnum, char* buf, size_t buflen) {
     if (ret) *buf = '\0';
     return buf;
   } else {
+#ifdef __CHERI_PURE_CAPABILITY__
+    /*
+     * XXX-AM: Disable this because CHERI clang will complain about the cast
+     * even though this happens in a branch that is elided with the constexpr
+     * conditional.
+     */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcheri-capability-misuse"
+#endif
     // GNU `strerror_r`; `ret` is `char *`:
     return reinterpret_cast<const char*>(ret);
+#ifdef __CHERI_PURE_CAPABILITY__
+#pragma clang diagnostic pop
+#endif
   }
 #endif
 }
@@ -66,8 +78,8 @@ constexpr int kSysNerr = 135;
 
 std::array<std::string, kSysNerr>* NewStrErrorTable() {
   auto* table = new std::array<std::string, kSysNerr>;
-  for (size_t i = 0; i < table->size(); ++i) {
-    (*table)[i] = StrErrorInternal(static_cast<int>(i));
+  for (int i = 0; i < static_cast<int>(table->size()); ++i) {
+    (*table)[i] = StrErrorInternal(i);
   }
   return table;
 }
@@ -77,8 +89,8 @@ std::array<std::string, kSysNerr>* NewStrErrorTable() {
 std::string StrError(int errnum) {
   absl::base_internal::ErrnoSaver errno_saver;
   static const auto* table = NewStrErrorTable();
-  if (errnum >= 0 && static_cast<size_t>(errnum) < table->size()) {
-    return (*table)[static_cast<size_t>(errnum)];
+  if (errnum >= 0 && errnum < static_cast<int>(table->size())) {
+    return (*table)[errnum];
   }
   return StrErrorInternal(errnum);
 }

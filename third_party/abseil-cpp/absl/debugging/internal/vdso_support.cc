@@ -90,7 +90,13 @@ VDSOSupport::VDSOSupport()
 // Finally, even if there is a race here, it is harmless, because
 // the operation should be idempotent.
 const void *VDSOSupport::Init() {
+  /*
+   * XXX-AM: CheriBSD does not have a VDSO EHDR interface, unless we are using
+   * linux compat. For the sake of pacifying clang, skip all this
+   */
+#if defined(__FreeBSD__) && !__has_feature(capabilities)
   const auto kInvalidBase = debugging_internal::ElfMemImage::kInvalidBase;
+
 #ifdef ABSL_HAVE_GETAUXVAL
   if (vdso_base_.load(std::memory_order_relaxed) == kInvalidBase) {
     errno = 0;
@@ -140,6 +146,11 @@ const void *VDSOSupport::Init() {
   // from assigning to getcpu_fn_ more than once.
   getcpu_fn_.store(fn, std::memory_order_relaxed);
   return vdso_base_.load(std::memory_order_relaxed);
+#else /* defined(__FreeBSD__) && __has_feature(capabilities) */
+  vdso_base_.store(nullptr, std::memory_order_relaxed);
+  getcpu_fn_.store(&GetCPUViaSyscall, std::memory_order_relaxed);
+  return nullptr;
+#endif
 }
 
 const void *VDSOSupport::SetBase(const void *base) {
@@ -193,9 +204,8 @@ long VDSOSupport::InitAndGetCPU(unsigned *cpu,  // NOLINT(runtime/int)
 ABSL_ATTRIBUTE_NO_SANITIZE_MEMORY
 int GetCPU() {
   unsigned cpu;
-  long ret_code =  // NOLINT(runtime/int)
-      (*VDSOSupport::getcpu_fn_)(&cpu, nullptr, nullptr);
-  return ret_code == 0 ? static_cast<int>(cpu) : static_cast<int>(ret_code);
+  int ret_code = (*VDSOSupport::getcpu_fn_)(&cpu, nullptr, nullptr);
+  return ret_code == 0 ? cpu : ret_code;
 }
 
 }  // namespace debugging_internal

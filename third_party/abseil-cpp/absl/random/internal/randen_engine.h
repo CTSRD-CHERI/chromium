@@ -32,6 +32,12 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace random_internal {
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+#define RANDEN_ALIGN 16
+#else
+#define RANDEN_ALIGN 8
+#endif
+
 // Deterministic pseudorandom byte generator with backtracking resistance
 // (leaking the state does not compromise prior outputs). Based on Reverie
 // (see "A Robust and Sponge-Like PRNG with Improved Efficiency") instantiated
@@ -42,7 +48,7 @@ namespace random_internal {
 // 'Strong' (well-distributed, unpredictable, backtracking-resistant) random
 // generator, faster in some benchmarks than std::mt19937_64 and pcg64_c32.
 template <typename T>
-class alignas(8) randen_engine {
+class alignas(RANDEN_ALIGN) randen_engine {
  public:
   // C++11 URBG interface:
   using result_type = T;
@@ -142,7 +148,7 @@ class alignas(8) randen_engine {
       // The Randen paper suggests preferentially initializing even-numbered
       // 128-bit vectors of the randen state (there are 16 such vectors).
       // The seed data is merged into the state offset by 128-bits, which
-      // implies preferring seed bytes [16..31, ..., 208..223]. Since the
+      // implies prefering seed bytes [16..31, ..., 208..223]. Since the
       // buffer is 32-bit values, we swap the corresponding buffer positions in
       // 128-bit chunks.
       size_t dst = kBufferSize;

@@ -262,7 +262,6 @@ absl_cc_library(
     absl::config
     absl::core_headers
     absl::flags_usage_internal
-    absl::raw_logging_internal
     absl::strings
     absl::synchronization
 )
@@ -280,7 +279,6 @@ absl_cc_library(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
-    absl::algorithm_container
     absl::config
     absl::core_headers
     absl::flags_config
@@ -297,7 +295,7 @@ absl_cc_library(
 )
 
 ############################################################################
-# Unit tests in alphabetical order.
+# Unit tests in alpahabetical order.
 
 absl_cc_test(
   NAME

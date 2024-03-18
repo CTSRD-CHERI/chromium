@@ -38,7 +38,7 @@ static const char *DemangleIt(const char * const mangled) {
   }
 }
 
-// Test corner cases of boundary conditions.
+// Test corner cases of bounary conditions.
 TEST(Demangle, CornerCases) {
   char tmp[10];
   EXPECT_TRUE(Demangle("_Z6foobarv", tmp, sizeof(tmp)));
@@ -102,30 +102,6 @@ TEST(Demangle, Clones) {
   EXPECT_FALSE(Demangle("_ZL3Foov.isra.2.constprop.", tmp, sizeof(tmp)));
 }
 
-// Test the GNU abi_tag extension.
-TEST(Demangle, AbiTags) {
-  char tmp[80];
-
-  // Mangled name generated via:
-  // struct [[gnu::abi_tag("abc")]] A{};
-  // A a;
-  EXPECT_TRUE(Demangle("_Z1aB3abc", tmp, sizeof(tmp)));
-  EXPECT_STREQ("a[abi:abc]", tmp);
-
-  // Mangled name generated via:
-  // struct B {
-  //   B [[gnu::abi_tag("xyz")]] (){};
-  // };
-  // B b;
-  EXPECT_TRUE(Demangle("_ZN1BC2B3xyzEv", tmp, sizeof(tmp)));
-  EXPECT_STREQ("B::B[abi:xyz]()", tmp);
-
-  // Mangled name generated via:
-  // [[gnu::abi_tag("foo", "bar")]] void C() {}
-  EXPECT_TRUE(Demangle("_Z1CB3barB3foov", tmp, sizeof(tmp)));
-  EXPECT_STREQ("C[abi:bar][abi:foo]()", tmp);
-}
-
 // Tests that verify that Demangle footprint is within some limit.
 // They are not to be run under sanitizers as the sanitizers increase
 // stack consumption by about 4x.
@@ -159,7 +135,11 @@ static const char *DemangleStackConsumption(const char *mangled,
 // with some level of nesting. With alternate signal stack we have 64K,
 // but some signal handlers run on thread stack, and could have arbitrarily
 // little space left (so we don't want to make this number too large).
+#if defined(__CHERI_PURE_CAPABILITY__)
+const int kStackConsumptionUpperLimit = 16 * 1024;
+#else
 const int kStackConsumptionUpperLimit = 8192;
+#endif
 
 // Returns a mangled name nested to the given depth.
 static std::string NestedMangledName(int depth) {
