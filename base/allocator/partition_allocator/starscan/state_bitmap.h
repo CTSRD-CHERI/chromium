@@ -413,7 +413,12 @@ StateBitmap<PageSize, PageAlignment, AllocationAlignment>::IterateImpl(
     CellType value = LoadCell(cell_index);
     while (value) {
       const size_t trailing_zeroes =
+#if defined(__CHERI_PURE_CAPABILITY__)
+          static_cast<size_t>(base::bits::CountTrailingZeroBits(
+            static_cast<ptraddr_t>(value)) & ~0b1);
+#else // defined(__CHERI_PURE_CAPABILITY__)
           static_cast<size_t>(base::bits::CountTrailingZeroBits(value) & ~0b1);
+#endif // defined(__CHERI_PURE_CAPABILITY__)
       const size_t clear_value_mask =
           ~(static_cast<CellType>(kStateMask) << trailing_zeroes);
       const CellType bits = (value >> trailing_zeroes) & kStateMask;
