@@ -34,6 +34,16 @@
 #include "absl/meta/type_traits.h"
 #include "absl/strings/string_view.h"
 
+// We can only add poisoning if we can detect consteval executions.
+#if defined(ABSL_HAVE_CONSTANT_EVALUATED) && \
+    (defined(ABSL_HAVE_ADDRESS_SANITIZER) || \
+     defined(ABSL_HAVE_MEMORY_SANITIZER))
+#define ABSL_INTERNAL_CORD_HAVE_SANITIZER 1
+#endif
+
+#define ABSL_CORD_INTERNAL_NO_SANITIZE \
+  ABSL_ATTRIBUTE_NO_SANITIZE_ADDRESS ABSL_ATTRIBUTE_NO_SANITIZE_MEMORY
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace cord_internal {
@@ -62,12 +72,6 @@ enum CordFeatureDefaults {
 extern std::atomic<bool> cord_ring_buffer_enabled;
 extern std::atomic<bool> shallow_subcords_enabled;
 
-// `cord_btree_exhaustive_validation` can be set to force exhaustive validation
-// in debug assertions, and code that calls `IsValid()` explicitly. By default,
-// assertions should be relatively cheap and AssertValid() can easily lead to
-// O(n^2) complexity as recursive / full tree validation is O(n).
-extern std::atomic<bool> cord_btree_exhaustive_validation;
-
 inline void enable_cord_ring_buffer(bool enable) {
   cord_ring_buffer_enabled.store(enable, std::memory_order_relaxed);
 }
@@ -94,6 +98,63 @@ enum Constants {
 
 // Emits a fatal error "Unexpected node type: xyz" and aborts the program.
 ABSL_ATTRIBUTE_NORETURN void LogFatalNodeType(CordRep* rep);
+
+// TODO(gcjenkinson): Remove or fix commented out code merged from
+// abseial-cpp cheri-20220623.0.
+// Fast implementation of memmove for up to 15 bytes. This implementation is
+// safe for overlapping regions. If nullify_tail is true, the destination is
+// padded with '\0' up to 16 bytes.
+// CHERI requires this to work up to 31 bytes.
+template <bool nullify_tail = false>
+inline void SmallMemmove(char* dst, const char* src, size_t n) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // if (n >= 16) {
+  //   assert(n <= 32);
+  //   __uint128_t buf1;
+  //   __uint128_t buf2;
+  //   memcpy(&buf1, src, 16);
+  //   memcpy(&buf2, src + n - 16, 16);
+  //   if (nullify_tail) {
+  //     memset(dst, 0, n);
+  //   }
+  //   memcpy(dst, &buf1, 16);
+  //   memcpy(dst + n - 16, &buf2, 16);
+  // } else
+#endif
+      if (n >= 8) {
+    assert(n <= 16);
+    uint64_t buf1;
+    uint64_t buf2;
+    memcpy(&buf1, src, 8);
+    memcpy(&buf2, src + n - 8, 8);
+    if (nullify_tail) {
+      memset(dst + 8, 0, 8);
+    }
+    memcpy(dst, &buf1, 8);
+    memcpy(dst + n - 8, &buf2, 8);
+  } else if (n >= 4) {
+    uint32_t buf1;
+    uint32_t buf2;
+    memcpy(&buf1, src, 4);
+    memcpy(&buf2, src + n - 4, 4);
+    if (nullify_tail) {
+      memset(dst + 4, 0, 4);
+      memset(dst + 8, 0, 8);
+    }
+    memcpy(dst, &buf1, 4);
+    memcpy(dst + n - 4, &buf2, 4);
+  } else {
+    if (n != 0) {
+      dst[0] = src[0];
+      dst[n / 2] = src[n / 2];
+      dst[n - 1] = src[n - 1];
+    }
+    if (nullify_tail) {
+      memset(dst + 8, 0, 8);
+      memset(dst + n, 0, 8);
+    }
+  }
+}
 
 // Compact class for tracking the reference count and state flags for CordRep
 // instances.  Data is stored in an atomic int32_t for compactness and speed.
@@ -133,8 +194,9 @@ class RefcountAndFlags {
   }
 
   // Returns the current reference count using acquire semantics.
-  inline int32_t Get() const {
-    return count_.load(std::memory_order_acquire) >> kNumFlags;
+  inline size_t Get() const {
+    return static_cast<size_t>(count_.load(std::memory_order_acquire) >>
+                               kNumFlags);
   }
 
   // Returns whether the atomic integer is 1.
@@ -228,7 +290,11 @@ struct CordRep {
       : length(l), refcount(immortal), tag(EXTERNAL), storage{} {}
 
   // The following three fields have to be less than 32 bytes since
-  // that is the smallest supported flat node size.
+  // that is the smallest supported flat node size. Some code optimizations rely
+  // on the specific layout of these fields. Notably: the non-trivial field
+  // `refcount` being preceded by `length`, and being tailed by POD data
+  // members only.
+  // # LINT.IfChange
   size_t length;
   RefcountAndFlags refcount;
   // If tag < FLAT, it represents CordRepKind and indicates the type of node.
@@ -243,8 +309,8 @@ struct CordRep {
   // `height`, `begin` and `end` in the 3 entries. Otherwise we would need to
   // allocate room for these in the derived class, as not all compilers reuse
   // padding space from the base class (clang and gcc do, MSVC does not, etc)
-  // XXX-AM: Flexible array member will require __subobject_* annotation
   uint8_t storage[3];
+  // # LINT.ThenChange(cord_rep_btree.h:copy_raw)
 
   // Returns true if this instance's tag matches the requested type.
   constexpr bool IsRing() const { return tag == RING; }
@@ -427,9 +493,9 @@ constexpr char GetOrNull(absl::string_view data, size_t pos) {
   return pos < data.size() ? data[pos] : '\0';
 }
 
-// We store cordz_info as 64 bit pointer value in big endian format. This
-// guarantees that the least significant byte of cordz_info matches the last
-// byte of the inline data representation in as_chars_, which holds the inlined
+// We store cordz_info as 64 bit pointer value in little endian format. This
+// guarantees that the least significant byte of cordz_info matches the first
+// byte of the inline data representation in `data`, which holds the inlined
 // size or the 'is_tree' bit.
 #if defined(__CHERI_PURE_CAPABILITY__)
 using cordz_info_t = intptr_t;
@@ -438,20 +504,20 @@ using cordz_info_t = int64_t;
 #endif
 
 // Assert that the `cordz_info` pointer value perfectly overlaps the last half
-// of `as_chars_` and can hold a pointer value.
+// of `data` and can hold a pointer value.
 #if !defined(__CHERI_PURE_CAPABILITY__)
 static_assert(sizeof(cordz_info_t) * 2 == kMaxInline + 1, "");
 #endif
 static_assert(sizeof(cordz_info_t) >= sizeof(intptr_t), "");
 
-// BigEndianByte() creates a big endian representation of 'value', i.e.: a big
-// endian value where the last byte in the host's representation holds 'value`,
-// with all other bytes being 0.
-static constexpr cordz_info_t BigEndianByte(unsigned char value) {
+// LittleEndianByte() creates a little endian representation of 'value', i.e.:
+// a little endian value where the first byte in the host's representation
+// holds 'value`, with all other bytes being 0.
+static constexpr cordz_info_t LittleEndianByte(unsigned char value) {
 #if defined(ABSL_IS_BIG_ENDIAN)
-  return value;
-#else
   return static_cast<cordz_info_t>(value) << ((sizeof(cordz_info_t) - 1) * 8);
+#else
+  return value;
 #endif
 }
 
@@ -460,55 +526,80 @@ class InlineData {
   // DefaultInitType forces the use of the default initialization constructor.
   enum DefaultInitType { kDefaultInit };
 
-  // kNullCordzInfo holds the big endian representation of intptr_t(1)
+  // kNullCordzInfo holds the little endian representation of intptr_t(1)
   // This is the 'null' / initial value of 'cordz_info'. The null value
   // is specifically big endian 1 as with 64-bit pointers, the last
   // byte of cordz_info overlaps with the last byte holding the tag.
-#if defined(__CHERI_PURE_CAPABILITY__)
-  static constexpr cordz_info_t kNullCordzInfo = 1;
-#else
-  static constexpr cordz_info_t kNullCordzInfo = BigEndianByte(1);
+  static constexpr cordz_info_t kNullCordzInfo = LittleEndianByte(1);
+
+  // kTagOffset contains the offset of the control byte / tag. This constant is
+  // intended mostly for debugging purposes: do not remove this constant as it
+  // is actively inspected and used by gdb pretty printing code.
+  static constexpr size_t kTagOffset = 0;
+
+  // Implement `~InlineData()` conditionally: we only need this destructor to
+  // unpoison poisoned instances under *SAN, and it will only compile correctly
+  // if the current compiler supports `absl::is_constant_evaluated()`.
+#ifdef ABSL_INTERNAL_CORD_HAVE_SANITIZER
+  ~InlineData() noexcept { unpoison(); }
 #endif
 
-#if defined(__CHERI_PURE_CAPABILITY__)
-  constexpr InlineData() : as_chars_{0}, cordz_info_{0} {}
-#else
-  constexpr InlineData() : as_chars_{0} {}
-#endif
-  explicit InlineData(DefaultInitType) {}
-  explicit constexpr InlineData(CordRep* rep) : as_tree_(rep) {}
-  explicit constexpr InlineData(absl::string_view chars)
-      : as_chars_{
-    GetOrNull(chars, 0), GetOrNull(chars, 1), GetOrNull(chars, 2),
-        GetOrNull(chars, 3), GetOrNull(chars, 4), GetOrNull(chars, 5),
-        GetOrNull(chars, 6), GetOrNull(chars, 7), GetOrNull(chars, 8),
-        GetOrNull(chars, 9), GetOrNull(chars, 10), GetOrNull(chars, 11),
-        GetOrNull(chars, 12), GetOrNull(chars, 13), GetOrNull(chars, 14),
-#if defined(__CHERI_PURE_CAPABILITY__)
-        // XXX-AM: The pure-capability version maintains the same size
-        // and layout of inline data, however the tag byte is kept in
-        // the LSB of the cordz_info_t pointer.
-        '\0'
+  constexpr InlineData() noexcept { poison_this(); }
+
+  explicit InlineData(DefaultInitType) noexcept : rep_(kDefaultInit) {
+    poison_this();
   }
-  , cordz_info_ { static_cast<cordz_info_t>((chars.size() << 1)) }
-#else
-        static_cast<char>((chars.size() << 1))
+
+  explicit InlineData(CordRep* rep) noexcept : rep_(rep) {
+    ABSL_ASSERT(rep != nullptr);
   }
+
+  // Explicit constexpr constructor to create a constexpr InlineData
+  // value. Creates an inlined SSO value if `rep` is null, otherwise
+  // creates a tree instance value.
+  constexpr InlineData(absl::string_view sv, CordRep* rep) noexcept
+      : rep_(rep ? Rep(rep) : Rep(sv)) {
+    poison();
+  }
+
+  constexpr InlineData(const InlineData& rhs) noexcept;
+  InlineData& operator=(const InlineData& rhs) noexcept;
+
+  friend bool operator==(const InlineData& lhs, const InlineData& rhs) {
+#ifdef ABSL_INTERNAL_CORD_HAVE_SANITIZER
+    const Rep l = lhs.rep_.SanitizerSafeCopy();
+    const Rep r = rhs.rep_.SanitizerSafeCopy();
+    return memcmp(&l, &r, sizeof(l)) == 0;
+#else
+    return memcmp(&lhs, &rhs, sizeof(lhs)) == 0;
 #endif
-  {}
+  }
+  friend bool operator!=(const InlineData& lhs, const InlineData& rhs) {
+    return !operator==(lhs, rhs);
+  }
+
+  // Poisons the unused inlined SSO data if the current instance
+  // is inlined, else un-poisons the entire instance.
+  constexpr void poison();
+
+  // Un-poisons this instance.
+  constexpr void unpoison();
+
+  // Poisons the current instance. This is used on default initialization.
+  constexpr void poison_this();
 
   // Returns true if the current instance is empty.
   // The 'empty value' is an inlined data value of zero length.
-  bool is_empty() const { return tag() == 0; }
+  bool is_empty() const { return rep_.tag() == 0; }
 
   // Returns true if the current instance holds a tree value.
-  bool is_tree() const { return (tag() & 1) != 0; }
+  bool is_tree() const { return (rep_.tag() & 1) != 0; }
 
   // Returns true if the current instance holds a cordz_info value.
   // Requires the current instance to hold a tree value.
   bool is_profiled() const {
     assert(is_tree());
-    return as_tree_.cordz_info != kNullCordzInfo;
+    return rep_.cordz_info() != kNullCordzInfo;
   }
 
   // Returns true if either of the provided instances hold a cordz_info value.
@@ -517,8 +608,8 @@ class InlineData {
   static bool is_either_profiled(const InlineData& data1,
                                  const InlineData& data2) {
     assert(data1.is_tree() && data2.is_tree());
-    return ((ptraddr_t)data1.as_tree_.cordz_info |
-            (ptraddr_t)data2.as_tree_.cordz_info) != kNullCordzInfo;
+    return (static_cast<ptraddr_t>(data1.rep_.cordz_info()) |
+            static_cast<ptraddr_t>(data2.rep_.cordz_info())) != kNullCordzInfo;
   }
 
   // Returns the cordz_info sampling instance for this instance, or nullptr
@@ -527,10 +618,10 @@ class InlineData {
   CordzInfo* cordz_info() const {
     assert(is_tree());
 #if defined(__CHERI_PURE_CAPABILITY__)
-    intptr_t info = as_tree_.cordz_info;
+    intptr_t info = rep_.cordz_info();
 #else
-    intptr_t info = static_cast<intptr_t>(
-        absl::big_endian::ToHost64(static_cast<uint64_t>(as_tree_.cordz_info)));
+    intptr_t info = static_cast<intptr_t>(absl::little_endian::ToHost64(
+        static_cast<uint64_t>(rep_.cordz_info())));
 #endif
     assert(info & 1);
     return reinterpret_cast<CordzInfo*>(info - 1);
@@ -543,17 +634,17 @@ class InlineData {
     assert(is_tree());
     uintptr_t info = reinterpret_cast<uintptr_t>(cordz_info) | 1;
 #if defined(__CHERI_PURE_CAPABILITY__)
-    as_tree_.cordz_info = info;
+    rep_.set_cordz_info(info);
 #else
-    as_tree_.cordz_info =
-        static_cast<cordz_info_t>(absl::big_endian::FromHost64(info));
+    rep_.set_cordz_info(
+        static_cast<cordz_info_t>(absl::little_endian::FromHost64(info)));
 #endif
   }
 
   // Resets the current cordz_info to null / empty.
   void clear_cordz_info() {
     assert(is_tree());
-    as_tree_.cordz_info = kNullCordzInfo;
+    rep_.set_cordz_info(kNullCordzInfo);
   }
 
   // Returns a read only pointer to the character data inside this instance.
@@ -561,9 +652,9 @@ class InlineData {
   const char* as_chars() const {
     assert(!is_tree());
 #if defined(__CHERI_PURE_CAPABILITY__)
-    return cheri_setbounds(as_chars_, kMaxInline + 1);
+    return cheri_setbounds(rep_.as_chars(), kMaxInline + 1);
 #else
-    return as_chars_;
+    return rep_.as_chars();
 #endif
   }
 
@@ -584,9 +675,9 @@ class InlineData {
   // if the current instance does not hold inline data, i.e.: is_tree() == true.
   char* as_chars() {
 #if defined(__CHERI_PURE_CAPABILITY__)
-    return cheri_setbounds(as_chars_, kMaxInline + 1);
+    return cheri_setbounds(rep_.as_chars(), kMaxInline + 1);
 #else
-    return as_chars_;
+    return rep_.as_chars();
 #endif
   }
 
@@ -594,14 +685,27 @@ class InlineData {
   // Requires the current instance to hold a tree value.
   CordRep* as_tree() const {
     assert(is_tree());
-    return as_tree_.rep;
+    return rep_.tree();
+  }
+
+  void set_inline_data(const char* data, size_t n) {
+    ABSL_ASSERT(n <= kMaxInline);
+    unpoison();
+    rep_.set_tag(static_cast<int8_t>(n << 1));
+    SmallMemmove<true>(rep_.as_chars(), data, n);
+    poison();
+  }
+
+  void copy_max_inline_to(char* dst) const {
+    assert(!is_tree());
+    memcpy(dst, rep_.SanitizerSafeCopy().as_chars(), kMaxInline);
   }
 
   // Initialize this instance to holding the tree value `rep`,
   // initializing the cordz_info to null, i.e.: 'not profiled'.
   void make_tree(CordRep* rep) {
-    as_tree_.rep = rep;
-    as_tree_.cordz_info = kNullCordzInfo;
+    unpoison();
+    rep_.make_tree(rep);
   }
 
   // Set the tree value of this instance to 'rep`.
@@ -609,75 +713,190 @@ class InlineData {
   // Does not affect the value of cordz_info.
   void set_tree(CordRep* rep) {
     assert(is_tree());
-    as_tree_.rep = rep;
+    rep_.set_tree(rep);
   }
 
   // Returns the size of the inlined character data inside this instance.
   // Requires the current instance to hold inline data.
-  size_t inline_size() const {
-    assert(!is_tree());
-    return tag() >> 1;
-  }
+  size_t inline_size() const { return rep_.inline_size(); }
 
   // Sets the size of the inlined character data inside this instance.
   // Requires `size` to be <= kMaxInline.
   // See the documentation on 'as_chars()' for more information and examples.
   void set_inline_size(size_t size) {
-    ABSL_ASSERT(size <= kMaxInline);
-    tag() = static_cast<char>(size << 1);
+    unpoison();
+    rep_.set_inline_size(size);
+    poison();
+  }
+
+  // Compares 'this' inlined data  with rhs. The comparison is a straightforward
+  // lexicographic comparison. `Compare()` returns values as follows:
+  //
+  //   -1  'this' InlineData instance is smaller
+  //    0  the InlineData instances are equal
+  //    1  'this' InlineData instance larger
+  int Compare(const InlineData& rhs) const {
+    return Compare(rep_.SanitizerSafeCopy(), rhs.rep_.SanitizerSafeCopy());
   }
 
  private:
-  // See cordz_info_t for forced alignment and size of `cordz_info` details.
-  struct AsTree {
-    explicit constexpr AsTree(absl::cord_internal::CordRep* tree)
-        : rep(tree), cordz_info(kNullCordzInfo) {}
-    // This union uses up extra space so that whether rep is 32 or 64 bits,
-    // cordz_info will still start at the eighth byte, and the last
-    // byte of cordz_info will still be the last byte of InlineData.
-    union {
+  struct Rep {
+    // See cordz_info_t for forced alignment and size of `cordz_info` details.
+    struct AsTree {
+      explicit constexpr AsTree(absl::cord_internal::CordRep* tree)
+          : rep(tree) {}
       absl::cord_internal::CordRep* rep;
-      cordz_info_t unused_aligner;
+      cordz_info_t cordz_info = kNullCordzInfo;
     };
-    cordz_info_t cordz_info;
-  };
 
 #if defined(__CHERI_PURE_CAPABILITY__)
-#if defined(ABSL_IS_BIG_ENDIAN)
-  char& tag() {
-    return reinterpret_cast<char*>(&cordz_info_)[sizeof(cordz_info_t) - 1];
-  }
-  char tag() const {
-    return reinterpret_cast<const char*>(
-        &cordz_info_)[sizeof(cordz_info_t) - 1];
-  }
+    explicit Rep(DefaultInitType) : cordz_info_{0}  {}
+    constexpr Rep() : data{0} , cordz_info_{0} {}
 #else
-  char& tag() { return reinterpret_cast<char*>(&cordz_info_)[0]; }
-  char tag() const { return reinterpret_cast<const char*>(&cordz_info_)[0]; }
+    explicit Rep(DefaultInitType) {}
+    constexpr Rep() : data{0} {}
 #endif
-#else   // !__CHERI_PURE_CAPABILITY__
-  char& tag() { return reinterpret_cast<char*>(this)[kMaxInline]; }
-  char tag() const { return reinterpret_cast<const char*>(this)[kMaxInline]; }
-#endif  // !__CHERI_PURE_CAPABILITY__
+    constexpr Rep(const Rep&) = default;
+    constexpr Rep& operator=(const Rep&) = default;
 
-  // If the data has length <= kMaxInline, we store it in `as_chars_`, and
-  // store the size in the last char of `as_chars_` shifted left + 1.
-  // Else we store it in a tree and store a pointer to that tree in
-  // `as_tree_.rep` and store a tag in `tagged_size`.
+    explicit constexpr Rep(CordRep* rep) : as_tree(rep) {}
+
+    explicit constexpr Rep(absl::string_view chars)
 #if defined(__CHERI_PURE_CAPABILITY__)
-  union {
-    struct {
-      char as_chars_[kMaxInline + 1];
-      cordz_info_t cordz_info_;
+        : data{GetOrNull(chars, 0),
+#else
+        : data{static_cast<char>((chars.size() << 1)),
+               GetOrNull(chars, 0),
+#endif
+               GetOrNull(chars, 1),
+               GetOrNull(chars, 2),
+               GetOrNull(chars, 3),
+               GetOrNull(chars, 4),
+               GetOrNull(chars, 5),
+               GetOrNull(chars, 6),
+               GetOrNull(chars, 7),
+               GetOrNull(chars, 8),
+               GetOrNull(chars, 9),
+               GetOrNull(chars, 10),
+               GetOrNull(chars, 11),
+               GetOrNull(chars, 12),
+               GetOrNull(chars, 13),
+#if defined(__CHERI_PURE_CAPABILITY__)
+               GetOrNull(chars, 14)},
+               cordz_info_{ static_cast<cordz_info_t>((chars.size() << 1)) } {}
+#else
+               GetOrNull(chars, 14)} {}
+#endif
+
+    // Disable sanitizer as we must always be able to read `tag`.
+    ABSL_CORD_INTERNAL_NO_SANITIZE
+#if defined(__CHERI_PURE_CAPABILITY__)
+    int8_t tag() const { return reinterpret_cast<const int8_t*>(&cordz_info_)[0]; }
+    void set_tag(int8_t rhs) { reinterpret_cast<int8_t*>(&cordz_info_)[0] = rhs; }
+#else
+    int8_t tag() const { return reinterpret_cast<const int8_t*>(this)[0]; }
+    void set_tag(int8_t rhs) { reinterpret_cast<int8_t*>(this)[0] = rhs; }
+#endif
+
+#if defined(__CHERI_PURE_CAPABILITY__)
+    char* as_chars() { return data; }
+    const char* as_chars() const { return data; }
+#else
+    char* as_chars() { return data + 1; }
+    const char* as_chars() const { return data + 1; }
+#endif
+
+    bool is_tree() const { return (tag() & 1) != 0; }
+
+    size_t inline_size() const {
+      ABSL_ASSERT(!is_tree());
+      return static_cast<size_t>(tag()) >> 1;
+    }
+
+    void set_inline_size(size_t size) {
+      ABSL_ASSERT(size <= kMaxInline);
+      set_tag(static_cast<int8_t>(size << 1));
+    }
+
+    CordRep* tree() const { return as_tree.rep; }
+    void set_tree(CordRep* rhs) { as_tree.rep = rhs; }
+
+#if defined(__CHERI_PURE_CAPABILITY__)
+    cordz_info_t cordz_info() const { return cordz_info_; }
+    void set_cordz_info(cordz_info_t rhs) { cordz_info_ = rhs; }
+#else
+    cordz_info_t cordz_info() const { return as_tree.cordz_info; }
+    void set_cordz_info(cordz_info_t rhs) { as_tree.cordz_info = rhs; }
+#endif
+
+    void make_tree(CordRep* tree) {
+      as_tree.rep = tree;
+#if defined(__CHERI_PURE_CAPABILITY__)
+      cordz_info_ = kNullCordzInfo;
+#else
+      as_tree.cordz_info = kNullCordzInfo;
+#endif
+    }
+
+#ifdef ABSL_INTERNAL_CORD_HAVE_SANITIZER
+    constexpr Rep SanitizerSafeCopy() const {
+      if (!absl::is_constant_evaluated()) {
+        Rep res;
+        if (is_tree()) {
+          res = *this;
+        } else {
+          res.set_tag(tag());
+          memcpy(res.as_chars(), as_chars(), inline_size());
+        }
+        return res;
+      } else {
+        return *this;
+      }
+    }
+#else
+    constexpr const Rep& SanitizerSafeCopy() const { return *this; }
+#endif
+
+    // If the data has length <= kMaxInline, we store it in `data`, and
+    // store the size in the first char of `data` shifted left + 1.
+    // Else we store it in a tree and store a pointer to that tree in
+    // `as_tree.rep` with a tagged pointer to make `tag() & 1` non zero.
+#if defined(__CHERI_PURE_CAPABILITY__)
+    union {
+      struct {
+        char data[kMaxInline + 1];
+        cordz_info_t cordz_info_;
+      };
+      AsTree as_tree;
     };
-    AsTree as_tree_;
   };
 #else
-  union {
-    char as_chars_[kMaxInline + 1];
-    AsTree as_tree_;
+    union {
+      char data[kMaxInline + 1];
+      AsTree as_tree;
+    };
   };
 #endif
+
+  // Private implementation of `Compare()`
+  static inline int Compare(const Rep& lhs, const Rep& rhs) {
+    uint64_t x, y;
+    memcpy(&x, lhs.as_chars(), sizeof(x));
+    memcpy(&y, rhs.as_chars(), sizeof(y));
+    if (x == y) {
+      memcpy(&x, lhs.as_chars() + 7, sizeof(x));
+      memcpy(&y, rhs.as_chars() + 7, sizeof(y));
+      if (x == y) {
+        if (lhs.inline_size() == rhs.inline_size()) return 0;
+        return lhs.inline_size() < rhs.inline_size() ? -1 : 1;
+      }
+    }
+    x = absl::big_endian::FromHost64(x);
+    y = absl::big_endian::FromHost64(y);
+    return x < y ? -1 : 1;
+  }
+
+  Rep rep_;
 };
 
 #if defined(__CHERI_PURE_CAPABILITY__)
@@ -685,6 +904,58 @@ static_assert(sizeof(InlineData) == 2 * sizeof(uintptr_t), "");
 #else
 static_assert(sizeof(InlineData) == kMaxInline + 1, "");
 #endif
+
+#ifdef ABSL_INTERNAL_CORD_HAVE_SANITIZER
+
+constexpr InlineData::InlineData(const InlineData& rhs) noexcept
+    : rep_(rhs.rep_.SanitizerSafeCopy()) {
+  poison();
+}
+
+inline InlineData& InlineData::operator=(const InlineData& rhs) noexcept {
+  unpoison();
+  rep_ = rhs.rep_.SanitizerSafeCopy();
+  poison();
+  return *this;
+}
+
+constexpr void InlineData::poison_this() {
+  if (!absl::is_constant_evaluated()) {
+    container_internal::SanitizerPoisonObject(this);
+  }
+}
+
+constexpr void InlineData::unpoison() {
+  if (!absl::is_constant_evaluated()) {
+    container_internal::SanitizerUnpoisonObject(this);
+  }
+}
+
+constexpr void InlineData::poison() {
+  if (!absl::is_constant_evaluated()) {
+    if (is_tree()) {
+      container_internal::SanitizerUnpoisonObject(this);
+    } else if (const size_t size = inline_size()) {
+      if (size < kMaxInline) {
+        const char* end = rep_.as_chars() + size;
+        container_internal::SanitizerPoisonMemoryRegion(end, kMaxInline - size);
+      }
+    } else {
+      container_internal::SanitizerPoisonObject(this);
+    }
+  }
+}
+
+#else  // ABSL_INTERNAL_CORD_HAVE_SANITIZER
+
+constexpr InlineData::InlineData(const InlineData&) noexcept = default;
+inline InlineData& InlineData::operator=(const InlineData&) noexcept = default;
+
+constexpr void InlineData::poison_this() {}
+constexpr void InlineData::unpoison() {}
+constexpr void InlineData::poison() {}
+
+#endif  // ABSL_INTERNAL_CORD_HAVE_SANITIZER
 
 inline CordRepSubstring* CordRep::substring() {
   assert(IsSubstring());

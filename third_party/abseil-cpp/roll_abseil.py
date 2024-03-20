@@ -93,13 +93,13 @@ Bug: None""".format(hash_diff)
   subprocess.check_call(['git', 'commit', '-m', desc], cwd=chromium_dir)
 
   logging.info('Upload...')
-  subprocess.check_call(['git', 'cl', 'upload', '-m', desc, '--bypass-hooks'], cwd=chromium_dir)
+  #subprocess.check_call(['git', 'cl', 'upload', '-m', desc, '--bypass-hooks'], cwd=chromium_dir)
 
 
 def _Roll():
   chromium_dir = os.getcwd()
   abseil_in_chromium_dir = os.path.join(chromium_dir, 'third_party', 'abseil-cpp')
-  ##_SyncChromium(chromium_dir)
+  #_SyncChromium(chromium_dir)
 
   branch_name = datetime.today().strftime('rolling-absl-%Y%m%d')
   logging.info('Creating branch ' + branch_name + ' for the roll...')
