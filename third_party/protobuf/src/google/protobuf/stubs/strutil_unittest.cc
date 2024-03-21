@@ -817,9 +817,17 @@ TEST(StrCat, Ints) {
   EXPECT_EQ(answer, "-78");
   answer = StrCat(ptrdiff, size);
   EXPECT_EQ(answer, "-910");
+#if defined(__CHERI_PURE_CAPABILITY__)
+  answer = StrCat(ptrdiff, (ssize_t) intptr);
+#else
   answer = StrCat(ptrdiff, intptr);
+#endif
   EXPECT_EQ(answer, "-9-12");
+#if defined(__CHERI_PURE_CAPABILITY__)
+  answer = StrCat((size_t) uintptr, 0);
+#else
   answer = StrCat(uintptr, 0);
+#endif
   EXPECT_EQ(answer, "130");
 }
 

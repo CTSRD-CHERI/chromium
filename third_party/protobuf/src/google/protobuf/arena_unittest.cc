@@ -1354,6 +1354,9 @@ TEST(ArenaTest, RepeatedFieldWithNonPODType) {
 
 // Align n to next multiple of 8
 uint64_t Align8(uint64_t n) { return (n + 7) & -8; }
+#if defined(__CHERI_PURE_CAPABILITY__)
+uint64_t AlignMaxAlign(uint64_t n) { return __builtin_align_up(n, alignof(max_align_t)); }
+#endif
 
 TEST(ArenaTest, SpaceAllocated_and_Used) {
   Arena arena_1;
@@ -1363,7 +1366,11 @@ TEST(ArenaTest, SpaceAllocated_and_Used) {
   Arena::CreateArray<char>(&arena_1, 320);
   // Arena will allocate slightly more than 320 for the block headers.
   EXPECT_LE(320, arena_1.SpaceAllocated());
+#if defined(__CHERI_PURE_CAPABILITY__)
   EXPECT_EQ(Align8(320), arena_1.SpaceUsed());
+#else
+  EXPECT_EQ(AlignMaxAlign(320), arena_1.SpaceUsed());
+#endif
   EXPECT_LE(320, arena_1.Reset());
 
   // Test with initial block.
@@ -1379,7 +1386,11 @@ TEST(ArenaTest, SpaceAllocated_and_Used) {
   EXPECT_EQ(1024, arena_2.Reset());
   Arena::CreateArray<char>(&arena_2, 55);
   EXPECT_EQ(1024, arena_2.SpaceAllocated());
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_EQ(AlignMaxAlign(55), arena_2.SpaceUsed());
+#else
   EXPECT_EQ(Align8(55), arena_2.SpaceUsed());
+#endif
   EXPECT_EQ(1024, arena_2.Reset());
 }
 
@@ -1418,11 +1429,19 @@ TEST(ArenaTest, BlockSizeSmallerThanAllocation) {
 
     *Arena::Create<int64_t>(&arena) = 42;
     EXPECT_GE(arena.SpaceAllocated(), 8);
+#if defined(__CHERI_PURE_CAPABILITY__)
+    EXPECT_EQ(16, arena.SpaceUsed());
+#else
     EXPECT_EQ(8, arena.SpaceUsed());
+#endif
 
     *Arena::Create<int64_t>(&arena) = 42;
     EXPECT_GE(arena.SpaceAllocated(), 16);
+#if defined(__CHERI_PURE_CAPABILITY__)
+    EXPECT_EQ(32, arena.SpaceUsed());
+#else
     EXPECT_EQ(16, arena.SpaceUsed());
+#endif
   }
 }
 

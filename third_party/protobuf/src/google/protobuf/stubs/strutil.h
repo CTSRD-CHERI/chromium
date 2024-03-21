@@ -604,7 +604,11 @@ struct Hex {
     // their unsigned counterparts.
 #ifdef LANG_CXX11
     static_assert(
+#if defined(__CHERI_PURE_CAPABILITY__)
+        sizeof(v) == 1 || sizeof(v) == 2 || sizeof(v) == 4 || sizeof(v) == 8 || sizeof(v) == 16,
+#else
         sizeof(v) == 1 || sizeof(v) == 2 || sizeof(v) == 4 || sizeof(v) == 8,
+#endif
         "Unknown integer type");
 #endif
     value = sizeof(v) == 1 ? static_cast<uint8>(v)

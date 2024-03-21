@@ -55,6 +55,12 @@ namespace google {
 namespace protobuf {
 namespace internal {
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+inline constexpr size_t AlignUpToMaxAlign(size_t n) {
+  return __builtin_align_up(n, alignof(max_align_t));
+}
+#endif
+
 inline constexpr size_t AlignUpTo8(size_t n) {
   // Align n to next multiple of 8 (from Hacker's Delight, Chapter 3.)
   return (n + 7) & static_cast<size_t>(-8);
@@ -121,7 +127,11 @@ class TaggedAllocationPolicyPtr {
       : policy_(reinterpret_cast<uintptr_t>(policy)) {}
 
   void set_policy(AllocationPolicy* policy) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    ptraddr_t bits = policy_ & kTagsMask;
+#else
     auto bits = policy_ & kTagsMask;
+#endif
     policy_ = reinterpret_cast<uintptr_t>(policy) | bits;
   }
 
@@ -163,19 +173,36 @@ class TaggedAllocationPolicyPtr {
     kRecordAllocs = 2,
   };
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static constexpr ptraddr_t kTagsMask = 7;
+  static constexpr ptraddr_t kPtrMask = ~kTagsMask;
+#else
   static constexpr uintptr_t kTagsMask = 7;
   static constexpr uintptr_t kPtrMask = ~kTagsMask;
+#endif
 
   template <uintptr_t kMask>
   uintptr_t get_mask() const {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    return policy_ & (ptraddr_t) kMask;
+#else
     return policy_ & kMask;
+#endif
   }
   template <uintptr_t kMask>
   void set_mask(bool v) {
     if (v) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+      policy_ |= (ptraddr_t) kMask;
+#else
       policy_ |= kMask;
+#endif
     } else {
+#if defined(__CHERI_PURE_CAPABILITY__)
+      policy_ &= ~(ptraddr_t) kMask;
+#else
       policy_ &= ~kMask;
+#endif
     }
   }
   uintptr_t policy_;

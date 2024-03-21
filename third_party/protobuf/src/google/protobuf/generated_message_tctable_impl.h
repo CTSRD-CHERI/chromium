@@ -248,7 +248,11 @@ enum FieldType : uint16_t {
 #ifndef NDEBUG
 template <size_t align>
 void AlignFail(uintptr_t address) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  GOOGLE_LOG(FATAL) << "Unaligned (" << align << ") access at " << (ptraddr_t) address;
+#else
   GOOGLE_LOG(FATAL) << "Unaligned (" << align << ") access at " << address;
+#endif
 }
 
 extern template void AlignFail<4>(uintptr_t);

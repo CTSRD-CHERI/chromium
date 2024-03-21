@@ -121,7 +121,11 @@ struct Offset {
 #endif
 
 // Base class for message-level table with info for the tail-call parser.
+#if defined(__CHERI_PURE_CAPABILITY__)
+struct alignas(max_align_t) TcParseTableBase {
+#else
 struct alignas(uint64_t) TcParseTableBase {
+#endif
   // Common attributes for message layout:
   uint16_t has_bits_offset;
   uint16_t extension_offset;
@@ -240,9 +244,17 @@ struct alignas(uint64_t) TcParseTableBase {
 #pragma warning(pop)
 #endif
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+static_assert(sizeof(TcParseTableBase::FastFieldEntry) <= 32,
+#else
 static_assert(sizeof(TcParseTableBase::FastFieldEntry) <= 16,
+#endif
               "Fast field entry is too big.");
+#if defined(__CHERI_PURE_CAPABILITY__)
+static_assert(sizeof(TcParseTableBase::FieldEntry) <= 32,
+#else
 static_assert(sizeof(TcParseTableBase::FieldEntry) <= 16,
+#endif
               "Field entry is too big.");
 
 template <size_t kFastTableSizeLog2, size_t kNumFieldEntries = 0,

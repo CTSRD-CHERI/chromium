@@ -201,8 +201,13 @@ int FieldSpaceUsed(const FieldDescriptor* field) {
 
 inline int DivideRoundingUp(int i, int j) { return (i + (j - 1)) / j; }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+static const int kSafeAlignment = alignof(max_align_t);
+static const int kMaxOneofUnionSize = sizeof(intptr_t);
+#else
 static const int kSafeAlignment = sizeof(uint64_t);
 static const int kMaxOneofUnionSize = sizeof(uint64_t);
+#endif
 
 inline int AlignTo(int offset, int alignment) {
   return DivideRoundingUp(offset, alignment) * alignment;

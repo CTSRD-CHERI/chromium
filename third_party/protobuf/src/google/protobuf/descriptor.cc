@@ -362,9 +362,14 @@ class FlatAllocatorImpl {
     // We can't call PlanArray after FinalizePlanning has been called.
     GOOGLE_CHECK(!has_allocated());
     if (std::is_trivially_destructible<U>::value) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+      static_assert(alignof(U) <= alignof(max_align_t), "");
+      total_.template Get<char>() += RoundUpTo<alignof(max_align_t)>(array_size * sizeof(U));
+#else
       // Trivial types are aligned to 8 bytes.
       static_assert(alignof(U) <= 8, "");
       total_.template Get<char>() += RoundUpTo<8>(array_size * sizeof(U));
+#endif
     } else {
       // Since we can't use `if constexpr`, just make the expression compile
       // when this path is not taken.
@@ -386,7 +391,11 @@ class FlatAllocatorImpl {
     TypeToUse*& data = pointers_.template Get<TypeToUse>();
     int& used = used_.template Get<TypeToUse>();
     U* res = reinterpret_cast<U*>(data + used);
+#if defined(__CHERI_PURE_CAPABILITY__)
+    used += trivial ? RoundUpTo<alignof(max_align_t)>(array_size * sizeof(U)) : array_size;
+#else
     used += trivial ? RoundUpTo<8>(array_size * sizeof(U)) : array_size;
+#endif
     GOOGLE_CHECK_LE(used, total_.template Get<TypeToUse>());
     return res;
   }
@@ -1800,17 +1809,29 @@ bool DescriptorPool::Tables::AddExtension(const FieldDescriptor* field) {
 template <typename Type>
 Type* DescriptorPool::Tables::Allocate() {
   static_assert(std::is_trivially_destructible<Type>::value, "");
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static_assert(alignof(Type) <= alignof(max_align_t), "");
+#else
   static_assert(alignof(Type) <= 8, "");
+#endif
   return ::new (AllocateBytes(sizeof(Type))) Type{};
 }
 
 void* DescriptorPool::Tables::AllocateBytes(int size) {
   if (size == 0) return nullptr;
+#if defined(__CHERI_PURE_CAPABILITY__)
+  void* p = ::operator new(size + RoundUpTo<alignof(max_align_t)>(sizeof(int)));
+#else
   void* p = ::operator new(size + RoundUpTo<8>(sizeof(int)));
+#endif
   int* sizep = static_cast<int*>(p);
   misc_allocs_.emplace_back(sizep);
   *sizep = size;
+#if defined(__CHERI_PURE_CAPABILITY__)
+  return static_cast<char*>(p) + RoundUpTo<alignof(max_align_t)>(sizeof(int));
+#else
   return static_cast<char*>(p) + RoundUpTo<8>(sizeof(int));
+#endif
 }
 
 template <typename... T>

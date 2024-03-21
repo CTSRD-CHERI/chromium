@@ -183,11 +183,19 @@ class PROTOBUF_EXPORT InternalMetadata {
   intptr_t ptr_;
 
   // Tagged pointer implementation.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static constexpr ptraddr_t kUnknownFieldsTagMask = 1;
+  static constexpr ptraddr_t kMessageOwnedArenaTagMask = 2;
+  static constexpr ptraddr_t kPtrTagMask =
+      kUnknownFieldsTagMask | kMessageOwnedArenaTagMask;
+  static constexpr ptraddr_t kPtrValueMask = ~kPtrTagMask;
+#else
   static constexpr intptr_t kUnknownFieldsTagMask = 1;
   static constexpr intptr_t kMessageOwnedArenaTagMask = 2;
   static constexpr intptr_t kPtrTagMask =
       kUnknownFieldsTagMask | kMessageOwnedArenaTagMask;
   static constexpr intptr_t kPtrValueMask = ~kPtrTagMask;
+#endif
 
   // Accessors for pointer tag and pointer value.
   PROTOBUF_ALWAYS_INLINE bool HasUnknownFieldsTag() const {
@@ -218,7 +226,11 @@ class PROTOBUF_EXPORT InternalMetadata {
       // Subtle: we want to preserve the message-owned arena flag, while at the
       // same time replacing the pointer to Container<T> with a pointer to the
       // arena.
+#if defined(__CHERI_PURE_CAPABILITY__)
+      ptraddr_t message_owned_arena_tag = ptr_ & kMessageOwnedArenaTagMask;
+#else
       intptr_t message_owned_arena_tag = ptr_ & kMessageOwnedArenaTagMask;
+#endif
       ptr_ = reinterpret_cast<intptr_t>(a) | message_owned_arena_tag;
       return a;
     } else {

@@ -239,7 +239,11 @@ struct ArenaOptions {
 // well as protobuf container types like RepeatedPtrField and Map. The protocol
 // is internal to protobuf and is not guaranteed to be stable. Non-proto types
 // should not rely on this protocol.
+#if defined(__CHERI_PURE_CAPABILITY__)
+class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(alignof(max_align_t)) Arena final {
+#else
 class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8) Arena final {
+#endif
  public:
   // Default constructor with sensible default options, tuned for average
   // use-cases.
@@ -316,16 +320,26 @@ class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8) Arena final {
   }
 
   // Allocates memory with the specific size and alignment.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  void* AllocateAligned(size_t size, size_t align = alignof(max_align_t)) {
+    if (align <= alignof(max_align_t)) {
+      return AllocateAlignedNoHook(internal::AlignUpToMaxAlign(size));
+#else
   void* AllocateAligned(size_t size, size_t align = 8) {
     if (align <= 8) {
       return AllocateAlignedNoHook(internal::AlignUpTo8(size));
+#endif
     } else {
       // We are wasting space by over allocating align - 8 bytes. Compared
       // to a dedicated function that takes current alignment in consideration.
       // Such a scheme would only waste (align - 8)/2 bytes on average, but
       // requires a dedicated function in the outline arena allocation
       // functions. Possibly re-evaluate tradeoffs later.
+#if defined(__CHERI_PURE_CAPABILITY__)
+      return internal::AlignTo(AllocateAlignedNoHook(size + align - alignof(max_align_t)), align);
+#else
       return internal::AlignTo(AllocateAlignedNoHook(size + align - 8), align);
+#endif
     }
   }
 
@@ -594,13 +608,22 @@ class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8) Arena final {
     if (destructor == nullptr) {
       return AllocateAlignedWithHook(size, align, type);
     } else {
+#if defined(__CHERI_PURE_CAPABILITY__)
+      if (align <= alignof(max_align_t)) {
+        auto res = AllocateAlignedWithCleanup(internal::AlignUpToMaxAlign(size), type);
+#else
       if (align <= 8) {
         auto res = AllocateAlignedWithCleanup(internal::AlignUpTo8(size), type);
+#endif
         res.second->elem = res.first;
         res.second->cleanup = destructor;
         return res.first;
       } else {
+#if defined(__CHERI_PURE_CAPABILITY__)
+        auto res = AllocateAlignedWithCleanup(size + align - alignof(max_align_t), type);
+#else
         auto res = AllocateAlignedWithCleanup(size + align - 8, type);
+#endif
         auto ptr = internal::AlignTo(res.first, align);
         res.second->elem = ptr;
         res.second->cleanup = destructor;
@@ -790,8 +813,13 @@ class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8) Arena final {
 
   void* AllocateAlignedWithHookForArray(size_t n, size_t align,
                                         const std::type_info* type) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    if (align <= alignof(max_align_t)) {
+      return AllocateAlignedWithHookForArray(internal::AlignUpToMaxAlign(n), type);
+#else
     if (align <= 8) {
       return AllocateAlignedWithHookForArray(internal::AlignUpTo8(n), type);
+#endif
     } else {
       // We are wasting space by over allocating align - 8 bytes. Compared
       // to a dedicated function that takes current alignment in consideration.
@@ -799,21 +827,34 @@ class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8) Arena final {
       // requires a dedicated function in the outline arena allocation
       // functions. Possibly re-evaluate tradeoffs later.
       return internal::AlignTo(
+#if defined(__CHERI_PURE_CAPABILITY__)
+          AllocateAlignedWithHookForArray(n + align - alignof(max_align_t), type), align);
+#else
           AllocateAlignedWithHookForArray(n + align - 8, type), align);
+#endif
     }
   }
 
   void* AllocateAlignedWithHook(size_t n, size_t align,
                                 const std::type_info* type) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    if (align <= alignof(max_align_t)) {
+      return AllocateAlignedWithHook(internal::AlignUpToMaxAlign(n), type);
+#else
     if (align <= 8) {
       return AllocateAlignedWithHook(internal::AlignUpTo8(n), type);
+#endif
     } else {
       // We are wasting space by over allocating align - 8 bytes. Compared
       // to a dedicated function that takes current alignment in consideration.
       // Such a scheme would only waste (align - 8)/2 bytes on average, but
       // requires a dedicated function in the outline arena allocation
       // functions. Possibly re-evaluate tradeoffs later.
+#if defined(__CHERI_PURE_CAPABILITY__)
+      return internal::AlignTo(AllocateAlignedWithHook(n + align - alignof(max_align_t), type),
+#else
       return internal::AlignTo(AllocateAlignedWithHook(n + align - 8, type),
+#endif
                                align);
     }
   }

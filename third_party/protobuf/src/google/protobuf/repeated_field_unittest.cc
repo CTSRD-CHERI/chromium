@@ -227,7 +227,12 @@ void CheckNaturalGrowthOnArenasReuseBlocks(bool is_ptr) {
   // expected.
   EXPECT_THAT(
       arena.SpaceUsed() - (is_ptr ? sizeof(T) * kNumElems * kNumFields : 0),
+#if defined(__CHERI_PURE_CAPABILITY__)
+      // Double the overhead to account for capability overheads
+      AllOf(Ge(used_bytes_if_reusing), Le(1.04 * used_bytes_if_reusing)));
+#else
       AllOf(Ge(used_bytes_if_reusing), Le(1.02 * used_bytes_if_reusing)));
+#endif
 }
 
 TEST(RepeatedField, NaturalGrowthOnArenasReuseBlocks) {
