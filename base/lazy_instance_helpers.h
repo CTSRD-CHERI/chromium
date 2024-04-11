@@ -65,7 +65,11 @@ Type* GetOrCreateLazyPointer(std::atomic<uintptr_t>& state,
 
   // If any bit in the created mask is true, the instance has already been
   // fully constructed.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  constexpr ptraddr_t kLazyInstanceCreatedMask =
+#else // defined(__CHERI_PURE_CAPABILITY__)
   constexpr uintptr_t kLazyInstanceCreatedMask =
+#endif // defined(__CHERI_PURE_CAPABILITY__)
       ~internal::kLazyInstanceStateCreating;
 
   // We will hopefully have fast access when the instance is already created.
