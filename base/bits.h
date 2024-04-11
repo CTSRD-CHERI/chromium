@@ -38,31 +38,60 @@ constexpr bool IsPowerOfTwo(T value) {
 template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
 constexpr T AlignDown(T size, T alignment) {
   DCHECK(IsPowerOfTwo(alignment));
+#if __has_attribute(__builtin_align_down)
+  return __builtin_align_down(size, alignment);
+#else
   return size & ~(alignment - 1);
+#endif
 }
 
 // Move |ptr| back to the previous multiple of alignment, which must be a power
 // of two. Defined for types where sizeof(T) is one byte.
 template <typename T, typename = typename std::enable_if<sizeof(T) == 1>::type>
 inline T* AlignDown(T* ptr, uintptr_t alignment) {
+#if __has_attribute(__builtin_align_down)
+  return __builtin_align_down(size, alignment);
+#else
   return reinterpret_cast<T*>(
       AlignDown(reinterpret_cast<uintptr_t>(ptr), alignment));
+#endif
 }
 
 // Round up |size| to a multiple of alignment, which must be a power of two.
 template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
 constexpr T AlignUp(T size, T alignment) {
   DCHECK(IsPowerOfTwo(alignment));
+#if __has_attribute(__builtin_align_up)
+  return __builtin_align_up(size, alignment);
+#else
+  return (size + alignment - 1) & ~(alignment - 1);
+#endif
+}
+
+#if defined(__CHERI_PURE_CAPABILITY__)
+template <>
+constexpr uintptr_t AlignUp(uintptr_t size, uintptr_t alignment) {
+  DCHECK(IsPowerOfTwo(alignment));
+  return (size + (ptraddr_t) (alignment - 1)) & (ptraddr_t) ~(alignment - 1);
+}
+
+constexpr uintptr_t AlignUp(uintptr_t size, size_t alignment) {
+  DCHECK(IsPowerOfTwo(alignment));
   return (size + alignment - 1) & ~(alignment - 1);
 }
+#endif // defined(__CHERI_PURE_CAPABILITY__)
 
 // Advance |ptr| to the next multiple of alignment, which must be a power of
 // two. Defined for types where sizeof(T) is one byte.
 template <typename T, typename = typename std::enable_if<sizeof(T) == 1>::type>
 inline T* AlignUp(T* ptr, uintptr_t alignment) {
+#if __has_attribute(__builtin_align_up)
+  return __builtin_align_up(size, alignment);
+#else
   return reinterpret_cast<T*>(
       AlignUp(reinterpret_cast<uintptr_t>(ptr), alignment));
 }
+#endif
 
 // CountLeadingZeroBits(value) returns the number of zero bits following the
 // most significant 1 bit in |value| if |value| is non-zero, otherwise it
