@@ -138,14 +138,22 @@ inline Atomic64 NoBarrier_AtomicExchange(volatile Atomic64* ptr,
 }
 
 inline Atomic64 NoBarrier_AtomicIncrement(volatile Atomic64* ptr,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                                          Atomic64 increment __attribute__((cheri_no_provenance))) {
+#else // defined(__CHERI_PURE_CAPABILITY__)
                                           Atomic64 increment) {
+#endif // defined(__CHERI_PURE_CAPABILITY__)
   return increment +
          ((AtomicLocation64)ptr)
              ->fetch_add(increment, std::memory_order_relaxed);
 }
 
 inline Atomic64 Barrier_AtomicIncrement(volatile Atomic64* ptr,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                                        Atomic64 increment __attribute__((cheri_no_provenance))) {
+#else // defined(__CHERI_PURE_CAPABILITY__)
                                         Atomic64 increment) {
+#endif // defined(__CHERI_PURE_CAPABILITY__)
   return increment + ((AtomicLocation64)ptr)->fetch_add(increment);
 }
 
