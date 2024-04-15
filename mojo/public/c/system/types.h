@@ -168,7 +168,11 @@ typedef uint32_t MojoInitializeFlags;
 #define MOJO_INITIALIZE_FLAG_LOAD_ONLY ((MojoInitializeFlags)4)
 
 // Options passed to |MojoInitialize()|.
+#if defined(__CHERI_PURE_CAPABILITY__)
+struct MOJO_ALIGNAS(alignof(max_align_t)) MojoInitializeOptions {
+#else // defined(__CHERI_PURE_CAPABILITY__)
 struct MOJO_ALIGNAS(8) MojoInitializeOptions {
+#endif // defined(__CHERI_PURE_CAPABILITY__)
   // The size of this structure, used for versioning.
   uint32_t struct_size;
 

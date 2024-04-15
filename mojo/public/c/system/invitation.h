@@ -33,7 +33,11 @@ typedef uint32_t MojoProcessErrorFlags;
 // Details regarding why an invited process has had its connection to this
 // process terminated by the system. See |MojoProcessErrorHandler| and
 // |MojoSendInvitation()|.
+#if defined(__CHERI_PURE_CAPABILITY__)
+struct MOJO_ALIGNAS(alignof(max_align_t)) MojoProcessErrorDetails {
+#else // defined(__CHERI_PURE_CAPABILITY__)
 struct MOJO_ALIGNAS(8) MojoProcessErrorDetails {
+#endif // defined(__CHERI_PURE_CAPABILITY__)
   // The size of this structure, used for versioning.
   uint32_t struct_size;
 

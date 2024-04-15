@@ -23,7 +23,11 @@ const MojoTrapEventFlags MOJO_TRAP_EVENT_FLAG_WITHIN_API_CALL = 1 << 0;
 #endif
 
 // Structure passed to trap event handlers when invoked by a tripped trap.
+#if defined(__CHERI_PURE_CAPABILITY__)
+struct MOJO_ALIGNAS(alignof(max_align_t)) MojoTrapEvent {
+#else // defined(__CHERI_PURE_CAPABILITY__)
 struct MOJO_ALIGNAS(8) MojoTrapEvent {
+#endif // defined(__CHERI_PURE_CAPABILITY__)
   // The size of this structure, used for versioning.
   uint32_t struct_size;
 
