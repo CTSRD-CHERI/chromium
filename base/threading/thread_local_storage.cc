@@ -135,6 +135,9 @@ enum class TlsVectorState {
 };
 
 // Bit-mask used to store TlsVectorState.
+#if defined(__CHERI_PURE_CAPABILITY__)
+__attribute__((cheri_no_provenance))
+#endif
 constexpr uintptr_t kVectorStateBitMask = 3;
 static_assert(static_cast<int>(TlsVectorState::kMaxValue) <=
                   kVectorStateBitMask,
