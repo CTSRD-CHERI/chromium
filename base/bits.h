@@ -34,16 +34,36 @@ constexpr bool IsPowerOfTwo(T value) {
   return value > 0 && (value & (value - 1)) == 0;
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+// Returns true iff |value| is a power of 2.
+//
+// TODO(pkasting): When C++20 is available, replace with std::has_single_bit().
+template <>
+constexpr bool IsPowerOfTwo(uintptr_t value) {
+  // From "Hacker's Delight": Section 2.1 Manipulating Rightmost Bits.
+  //
+  // Only positive integers with a single bit set are powers of two. If only one
+  // bit is set in x (e.g. 0b00000100000000) then |x-1| will have that bit set
+  // to zero and all bits to its right set to 1 (e.g. 0b00000011111111). Hence
+  // |x & (x-1)| is 0 iff x is a power of two.
+  return value > 0 && (value & (ptraddr_t) (value - 1)) == 0;
+}
+#endif // defined(__CHERI_PURE_CAPABILITY__)
+
 // Round down |size| to a multiple of alignment, which must be a power of two.
 template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
 constexpr T AlignDown(T size, T alignment) {
   DCHECK(IsPowerOfTwo(alignment));
-#if __has_attribute(__builtin_align_down)
-  return __builtin_align_down(size, alignment);
-#else
   return size & ~(alignment - 1);
-#endif
 }
+
+#if defined(__CHERI_PURE_CAPABILITY__)
+template <>
+constexpr uintptr_t AlignDown(uintptr_t size, uintptr_t alignment) {
+  DCHECK(IsPowerOfTwo(alignment));
+  return size & (ptraddr_t) ~(alignment - 1);
+}
+#endif // defined(__CHERI_PURE_CAPABILITY__)
 
 // Move |ptr| back to the previous multiple of alignment, which must be a power
 // of two. Defined for types where sizeof(T) is one byte.
@@ -61,11 +81,7 @@ inline T* AlignDown(T* ptr, uintptr_t alignment) {
 template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
 constexpr T AlignUp(T size, T alignment) {
   DCHECK(IsPowerOfTwo(alignment));
-#if __has_attribute(__builtin_align_up)
-  return __builtin_align_up(size, alignment);
-#else
   return (size + alignment - 1) & ~(alignment - 1);
-#endif
 }
 
 #if defined(__CHERI_PURE_CAPABILITY__)
@@ -90,8 +106,8 @@ inline T* AlignUp(T* ptr, uintptr_t alignment) {
 #else
   return reinterpret_cast<T*>(
       AlignUp(reinterpret_cast<uintptr_t>(ptr), alignment));
-}
 #endif
+}
 
 // CountLeadingZeroBits(value) returns the number of zero bits following the
 // most significant 1 bit in |value| if |value| is non-zero, otherwise it
