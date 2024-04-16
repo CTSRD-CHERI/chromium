@@ -198,7 +198,14 @@ struct MOJO_ALIGNAS(8) MojoInitializeOptions {
   int32_t argc;
   MOJO_POINTER_FIELD(const char* const*, argv);
 };
+#if defined(__CHERI_PURE_CAPABILITY__)
+// Account for strong alignment requirements of the MOJO_POINTER_FIELDs
+// on 64-bit CHERI architectures.
+MOJO_STATIC_ASSERT((sizeof(struct MojoInitializeOptions) == 32) ||
+                   (sizeof(struct MojoInitializeOptions) == 48),
+#else // defined(__CHERI_PURE_CAPABILITY__)
 MOJO_STATIC_ASSERT(sizeof(struct MojoInitializeOptions) == 32,
+#endif // defined(__CHERI_PURE_CAPABILITY__)
                    "MojoInitializeOptions has wrong size");
 
 // Flags passed to |MojoShutdown()| via |MojoShutdownOptions|.
