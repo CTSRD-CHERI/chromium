@@ -16,6 +16,15 @@ if (enable_rust) {
   import("//build/rust/rust_bindgen.gni")
 }
 
+declare_args() {
+  # Set to true to disable BoringSSL assembler optimizations.
+  # Porting to CHERI architectures requires adaptation of the BoringSSL
+  # assembler optimizations to use capability register values. This
+  # option allow assembler optimizations to be disabled until these
+  # adaptions have been made and tested.
+  disable_asm_optimizations = true
+}
+
 # Config for us and everybody else depending on BoringSSL.
 config("external_config") {
   include_dirs = [ "src/include" ]
@@ -112,7 +121,9 @@ if (is_win && !is_msan && current_cpu != "arm64") {
     asmflags = []
     include_dirs = [ "src/include" ]
 
-    if (is_msan) {
+    if (disable_asm_optimizations) {
+      public_configs = [ ":no_asm_config" ]
+    } else if (is_msan) {
       public_configs = [ ":no_asm_config" ]
     } else if (current_cpu == "x64") {
       if (is_apple) {
