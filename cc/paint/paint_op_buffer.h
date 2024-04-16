@@ -163,7 +163,11 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   };
 
   enum { kInitialBufferSize = 4096 };
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static constexpr size_t kPaintOpAlign = alignof(max_align_t);
+#else // defined(__CHERI_PURE_CAPABILITY__)
   static constexpr size_t kPaintOpAlign = 8;
+#endif // defined(__CHERI_PURE_CAPABILITY__)
   template <typename Op>
   static constexpr uint16_t ComputeOpAlignedSize() {
     constexpr size_t size = base::bits::AlignUp(sizeof(Op), kPaintOpAlign);
