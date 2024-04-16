@@ -94,6 +94,10 @@ declare_args() {
   # RAW_PTR_EXCLUSION macro is disabled on official builds because it increased
   # binary size. This flag can be used to enable it for official builds too.
   force_enable_raw_ptr_exclusion = false
+  
+  # RAW_PTR_EXCLUSION macro is enbale on non-official by default.
+  # This flag can be used to disable it fof non-official builds.
+  enable_raw_ptr_exclusion_non_official = true 
 }
 
 assert(!enable_pointer_compression_support || glue_core_pools,

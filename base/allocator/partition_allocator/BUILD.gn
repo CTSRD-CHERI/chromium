@@ -462,6 +462,7 @@ buildflag_header("partition_alloc_buildflags") {
     "FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES=$_force_all_process_brp",
 
     "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
+    "ENABLE_RAW_PTR_EXCLUSION_NON_OFFICIAL=$enable_raw_ptr_exclusion_non_official",
 
     "RECORD_ALLOC_INFO=$_record_alloc_info",
     "USE_FREESLOT_BITMAP=$use_freeslot_bitmap",

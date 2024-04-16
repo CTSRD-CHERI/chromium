@@ -28,7 +28,11 @@
 // easier for any bug involving the pointer to become a security vulnerability.
 // For additional guidance please see the "When to use raw_ptr<T>" section of
 // `//base/memory/raw_ptr.md`.
+#if BUILDFLAG(ENABLE_RAW_PTR_EXCLUSION_NON_OFFICIAL)
 #define RAW_PTR_EXCLUSION __attribute__((annotate("raw_ptr_exclusion")))
+#else
+#define RAW_PTR_EXCLUSION
+#endif
 #endif
 #else
 #define RAW_PTR_EXCLUSION
