@@ -243,7 +243,11 @@ typedef IpczResult(IPCZ_API* IpczTransportActivityHandler)(
     const struct IpczTransportActivityOptions* options);  // in
 
 // Structure to be filled in by a driver's GetSharedMemoryInfo().
+#if defined(__CHERI_PURE_CAPABILITY__)
+struct IPCZ_ALIGN(16) IpczSharedMemoryInfo {
+#else   // !__CHERI_PURE_CAPABILITY__
 struct IPCZ_ALIGN(8) IpczSharedMemoryInfo {
+#endif  // !__CHERI_PURE_CAPABILITY__
   // The exact size of this structure in bytes. Set by ipcz before passing the
   // structure to the driver.
   size_t size;
@@ -260,7 +264,11 @@ struct IPCZ_ALIGN(8) IpczSharedMemoryInfo {
 // I/O operations to facilitate communication between nodes, giving embedding
 // systems full control over choice of OS-specific transport mechanisms and I/O
 // scheduling decisions.
+#if defined(__CHERI_PURE_CAPABILITY__)
+struct IPCZ_ALIGN(16) IpczDriver {
+#else   // !__CHERI_PURE_CAPABILITY__
 struct IPCZ_ALIGN(8) IpczDriver {
+#endif  // !__CHERI_PURE_CAPABILITY__
   // The exact size of this structure in bytes. Must be set accurately by the
   // application before passing this structure to any ipcz API functions.
   size_t size;
@@ -564,7 +572,11 @@ typedef uint32_t IpczFeature;
 #define IPCZ_FEATURE_MEM_V2 ((IpczFeature)0xA110C002)
 
 // Options given to CreateNode() to configure the new node's behavior.
+#if defined(__CHERI_PURE_CAPABILITY__)
+struct IPCZ_ALIGN(16) IpczCreateNodeOptions {
+#else   // !__CHERI_PURE_CAPABILITY__
 struct IPCZ_ALIGN(8) IpczCreateNodeOptions {
+#endif  // !__CHERI_PURE_CAPABILITY__
   // The exact size of this structure in bytes. Must be set accurately before
   // passing the structure to CreateNode().
   size_t size;
@@ -735,7 +747,11 @@ typedef void (*IpczApplicationObjectDestructor)(uintptr_t object,
 // Describes the contents of a box. Boxes may contain driver objects, arbitrary
 // application-defined objects, or collections of bytes and ipcz handles
 // (portals or other boxes).
+#if defined(__CHERI_PURE_CAPABILITY__)
+struct IPCZ_ALIGN(16) IpczBoxContents {
+#else // defined(__CHERI_PURE_CAPABILITY__)
 struct IPCZ_ALIGN(8) IpczBoxContents {
+#endif // defined(__CHERI_PURE_CAPABILITY__)
   // The exact size of this structure in bytes. Must be set accurately before
   // passing the structure to Box() or Unbox().
   size_t size;
@@ -789,7 +805,11 @@ typedef uint32_t IpczPortalStatusFlags;
 
 // Information returned by QueryPortalStatus() or provided to
 // IpczTrapEventHandlers when a trap's conditions are met on a portal.
+#if defined(__CHERI_PURE_CAPABILITY__)
+struct IPCZ_ALIGN(16) IpczPortalStatus {
+#else   // !__CHERI_PURE_CAPABILITY__
 struct IPCZ_ALIGN(8) IpczPortalStatus {
+#endif  // !__CHERI_PURE_CAPABILITY__
   // The exact size of this structure in bytes. Must be set accurately before
   // passing the structure to any functions.
   size_t size;
@@ -866,7 +886,11 @@ typedef uint32_t IpczTrapConditionFlags;
 
 // A structure describing portal conditions necessary to trigger a trap and
 // invoke its event handler.
+#if defined(__CHERI_PURE_CAPABILITY__)
+struct IPCZ_ALIGN(16) IpczTrapConditions {
+#else   // !__CHERI_PURE_CAPABILITY__
 struct IPCZ_ALIGN(8) IpczTrapConditions {
+#endif  // !__CHERI_PURE_CAPABILITY__
   // The exact size of this structure in bytes. Must be set accurately before
   // passing the structure to Trap().
   size_t size;
@@ -885,7 +909,11 @@ struct IPCZ_ALIGN(8) IpczTrapConditions {
 
 // Structure passed to each IpczTrapEventHandler invocation with details about
 // the event.
+#if defined(__CHERI_PURE_CAPABILITY__)
+struct IPCZ_ALIGN(16) IpczTrapEvent {
+#else // defined(__CHERI_PURE_CAPABILITY__)
 struct IPCZ_ALIGN(8) IpczTrapEvent {
+#endif // defined(__CHERI_PURE_CAPABILITY__)
   // The size of this structure in bytes. Populated by ipcz to indicate which
   // version is being provided to the handler.
   size_t size;
@@ -932,7 +960,11 @@ extern "C" {
 //
 // The order and signature (ABI) of functions defined here must never change,
 // but new functions may be added to the end.
+#if defined(__CHERI_PURE_CAPABILITY__)
+struct IPCZ_ALIGN(16) IpczAPI {
+#else // defined(__CHERI_PURE_CAPABILITY__)
 struct IPCZ_ALIGN(8) IpczAPI {
+#endif // defined(__CHERI_PURE_CAPABILITY__)
   // The exact size of this structure in bytes. Must be set accurately by the
   // application before passing the structure to an implementation of
   // IpczGetAPIFn.
