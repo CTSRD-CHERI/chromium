@@ -202,7 +202,7 @@ struct MOJO_ALIGNAS(8) MojoInitializeOptions {
 // Account for strong alignment requirements of the MOJO_POINTER_FIELDs
 // on 64-bit CHERI architectures.
 MOJO_STATIC_ASSERT((sizeof(struct MojoInitializeOptions) == 32) ||
-                   (sizeof(struct MojoInitializeOptions) == 48),
+                   (sizeof(struct MojoInitializeOptions) == 64),
 #else // defined(__CHERI_PURE_CAPABILITY__)
 MOJO_STATIC_ASSERT(sizeof(struct MojoInitializeOptions) == 32,
 #endif // defined(__CHERI_PURE_CAPABILITY__)

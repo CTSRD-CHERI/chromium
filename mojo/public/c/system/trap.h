@@ -67,7 +67,12 @@ struct MOJO_ALIGNAS(8) MojoTrapEvent {
   // time the trap was tripped.
   struct MojoHandleSignalsState signals_state;
 };
+#if defined(__CHERI_PURE_CAPABILITY__)
+MOJO_STATIC_ASSERT((sizeof(struct MojoTrapEvent) == 32) ||
+                   (sizeof(struct MojoTrapEvent) == 48),
+#else // defined(__CHERI_PURE_CAPABILITY__)
 MOJO_STATIC_ASSERT(sizeof(struct MojoTrapEvent) == 32,
+#endif // defined(__CHERI_PURE_CAPABILITY__)
                    "MojoTrapEvent has wrong size.");
 
 // Value given to |MojoAddTrigger| to configure what condition should cause it
