@@ -33,7 +33,11 @@ typedef uint32_t MojoProcessErrorFlags;
 // Details regarding why an invited process has had its connection to this
 // process terminated by the system. See |MojoProcessErrorHandler| and
 // |MojoSendInvitation()|.
+#if defined(__CHERI_PURE_CAPABILITY__)
+struct MOJO_ALIGNAS(alignof(max_align_t)) MojoProcessErrorDetails {
+#else // defined(__CHERI_PURE_CAPABILITY__)
 struct MOJO_ALIGNAS(8) MojoProcessErrorDetails {
+#endif // defined(__CHERI_PURE_CAPABILITY__)
   // The size of this structure, used for versioning.
   uint32_t struct_size;
 
@@ -48,7 +52,12 @@ struct MOJO_ALIGNAS(8) MojoProcessErrorDetails {
   // See |MojoProcessErrorFlags|.
   MojoProcessErrorFlags flags;
 };
+#if defined(__CHERI_PURE_CAPABILITY__)
+MOJO_STATIC_ASSERT((sizeof(struct MojoProcessErrorDetails) == 24) ||
+                   (sizeof(struct MojoProcessErrorDetails) == 48),
+#else // defined(__CHERI_PURE_CAPABILITY__)
 MOJO_STATIC_ASSERT(sizeof(struct MojoProcessErrorDetails) == 24,
+#endif // defined(__CHERI_PURE_CAPABILITY__)
                    "MojoProcessErrorDetails has wrong size.");
 
 // An opaque process handle value which must be provided when sending an
@@ -104,7 +113,11 @@ typedef uint32_t MojoInvitationTransportType;
 
 // A transport endpoint over which an invitation may be sent or received via
 // |MojoSendInvitation()| or |MojoAcceptInvitation()| respectively.
+#if defined(__CHERI_PURE_CAPABILITY__)
+struct MOJO_ALIGNAS(alignof(max_align_t)) MojoInvitationTransportEndpoint {
+#else // defined(__CHERI_PURE_CAPABILITY__)
 struct MOJO_ALIGNAS(8) MojoInvitationTransportEndpoint {
+#endif // defined(__CHERI_PURE_CAPABILITY__)
   // The size of this structure, used for versioning.
   uint32_t struct_size;
 
@@ -124,7 +137,11 @@ struct MOJO_ALIGNAS(8) MojoInvitationTransportEndpoint {
   //     descriptor.
   MOJO_POINTER_FIELD(const struct MojoPlatformHandle*, platform_handles);
 };
+#if defined(__CHERI_PURE_CAPABILITY__)
+MOJO_STATIC_ASSERT(sizeof(struct MojoInvitationTransportEndpoint) == 32,
+#else // defined(__CHERI_PURE_CAPABILITY__)
 MOJO_STATIC_ASSERT(sizeof(struct MojoInvitationTransportEndpoint) == 24,
+#endif // defined(__CHERI_PURE_CAPABILITY__)
                    "MojoInvitationTransportEndpoint has wrong size.");
 
 // Flags passed to |MojoCreateInvitation()| via |MojoCreateInvitationOptions|.
@@ -218,7 +235,11 @@ typedef uint32_t MojoSendInvitationFlags;
 #define MOJO_SEND_INVITATION_FLAG_SHARE_BROKER ((MojoSendInvitationFlags)8)
 
 // Options passed to |MojoSendInvitation()|.
+#if defined(__CHERI_PURE_CAPABILITY__)
+struct MOJO_ALIGNAS(alignof(max_align_t)) MojoSendInvitationOptions {
+#else // defined(__CHERI_PURE_CAPABILITY__)
 struct MOJO_ALIGNAS(8) MojoSendInvitationOptions {
+#endif // defined(__CHERI_PURE_CAPABILITY__)
   // The size of this structure, used for versioning.
   uint32_t struct_size;
 
@@ -233,7 +254,12 @@ struct MOJO_ALIGNAS(8) MojoSendInvitationOptions {
   MOJO_POINTER_FIELD(const char*, isolated_connection_name);
   uint32_t isolated_connection_name_length;
 };
+#if defined(__CHERI_PURE_CAPABILITY__)
+MOJO_STATIC_ASSERT((sizeof(struct MojoSendInvitationOptions) == 24) ||
+                   (sizeof(struct MojoSendInvitationOptions) == 48),
+#else // defined(__CHERI_PURE_CAPABILITY__)
 MOJO_STATIC_ASSERT(sizeof(struct MojoSendInvitationOptions) == 24,
+#endif // defined(__CHERI_PURE_CAPABILITY__)
                    "MojoSendInvitationOptions has wrong size");
 
 // Flags passed to |MojoAcceptInvitation()| via |MojoAcceptInvitationOptions|.
