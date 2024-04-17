@@ -204,7 +204,11 @@ struct VersionMetadata {
 }  // namespace internal
 
 // Message helps build, serialize, and deserialize ipcz-internal messages.
+#if defined(__CHERI_PURE_CAPABILITY__)
+class IPCZ_ALIGN(max_align_t) Message {
+#else // defined(__CHERI_PURE_CAPABILITY__)
 class IPCZ_ALIGN(8) Message {
+#endif // defined(__CHERI_PURE_CAPABILITY__)
  public:
   enum { kIncoming };
 
