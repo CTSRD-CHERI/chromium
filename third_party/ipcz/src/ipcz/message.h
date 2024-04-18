@@ -59,7 +59,11 @@ struct IPCZ_ALIGN(8) MessageHeader {
   // Reserved for future use. Must be zero.
   uint32_t reserved1;
 };
+#if defined(__CHERI_PURE_CAPABILITY__)
+static_assert(sizeof(MessageHeader) == 32, "Unexpected size");
+#else // defined(__CHERI_PURE_CAPABILITY__)
 static_assert(sizeof(MessageHeader) == 24, "Unexpected size");
+#endif // defined(__CHERI_PURE_CAPABILITY__)
 
 using MessageHeaderV0 = MessageHeader;
 using LatestMessageHeaderVersion = MessageHeaderV0;
