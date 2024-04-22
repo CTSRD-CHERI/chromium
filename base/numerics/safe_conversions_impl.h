@@ -243,7 +243,13 @@ struct NarrowingRange {
   // Masks out the integer bits that are beyond the precision of the
   // intermediate type used for comparison.
   static constexpr T Adjust(T value) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    static_assert((std::is_same<T, Dst>::value) ||
+		  (std::is_same<long, T>::value && std::is_same<intptr_t, Dst>::value) ||
+		  (std::is_same<unsigned long, T>::value && std::is_same<uintptr_t, Dst>::value), "");
+#else // defined(__CHERI_PURE_CAPABILITY__)
     static_assert(std::is_same<T, Dst>::value, "");
+#endif // defined(__CHERI_PURE_CAPABILITY__)
     static_assert(kShift < DstLimits::digits, "");
     using UnsignedDst = typename std::make_unsigned_t<T>;
     return static_cast<T>(ConditionalNegate(
