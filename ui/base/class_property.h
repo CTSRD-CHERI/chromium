@@ -166,7 +166,13 @@ class COMPONENT_EXPORT(UI_BASE) PropertyHandler {
   // ClassProperty<>.
   struct Value {
     const char* name;
+#if defined(__CHERI_PURE_CAPABILITY__)
+    // Properties such as WmMoveResizeHandler are pointers and therefore
+    // require that the value type is capable of storing a capability.
+    intptr_t value;
+#else // defined(__CHERI_PURE_CAPABILITY__)
     int64_t value;
+#endif // defined(__CHERI_PURE_CAPABILITY__)
     PropertyDeallocator deallocator;
   };
 
@@ -333,11 +339,19 @@ T* PropertyHandler::SetProperty(const ClassProperty<T*>* property,
 #define DEFINE_UI_CLASS_PROPERTY_TYPE(T) \
   DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(, T)
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+#define DEFINE_UI_CLASS_PROPERTY_KEY(TYPE, NAME, DEFAULT)                     \
+  static_assert(sizeof(TYPE) <= sizeof(intptr_t), "property type too large"); \
+  const ::ui::ClassProperty<TYPE> NAME##_Value = {DEFAULT, #NAME, false,      \
+                                                  nullptr};                   \
+  const ::ui::ClassProperty<TYPE>* const NAME = &NAME##_Value;
+#else // defined(__CHERI_PURE_CAPABILITY__)
 #define DEFINE_UI_CLASS_PROPERTY_KEY(TYPE, NAME, DEFAULT)                    \
   static_assert(sizeof(TYPE) <= sizeof(int64_t), "property type too large"); \
   const ::ui::ClassProperty<TYPE> NAME##_Value = {DEFAULT, #NAME, false,     \
                                                   nullptr};                  \
   const ::ui::ClassProperty<TYPE>* const NAME = &NAME##_Value;
+#endif // defined(__CHERI_PURE_CAPABILITY__)
 
 #define DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(TYPE, NAME, DEFAULT)           \
   namespace {                                                             \
