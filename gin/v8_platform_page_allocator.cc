@@ -79,7 +79,12 @@ void* PageAllocator::GetRandomMmapAddr() {
 void* PageAllocator::AllocatePages(void* address,
                                    size_t length,
                                    size_t alignment,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                                   v8::PageAllocator::Permission permissions,
+                                   v8::PageAllocator::Permission max_permissions) {
+#else
                                    v8::PageAllocator::Permission permissions) {
+#endif // __CHERI_PURE_CAPABILITY__
   partition_alloc::PageAccessibilityConfiguration config =
       GetPageConfig(permissions);
   return partition_alloc::AllocPages(address, length, alignment, config,

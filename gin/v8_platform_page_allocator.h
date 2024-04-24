@@ -34,7 +34,12 @@ class GIN_EXPORT PageAllocator final : public v8::PageAllocator {
   void* AllocatePages(void* address,
                       size_t length,
                       size_t alignment,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                      v8::PageAllocator::Permission permissions,
+                      v8::PageAllocator::Permission max_permissions) override;
+#else
                       v8::PageAllocator::Permission permissions) override;
+#endif // __CHERI_PURE_CAPABILITY__
 
   bool FreePages(void* address, size_t length) override;
 
