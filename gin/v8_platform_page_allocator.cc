@@ -82,10 +82,16 @@ void* PageAllocator::GetRandomMmapAddr() {
   return reinterpret_cast<void*>(::partition_alloc::GetRandomPageBase());
 }
 
-void* PageAllocator::AllocatePages(void* address,
-                                   size_t length,
-                                   size_t alignment,
-                                   v8::PageAllocator::Permission permissions) {
+void* PageAllocator::AllocatePages(
+    void* address,
+    size_t length,
+    size_t alignment,
+#if defined(__CHERI_PURE_CAPABILITY__)
+    v8::PageAllocator::Permission permissions,
+    v8::PageAllocator::Permission max_permissions) {
+#else
+    v8::PageAllocator::Permission permissions) {
+#endif  // __CHERI_PURE_CAPABILITY__
   partition_alloc::PageAccessibilityConfiguration config =
       GetPageConfig(permissions);
   return partition_alloc::AllocPages(address, length, alignment, config,
@@ -122,7 +128,8 @@ bool PageAllocator::ReleasePages(void* address,
 
 bool PageAllocator::SetPermissions(void* address,
                                    size_t length,
-                                   Permission permissions) {
+                                   Permission permissions,
+                                   Permission max_permissions) {
   // If V8 sets permissions to none, we can discard the memory.
   if (permissions == v8::PageAllocator::Permission::kNoAccess) {
     // Use PageAccessibilityDisposition::kAllowKeepForPerf as an
@@ -141,7 +148,8 @@ bool PageAllocator::SetPermissions(void* address,
 
 bool PageAllocator::RecommitPages(void* address,
                                   size_t length,
-                                  Permission permissions) {
+                                  Permission permissions,
+                                  Permission max_permissions) {
   partition_alloc::RecommitSystemPages(
       reinterpret_cast<uintptr_t>(address), length, GetPageConfig(permissions),
       partition_alloc::PageAccessibilityDisposition::kAllowKeepForPerf);

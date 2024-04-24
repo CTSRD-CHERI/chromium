@@ -33,7 +33,8 @@ class GIN_EXPORT PageAllocator final : public v8::PageAllocator {
   void* AllocatePages(void* address,
                       size_t length,
                       size_t alignment,
-                      v8::PageAllocator::Permission permissions) override;
+                      Permission permissions,
+                      Permission max_permissions) override;
 
   bool FreePages(void* address, size_t length) override;
 
@@ -41,11 +42,13 @@ class GIN_EXPORT PageAllocator final : public v8::PageAllocator {
 
   bool SetPermissions(void* address,
                       size_t length,
-                      Permission permissions) override;
+                      Permission permissions,
+                      Permission max_permissions) override;
 
   bool RecommitPages(void* address,
                      size_t length,
-                     Permission permissions) override;
+                     Permission permissions,
+                     Permission max_permissions) override;
 
   bool DiscardSystemPages(void* address, size_t size) override;
 
