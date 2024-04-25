@@ -157,7 +157,14 @@ class BASE_EXPORT SubstringSetMatcher {
   // A node in the trie, packed tightly together so that it occupies 12 bytes
   // (both on 32- and 64-bit platforms), but aligned to at least 4 (see the
   // comment on edges_).
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // On CHERI-architectures the edges (AhoCorasickEdge *) must be aligned to
+  // alignof(max_align_t) to preserve capabiltiy provenance. Therefore, ensure
+  // that the AhoCorasickNode isn't forcable aligned to weaker alignment. 
+  class alignas(alignof(max_align_t)) AhoCorasickNode {
+#else // defined(__CHERI_PURE_CAPABILITY__)
   class alignas(AhoCorasickEdge) AhoCorasickNode {
+#endif // defined(__CHERI_PURE_CAPABILITY__)
    public:
     AhoCorasickNode();
     ~AhoCorasickNode();
