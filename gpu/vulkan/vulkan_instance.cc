@@ -30,7 +30,11 @@ const char* kSkippedErrors[] = {
 VKAPI_ATTR VkBool32 VKAPI_CALL
 VulkanErrorCallback(VkDebugReportFlagsEXT flags,
                     VkDebugReportObjectTypeEXT object_type,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                    uintptr_t object,
+#else // defined(__CHERI_PURE_CAPABILITY__)
                     uint64_t object,
+#endif // defined(__CHERI_PURE_CAPABILITY__)
                     size_t location,
                     int32_t message_code,
                     const char* layer_prefix,
@@ -51,7 +55,11 @@ VulkanErrorCallback(VkDebugReportFlagsEXT flags,
 VKAPI_ATTR VkBool32 VKAPI_CALL
 VulkanWarningCallback(VkDebugReportFlagsEXT flags,
                       VkDebugReportObjectTypeEXT object_type,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                      uintptr_t object,
+#else // defined(__CHERI_PURE_CAPABILITY__)
                       uint64_t object,
+#endif // defined(__CHERI_PURE_CAPABILITY__)
                       size_t location,
                       int32_t message_code,
                       const char* layer_prefix,
