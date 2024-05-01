@@ -123,7 +123,13 @@ bool ScopedMmap::ResetAddrLen(void* addr, size_t len) {
     const size_t old_len_round = RoundPage(len_);
     if (old_addr < new_addr) {
       result &= LoggingMunmap(
+#if defined(__CHERI_PURE_CAPABILITY__)
+          old_addr, std::min(old_len_round,
+          static_cast<ptraddr_t>(new_addr) - static_cast<ptraddr_t>(old_addr)),
+	  can_log_);
+#else // defined(__CHERI_PURE_CAPABILITY__)
           old_addr, std::min(old_len_round, new_addr - old_addr), can_log_);
+#endif // defined(__CHERI_PURE_CAPABILITY__)
     }
     if (old_addr + old_len_round > new_addr + new_len_round) {
       uintptr_t unmap_start = std::max(old_addr, new_addr + new_len_round);
