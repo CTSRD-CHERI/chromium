@@ -125,7 +125,7 @@ bool ScopedMmap::ResetAddrLen(void* addr, size_t len) {
       result &= LoggingMunmap(
 #if defined(__CHERI_PURE_CAPABILITY__)
           old_addr, std::min(old_len_round,
-          static_cast<ptraddr_t>(new_addr) - static_cast<ptraddr_t>(old_addr)),
+          static_cast<ptraddr_t>(new_addr - old_addr)),
 	  can_log_);
 #else // defined(__CHERI_PURE_CAPABILITY__)
           old_addr, std::min(old_len_round, new_addr - old_addr), can_log_);
