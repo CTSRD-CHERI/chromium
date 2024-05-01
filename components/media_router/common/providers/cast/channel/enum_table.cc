@@ -12,7 +12,11 @@ namespace cast_util {
 // This assertion is pretty paranoid.  It will probably only ever be triggered
 // if someone who doesn't understand how EnumTable works tries to add extra
 // members to GenericEnumTableEntry.
+#if defined(__CHERI_PURE_CAPABILITY__)
+static_assert(sizeof(GenericEnumTableEntry) == 32,
+#else // defined(__CHERI_PURE_CAPABILITY__)
 static_assert(sizeof(GenericEnumTableEntry) == 16,
+#endif // defined(__CHERI_PURE_CAPABILITY__)
               "Instances of GenericEnumTableEntry are too big.");
 #endif
 
