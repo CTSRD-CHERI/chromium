@@ -34,7 +34,9 @@ asm(
     "  stp c23, c24, [csp, #-32]!                         \n"
     "  stp c25, c26, [csp, #-32]!                         \n"
     "  stp c27, c28, [csp, #-32]!                         \n"
-    "  stp fp, lr,   [csp, #-32]!                         \n"
+    "  stp cfp, clr,   [csp, #-32]!                       \n"
+    // Maintain frame pointer.
+    "  mov cfp, csp                                       \n"
 #else // defined(__CHERI_PURE_CAPABILITY__)
     // x19-x29 are callee-saved.
     "  stp x19, x20, [sp, #-16]!                          \n"
@@ -43,9 +45,9 @@ asm(
     "  stp x25, x26, [sp, #-16]!                          \n"
     "  stp x27, x28, [sp, #-16]!                          \n"
     "  stp fp, lr,   [sp, #-16]!                          \n"
-#endif // defined(__CHERI_PURE_CAPABILITY__)
     // Maintain frame pointer.
     "  mov fp, sp                                         \n"
+#endif // defined(__CHERI_PURE_CAPABILITY__)
     // Pass 1st parameter (x0) unchanged (Stack*).
     // Pass 2nd parameter (x1) unchanged (StackVisitor*).
     // Save 3rd parameter (x2; IterateStackCallback)
@@ -62,7 +64,7 @@ asm(
 #endif // defined(__CHERI_PURE_CAPABILITY__)
     // Load return address and frame pointer.
 #if defined(__CHERI_PURE_CAPABILITY__)
-    "  ldp fp, lr, [csp], #16                             \n"
+    "  ldp cfp, clr, [csp], #16                           \n"
 #else // defined(__CHERI_PURE_CAPABILITY__)
     "  ldp fp, lr, [sp], #16                              \n"
 #endif // defined(__CHERI_PURE_CAPABILITY__)
