@@ -2019,7 +2019,7 @@ static_library("test_support") {
     "url_request/url_request_test_util.h",
   ]
 
-  if (is_linux || is_chromeos || is_android) {
+  if ((is_linux || is_chromeos || is_android) && !is_bsd) {
     sources += [
       "base/address_tracker_linux_test_util.cc",
       "base/address_tracker_linux_test_util.h",
