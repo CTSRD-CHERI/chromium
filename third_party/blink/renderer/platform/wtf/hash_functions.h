@@ -127,7 +127,12 @@ bool FloatEqualForHash(T a, T b) {
 
 template <typename T>
 unsigned HashPointer(T* key) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  return HashInt(base::bit_cast<internal::IntHashBits<ptraddr_t>>(
+                 static_cast<ptraddr_t>(key)));
+#else   // !__CHERI_PURE_CAPABILITY__
   return HashInt(base::bit_cast<internal::IntHashBits<T*>>(key));
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 // Useful compounding hash functions.
