@@ -14,7 +14,11 @@
 namespace blink {
 
 struct SameSizeAsDisplayItem {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  size_t client_id;
+#else    // !__CHERI_PURE_CAPABILITY__
   void* pointer;
+#endif   // !__CHERI_PURE_CAPABILITY__
   gfx::Rect rect;
   uint32_t i1;
   uint32_t i2;

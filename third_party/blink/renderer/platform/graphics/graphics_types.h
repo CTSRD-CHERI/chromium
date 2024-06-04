@@ -34,7 +34,11 @@
 
 namespace blink {
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+typedef size_t DisplayItemClientId;
+#else   // !__CHERI_PURE_CAPABILITY__
 typedef uintptr_t DisplayItemClientId;
+#endif  // !__CHERI_PURE_CAPABILITY__
 static const DisplayItemClientId kInvalidDisplayItemClientId = 0u;
 
 enum AlphaDisposition {
