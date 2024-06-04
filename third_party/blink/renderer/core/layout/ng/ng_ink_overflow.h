@@ -238,7 +238,11 @@ class CORE_EXPORT NGInkOverflow {
     // When both self and contents overflow.
     NGContainerInkOverflow* container_;
     // Outsets in small |LayoutUnit|s when overflow is small.
+#if defined(__CHERI_PURE_CAPABILITY__)
+    SmallRawValue outsets_[8];
+#else   // !__CHERI_PURE_CAPABILITY__
     SmallRawValue outsets_[4];
+#endif  // !__CHERI_PURE_CAPABILITY__
     static_assert(sizeof(outsets_) == sizeof(single_),
                   "outsets should be the size of a pointer");
   };
