@@ -68,6 +68,7 @@ ASSERT_SIZE(RefCounted<int>, SameSizeAsRefCounted);
 ASSERT_SIZE(std::unique_ptr<int>, int*);
 ASSERT_SIZE(scoped_refptr<RefCounted<int>>, int*);
 ASSERT_SIZE(Vector<int>, SameSizeAsVectorWithInlineCapacity<int>);
+#if !defined(__CHERI_PURE_CAPABILITY__)
 // This is to avoid problem of comma in macro parameters.
 #define INLINE_CAPACITY_PARAMS(i) int, i
 ASSERT_SIZE(Vector<INLINE_CAPACITY_PARAMS(1)>,
@@ -76,5 +77,6 @@ ASSERT_SIZE(Vector<INLINE_CAPACITY_PARAMS(2)>,
             SameSizeAsVectorWithInlineCapacity<INLINE_CAPACITY_PARAMS(2)>);
 ASSERT_SIZE(Vector<INLINE_CAPACITY_PARAMS(3)>,
             SameSizeAsVectorWithInlineCapacity<INLINE_CAPACITY_PARAMS(3)>);
+#endif   // !__CHERI_PURE_CAPABILITY__
 
 }  // namespace WTF
