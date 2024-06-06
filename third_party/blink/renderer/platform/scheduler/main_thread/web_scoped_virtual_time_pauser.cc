@@ -20,7 +20,11 @@ WebScopedVirtualTimePauser::WebScopedVirtualTimePauser(
     : duration_(duration),
       scheduler_(scheduler),
       debug_name_(name),
+#if defined(__CHERI_PURE_CAPABILITY__)
+      trace_id_(static_cast<size_t>(reinterpret_cast<uintptr_t>(this))) {}
+#else   // !__CHERI_PURE_CAPABILITY__
       trace_id_(reinterpret_cast<intptr_t>(this)) {}
+#endif  // !__CHERI_PURE_CAPABILITY__
 
 WebScopedVirtualTimePauser::~WebScopedVirtualTimePauser() {
   if (paused_ && scheduler_)
