@@ -13,7 +13,7 @@
 //
 // Developer note: this macro must be kept in sync with the definition of
 // STACK_ALLOCATED_IGNORE in /base/memory/stack_allocated.h.
-#if defined(__clang__)
+#if defined(__clang__) && !defined(__CHERI_PURE_CAPABILITY__)
 #define GC_PLUGIN_IGNORE(reason)                     \
   __attribute__((annotate("blink_gc_plugin_ignore"), \
                  annotate("stack_allocated_ignore")))
