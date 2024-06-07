@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl -w
 # This script was originally based on the script of the same name from
 # the KDE SDK (by dfaure@kde.org)
 #
