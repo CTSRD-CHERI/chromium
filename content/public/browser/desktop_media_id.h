@@ -21,7 +21,11 @@ struct CONTENT_EXPORT DesktopMediaID {
  public:
   enum Type { TYPE_NONE, TYPE_SCREEN, TYPE_WINDOW, TYPE_WEB_CONTENTS };
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+  using Id = size_t;
+#else // defined(__CHERI_PURE_CAPABILITY__)
   using Id = intptr_t;
+#endif // defined(__CHERI_PURE_CAPABILITY__)
 
   // Represents an "unset" value for either |id| or |window_id|.
   static constexpr Id kNullId = 0;
