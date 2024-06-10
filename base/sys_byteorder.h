@@ -63,6 +63,7 @@ inline BASE_BYTESWAPS_CONSTEXPR uint64_t ByteSwap(uint64_t x) {
 #endif
 }
 
+#if !defined(__CHERI_PURE_CAPABILITY__)
 inline BASE_BYTESWAPS_CONSTEXPR uintptr_t ByteSwapUintPtrT(uintptr_t x) {
   // We do it this way because some build configurations are ILP32 even when
   // defined(ARCH_CPU_64_BITS). Unfortunately, we can't use sizeof in #ifs. But,
@@ -75,6 +76,7 @@ inline BASE_BYTESWAPS_CONSTEXPR uintptr_t ByteSwapUintPtrT(uintptr_t x) {
     return ByteSwap(static_cast<uint32_t>(x));
   return ByteSwap(static_cast<uint64_t>(x));
 }
+#endif // !defined(__CHERI_PURE_CAPABILITY__)
 
 // Converts the bytes in |x| from host order (endianness) to little endian, and
 // returns the result.
