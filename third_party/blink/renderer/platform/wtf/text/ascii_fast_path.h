@@ -36,12 +36,13 @@
 
 namespace WTF {
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+typedef ptraddr_t MachineWord;
+const size_t kMachineWordAlignmentMask = sizeof(MachineWord) - 1;
+#else   // !__CHERI_PURE_CAPABILITY__
 // Assuming that a pointer is the size of a "machine word", then
 // uintptr_t is an integer type that is also a machine word.
 typedef uintptr_t MachineWord;
-#if defined(__CHERI_PURE_CAPABILITY__)
-const size_t kMachineWordAlignmentMask = sizeof(MachineWord) - 1;
-#else   // !__CHERI_PURE_CAPABILITY__
 const uintptr_t kMachineWordAlignmentMask = sizeof(MachineWord) - 1;
 #endif  // !__CHERI_PURE_CAPABILITY__
 
