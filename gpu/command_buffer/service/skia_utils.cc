@@ -413,7 +413,11 @@ uint64_t GrBackendTextureTracingID(const GrBackendTexture& backend_texture) {
     case GrBackendApi::kVulkan: {
       GrVkImageInfo image_info;
       if (backend_texture.getVkImageInfo(&image_info))
+#if defined(__CHERI_PURE_CAPABILITY__)
+        return static_cast<uint64_t>(reinterpret_cast<uintptr_t>(image_info.fImage));
+#else // defined(__CHERI_PURE_CAPABILITY__)
         return reinterpret_cast<uint64_t>(image_info.fImage);
+#endif // defined(__CHERI_PURE_CAPABILITY__)
       break;
     }
 #endif
