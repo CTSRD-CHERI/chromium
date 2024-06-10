@@ -39,9 +39,13 @@
 
 namespace blink {
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+using MachineWord = ptraddr_t;
+#else
 // Assuming that a pointer is the size of a "machine word", then
 // uintptr_t is an integer type that is also a machine word.
 using MachineWord = uintptr_t;
+#endif
 const size_t kMachineWordAlignmentMask = sizeof(MachineWord) - 1;
 
 inline bool IsAlignedToMachineWord(const void* pointer) {
