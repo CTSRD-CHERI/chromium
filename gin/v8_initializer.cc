@@ -478,7 +478,12 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
   uintptr_t pool_base = 0;
   while (!pool_base && pool_size >= min_pool_size) {
     pool_base = sandbox_address_space->AllocatePages(
+#if defined(__CHERI_PURE_CAPABILITY__)
+        0, pool_size, pool_size, v8::PagePermissions::kNoAccess,
+        v8::PagePermissions::kReadWrite);
+#else   // !__CHERI_PURE_CAPABILITY__
         0, pool_size, pool_size, v8::PagePermissions::kNoAccess);
+#endif  // !__CHERI_PURE_CAPABILITY__
     if (!pool_base) {
       pool_size /= 2;
     }
