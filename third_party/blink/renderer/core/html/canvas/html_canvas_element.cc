@@ -1775,13 +1775,21 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
 
   const int bytes_per_pixel = GetRenderingContextSkColorInfo().bytesPerPixel();
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+  size_t gpu_memory_usage = 0;
+#else  // !__CHERI_PURE_CAPABILITY__
   intptr_t gpu_memory_usage = 0;
+#endif  // !__CHERI_PURE_CAPABILITY__
   uint32_t canvas_width = std::min(kMaximumCanvasSize, width());
   uint32_t canvas_height = std::min(kMaximumCanvasSize, height());
 
   if (gpu_buffer_count) {
     // Switch from cpu mode to gpu mode
+#if defined(__CHERI_PURE_CAPABILITY__)
+    base::CheckedNumeric<size_t> checked_usage =
+#else  // !__CHERI_PURE_CAPABILITY__
     base::CheckedNumeric<intptr_t> checked_usage =
+#endif  // !__CHERI_PURE_CAPABILITY__
         gpu_buffer_count * bytes_per_pixel;
     checked_usage *= canvas_width;
     checked_usage *= canvas_height;
@@ -1791,16 +1799,28 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
 
   // Recomputation of externally memory usage computation is carried out
   // in all cases.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  base::CheckedNumeric<size_t> checked_usage =
+#else  // !__CHERI_PURE_CAPABILITY__
   base::CheckedNumeric<intptr_t> checked_usage =
+#endif  // !__CHERI_PURE_CAPABILITY__
       non_gpu_buffer_count * bytes_per_pixel;
   checked_usage *= canvas_width;
   checked_usage *= canvas_height;
   checked_usage += gpu_memory_usage;
+#if defined(__CHERI_PURE_CAPABILITY__)
+  size_t externally_allocated_memory =
+#else  // !__CHERI_PURE_CAPABILITY__
   intptr_t externally_allocated_memory =
+#endif  // !__CHERI_PURE_CAPABILITY__
       checked_usage.ValueOrDefault(std::numeric_limits<intptr_t>::max());
   // Subtracting two intptr_t that are known to be positive will never
   // underflow.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  size_t delta_bytes =
+#else  // !__CHERI_PURE_CAPABILITY__
   intptr_t delta_bytes =
+#endif  // !__CHERI_PURE_CAPABILITY__
       externally_allocated_memory - externally_allocated_memory_;
 
   // If the the rendering context supports NoAllocDirectCall, we must use a
@@ -1815,7 +1835,11 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
         context_ ? context_->AsNoAllocDirectCallHost() : nullptr;
     if (nadc_host) {
       nadc_host->PostDeferrableAction(WTF::BindOnce(
+#if defined(__CHERI_PURE_CAPABILITY__)
+          [](size_t delta_bytes) {
+#else  // !__CHERI_PURE_CAPABILITY__
           [](intptr_t delta_bytes) {
+#endif  // !__CHERI_PURE_CAPABILITY__
             v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
                 delta_bytes);
           },
