@@ -28,7 +28,11 @@
 //     have a signature which lends itself to reasonably extensible behavior
 //     (e.g. an optional "Options" structure as many functions here have).
 //
+#if defined(__CHERI_PURE_CAPABILITY__)
+#pragma pack(push, alignof(max_align_t))
+#else   // !__CHERI_PURE_CAPABILITY__
 #pragma pack(push, 8)
+#endif  // !__CHERI_PURE_CAPABILITY__
 struct MojoSystemThunks2 {
   uint32_t size;  // Should be set to sizeof(MojoSystemThunks).
 
