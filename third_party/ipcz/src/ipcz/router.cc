@@ -663,7 +663,7 @@ IpczResult Router::EndGet(IpczTransaction transaction,
 
 IpczResult Router::Trap(const IpczTrapConditions& conditions,
                         IpczTrapEventHandler handler,
-                        uint64_t context,
+                        uintptr_t context,
                         IpczTrapConditionFlags* satisfied_condition_flags,
                         IpczPortalStatus* status) {
   absl::MutexLock lock(&mutex_);
