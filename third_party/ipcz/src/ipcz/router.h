@@ -173,7 +173,7 @@ class Router : public RefCounted {
   // implements the ipcz Trap() API. See its description in ipcz.h for details.
   IpczResult Trap(const IpczTrapConditions& conditions,
                   IpczTrapEventHandler handler,
-                  uint64_t context,
+                  uintptr_t context,
                   IpczTrapConditionFlags* satisfied_condition_flags,
                   IpczPortalStatus* status);
 
