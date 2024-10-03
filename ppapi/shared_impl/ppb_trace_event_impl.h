@@ -27,7 +27,11 @@ class PPAPI_SHARED_EXPORT TraceEventImpl {
                             uint32_t num_args,
                             const char* arg_names[],
                             const uint8_t arg_types[],
+#if defined(__CHERI_PURE_CAPABILITY__)
+                            const uintptr_t arg_values[],
+#else   // !__CHERI_PURE_CAPABILITY__
                             const uint64_t arg_values[],
+#endif  // !__CHERI_PURE_CAPABILITY__
                             uint8_t flags);
   static void AddTraceEventWithThreadIdAndTimestamp(
       int8_t phase,
@@ -39,7 +43,11 @@ class PPAPI_SHARED_EXPORT TraceEventImpl {
       uint32_t num_args,
       const char* arg_names[],
       const uint8_t arg_types[],
+#if defined(__CHERI_PURE_CAPABILITY__)
+      const uintptr_t arg_values[],
+#else   // !__CHERI_PURE_CAPABILITY__
       const uint64_t arg_values[],
+#endif  // !__CHERI_PURE_CAPABILITY__
       uint8_t flags);
   static int64_t Now();
   static void SetThreadName(const char* thread_name);

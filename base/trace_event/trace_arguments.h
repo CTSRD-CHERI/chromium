@@ -235,6 +235,9 @@ union BASE_EXPORT TraceValue {
   // #union
   RAW_PTR_EXCLUSION protozero::HeapBuffered<
       perfetto::protos::pbzero::DebugAnnotation>* as_proto;
+#if defined(__CHERI_PURE_CAPABILITY__)
+  uintptr_t as_uintptr;
+#endif  // !__CHERI_PURE_CAPABILITY__
 
   // Static method to create a new TraceValue instance from a given
   // initialization value. Note that this deduces the TRACE_VALUE_TYPE_XXX
@@ -667,7 +670,11 @@ class BASE_EXPORT TraceArguments {
   TraceArguments(int num_args,
                  const char* const* arg_names,
                  const unsigned char* arg_types,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                 const uintptr_t* arg_values);
+#else   // !__CHERI_PURE_CAPABILITY__
                  const unsigned long long* arg_values);
+#endif  // !__CHERI_PURE_CAPABILITY__
 
   // Constructor used to convert legacy set of arguments, where the
   // convertable values are also provided by an array of CONVERTABLE_TYPE.
@@ -675,7 +682,11 @@ class BASE_EXPORT TraceArguments {
   TraceArguments(int num_args,
                  const char* const* arg_names,
                  const unsigned char* arg_types,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                 const uintptr_t* arg_values,
+#else   // !__CHERI_PURE_CAPABILITY__
                  const unsigned long long* arg_values,
+#endif  // !__CHERI_PURE_CAPABILITY__
                  CONVERTABLE_TYPE* arg_convertables) {
     static int max_args = static_cast<int>(kMaxSize);
     if (num_args > max_args)
@@ -688,7 +699,11 @@ class BASE_EXPORT TraceArguments {
         values_[n].Init(
             std::forward<CONVERTABLE_TYPE>(std::move(arg_convertables[n])));
       } else {
+#if defined(__CHERI_PURE_CAPABILITY__)
+        values_[n].as_uintptr = arg_values[n];
+#else   // !__CHERI_PURE_CAPABILITY__
         values_[n].as_uint = arg_values[n];
+#endif  // !__CHERI_PURE_CAPABILITY__
       }
     }
   }

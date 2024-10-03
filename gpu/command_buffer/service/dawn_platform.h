@@ -32,7 +32,11 @@ class DawnPlatform : public dawn::platform::Platform {
                          int num_args,
                          const char** arg_names,
                          const unsigned char* arg_types,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                         const uintptr_t* arg_values,
+#else   // !__CHERI_PURE_CAPABILITY__
                          const uint64_t* arg_values,
+#endif  // !__CHERI_PURE_CAPABILITY__
                          unsigned char flags) override;
 
   dawn::platform::CachingInterface* GetCachingInterface() override;

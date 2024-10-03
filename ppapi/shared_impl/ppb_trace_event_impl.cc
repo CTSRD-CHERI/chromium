@@ -35,7 +35,11 @@ void TraceEventImpl::AddTraceEvent(int8_t phase,
                                    uint32_t num_args,
                                    const char* arg_names[],
                                    const uint8_t arg_types[],
+#if defined(__CHERI_PURE_CAPABILITY__)
+                                   const uintptr_t arg_values[],
+#else   // !__CHERI_PURE_CAPABILITY__
                                    const uint64_t arg_values[],
+#endif  // !__CHERI_PURE_CAPABILITY__
                                    uint8_t flags) {
 
   static_assert(sizeof(unsigned long long) == sizeof(uint64_t),
@@ -45,7 +49,11 @@ void TraceEventImpl::AddTraceEvent(int8_t phase,
   // though they have the same size, on all platforms we care about.
   base::trace_event::TraceArguments args(
       num_args, arg_names, arg_types,
+#if defined(__CHERI_PURE_CAPABILITY__)
+      arg_values);
+#else   // !__CHERI_PURE_CAPABILITY__
       reinterpret_cast<const unsigned long long*>(arg_values));
+#endif  // !__CHERI_PURE_CAPABILITY__
   base::trace_event::TraceLog::GetInstance()->AddTraceEvent(
       phase, static_cast<const unsigned char*>(category_enabled), name,
       trace_event_internal::kGlobalScope, id, &args, flags);
@@ -62,12 +70,20 @@ void TraceEventImpl::AddTraceEventWithThreadIdAndTimestamp(
     uint32_t num_args,
     const char* arg_names[],
     const uint8_t arg_types[],
+#if defined(__CHERI_PURE_CAPABILITY__)
+    const uintptr_t arg_values[],
+#else   // !__CHERI_PURE_CAPABILITY__
     const uint64_t arg_values[],
+#endif  // !__CHERI_PURE_CAPABILITY__
     uint8_t flags) {
   // See above comment about the cast to |const unsigned long long*|.
   base::trace_event::TraceArguments args(
       num_args, arg_names, arg_types,
+#if defined(__CHERI_PURE_CAPABILITY__)
+      arg_values);
+#else   // !__CHERI_PURE_CAPABILITY__
       reinterpret_cast<const unsigned long long*>(arg_values));
+#endif  // !__CHERI_PURE_CAPABILITY__
   base::trace_event::TraceLog::GetInstance()
       ->AddTraceEventWithThreadIdAndTimestamp(
           phase, static_cast<const unsigned char*>(category_enabled), name,

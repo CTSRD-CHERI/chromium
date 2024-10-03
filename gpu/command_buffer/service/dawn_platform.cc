@@ -104,13 +104,21 @@ uint64_t DawnPlatform::AddTraceEvent(
     int num_args,
     const char** arg_names,
     const unsigned char* arg_types,
+#if defined(__CHERI_PURE_CAPABILITY__)
+    const uintptr_t* arg_values,
+#else   // !__CHERI_PURE_CAPABILITY__
     const uint64_t* arg_values,
+#endif  // !__CHERI_PURE_CAPABILITY__
     unsigned char flags) {
   base::TimeTicks timestamp_tt = base::TimeTicks() + base::Seconds(timestamp);
 
   base::trace_event::TraceArguments args(
       num_args, arg_names, arg_types,
+#if defined(__CHERI_PURE_CAPABILITY__)
+      arg_values);
+#else   // !__CHERI_PURE_CAPABILITY__
       reinterpret_cast<const unsigned long long*>(arg_values));
+#endif  // !__CHERI_PURE_CAPABILITY__
 
   base::trace_event::TraceEventHandle handle =
       TRACE_EVENT_API_ADD_TRACE_EVENT_WITH_THREAD_ID_AND_TIMESTAMP(

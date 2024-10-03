@@ -233,7 +233,11 @@ TraceArguments& TraceArguments::operator=(TraceArguments&& other) noexcept {
 TraceArguments::TraceArguments(int num_args,
                                const char* const* arg_names,
                                const unsigned char* arg_types,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                               const uintptr_t * arg_values) {
+#else   // !__CHERI_PURE_CAPABILITY__)
                                const unsigned long long* arg_values) {
+#endif  // !__CHERI_PURE_CAPABILITY__
   if (num_args > static_cast<int>(kMaxSize))
     num_args = static_cast<int>(kMaxSize);
 
@@ -241,7 +245,11 @@ TraceArguments::TraceArguments(int num_args,
   for (size_t n = 0; n < size_; ++n) {
     types_[n] = arg_types[n];
     names_[n] = arg_names[n];
+#if defined(__CHERI_PURE_CAPABILITY__)
+    values_[n].as_uintptr = arg_values[n];
+#else   // !__CHERI_PURE_CAPABILITY__
     values_[n].as_uint = arg_values[n];
+#endif  // !__CHERI_PURE_CAPABILITY__
   }
 }
 

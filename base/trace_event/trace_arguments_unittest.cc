@@ -285,11 +285,19 @@ TEST(TraceArguments, ConstructorLegacyNoConvertables) {
       TRACE_VALUE_TYPE_POINTER,
   };
   static const char kText[] = "Some text";
+#if defined(__CHERI_PURE_CAPABILITY__)
+  const uintptr_t kValues[3] = {
+      1000042ULL,
+      reinterpret_cast<uintptr_t>(kText),
+      reinterpret_cast<uintptr_t>(kText + 2),
+  };
+#else   // !__CHERI_PURE_CAPABILITY__
   const unsigned long long kValues[3] = {
       1000042ULL,
       reinterpret_cast<unsigned long long>(kText),
       reinterpret_cast<unsigned long long>(kText + 2),
   };
+#endif  // !__CHERI_PURE_CAPABILITY__
   TraceArguments args(3, kNames, kTypes, kValues);
   // Check that only the first kMaxSize arguments are taken!
   EXPECT_EQ(2U, args.size());

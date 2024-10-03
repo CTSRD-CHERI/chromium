@@ -63,7 +63,11 @@ struct PPB_Trace_Event_Dev_0_2 {
                         uint32_t num_args,
                         const char* arg_names[],
                         const uint8_t arg_types[],
+#if defined(__CHERI_PURE_CAPABILITY__)
+                        const uintptr_t arg_values[],
+#else   // !__CHERI_PURE_CAPABILITY__
                         const uint64_t arg_values[],
+#endif  // !__CHERI_PURE_CAPABILITY__
                         uint8_t flags);
   /**
    * Version of the above interface that allows specifying a custom thread id
@@ -80,7 +84,11 @@ struct PPB_Trace_Event_Dev_0_2 {
                                                 uint32_t num_args,
                                                 const char* arg_names[],
                                                 const uint8_t arg_types[],
+#if defined(__CHERI_PURE_CAPABILITY__)
+                                                const uintptr_t arg_values[],
+#else   // !__CHERI_PURE_CAPABILITY__
                                                 const uint64_t arg_values[],
+#endif  // !__CHERI_PURE_CAPABILITY__
                                                 uint8_t flags);
   /**
    * Get the current clock value. Since this uses the same function as the trace
@@ -106,7 +114,11 @@ struct PPB_Trace_Event_Dev_0_1 {
                         uint32_t num_args,
                         const char* arg_names[],
                         const uint8_t arg_types[],
+#if defined(__CHERI_PURE_CAPABILITY__)
+                        const uintptr_t arg_values[],
+#else   // !__CHERI_PURE_CAPABILITY__
                         const uint64_t arg_values[],
+#endif  // !__CHERI_PURE_CAPABILITY__
                         uint8_t flags);
   void (*SetThreadName)(const char* thread_name);
 };

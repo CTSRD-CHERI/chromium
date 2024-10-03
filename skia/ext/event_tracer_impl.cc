@@ -29,7 +29,11 @@ class SkChromiumEventTracer: public SkEventTracer {
                                       int32_t numArgs,
                                       const char** argNames,
                                       const uint8_t* argTypes,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                                      const uintptr_t* argValues,
+#else   // !__CHERI_PURE_CAPABILITY__
                                       const uint64_t* argValues,
+#endif  // !__CHERI_PURE_CAPABILITY__
                                       uint8_t flags) override;
   void updateTraceEventDuration(const uint8_t* categoryEnabledFlag,
                                 const char* name,
@@ -54,11 +58,19 @@ SkEventTracer::Handle
                                          int32_t numArgs,
                                          const char** argNames,
                                          const uint8_t* argTypes,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                                         const uintptr_t* argValues,
+#else   // !__CHERI_PURE_CAPABILITY__
                                          const uint64_t* argValues,
+#endif  // !__CHERI_PURE_CAPABILITY__
                                          uint8_t flags) {
   base::trace_event::TraceArguments args(
       numArgs, argNames, argTypes,
+#if defined(__CHERI_PURE_CAPABILITY__)
+      argValues);
+#else   // !__CHERI_PURE_CAPABILITY__
       reinterpret_cast<const unsigned long long*>(argValues));
+#endif  // !__CHERI_PURE_CAPABILITY__
   base::trace_event::TraceEventHandle handle = TRACE_EVENT_API_ADD_TRACE_EVENT(
       phase, categoryEnabledFlag, name, trace_event_internal::kGlobalScope, id,
       &args, flags);
