@@ -85,8 +85,13 @@ static_assert(
 
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 uintptr_t NextAlignedWithOffset(uintptr_t ptr,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                                size_t alignment,
+                                size_t requested_offset);
+#else   // !__CHERI_PURE_CAPABILITY__
                                 uintptr_t alignment,
                                 uintptr_t requested_offset);
+#endif  // !__CHERI_PURE_CAPABILITY__
 
 // Allocates one or more pages.
 //
