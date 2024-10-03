@@ -206,5 +206,10 @@ bool SandboxLinux::LimitAddressSpace(int* error) {
         // !defined(THREAD_SANITIZER) && !defined(LEAK_SANITIZER)
 }
 
+int SandboxLinux::GetStatus() {
+  // TODO(gcjenkinson): Implement missing GetStatus for BSD FreeBSD.
+  return 0;
+}
+
 }  // namespace policy
 }  // namespace sandbox
