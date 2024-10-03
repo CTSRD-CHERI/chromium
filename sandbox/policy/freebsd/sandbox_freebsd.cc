@@ -207,6 +207,11 @@ bool SandboxLinux::LimitAddressSpace(int* error) {
         // !defined(THREAD_SANITIZER) && !defined(LEAK_SANITIZER)
 }
 
+int SandboxLinux::GetStatus() {
+  // TODO(gcjenkinson): Implement missing GetStatus for BSD FreeBSD.
+  return 0;
+}
+
 // static
 std::string SandboxLinux::GetSandboxTypeInEnglish(sandbox::mojom::Sandbox sandbox_type) {
   switch (sandbox_type) {
