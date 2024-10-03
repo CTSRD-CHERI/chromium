@@ -207,6 +207,10 @@ declare_args() {
                                                        current_cpu == "x64"))))
 }
 
+declare_args() {
+  is_purecap=true
+}
+
 if (is_android || (is_chromeos_ash && is_chromeos_device)) {
   # Set the path to use orderfile for linking Chrome
   # Note that this is for using only one orderfile for linking
@@ -2598,7 +2602,8 @@ config("symbols") {
         # Disable on non-fission 32-bit Android because it pushes
         # libcomponents_unittests over the 4gb size limit.
         !(is_android && !use_debug_fission && current_cpu != "x64" &&
-          current_cpu != "arm64")
+          current_cpu != "arm64") &&
+        !is_purecap
     if (_enable_gdb_index) {
       if (is_clang) {
         # This flag enables the GNU-format pubnames and pubtypes sections,
