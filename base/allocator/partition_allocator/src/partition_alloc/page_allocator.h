@@ -111,8 +111,8 @@ static_assert(
 
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 uintptr_t NextAlignedWithOffset(uintptr_t ptr,
-                                uintptr_t alignment,
-                                uintptr_t requested_offset);
+                                size_t alignment,
+                                size_t requested_offset);
 
 // Allocates one or more pages.
 //
