@@ -658,7 +658,11 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // padding out allocations. An alignment of 16 would ensure that the block
   // header structure always sits in a single cache line. An average of about
   // 1/2 this value will be wasted with every allocation.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static constexpr size_t kAllocAlignment = alignof(max_align_t);
+#else   // !__CHERI_PURE_CAPABILITY__
   static constexpr size_t kAllocAlignment = 8;
+#endif  // !__CHERI_PURE_CAPABILITY__
   static const Reference kReferenceQueue;
 
   // The shared metadata is always located at the top of the memory segment.
