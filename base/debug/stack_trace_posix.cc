@@ -995,13 +995,13 @@ void StackTrace::PrintWithPrefix(const char* prefix_string) const {
 #endif
 }
 
-#if defined(HAVE_BACKTRACE)
 void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
                                           const char* prefix_string) const {
+#if defined(HAVE_BACKTRACE)
   StreamBacktraceOutputHandler handler(os);
   ProcessBacktrace(trace_, count_, prefix_string, &handler);
-}
 #endif
+}
 
 namespace internal {
 
