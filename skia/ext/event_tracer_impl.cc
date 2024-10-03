@@ -60,7 +60,11 @@ SkEventTracer::Handle
                                          uint8_t flags) {
   base::trace_event::TraceArguments args(
       numArgs, argNames, argTypes,
+#if defined(__CHERI_PURE_CAPABILITY__)
+      argValues);
+#else   // !__CHERI_PURE_CAPABILITY__
       reinterpret_cast<const unsigned long long*>(argValues));
+#endif  // !__CHERI_PURE_CAPABILITY__
   base::trace_event::TraceEventHandle handle = TRACE_EVENT_API_ADD_TRACE_EVENT(
       phase, categoryEnabledFlag, name, id, &args, flags);
   SkEventTracer::Handle result;
