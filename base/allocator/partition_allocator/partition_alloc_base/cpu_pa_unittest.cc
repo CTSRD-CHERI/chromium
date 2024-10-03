@@ -140,7 +140,7 @@ TEST(CPU, RunExtendedInstructions) {
   // used incorrectly. This test demonstrates how it should be done and that
   // this approach works.
   if (cpu.has_mte()) {
-#if !defined(__ARM_FEATURE_MEMORY_TAGGING)
+#if !defined(__ARM_FEATURE_MEMORY_TAGGING) || defined(__CHERI_PURE_CAPABILITY__)
     // In this section, we're running on an MTE-compatible core, but we're
     // building this file without MTE support. Fail this test to indicate that
     // there's a problem with the base/ build configuration.

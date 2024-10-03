@@ -140,7 +140,7 @@ TEST(CPU, RunExtendedInstructions) {
   // used incorrectly. This test demonstrates how it should be done and that
   // this approach works.
   if (cpu.has_mte()) {
-#if !defined(__ARM_FEATURE_MEMORY_TAGGING)
+#if !defined(__ARM_FEATURE_MEMORY_TAGGING) || defined(__CHERI_PURE_CAPABILITY__)
     // In this section, we're running on an MTE-compatible core, but we're
     // building this file without MTE support. Fail this test to indicate that
     // there's a problem with the base/ build configuration.
@@ -148,7 +148,7 @@ TEST(CPU, RunExtendedInstructions) {
         << "MTE support detected (but base/ built without MTE support)";
 #else
     char ptr[32];
-    uint64_t val;
+    uint64_t ptr;
     // Execute a trivial MTE instruction. Normally, MTE should be used via the
     // intrinsics documented at
     // https://developer.arm.com/documentation/101028/0012/10--Memory-tagging-intrinsics,
