@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 
-#if defined(__clang__)
+#if defined(__clang__) && !defined(__CHERI_PURE_CAPABILITY__)
 #define STACK_ALLOCATED_IGNORE(reason) \
   __attribute__((annotate("stack_allocated_ignore")))
 #else  // !defined(__clang__)
