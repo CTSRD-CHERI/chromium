@@ -74,8 +74,13 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
                 "generic smallest bucket");
   static_assert(internal::kMaxBucketed == 983040, "generic max bucketed");
   STATIC_ASSERT_OR_PA_CHECK(
+#if defined(__CHERI_PURE_CAPABILITY__)
+      internal::MaxSystemPagesPerRegularSlotSpan() <= 32,
+      "System pages per slot span must be no greater than 32.");
+#else   // !__CHERI_PURE_CAPABILITY__
       internal::MaxSystemPagesPerRegularSlotSpan() <= 16,
       "System pages per slot span must be no greater than 16.");
+#endif  // !__CHERI_PURE_CAPABILITY__
 
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
   STATIC_ASSERT_OR_PA_CHECK(

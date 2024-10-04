@@ -95,7 +95,11 @@ PartitionPageShift() {
     ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)) && defined(ARCH_CPU_ARM64))
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PartitionPageShift() {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  return PageAllocationGranularityShift() + 3;
+#else   // !__CHERI_PURE_CAPABILITY__
   return PageAllocationGranularityShift() + 2;
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 #else
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
