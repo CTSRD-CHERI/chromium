@@ -211,6 +211,8 @@ SystemPageBaseMask() {
 }
 
 #if defined(__CHERI_PURE_CAPABILITY__)
+// Increase PageMetadata as the PartitionSuperPageExtentEntry no longer fitted
+// within the 32B metadata size due to wider capabilities.
 constexpr size_t kPageMetadataShift = 6;  // 64 bytes per partition page.
 #else // defined(__CHERI_PURE_CAPABILITY__)
 constexpr size_t kPageMetadataShift = 5;  // 32 bytes per partition page.
