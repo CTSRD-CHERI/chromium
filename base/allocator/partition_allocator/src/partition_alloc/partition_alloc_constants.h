@@ -105,7 +105,11 @@ constexpr size_t kPartitionCachelineSize = 64;
     defined(PARTITION_ALLOCATOR_CONSTANTS_POSIX_NONCONST_PAGE_SIZE)
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PartitionPageShift() {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  return PageAllocationGranularityShift() + 3;
+#else   // !__CHERI_PURE_CAPABILITY__
   return PageAllocationGranularityShift() + 2;
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 #elif defined(_MIPS_ARCH_LOONGSON)
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
