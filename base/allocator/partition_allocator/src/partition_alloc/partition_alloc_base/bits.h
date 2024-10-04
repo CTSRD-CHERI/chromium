@@ -33,6 +33,19 @@ constexpr bool HasSingleBit(T value) {
   return value > 0 && (value & (value - 1)) == 0;
 }
 
+#if __has_builtin(__builtin_align_down) && __has_builtin(__builtin_align_up)
+// Round down |value| to a multiple of alignment, which must be a power of two.
+template <typename T>
+inline constexpr T AlignDown(T value, size_t alignment) {
+  return __builtin_align_down(value, alignment);
+}
+
+// Round up |value| to a multiple of alignment, which must be a power of two.
+template <typename T>
+inline constexpr T AlignUp(T value, size_t alignment) {
+  return __builtin_align_up(value, alignment);
+}
+#else
 // Round down |size| to a multiple of alignment, which must be a power of two.
 template <typename T>
 inline constexpr T AlignDown(T size, T alignment) {
@@ -64,6 +77,7 @@ inline T* AlignUp(T* ptr, size_t alignment) {
   return reinterpret_cast<T*>(
       AlignUp(reinterpret_cast<size_t>(ptr), alignment));
 }
+#endif
 
 // Backport of C++20 std::countl_zero in <bit>.
 //
