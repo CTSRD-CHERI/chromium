@@ -178,6 +178,17 @@ uintptr_t SystemAllocPagesInternal(uintptr_t hint,
 #endif
 
   int access_flag = GetAccessFlags(accessibility);
+#if defined (__FreeBSD__)
+  // Set the maximum protections for the mmaped memory.
+  access_flag |= PROT_MAX(PROT_READ | PROT_WRITE);
+#endif    // __FreeBSD__
+#if defined (__CHERI_PURE_CAPABILITY__)
+  // On CHERI architectures set PROT_WRITE so that the mapped memory gains
+  // permissions to write capabilitiesr.: VM_PROT_ADD_CAP is never called on
+  // prot and max_prot in mprotect itself:
+  // https://github.com/CTSRD-CHERI/cheribsd/issues/1818
+  access_flag |= PROT_WRITE;
+#endif    // __CHERI_PURE_CAPABILITY__
   int map_flags = MAP_ANONYMOUS | MAP_PRIVATE;
 
 #if BUILDFLAG(IS_APPLE)
@@ -342,7 +353,12 @@ void DecommitAndZeroSystemPagesInternal(uintptr_t address, size_t length) {
   // new mapping is established." As a consequence, the memory will be
   // zero-initialized on next access.
   void* ptr = reinterpret_cast<void*>(address);
+#if defined(__FreeBSD__)
+  // Set the maximum protections for the mmaped memory.
+  void* ret = mmap(ptr, length, PROT_MAX(PROT_READ | PROT_WRITE) | PROT_NONE,
+#else   // !__CheriBSD__
   void* ret = mmap(ptr, length, PROT_NONE,
+#endif  // !__CheriBSD__
                    MAP_FIXED | MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
   PA_CHECK(ptr == ret);
 }
