@@ -248,8 +248,13 @@ typedef unsigned long long int khronos_uintptr_t;
 typedef signed   long long int khronos_ssize_t;
 typedef unsigned long long int khronos_usize_t;
 #else
+#if defined(__CHERI_PURE_CAPABILITY__)
 typedef signed   long  int     khronos_intptr_t;
 typedef unsigned long  int     khronos_uintptr_t;
+#else   // !__CHERI_PURE_CAPABILITY__
+typedef signed   long  int     khronos_intptr_t;
+typedef unsigned long  int     khronos_uintptr_t;
+#endif  // !__CHERI_PURE_CAPABILITY__
 typedef signed   long  int     khronos_ssize_t;
 typedef unsigned long  int     khronos_usize_t;
 #endif
