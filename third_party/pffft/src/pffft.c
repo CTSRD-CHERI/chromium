@@ -249,7 +249,11 @@ void validate_pffft_simd() {
 void *pffft_aligned_malloc(size_t nb_bytes) {
   void *p, *p0 = malloc(nb_bytes + MALLOC_V4SF_ALIGNMENT);
   if (!p0) return (void *) 0;
+#if __has_builtin(__builtin_align_up) 
+  p = __builtin_align_up(p0, MALLOC_V4SF_ALIGNMENT);
+#else
   p = (void *) (((size_t) p0 + MALLOC_V4SF_ALIGNMENT) & (~((size_t) (MALLOC_V4SF_ALIGNMENT-1))));
+#endif
   *((void **) p - 1) = p0;
   return p;
 }
