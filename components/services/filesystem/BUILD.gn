@@ -54,5 +54,9 @@ if (!is_ios) {
       "//mojo/public/cpp/system",
       "//testing/gtest",
     ]
+  
+    if (is_bsd) {
+      deps += [ "//sandbox/policy" ]
+    }
   }
 }

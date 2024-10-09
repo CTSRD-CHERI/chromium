@@ -950,6 +950,10 @@ test("gfx_unittests") {
     additional_manifest_fragments =
         [ "//build/config/fuchsia/test/test_fonts.shard.test-cml" ]
   }
+
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
 }
 
 if (is_android) {

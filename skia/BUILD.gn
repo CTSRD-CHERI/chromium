@@ -938,6 +938,10 @@ test("skia_unittests") {
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
+  
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
 
   data_deps = [ "//testing/buildbot/filters:skia_unittests_filters" ]
 

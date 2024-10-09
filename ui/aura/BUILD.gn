@@ -343,6 +343,10 @@ test("aura_unittests") {
     deps += [ "//ui/ozone" ]
   }
 
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
+
   if (is_fuchsia) {
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/present_view.shard.test-cml",

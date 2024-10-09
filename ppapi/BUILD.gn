@@ -309,6 +309,10 @@ test("ppapi_unittests") {
     "//testing/gtest",
     "//ui/surface",
   ]
+  
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
 }
 
 test("ppapi_perftests") {

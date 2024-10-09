@@ -28,6 +28,10 @@ viz_test("viz_unittests") {
     "//mojo/core/embedder",
   ]
 
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
+
   data = [ "//components/test/data/viz/" ]
 
   data_deps = [

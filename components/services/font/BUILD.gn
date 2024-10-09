@@ -57,6 +57,10 @@ test("font_service_unittests") {
     "//testing/gtest",
   ]
 
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
+
   if (enable_pdf) {
     deps += [
       "//third_party:freetype_harfbuzz",

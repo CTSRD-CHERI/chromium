@@ -303,6 +303,11 @@ test("audio_unittests") {
     "//media/audio:unit_tests",
     "//media/test:run_all_unittests",
   ]
+  
+if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
+
   if (is_android) {
     deps += [
       # The test needs the java dependencies to add the java classes for their

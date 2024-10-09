@@ -918,6 +918,10 @@ cc_test("cc_unittests") {
     "//ui/gl",
     "//ui/gl:test_support",
   ]
+  
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
 
   data = [ "//components/test/data/viz/" ]
   data_deps = [

@@ -55,6 +55,10 @@ test("mojo_unittests") {
     "//mojo/public/cpp/system/tests",
     "//mojo/public/js/ts/bindings/tests",
   ]
+
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
 }
 
 test("mojo_perftests") {
@@ -66,7 +70,7 @@ test("mojo_perftests") {
     "//mojo/public/cpp/bindings/tests:perftests",
     "//testing/perf",
   ]
-
+  
   if (!is_ios) {
     sources += [ "//mojo/core/message_pipe_perftest.cc" ]
 

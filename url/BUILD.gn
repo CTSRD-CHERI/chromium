@@ -228,6 +228,10 @@ test("url_unittests") {
     "//testing/gtest",
   ]
 
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
+
   if (use_platform_icu_alternatives) {
     # Unit tests that are not supported by the current ICU alternatives on Android.
     if (is_android) {
