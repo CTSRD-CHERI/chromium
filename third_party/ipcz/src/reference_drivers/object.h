@@ -21,7 +21,7 @@ class Object : public RefCounted {
     kMemory,
     kMapping,
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || BUILDFLAG(IS_BSD)
     // A non-standard driver object type which wraps a FileDescriptor object.
     kFileDescriptor,
 #endif
