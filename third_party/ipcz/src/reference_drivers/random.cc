@@ -18,7 +18,7 @@
 #include <asm/unistd.h>
 #include <sys/syscall.h>
 #include <unistd.h>
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_BSD)
 #include <sys/random.h>
 #include <unistd.h>
 #endif
