@@ -237,9 +237,14 @@ bool IsInstanceOf(PP_Var var,
     return false;
 
   PP_Bool result = PP_FALSE;
+#if defined(__CHERI_PURE_CAPABILITY__)
+  intptr_t class_int = reinterpret_cast<intptr_t>(ppp_class);
+  intptr_t class_data_int = 0;
+#else   // !__CHERI_PURE_CAPABILITY__
   int64_t class_int =
       static_cast<int64_t>(reinterpret_cast<intptr_t>(ppp_class));
   int64_t class_data_int = 0;
+#endif  // !__CHERI_PURE_CAPABILITY__
   dispatcher->Send(new PpapiHostMsg_PPBVar_IsInstanceOfDeprecated(
       API_ID_PPB_VAR_DEPRECATED, SerializedVarSendInput(dispatcher, var),
       class_int, &class_data_int, &result));
@@ -261,10 +266,15 @@ PP_Var CreateObject(PP_Instance instance,
     return PP_MakeUndefined();  // Object already exists with this user data.
 
   ReceiveSerializedVarReturnValue result;
+#if defined(__CHERI_PURE_CAPABILITY__)
+  intptr_t class_int = reinterpret_cast<intptr_t>(ppp_class);
+  intptr_t data_int = reinterpret_cast<intptr_t>(ppp_class_data);
+#else   // !__CHERI_PURE_CAPABILITY__
   int64_t class_int =
       static_cast<int64_t>(reinterpret_cast<intptr_t>(ppp_class));
   int64_t data_int =
       static_cast<int64_t>(reinterpret_cast<intptr_t>(ppp_class_data));
+#endif  // !__CHERI_PURE_CAPABILITY__
   dispatcher->Send(new PpapiHostMsg_PPBVar_CreateObjectDeprecated(
       API_ID_PPB_VAR_DEPRECATED, instance, class_int, data_int,
       &result));
@@ -486,8 +496,13 @@ void PPB_Var_Deprecated_Proxy::OnMsgConstruct(
 
 void PPB_Var_Deprecated_Proxy::OnMsgIsInstanceOfDeprecated(
     SerializedVarReceiveInput var,
+#if defined(__CHERI_PURE_CAPABILITY__)
+    intptr_t ppp_class,
+    intptr_t* ppp_class_data,
+#else   // !__CHERI_PURE_CAPABILITY__
     int64_t ppp_class,
     int64_t* ppp_class_data,
+#endif  // !__CHERI_PURE_CAPABILITY__
     PP_Bool* result) {
   SetAllowPluginReentrancy();
   *result = PPP_Class_Proxy::IsInstanceOf(ppb_var_impl_,
@@ -498,8 +513,13 @@ void PPB_Var_Deprecated_Proxy::OnMsgIsInstanceOfDeprecated(
 
 void PPB_Var_Deprecated_Proxy::OnMsgCreateObjectDeprecated(
     PP_Instance instance,
+#if defined(__CHERI_PURE_CAPABILITY__)
+    intptr_t ppp_class,
+    intptr_t class_data,
+#else   // !__CHERI_PURE_CAPABILITY__
     int64_t ppp_class,
     int64_t class_data,
+#endif  // !__CHERI_PURE_CAPABILITY__
     SerializedVarReturnValue result) {
   SetAllowPluginReentrancy();
   result.Return(dispatcher(), PPP_Class_Proxy::CreateProxiedObject(

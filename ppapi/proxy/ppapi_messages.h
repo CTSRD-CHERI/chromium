@@ -485,55 +485,100 @@ IPC_MESSAGE_ROUTED2(PpapiMsg_PPBInstance_MouseLockComplete,
 
 // PPP_Class.
 IPC_SYNC_MESSAGE_ROUTED3_2(PpapiMsg_PPPClass_HasProperty,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                           intptr_t /* ppp_class */,
+                           intptr_t /* object */,
+#else   // !__CHERI_PURE_CAPABILITY__
                            int64_t /* ppp_class */,
                            int64_t /* object */,
+#endif  // !__CHERI_PURE_CAPABILITY__
                            ppapi::proxy::SerializedVar /* property */,
                            ppapi::proxy::SerializedVar /* out_exception */,
                            bool /* result */)
 IPC_SYNC_MESSAGE_ROUTED3_2(PpapiMsg_PPPClass_HasMethod,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                           intptr_t /* ppp_class */,
+                           intptr_t /* object */,
+#else   // !__CHERI_PURE_CAPABILITY__
                            int64_t /* ppp_class */,
                            int64_t /* object */,
+#endif  // !__CHERI_PURE_CAPABILITY__
                            ppapi::proxy::SerializedVar /* method */,
                            ppapi::proxy::SerializedVar /* out_exception */,
                            bool /* result */)
 IPC_SYNC_MESSAGE_ROUTED3_2(PpapiMsg_PPPClass_GetProperty,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                           intptr_t /* ppp_class */,
+                           intptr_t /* object */,
+#else   // !__CHERI_PURE_CAPABILITY__
                            int64_t /* ppp_class */,
                            int64_t /* object */,
+#endif  // !__CHERI_PURE_CAPABILITY__
                            ppapi::proxy::SerializedVar /* property */,
                            ppapi::proxy::SerializedVar /* out_exception */,
                            ppapi::proxy::SerializedVar /* result */)
 IPC_SYNC_MESSAGE_ROUTED2_2(PpapiMsg_PPPClass_EnumerateProperties,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                           intptr_t /* ppp_class */,
+                           intptr_t /* object */,
+#else   // !__CHERI_PURE_CAPABILITY__
                            int64_t /* ppp_class */,
                            int64_t /* object */,
+#endif  // !__CHERI_PURE_CAPABILITY__
                            std::vector<ppapi::proxy::SerializedVar> /* props */,
                            ppapi::proxy::SerializedVar /* out_exception */)
 IPC_SYNC_MESSAGE_ROUTED4_1(PpapiMsg_PPPClass_SetProperty,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                           intptr_t /* ppp_class */,
+                           intptr_t /* object */,
+#else   // !__CHERI_PURE_CAPABILITY__
                            int64_t /* ppp_class */,
                            int64_t /* object */,
+#endif  // !__CHERI_PURE_CAPABILITY__
                            ppapi::proxy::SerializedVar /* name */,
                            ppapi::proxy::SerializedVar /* value */,
                            ppapi::proxy::SerializedVar /* out_exception */)
 IPC_SYNC_MESSAGE_ROUTED3_1(PpapiMsg_PPPClass_RemoveProperty,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                           intptr_t /* ppp_class */,
+                           intptr_t /* object */,
+#else   // !__CHERI_PURE_CAPABILITY__
                            int64_t /* ppp_class */,
                            int64_t /* object */,
+#endif  // !__CHERI_PURE_CAPABILITY__
                            ppapi::proxy::SerializedVar /* property */,
                            ppapi::proxy::SerializedVar /* out_exception */)
 IPC_SYNC_MESSAGE_ROUTED4_2(PpapiMsg_PPPClass_Call,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                           intptr_t /* ppp_class */,
+                           intptr_t /* object */,
+#else   // !__CHERI_PURE_CAPABILITY__
                            int64_t /* ppp_class */,
                            int64_t /* object */,
+#endif  // !__CHERI_PURE_CAPABILITY__
                            ppapi::proxy::SerializedVar /* method_name */,
                            std::vector<ppapi::proxy::SerializedVar> /* args */,
                            ppapi::proxy::SerializedVar /* out_exception */,
                            ppapi::proxy::SerializedVar /* result */)
 IPC_SYNC_MESSAGE_ROUTED3_2(PpapiMsg_PPPClass_Construct,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                           intptr_t /* ppp_class */,
+                           intptr_t /* object */,
+#else   // !__CHERI_PURE_CAPABILITY__
                            int64_t /* ppp_class */,
                            int64_t /* object */,
+#endif  // !__CHERI_PURE_CAPABILITY__
                            std::vector<ppapi::proxy::SerializedVar> /* args */,
                            ppapi::proxy::SerializedVar /* out_exception */,
                            ppapi::proxy::SerializedVar /* result */)
 IPC_MESSAGE_ROUTED2(PpapiMsg_PPPClass_Deallocate,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                    intptr_t /* ppp_class */,
+                    intptr_t /* object */)
+#else   // !__CHERI_PURE_CAPABILITY__
                     int64_t /* ppp_class */,
                     int64_t /* object */)
+#endif  // !__CHERI_PURE_CAPABILITY__
 
 // PPP_Graphics3D_Dev.
 IPC_MESSAGE_ROUTED1(PpapiMsg_PPPGraphics3D_ContextLost,
@@ -931,13 +976,23 @@ IPC_SYNC_MESSAGE_ROUTED2_2(PpapiHostMsg_PPBVar_Construct,
                            ppapi::proxy::SerializedVar /* result */)
 IPC_SYNC_MESSAGE_ROUTED2_2(PpapiHostMsg_PPBVar_IsInstanceOfDeprecated,
                            ppapi::proxy::SerializedVar /* var */,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                           intptr_t /* object_class */,
+                           intptr_t /* object-data */,
+#else   // !__CHERI_PURE_CAPABILITY__
                            int64_t /* object_class */,
                            int64_t /* object-data */,
+#endif  // !__CHERI_PURE_CAPABILITY__
                            PP_Bool /* result */)
 IPC_SYNC_MESSAGE_ROUTED3_1(PpapiHostMsg_PPBVar_CreateObjectDeprecated,
                            PP_Instance /* instance */,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                           intptr_t /* object_class */,
+                           intptr_t /* object_data */,
+#else   // !__CHERI_PURE_CAPABILITY__
                            int64_t /* object_class */,
                            int64_t /* object_data */,
+#endif  // !__CHERI_PURE_CAPABILITY__
                            ppapi::proxy::SerializedVar /* result */)
 
 #if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)

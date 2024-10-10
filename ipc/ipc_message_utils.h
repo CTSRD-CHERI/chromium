@@ -273,6 +273,36 @@ struct ParamTraits<unsigned long long> {
   COMPONENT_EXPORT(IPC) static void Log(const param_type& p, std::string* l);
 };
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+template <>
+struct ParamTraits<intptr_t> {
+  typedef intptr_t param_type;
+  static void Write(base::Pickle* m, const param_type& p) {
+    m->WriteIntptr(p);
+  }
+  static bool Read(const base::Pickle* m,
+                   base::PickleIterator* iter,
+                   param_type* r) {
+    return iter->ReadIntptr(r);
+  }
+  COMPONENT_EXPORT(IPC) static void Log(const param_type& p, std::string* l);
+};
+
+template <>
+struct ParamTraits<uintptr_t> {
+  typedef uintptr_t param_type;
+  static void Write(base::Pickle* m, const param_type& p) {
+    m->WriteUIntptr(p);
+  }
+  static bool Read(const base::Pickle* m,
+                   base::PickleIterator* iter,
+                   param_type* r) {
+    return iter->ReadUIntptr(r);
+  }
+  COMPONENT_EXPORT(IPC) static void Log(const param_type& p, std::string* l);
+};
+#endif   // __CHERI_PURE_CAPABILITY__
+
 // Note that the IPC layer doesn't sanitize NaNs and +/- INF values.  Clients
 // should be sure to check the sanity of these values after receiving them over
 // IPC.

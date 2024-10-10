@@ -80,12 +80,22 @@ class PPB_Var_Deprecated_Proxy : public InterfaceProxy {
                       SerializedVarOutParam exception,
                       SerializedVarReturnValue result);
   void OnMsgIsInstanceOfDeprecated(SerializedVarReceiveInput var,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                                   intptr_t ppp_class,
+                                   intptr_t* ppp_class_data,
+#else   // !__CHERI_PURE_CAPABILITY__
                                    int64_t ppp_class,
                                    int64_t* ppp_class_data,
+#endif  // !__CHERI_PURE_CAPABILITY__
                                    PP_Bool* result);
   void OnMsgCreateObjectDeprecated(PP_Instance instance,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                                   intptr_t ppp_class,
+                                   intptr_t ppp_class_data,
+#else   // !__CHERI_PURE_CAPABILITY__
                                    int64_t ppp_class,
                                    int64_t ppp_class_data,
+#endif  // !__CHERI_PURE_CAPABILITY__
                                    SerializedVarReturnValue result);
 
   // Call in the host for messages that can be reentered.

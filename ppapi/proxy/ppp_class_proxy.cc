@@ -24,12 +24,21 @@ namespace {
 // Represents a plugin-implemented class in the browser process. This just
 // stores the data necessary to call back the plugin.
 struct ObjectProxy {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  ObjectProxy(Dispatcher* d, intptr_t p, intptr_t ud)
+#else   // !__CHERI_PURE_CAPABILITY__
   ObjectProxy(Dispatcher* d, int64_t p, int64_t ud)
+#endif  // !__CHERI_PURE_CAPABILITY__
       : dispatcher(d), ppp_class(p), user_data(ud) {}
 
   Dispatcher* dispatcher;
+#if defined(__CHERI_PURE_CAPABILITY__)
+  intptr_t ppp_class;
+  intptr_t user_data;
+#else   // !__CHERI_PURE_CAPABILITY__
   int64_t ppp_class;
   int64_t user_data;
+#endif  // !__CHERI_PURE_CAPABILITY__
 };
 
 ObjectProxy* ToObjectProxy(void* data) {
@@ -186,14 +195,22 @@ const PPP_Class_Deprecated class_interface = {
 
 // Converts an int64_t object from IPC to a PPP_Class* for calling into the
 // plugin's implementation.
+#if defined(__CHERI_PURE_CAPABILITY__)
+const PPP_Class_Deprecated* ToPPPClass(intptr_t value) {
+#else   // !__CHERI_PURE_CAPABILITY__
 const PPP_Class_Deprecated* ToPPPClass(int64_t value) {
+#endif  // !__CHERI_PURE_CAPABILITY__
   return reinterpret_cast<const PPP_Class_Deprecated*>(
       static_cast<intptr_t>(value));
 }
 
 // Converts an int64_t object from IPC to a void* for calling into the plugin's
 // implementation as the user data.
+#if defined(__CHERI_PURE_CAPABILITY__)
+void* ToUserData(intptr_t value) {
+#else   // !__CHERI_PURE_CAPABILITY__
 void* ToUserData(int64_t value) {
+#endif  // !__CHERI_PURE_CAPABILITY__
   return reinterpret_cast<void*>(static_cast<intptr_t>(value));
 }
 
@@ -217,8 +234,13 @@ InterfaceProxy* PPP_Class_Proxy::Create(Dispatcher* dispatcher) {
 PP_Var PPP_Class_Proxy::CreateProxiedObject(const PPB_Var_Deprecated* var,
                                             Dispatcher* dispatcher,
                                             PP_Instance instance_id,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                                            intptr_t ppp_class,
+                                            intptr_t class_data) {
+#else   // !__CHERI_PURE_CAPABILITY__
                                             int64_t ppp_class,
                                             int64_t class_data) {
+#endif  // !__CHERI_PURE_CAPABILITY__
   ObjectProxy* object_proxy = new ObjectProxy(dispatcher,
                                               ppp_class, class_data);
   return var->CreateObject(instance_id, &class_interface, object_proxy);
@@ -227,8 +249,13 @@ PP_Var PPP_Class_Proxy::CreateProxiedObject(const PPB_Var_Deprecated* var,
 // static
 PP_Bool PPP_Class_Proxy::IsInstanceOf(const PPB_Var_Deprecated* ppb_var_impl,
                                       const PP_Var& var,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                                      intptr_t ppp_class,
+                                      intptr_t* ppp_class_data) {
+#else   // !__CHERI_PURE_CAPABILITY__
                                       int64_t ppp_class,
                                       int64_t* ppp_class_data) {
+#endif  // !__CHERI_PURE_CAPABILITY__
   void* proxied_object = NULL;
   if (ppb_var_impl->IsInstanceOf(var,
                                  &class_interface,
@@ -269,8 +296,13 @@ bool PPP_Class_Proxy::OnMessageReceived(const IPC::Message& msg) {
   return handled;
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+void PPP_Class_Proxy::OnMsgHasProperty(intptr_t ppp_class,
+                                       intptr_t object,
+#else   // !__CHERI_PURE_CAPABILITY__
 void PPP_Class_Proxy::OnMsgHasProperty(int64_t ppp_class,
                                        int64_t object,
+#endif  // !__CHERI_PURE_CAPABILITY__
                                        SerializedVarReceiveInput property,
                                        SerializedVarOutParam exception,
                                        bool* result) {
@@ -282,8 +314,13 @@ void PPP_Class_Proxy::OnMsgHasProperty(int64_t ppp_class,
                               exception.OutParam(dispatcher()));
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+void PPP_Class_Proxy::OnMsgHasMethod(intptr_t ppp_class,
+                                     intptr_t object,
+#else   // !__CHERI_PURE_CAPABILITY__
 void PPP_Class_Proxy::OnMsgHasMethod(int64_t ppp_class,
                                      int64_t object,
+#endif  // !__CHERI_PURE_CAPABILITY__
                                      SerializedVarReceiveInput property,
                                      SerializedVarOutParam exception,
                                      bool* result) {
@@ -295,8 +332,13 @@ void PPP_Class_Proxy::OnMsgHasMethod(int64_t ppp_class,
                               exception.OutParam(dispatcher()));
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+void PPP_Class_Proxy::OnMsgGetProperty(intptr_t ppp_class,
+                                       intptr_t object,
+#else   // !__CHERI_PURE_CAPABILITY__
 void PPP_Class_Proxy::OnMsgGetProperty(int64_t ppp_class,
                                        int64_t object,
+#endif  // !__CHERI_PURE_CAPABILITY__
                                        SerializedVarReceiveInput property,
                                        SerializedVarOutParam exception,
                                        SerializedVarReturnValue result) {
@@ -309,8 +351,13 @@ void PPP_Class_Proxy::OnMsgGetProperty(int64_t ppp_class,
 }
 
 void PPP_Class_Proxy::OnMsgEnumerateProperties(
+#if defined(__CHERI_PURE_CAPABILITY__)
+    intptr_t ppp_class,
+    intptr_t object,
+#else   // !__CHERI_PURE_CAPABILITY__
     int64_t ppp_class,
     int64_t object,
+#endif  // !__CHERI_PURE_CAPABILITY__
     std::vector<SerializedVar>* props,
     SerializedVarOutParam exception) {
   if (!ValidateUserData(ppp_class, object, &exception))
@@ -319,8 +366,13 @@ void PPP_Class_Proxy::OnMsgEnumerateProperties(
   // TODO(brettw) implement this.
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+void PPP_Class_Proxy::OnMsgSetProperty(intptr_t ppp_class,
+                                       intptr_t object,
+#else   // !__CHERI_PURE_CAPABILITY__
 void PPP_Class_Proxy::OnMsgSetProperty(int64_t ppp_class,
                                        int64_t object,
+#endif  // !__CHERI_PURE_CAPABILITY__
                                        SerializedVarReceiveInput property,
                                        SerializedVarReceiveInput value,
                                        SerializedVarOutParam exception) {
@@ -331,8 +383,13 @@ void PPP_Class_Proxy::OnMsgSetProperty(int64_t ppp_class,
       exception.OutParam(dispatcher()));
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+void PPP_Class_Proxy::OnMsgRemoveProperty(intptr_t ppp_class,
+                                          intptr_t object,
+#else   // !__CHERI_PURE_CAPABILITY__
 void PPP_Class_Proxy::OnMsgRemoveProperty(int64_t ppp_class,
                                           int64_t object,
+#endif  // !__CHERI_PURE_CAPABILITY__
                                           SerializedVarReceiveInput property,
                                           SerializedVarOutParam exception) {
   if (!ValidateUserData(ppp_class, object, &exception))
@@ -342,8 +399,13 @@ void PPP_Class_Proxy::OnMsgRemoveProperty(int64_t ppp_class,
       exception.OutParam(dispatcher()));
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+void PPP_Class_Proxy::OnMsgCall(intptr_t ppp_class,
+                                intptr_t object,
+#else   // !__CHERI_PURE_CAPABILITY__
 void PPP_Class_Proxy::OnMsgCall(int64_t ppp_class,
                                 int64_t object,
+#endif  // !__CHERI_PURE_CAPABILITY__
                                 SerializedVarReceiveInput method_name,
                                 SerializedVarVectorReceiveInput arg_vector,
                                 SerializedVarOutParam exception,
@@ -357,8 +419,13 @@ void PPP_Class_Proxy::OnMsgCall(int64_t ppp_class,
       arg_count, args, exception.OutParam(dispatcher())));
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+void PPP_Class_Proxy::OnMsgConstruct(intptr_t ppp_class,
+                                     intptr_t object,
+#else   // !__CHERI_PURE_CAPABILITY__
 void PPP_Class_Proxy::OnMsgConstruct(int64_t ppp_class,
                                      int64_t object,
+#endif  // !__CHERI_PURE_CAPABILITY__
                                      SerializedVarVectorReceiveInput arg_vector,
                                      SerializedVarOutParam exception,
                                      SerializedVarReturnValue result) {
@@ -371,7 +438,11 @@ void PPP_Class_Proxy::OnMsgConstruct(int64_t ppp_class,
       ToUserData(object), arg_count, args, exception.OutParam(dispatcher())));
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+void PPP_Class_Proxy::OnMsgDeallocate(intptr_t ppp_class, intptr_t object) {
+#else   // !__CHERI_PURE_CAPABILITY__
 void PPP_Class_Proxy::OnMsgDeallocate(int64_t ppp_class, int64_t object) {
+#endif  // !__CHERI_PURE_CAPABILITY__
   if (!ValidateUserData(ppp_class, object, NULL))
     return;
   PluginGlobals::Get()->plugin_var_tracker()->PluginImplementedObjectDestroyed(
@@ -379,8 +450,13 @@ void PPP_Class_Proxy::OnMsgDeallocate(int64_t ppp_class, int64_t object) {
   CallWhileUnlocked(ToPPPClass(ppp_class)->Deallocate, ToUserData(object));
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+bool PPP_Class_Proxy::ValidateUserData(intptr_t ppp_class,
+                                       intptr_t class_data,
+#else   // !__CHERI_PURE_CAPABILITY__
 bool PPP_Class_Proxy::ValidateUserData(int64_t ppp_class,
                                        int64_t class_data,
+#endif  // !__CHERI_PURE_CAPA8BILITY__
                                        SerializedVarOutParam* exception) {
   if (!PluginGlobals::Get()->plugin_var_tracker()->ValidatePluginObjectCall(
           ToPPPClass(ppp_class), ToUserData(class_data))) {
