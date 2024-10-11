@@ -123,6 +123,7 @@ component("policy") {
     ]
     deps += [
       "//sandbox:sandbox_buildflags",
+      "//sandbox/linux:sandbox_services",
       "//ui/gfx/x",
     ]
   }
