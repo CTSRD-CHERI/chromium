@@ -25,12 +25,22 @@ void PropertyHandler::AcquireAllPropertiesFrom(PropertyHandler&& other) {
   other.prop_map_.clear();
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+uintptr_t PropertyHandler::SetPropertyInternal(const void* key,
+#else   // !__CHERI_PURE_CAPABILITY__
 int64_t PropertyHandler::SetPropertyInternal(const void* key,
+#endif  // !__CHERI_PURE_CAPABILITY__
                                              const char* name,
                                              PropertyDeallocator deallocator,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                                             uintptr_t value,
+                                             uintptr_t default_value) {
+  uintptr_t old = GetPropertyInternal(key, default_value, false);
+#else   // !__CHERI_PURE_CAPABILITY__
                                              int64_t value,
                                              int64_t default_value) {
   int64_t old = GetPropertyInternal(key, default_value, false);
+#endif  // !__CHERI_PURE_CAPABILITY__
   if (value == default_value) {
     prop_map_.erase(key);
   } else {
@@ -64,8 +74,13 @@ PropertyHandler* PropertyHandler::GetParentHandler() const {
   return nullptr;
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+uintptr_t PropertyHandler::GetPropertyInternal(const void* key,
+                                             uintptr_t default_value,
+#else   // !__CHERI_PURE_CAPABILITY__
 int64_t PropertyHandler::GetPropertyInternal(const void* key,
                                              int64_t default_value,
+#endif  // !__CHERI_PURE_CAPABILITY__
                                              bool search_parent) const {
   const PropertyHandler* handler = this;
   while (handler) {

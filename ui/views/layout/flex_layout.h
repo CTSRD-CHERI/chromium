@@ -148,7 +148,11 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
 
    protected:
     // ui::PropertyHandler:
+#if defined(__CHERI_PURE_CAPABILITY__)
+    void AfterPropertyChange(const void* key, uintptr_t old_value) override;
+#else   // !__CHERI_PURE_CAPABILITY__
     void AfterPropertyChange(const void* key, int64_t old_value) override;
+#endif  // !__CHERI_PURE_CAPABILITY__
 
    private:
     const raw_ptr<FlexLayout> layout_;

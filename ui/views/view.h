@@ -1826,7 +1826,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // or else your class  will not properly register for ElementTrackerViews and
   // won't be available for interactive tests or in-product help/tutorials which
   // use that system.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  void AfterPropertyChange(const void* key, uintptr_t old_value) override;
+#else   // !__CHERI_PURE_CAPABILITY__
   void AfterPropertyChange(const void* key, int64_t old_value) override;
+#endif  // !__CHERI_PURE_CAPABILITY__
 
   // Property Support ----------------------------------------------------------
 

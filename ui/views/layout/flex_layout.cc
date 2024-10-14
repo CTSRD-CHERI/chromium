@@ -304,7 +304,11 @@ FlexLayout::PropertyHandler::PropertyHandler(FlexLayout* layout)
     : layout_(layout) {}
 
 void FlexLayout::PropertyHandler::AfterPropertyChange(const void* key,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                                                      uintptr_t old_value) {
+#else   // !__CHERI_PURE_CAPABILITY__
                                                       int64_t old_value) {
+#endif  // !__CHERI_PURE_CAPABILITY__
   layout_->InvalidateHost(true);
 }
 

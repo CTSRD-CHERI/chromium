@@ -2706,7 +2706,11 @@ void View::HandlePropertyChangeEffects(PropertyEffects effects) {
     SchedulePaint();
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+void View::AfterPropertyChange(const void* key, uintptr_t old_value) {
+#else   // !__CHERI_PURE_CAPABILITY__
 void View::AfterPropertyChange(const void* key, int64_t old_value) {
+#endif  // !__CHERI_PURE_CAPABILITY__
   if (key == kElementIdentifierKey) {
     const ui::ElementIdentifier old_element_id =
         ui::ElementIdentifier::FromRawValue(
