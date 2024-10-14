@@ -60,7 +60,11 @@
 namespace ui {
 
 // Type of a function to delete a property that this window owns.
+#if defined(__CHERI_PURE_CAPABILITY__)
+using PropertyDeallocator = void(*)(intptr_t value);
+#else // defined(__CHERI_PURE_CAPABILITY__)
 using PropertyDeallocator = void(*)(int64_t value);
+#endif // defined(__CHERI_PURE_CAPABILITY__)
 
 template<typename T>
 struct ClassProperty {
@@ -140,6 +144,11 @@ class COMPONENT_EXPORT(UI_BASE) PropertyHandler {
 
   // TODO(pkasting): Consider calling this only when the values differ.
   virtual void AfterPropertyChange(const void* key, int64_t old_value) {}
+#if defined(__CHERI_PURE_CAPABILITY__)
+  virtual void AfterPropertyChange(const void* key, intptr_t old_value) {}
+#else
+  virtual void AfterPropertyChange(const void* key, int64_t old_value) {}
+#endif
 
   // Override this function when inheriting this class on a class or classes
   // in which instances are arranged in a parent-child relationship and
@@ -199,21 +208,38 @@ class COMPONENT_EXPORT(UI_BASE) PropertyHandler {
 template<typename T>
 class ClassPropertyCaster {
  public:
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static intptr_t ToIntptr(T x)
+    requires(sizeof(T) <= sizeof(intptr_t))
+  {
+    return static_cast<intptr_t>(x);
+  }
+  static T FromIntptr(intptr_t x) { return static_cast<T>(x); }
+#else
   static int64_t ToInt64(T x)
     requires(sizeof(T) <= sizeof(int64_t))
   {
     return static_cast<int64_t>(x);
   }
   static T FromInt64(int64_t x) { return static_cast<T>(x); }
+#endif
 };
 template<typename T>
 class ClassPropertyCaster<T*> {
  public:
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static intptr_t ToIntptr(T* x) {
+    static_assert(sizeof(T*) <= sizeof(intptr_t));
+    return reinterpret_cast<intptr_t>(x);
+  }
+  static T* FromIntptr(intptr_t x) { return reinterpret_cast<T*>(x); }
+#else
   static int64_t ToInt64(T* x) {
     static_assert(sizeof(T*) <= sizeof(int64_t));
     return reinterpret_cast<int64_t>(x);
   }
   static T* FromInt64(int64_t x) { return reinterpret_cast<T*>(x); }
+#endif
 };
 template <>
 class ClassPropertyCaster<base::TimeDelta> {
@@ -233,6 +259,20 @@ class ClassPropertyCaster<base::TimeDelta> {
 template <>
 class ClassPropertyCaster<float> {
  public:
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static intptr_t ToIntptr(float x) {
+    static_assert(sizeof(float) <= sizeof(intptr_t),
+                  "expected float size <= sizeof(intptr_t)");
+    intptr_t ret = 0;
+    memcpy(&ret, &x, sizeof(float));
+    return ret;
+  }
+  static float FromIntptr(intptr_t x) {
+    float ret = 0.0;
+    memcpy(&ret, &x, sizeof(float));
+    return ret;
+  }
+#else
   static int64_t ToInt64(float x) {
     static_assert(sizeof(float) == sizeof(int32_t));
     return base::bit_cast<int32_t>(x);
@@ -240,6 +280,7 @@ class ClassPropertyCaster<float> {
   static float FromInt64(int64_t x) {
     return base::bit_cast<float>(static_cast<int32_t>(x));
   }
+#endif
 };
 
 namespace subtle {
@@ -250,12 +291,25 @@ class COMPONENT_EXPORT(UI_BASE) PropertyHelper {
   static T Set(::ui::PropertyHandler* handler,
                const ::ui::ClassProperty<T>* property,
                T value) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    const intptr_t old = handler->SetPropertyInternal(
+#else
     const int64_t old = handler->SetPropertyInternal(
+#endif
         property, property->name, property->deallocator,
+#if defined(__CHERI_PURE_CAPABILITY__)
+        ClassPropertyCaster<T>::ToIntptr(value),
+        ClassPropertyCaster<T>::ToIntptr(property->default_value));
+#else
         ClassPropertyCaster<T>::ToInt64(value),
         ClassPropertyCaster<T>::ToInt64(property->default_value));
+#endif
     if (property->deallocator &&
+#if defined(__CHERI_PURE_CAPABILITY__)
+        old != ClassPropertyCaster<T>::ToIntptr(property->default_value)) {
+#else
         old != ClassPropertyCaster<T>::ToInt64(property->default_value)) {
+#endif
       (*property->deallocator)(old);
     }
     return value;
@@ -264,9 +318,15 @@ class COMPONENT_EXPORT(UI_BASE) PropertyHelper {
   static T Get(const ::ui::PropertyHandler* handler,
                const ::ui::ClassProperty<T>* property,
                bool allow_cascade) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    return ClassPropertyCaster<T>::FromIntptr(handler->GetPropertyInternal(
+        property, ClassPropertyCaster<T>::ToIntptr(property->default_value),
+        property->cascading && allow_cascade));
+#else
     return ClassPropertyCaster<T>::FromInt64(handler->GetPropertyInternal(
         property, ClassPropertyCaster<T>::ToInt64(property->default_value),
         property->cascading && allow_cascade));
+#endif
   }
   template <typename T>
   static void Clear(::ui::PropertyHandler* handler,
@@ -349,7 +409,6 @@ T* PropertyHandler::SetProperty(const ClassProperty<T*>* property,
   DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(, T)
 
 #if defined(__CHERI_PURE_CAPABILITY__)
-#else
 #define DEFINE_UI_CLASS_PROPERTY_KEY_IMPL(TYPE, NAME, DEFAULT, CASCADES)     \
   static_assert(sizeof(TYPE) <= sizeof(intptr_t), "property type too large"); \
   const ::ui::ClassProperty<TYPE> NAME##_Value = {DEFAULT, #NAME, CASCADES,  \
@@ -369,6 +428,19 @@ T* PropertyHandler::SetProperty(const ClassProperty<T*>* property,
 #define DEFINE_CASCADING_UI_CLASS_PROPERTY_KEY(TYPE, NAME, DEFAULT) \
   DEFINE_UI_CLASS_PROPERTY_KEY_IMPL(TYPE, NAME, DEFAULT, true)
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+#define DEFINE_OWNED_UI_CLASS_PROPERTY_KEY_IMPL(TYPE, NAME, CASCADES) \
+  static_assert(base::IsComplete<TYPE>);                              \
+  static_assert(sizeof(TYPE*) <= sizeof(intptr_t));                    \
+  namespace {                                                         \
+  void Deallocator##NAME(intptr_t p) {                                 \
+    delete ::ui::ClassPropertyCaster<TYPE*>::FromInt64(p);            \
+  }                                                                   \
+  constexpr ::ui::ClassProperty<TYPE*> NAME##_Value = {               \
+      nullptr, #NAME, CASCADES, &Deallocator##NAME};                  \
+  } /* namespace */                                                   \
+  constexpr const ::ui::ClassProperty<TYPE*>* NAME = &NAME##_Value;
+#else
 #define DEFINE_OWNED_UI_CLASS_PROPERTY_KEY_IMPL(TYPE, NAME, CASCADES) \
   static_assert(base::IsComplete<TYPE>);                              \
   static_assert(sizeof(TYPE*) <= sizeof(int64_t));                    \
@@ -380,6 +452,7 @@ T* PropertyHandler::SetProperty(const ClassProperty<T*>* property,
       nullptr, #NAME, CASCADES, &Deallocator##NAME};                  \
   } /* namespace */                                                   \
   constexpr const ::ui::ClassProperty<TYPE*>* NAME = &NAME##_Value;
+#endif
 
 #define DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(TYPE, NAME) \
   DEFINE_OWNED_UI_CLASS_PROPERTY_KEY_IMPL(TYPE, NAME, false)
