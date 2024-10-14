@@ -909,7 +909,11 @@ std::unique_ptr<ScopedKeyboardHook> Window::CaptureSystemKeyEvents(
 // {Set,Get,Clear}Property are implemented in class_property.h.
 
 void Window::SetNativeWindowProperty(const char* key, void* value) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  SetPropertyInternal(key, key, nullptr, reinterpret_cast<intptr_t>(value), 0);
+#else   // !__CHERI_PURE_CAPABILITY__
   SetPropertyInternal(key, key, nullptr, reinterpret_cast<int64_t>(value), 0);
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 void* Window::GetNativeWindowProperty(const char* key) const {
@@ -1029,7 +1033,11 @@ void Window::RemoveOrDestroyChildren() {
   }
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+void Window::AfterPropertyChange(const void* key, intptr_t old_value) {
+#else // defined(__CHERI_PURE_CAPABILITY__)
 void Window::AfterPropertyChange(const void* key, int64_t old_value) {
+#endif // defined(__CHERI_PURE_CAPABILITY__)
   for (WindowObserver& observer : observers_)
     observer.OnWindowPropertyChanged(this, key, old_value);
 }
