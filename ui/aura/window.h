@@ -599,7 +599,11 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   void RemoveOrDestroyChildren();
 
   // Overrides from ui::PropertyHandler
+#if defined(__CHERI_PURE_CAPABILITY__)
+  void AfterPropertyChange(const void* key, intptr_t old_value) override;
+#else // defined(__CHERI_PURE_CAPABILITY__)
   void AfterPropertyChange(const void* key, int64_t old_value) override;
+#endif // defined(__CHERI_PURE_CAPABILITY__)
 
   // viz::HostFrameSinkClient:
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
