@@ -407,7 +407,14 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
     // Returns a lambda that compares two ranges using the given `pred`.
     const auto eq = [](const auto& pred) {
       return [&](const auto& a, const auto& b) {
+#if defined(__clang__) && __clang_major__ < 15
+	// FIXME(gcjenkinson): clang 13/14 only provide partial support for
+	// The One Ranges proposal, this does not include std::ranges::equal.
+	// For now, just fail the test.
+	return false;
+#else
         return std::ranges::equal(a, b, pred);
+#endif
       };
     };
 
