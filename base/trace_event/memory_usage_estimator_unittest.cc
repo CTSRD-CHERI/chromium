@@ -158,7 +158,11 @@ TEST(EstimateMemoryUsageTest, List) {
   for (int i = 0; i != 1000; ++i) {
     list.push_back(POD());
   }
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_EQ_32_64(24000u, 48000u, EstimateMemoryUsage(list));
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_EQ_32_64(12000u, 24000u, EstimateMemoryUsage(list));
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 TEST(EstimateMemoryUsageTest, Set) {
@@ -166,7 +170,11 @@ TEST(EstimateMemoryUsageTest, Set) {
   for (int i = 0; i != 1000; ++i) {
     set.insert({i, Data(i)});
   }
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_EQ_32_64(547500u, 579500u, EstimateMemoryUsage(set));
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_EQ_32_64(523500u, 547500u, EstimateMemoryUsage(set));
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 TEST(EstimateMemoryUsageTest, MultiSet) {
@@ -174,7 +182,11 @@ TEST(EstimateMemoryUsageTest, MultiSet) {
   for (int i = 0; i != 1000; ++i) {
     set.insert((i & 1) != 0);
   }
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_EQ_32_64(32000u, 64000u, EstimateMemoryUsage(set));
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_EQ_32_64(16000u, 32000u, EstimateMemoryUsage(set));
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 TEST(EstimateMemoryUsageTest, Map) {
@@ -182,7 +194,11 @@ TEST(EstimateMemoryUsageTest, Map) {
   for (int i = 0; i != 1000; ++i) {
     map.insert({Data(i), i});
   }
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_EQ_32_64(547500u, 579500u, EstimateMemoryUsage(map));
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_EQ_32_64(523500u, 547500u, EstimateMemoryUsage(map));
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 TEST(EstimateMemoryUsageTest, MultiMap) {
@@ -190,7 +206,11 @@ TEST(EstimateMemoryUsageTest, MultiMap) {
   for (int i = 0; i != 1000; ++i) {
     map.insert({static_cast<char>(i), Data(i)});
   }
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_EQ_32_64(547500u, 579500u, EstimateMemoryUsage(map));
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_EQ_32_64(523500u, 547500u, EstimateMemoryUsage(map));
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 TEST(EstimateMemoryUsageTest, UnorderedSet) {
@@ -198,7 +218,11 @@ TEST(EstimateMemoryUsageTest, UnorderedSet) {
   for (int i = 0; i != 1000; ++i) {
     set.insert(Data(i));
   }
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_EQ_32_64(523580u, 531660u, EstimateMemoryUsage(set));
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_EQ_32_64(511540u, 523580u, EstimateMemoryUsage(set));
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 TEST(EstimateMemoryUsageTest, UnorderedMultiSet) {
@@ -207,7 +231,11 @@ TEST(EstimateMemoryUsageTest, UnorderedMultiSet) {
     set.insert(Data(i));
     set.insert(Data(i));
   }
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_EQ_32_64(273580u, 281660u, EstimateMemoryUsage(set));
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_EQ_32_64(261540u, 273580u, EstimateMemoryUsage(set));
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 TEST(EstimateMemoryUsageTest, UnorderedMap) {
@@ -215,7 +243,11 @@ TEST(EstimateMemoryUsageTest, UnorderedMap) {
   for (int i = 0; i != 1000; ++i) {
     map.insert({Data(i), static_cast<short>(i)});
   }
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_EQ_32_64(531580u, 547660u, EstimateMemoryUsage(map));
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_EQ_32_64(515540u, 531580u, EstimateMemoryUsage(map));
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 TEST(EstimateMemoryUsageTest, UnorderedMultiMap) {
@@ -223,7 +255,11 @@ TEST(EstimateMemoryUsageTest, UnorderedMultiMap) {
   for (int i = 0; i != 1000; ++i) {
     map.insert({Data(i), static_cast<short>(i)});
   }
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_EQ_32_64(531580u, 547660u, EstimateMemoryUsage(map));
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_EQ_32_64(515540u, 531580u, EstimateMemoryUsage(map));
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 TEST(EstimateMemoryUsageTest, Deque) {
