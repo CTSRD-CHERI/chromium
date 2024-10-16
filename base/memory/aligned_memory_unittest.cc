@@ -12,9 +12,19 @@
 namespace base {
 
 TEST(AlignedMemoryTest, DynamicAllocation) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  void* p = AlignedAlloc(8,
+      std::max(static_cast<size_t>(8), alignof(max_align_t)));
+#else   // !__CHERI_PURE_CAPABILITY__
   void* p = AlignedAlloc(8, 8);
+#endif  // !__CHERI_PURE_CAPABILITY__
   EXPECT_TRUE(p);
+#if defined(__CHERI_PURE_CAPABILITY__)
   EXPECT_TRUE(IsAligned(p, 8));
+#else   // !__CHERI_PURE_CAPABILITY__
+  EXPECT_TRUE(IsAligned(p,
+      std::max(static_cast<size_t>(8), alignof(max_align_t)));
+#endif  // !__CHERI_PURE_CAPABILITY__
   AlignedFree(p);
 
   p = AlignedAlloc(8, 16);
@@ -35,13 +45,27 @@ TEST(AlignedMemoryTest, DynamicAllocation) {
 
 TEST(AlignedMemoryTest, ScopedDynamicAllocation) {
   std::unique_ptr<float, AlignedFreeDeleter> p(
+#if defined(__CHERI_PURE_CAPABILITY__)
+      static_cast<float*>(AlignedAlloc(8, std::max(static_cast<size_t>(8), alignof(max_align_t)))));
+#else   // !__CHERI_PURE_CAPABILITY__
       static_cast<float*>(AlignedAlloc(8, 8)));
+#endif  // !__CHERI_PURE_CAPABILITY__
   EXPECT_TRUE(p.get());
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_TRUE(IsAligned(p.get(),
+      std::max(static_cast<size_t>(8), alignof(max_align_t))));
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_TRUE(IsAligned(p.get(), 8));
+#endif  // !__CHERI_PURE_CAPABILITY__
 
   // Make sure IsAligned() can check const pointers as well.
   const float* const_p = p.get();
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_TRUE(IsAligned(const_p,
+      std::max(static_cast<size_t>(8), alignof(max_align_t))));
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_TRUE(IsAligned(const_p, 8));
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 TEST(AlignedMemoryTest, IsAligned) {
