@@ -259,7 +259,11 @@ TEST_P(PreloadingDeciderTest, PrefetchOnPointerEventHeuristics) {
   // Create list of SpeculationCandidatePtrs.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
 
+#if defined(__clang__) && __clang_major__ < 16
+  auto call_pointer_event_handler = [&event_type = event_type, &preloading_decider = preloading_decider](const GURL& url) {
+#else
   auto call_pointer_event_handler = [&](const GURL& url) {
+#endif
     switch (event_type) {
       case EventType::kPointerDown:
         preloading_decider->OnPointerDown(url);
@@ -344,7 +348,11 @@ TEST_P(PreloadingDeciderTest, PrerenderOnPointerEventHeuristics) {
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
 
   auto create_candidate =
+#if defined(__clang__) && __clang_major__ < 16
+      [&eagerness = eagerness, this](blink::mojom::SpeculationAction action, const std::string& url,
+#else
       [&](blink::mojom::SpeculationAction action, const std::string& url,
+#endif
           network::mojom::NoVarySearchPtr&& no_vary_search_hint = nullptr) {
         auto candidate = blink::mojom::SpeculationCandidate::New();
         candidate->action = action;
@@ -357,7 +365,11 @@ TEST_P(PreloadingDeciderTest, PrerenderOnPointerEventHeuristics) {
         return candidate;
       };
 
+#if defined(__clang__) && __clang_major__ < 16
+  auto call_pointer_event_handler = [&event_type = event_type, &preloading_decider = preloading_decider](const GURL& url) {
+#else
   auto call_pointer_event_handler = [&](const GURL& url) {
+#endif
     switch (event_type) {
       case EventType::kPointerDown:
         preloading_decider->OnPointerDown(url);
