@@ -134,7 +134,7 @@ absl::optional<size_t> ProcessMemoryDump::CountResidentBytes(
 
     for (size_t i = 0; i < page_count; i++)
       resident_page_count += vec[i].VirtualAttributes.Valid;
-#elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_BSD)
+#elif BUILDFLAG(IS_FUCHSIA)
     // TODO(crbug.com/851760): Implement counting resident bytes.
     // For now, log and avoid unused variable warnings.
     NOTIMPLEMENTED_LOG_ONCE();
