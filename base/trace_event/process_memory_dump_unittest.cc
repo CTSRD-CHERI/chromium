@@ -44,7 +44,11 @@ void* Map(size_t size) {
                         PAGE_READWRITE);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return ::mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON,
+#if BUILDFLAG(IS_BSD)
+                -1, 0);
+#else
                 0, 0);
+#endif
 #endif
 }
 
