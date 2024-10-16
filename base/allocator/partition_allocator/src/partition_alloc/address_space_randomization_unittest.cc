@@ -146,7 +146,11 @@ void RandomBitCorrelation(int random_bit) {
   constexpr int kHistory = 8;
   constexpr int kRepeats = 10000;
 #endif
+#if defined(__CHERI_PURE_CAPABILITY__)
+  constexpr int kPointerBits = 8 * sizeof(ptraddr_t);
+#else   // !__CHERI_PURE_CAPABILITY__
   constexpr int kPointerBits = 8 * sizeof(void*);
+#endif  // !__CHERI_PURE_CAPABILITY__
   uintptr_t history[kHistory];
   // The predictor bit is either constant 0 or 1, or one of the bits from the
   // history.
