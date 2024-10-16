@@ -25,7 +25,11 @@ enum class DataType {
 
 struct DataOrder {
   DataType type;
+#if defined(__CHERI_PURE_CAPABILITY__)
+  uintptr_t value;
+#else   // !__CHERI_PURE_CAPABILITY__
   uint64_t value;
+#endif  // !__CHERI_PURE_CAPABILITY__
 };
 
 TEST(BoxByteStreamTest, Default) {
@@ -44,8 +48,13 @@ TEST(BoxByteStreamTest, Default) {
       {DataType::kType_8, 0x28},
       {DataType::kType_16, 0x0},
       {DataType::kType_32, 0x0},
+#if defined(__CHERI_PURE_CAPABILITY__)
+      {DataType::kType_String, reinterpret_cast<uintptr_t>("")},
+      {DataType::kType_String, reinterpret_cast<uintptr_t>("abcdabcd")}};
+#else   // !__CHERI_PURE_CAPABILITY__
       {DataType::kType_String, reinterpret_cast<uint64_t>("")},
       {DataType::kType_String, reinterpret_cast<uint64_t>("abcdabcd")}};
+#endif  // !__CHERI_PURE_CAPABILITY__
   for (auto& data : test_data) {
     switch (data.type) {
       case DataType::kPlaceHolder:
