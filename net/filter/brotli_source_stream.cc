@@ -4,6 +4,9 @@
 
 #include "net/filter/brotli_source_stream.h"
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+#include "base/bits.h"
+#endif   // __CHERI_PURE_CAPABILITY__
 #include "base/bit_cast.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -145,22 +148,36 @@ class BrotliSourceStream : public FilterSourceStream {
   }
 
   void* AllocateMemoryInternal(size_t size) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    size_t* array = reinterpret_cast<size_t*>(malloc(size +
+        base::bits::AlignUp(sizeof(size_t), alignof(max_align_t))));
+#else   // !__CHERI_PURE_CAPABILITY__
     size_t* array = reinterpret_cast<size_t*>(malloc(size + sizeof(size_t)));
+#endif  // !__CHERI_PURE_CAPABILITY__
     if (!array)
       return nullptr;
     used_memory_ += size;
     if (used_memory_maximum_ < used_memory_)
       used_memory_maximum_ = used_memory_;
     array[0] = size;
+#if defined(__CHERI_PURE_CAPABILITY__)
+    return base::bits::AlignUp(reinterpret_cast<char*>(array) + size, alignof(max_align_t));
+#else   // !__CHERI_PURE_CAPABILITY__
     return &array[1];
+#endif  // !__CHERI_PURE_CAPABILITY__
   }
 
   void FreeMemoryInternal(void* address) {
     if (!address)
       return;
     size_t* array = reinterpret_cast<size_t*>(address);
+#if defined(__CHERI_PURE_CAPABILITY__)
+    used_memory_ -= array[-1];
+    free(base::bits::AlignUp(reinterpret_cast<char*>(array), alignof(max_align_t)));
+#else   // !__CHERI_PURE_CAPABILITY__
     used_memory_ -= array[-1];
     free(&array[-1]);
+#endif  // !__CHERI_PURE_CAPABILITY__
   }
 
   raw_ptr<BrotliDecoderState, DanglingUntriaged> brotli_state_;
