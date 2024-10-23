@@ -44,6 +44,9 @@ class BASE_EXPORT PickleIterator {
   [[nodiscard]] bool ReadUInt32(uint32_t* result);
   [[nodiscard]] bool ReadInt64(int64_t* result);
   [[nodiscard]] bool ReadUInt64(uint64_t* result);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  [[nodiscard]] bool ReadUIntptr(uintptr_t* result);
+#endif   // __CHERI_PURE_CAPABILITY__
   [[nodiscard]] bool ReadFloat(float* result);
   [[nodiscard]] bool ReadDouble(double* result);
   [[nodiscard]] bool ReadString(std::string* result);
@@ -254,6 +257,9 @@ class BASE_EXPORT Pickle {
   void WriteUInt32(uint32_t value) { WritePOD(value); }
   void WriteInt64(int64_t value) { WritePOD(value); }
   void WriteUInt64(uint64_t value) { WritePOD(value); }
+#if defined(__CHERI_PURE_CAPABILITY__)
+  void WriteUIntptr(uintptr_t value);
+#endif   // !__CHERI_PURE_CAPABILITY__
   void WriteFloat(float value) { WritePOD(value); }
   void WriteDouble(double value) { WritePOD(value); }
   void WriteString(std::string_view value);
@@ -270,6 +276,9 @@ class BASE_EXPORT Pickle {
   // TODO(https://crbug.com/40284755): Migrate callers to the span version.
   void WriteBytes(const void* data, size_t length);
   void WriteBytes(span<const uint8_t> data);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  void WriteBytesAligned(const void* data, size_t length, size_t align);
+#endif   // __CHERI_PURE_CAPABILITY__
 
   // WriteAttachment appends |attachment| to the pickle. It returns
   // false iff the set is full or if the Pickle implementation does not support
@@ -400,6 +409,9 @@ class BASE_EXPORT Pickle {
   }
 
   inline void* ClaimUninitializedBytesInternal(size_t num_bytes);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  inline void* ClaimAlignedUninitializedBytesInternal(size_t num_bytes, size_t align);
+#endif   // !__CHERI_PURE_CAPABILITY__
   inline void WriteBytesCommon(span<const uint8_t> data);
 
   FRIEND_TEST_ALL_PREFIXES(PickleTest, DeepCopyResize);
