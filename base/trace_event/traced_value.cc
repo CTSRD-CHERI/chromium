@@ -64,7 +64,11 @@ const bool kStackTypeArray = true;
 
 inline void WriteKeyNameAsRawPtr(Pickle& pickle, const char* ptr) {
   pickle.WriteBytes(&kTypeCStr, 1);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  pickle.WriteUIntptr(reinterpret_cast<uintptr_t>(ptr));
+#else   // !__CHERI_PURE_CAPABILITY__
   pickle.WriteUInt64(static_cast<uint64_t>(reinterpret_cast<uintptr_t>(ptr)));
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 inline void WriteKeyNameWithCopy(Pickle& pickle, base::StringPiece str) {
@@ -77,9 +81,15 @@ std::string ReadKeyName(PickleIterator& pickle_iterator) {
   bool res = pickle_iterator.ReadBytes(&type, 1);
   std::string key_name;
   if (res && *type == kTypeCStr) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    uintptr_t ptr_value = 0;
+    res = pickle_iterator.ReadUIntptr(&ptr_value);
+    key_name = reinterpret_cast<const char*>(ptr_value);
+#else   // !__CHERI_PURE_CAPABILITY__
     uint64_t ptr_value = 0;
     res = pickle_iterator.ReadUInt64(&ptr_value);
     key_name = reinterpret_cast<const char*>(static_cast<uintptr_t>(ptr_value));
+#endif  // !__CHERI_PURE_CAPABILITY__
   } else if (res && *type == kTypeString) {
     res = pickle_iterator.ReadString(&key_name);
   }

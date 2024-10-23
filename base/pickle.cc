@@ -40,12 +40,22 @@ inline bool PickleIterator::ReadBuiltinType(Type* result) {
 
 #if defined(__CHERI_PURE_CAPABILITY__)
 template <>
-inline bool PickleIterator::ReadBuiltinType(intptr_t* result) {
-  const char* read_from = GetReadPointerAndAdvance<intptr_t>();
-  if (!read_from)
-    return false;
-  memcpy(result, __builtin_align_up(read_from, alignof(intptr_t)), sizeof(*result));
-  return true;
+inline const char* PickleIterator::GetReadPointerAndAdvance<uintptr_t>() {
+  const char* current_read_ptr = payload_ + read_index_;
+  const char* aligned_current_read_ptr =
+      __builtin_align_up(current_read_ptr, alignof(max_align_t));
+
+  if (aligned_current_read_ptr > payload_ + end_index_) {
+    read_index_ = end_index_;
+    return nullptr;
+  }
+
+  ptraddr_t delta =
+      static_cast<ptraddr_t>(reinterpret_cast<uintptr_t>(aligned_current_read_ptr)) -
+      static_cast<ptraddr_t>(reinterpret_cast<uintptr_t>(current_read_ptr));
+  DCHECK(__builtin_is_aligned(payload_ + read_index_ + delta, alignof(max_align_t)));
+  Advance(delta + sizeof(uintptr_t));
+  return aligned_current_read_ptr;
 }
 
 template <>
@@ -53,7 +63,7 @@ inline bool PickleIterator::ReadBuiltinType(uintptr_t* result) {
   const char* read_from = GetReadPointerAndAdvance<uintptr_t>();
   if (!read_from)
     return false;
-  memcpy(result, __builtin_align_up(read_from, alignof(uintptr_t)), sizeof(*result));
+  memcpy(result, read_from, sizeof(*result));
   return true;
 }
 #endif   // __CHERI_PURE_CAPABILITY__
@@ -135,13 +145,7 @@ bool PickleIterator::ReadUInt64(uint64_t* result) {
 }
 
 #if defined(__CHERI_PURE_CAPABILITY__)
-bool PickleIterator::ReadIntptr(intptr_t* result) {
-  read_index_ = __builtin_align_up(read_index_, alignof(max_align_t));
-  return ReadBuiltinType(result);
-}
-
 bool PickleIterator::ReadUIntptr(uintptr_t* result) {
-  read_index_ = __builtin_align_up(read_index_, alignof(max_align_t));
   return ReadBuiltinType(result);
 }
 #endif   // __CHERI_PURE_CAPABILITY__
@@ -332,10 +336,6 @@ Pickle& Pickle::operator=(const Pickle& other) {
 }
 
 #if defined(__CHERI_PURE_CAPABILITY__)
-void Pickle::WriteIntptr(const intptr_t value) {
-  WriteBytesAligned(&value, sizeof(value), alignof(max_align_t));
-}
-
 void Pickle::WriteUIntptr(const uintptr_t  value) {
   WriteBytesAligned(&value, sizeof(value), alignof(max_align_t));
 }
@@ -369,7 +369,10 @@ inline void* Pickle::ClaimAlignedUninitializedBytesInternal(size_t length, size_
   DCHECK_LE(data_len, std::numeric_limits<uint32_t>::max());
 #endif
   DCHECK_LE(write_offset_, std::numeric_limits<uint32_t>::max() - data_len);
-  write_offset_ += __builtin_align_up(mutable_payload(), alignof(max_align_t)) - mutable_payload();
+  write_offset_ =
+      __builtin_align_up(write_offset_ + header_size_, alignof(max_align_t)) -
+      header_size_;
+  DCHECK(__builtin_is_aligned(write_offset_ + header_size_, alignof(max_align_t)));
   size_t new_size = write_offset_ + data_len;
   if (new_size > capacity_after_header_) {
     size_t new_capacity = capacity_after_header_ * 2;
@@ -382,6 +385,7 @@ inline void* Pickle::ClaimAlignedUninitializedBytesInternal(size_t length, size_
   }
 
   char* write = mutable_payload() + write_offset_;
+  DCHECK(__builtin_is_aligned(write, alignof(max_align_t)));
   memset(write + length, 0, data_len - length);  // Always initialize padding
   header_->payload_size = static_cast<uint32_t>(new_size);
   write_offset_ = new_size;

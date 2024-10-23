@@ -43,7 +43,6 @@ class BASE_EXPORT PickleIterator {
   [[nodiscard]] bool ReadInt64(int64_t* result);
   [[nodiscard]] bool ReadUInt64(uint64_t* result);
 #if defined(__CHERI_PURE_CAPABILITY__)
-  [[nodiscard]] bool ReadIntptr(intptr_t* result);
   [[nodiscard]] bool ReadUIntptr(uintptr_t* result);
 #endif   // __CHERI_PURE_CAPABILITY__
   [[nodiscard]] bool ReadFloat(float* result);
@@ -217,7 +216,6 @@ class BASE_EXPORT Pickle {
   void WriteInt64(int64_t value) { WritePOD(value); }
   void WriteUInt64(uint64_t value) { WritePOD(value); }
 #if defined(__CHERI_PURE_CAPABILITY__)
-  void WriteIntptr(intptr_t value);
   void WriteUIntptr(uintptr_t value);
 #endif   // !__CHERI_PURE_CAPABILITY__
   void WriteFloat(float value) { WritePOD(value); }
