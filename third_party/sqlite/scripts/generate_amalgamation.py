@@ -150,16 +150,18 @@ def _do_configure(config_name):
     configure = os.path.join(_SQLITE_SRC_DIR, 'configure')
     build_flags = ' '.join(
         ['-D' + f for f in _read_configuration_values(config_name)])
-    cflags = '-Os {} {}'.format(build_flags, _icu_cpp_flags())
-    ldflags = _icu_ld_flags()
+    cflags = '-Os {} {}'.format(build_flags, _icu_cpp_flags().decode('utf-8').rstrip())
+    ldflags = _icu_ld_flags().decode('utf-8').rstrip()
 
     cmd = [
         configure,
         'CFLAGS={}'.format(cflags),
         'LDFLAGS={}'.format(ldflags),
         '--disable-load-extension',
+        '--disable-editline',
         '--enable-amalgamation',
         '--enable-threadsafe',
+        '--with-readline-inc=/usr/local/include',
     ]
     subprocess.check_call(cmd)
 
