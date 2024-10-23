@@ -216,7 +216,11 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   // collisions are less of a worry than they would otherwise be.
   struct SimplePtrHashTraits : public GenericHashTraits<const void*> {
     static unsigned GetHash(const void* key) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+      ptraddr_t k = reinterpret_cast<ptraddr_t>(key);
+#else   // !__CHERI_PURE_CAPABILITY__
       uintptr_t k = reinterpret_cast<uintptr_t>(key);
+#endif  // !__CHERI_PURE_CAPABILITY__
       return static_cast<unsigned>(k ^ (k >> 8));
     }
   };
