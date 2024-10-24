@@ -51,8 +51,18 @@ namespace {
 
 // Use a machine-sized pointer as atomic type. It will use the Atomic32 or
 // Atomic64 routines, depending on the architecture.
+#if defined(__CHERI_PURE_CAPABILITY__)
+#ifdef ARCH_CPU_64_BITS
+typedef int64_t AtomicType;
+typedef int64_t UAtomicType;
+#else // !ARCH_CPU_64_BITS
+typedef int32_t AtomicType;
+typedef int32_t UAtomicType;
+#endif // !ARCH_CPU_64_BITS
+#else   // !__CHERI_PURE_CAPABILITY__
 typedef intptr_t AtomicType;
 typedef uintptr_t UAtomicType;
+#endif  // !__CHERI_PURE_CAPABILITY__
 
 // Template specialization for timestamp serialization/deserialization. This
 // is used to serialize timestamps using Unix time on systems where AtomicType
