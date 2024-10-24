@@ -180,7 +180,7 @@ uintptr_t SystemAllocPagesInternal(uintptr_t hint,
   int access_flag = GetAccessFlags(accessibility);
 #if defined (__FreeBSD__)
   // Set the maximum protections for the mmaped memory.
-  access_flag |= PROT_MAX(PROT_READ | PROT_WRITE);
+  access_flag |= PROT_MAX(PROT_READ | PROT_WRITE | PROT_EXEC);
 #endif    // __FreeBSD__
 #if defined (__CHERI_PURE_CAPABILITY__)
   // On CHERI architectures set PROT_WRITE so that the mapped memory gains
