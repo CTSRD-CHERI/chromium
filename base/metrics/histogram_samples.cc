@@ -260,11 +260,7 @@ void HistogramSamples::Subtract(const HistogramSamples& other) {
 }
 
 void HistogramSamples::Extract(HistogramSamples& other) {
-#if defined(__CHERI_PURE_CAPABILITY__)
-  static_assert(sizeof(other.meta_->sum) == 16);
-#else // defined(__CHERI_PURE_CAPABILITY__)
   static_assert(sizeof(other.meta_->sum) == 8);
-#endif // defined(__CHERI_PURE_CAPABILITY__)
 
 #ifdef ARCH_CPU_64_BITS
   // NoBarrier_AtomicExchange() is only defined for 64-bit types if
