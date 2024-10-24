@@ -65,7 +65,11 @@ typedef int32_t Atomic32;
 // http://code.google.com/p/nativeclient/issues/detail?id=1162
 typedef int64_t Atomic64;
 #else
+#if defined(__CHERI_PURE_CAPABILITY__)
+typedef int64_t Atomic64;
+#else   // !__CHERI_PURE_CAPABILITY__
 typedef intptr_t Atomic64;
+#endif  // !__CHERI_PURE_CAPABILITY__
 #endif
 #endif
 

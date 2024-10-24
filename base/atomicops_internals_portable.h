@@ -138,22 +138,14 @@ inline Atomic64 NoBarrier_AtomicExchange(volatile Atomic64* ptr,
 }
 
 inline Atomic64 NoBarrier_AtomicIncrement(volatile Atomic64* ptr,
-#if defined(__CHERI_PURE_CAPABILITY__)
-                                          Atomic64 increment __attribute__((cheri_no_provenance))) {
-#else // defined(__CHERI_PURE_CAPABILITY__)
                                           Atomic64 increment) {
-#endif // defined(__CHERI_PURE_CAPABILITY__)
   return increment +
          ((AtomicLocation64)ptr)
              ->fetch_add(increment, std::memory_order_relaxed);
 }
 
 inline Atomic64 Barrier_AtomicIncrement(volatile Atomic64* ptr,
-#if defined(__CHERI_PURE_CAPABILITY__)
-                                        Atomic64 increment __attribute__((cheri_no_provenance))) {
-#else // defined(__CHERI_PURE_CAPABILITY__)
                                         Atomic64 increment) {
-#endif // defined(__CHERI_PURE_CAPABILITY__)
   return increment + ((AtomicLocation64)ptr)->fetch_add(increment);
 }
 
@@ -196,6 +188,90 @@ inline Atomic64 Acquire_Load(volatile const Atomic64* ptr) {
 }
 
 #endif  // defined(ARCH_CPU_64_BITS)
+
+#if defined(__CHERI_PURE_CAPABILITY__)
+typedef volatile std::atomic<AtomicWord>* AtomicLocationIntptr;
+static_assert(sizeof(*(AtomicLocationIntptr) nullptr) == sizeof(AtomicWord),
+              "incompatible intptr atomic layout");
+
+inline AtomicWord NoBarrier_CompareAndSwap(volatile AtomicWord* ptr,
+                                         AtomicWord old_value,
+                                         AtomicWord new_value) {
+  ((AtomicLocationIntptr)ptr)
+      ->compare_exchange_strong(old_value,
+                                new_value,
+                                std::memory_order_relaxed,
+                                std::memory_order_relaxed);
+  return old_value;
+}
+
+inline AtomicWord NoBarrier_AtomicExchange(volatile AtomicWord* ptr,
+                                         AtomicWord new_value) {
+  return ((AtomicLocationIntptr)ptr)
+      ->exchange(new_value, std::memory_order_relaxed);
+}
+
+inline AtomicWord NoBarrier_AtomicIncrement(volatile AtomicWord* ptr,
+                                              AtomicWord increment) {
+  return ((AtomicLocationIntptr)ptr)
+             ->fetch_add(increment, std::memory_order_relaxed) +
+#if defined(ARCH_CPU_64_BITS)
+	     static_cast<Atomic64>(increment);
+#else
+	     static_cast<Atomic32>(increment);
+#endif
+}
+
+inline AtomicWord Barrier_AtomicIncrement(volatile AtomicWord* ptr,
+                                            AtomicWord increment) {
+  return ((AtomicLocationIntptr)ptr)->fetch_add(increment) +
+#if defined(ARCH_CPU_64_BITS)
+	     static_cast<Atomic64>(increment);
+#else
+	     static_cast<Atomic32>(increment);
+#endif
+}
+
+inline AtomicWord Acquire_CompareAndSwap(volatile AtomicWord* ptr,
+                                           AtomicWord old_value,
+                                           AtomicWord new_value) {
+  ((AtomicLocationIntptr)ptr)
+      ->compare_exchange_strong(old_value,
+                                new_value,
+                                std::memory_order_acquire,
+                                std::memory_order_acquire);
+  return old_value;
+}
+
+inline AtomicWord Release_CompareAndSwap(volatile AtomicWord* ptr,
+                                           AtomicWord old_value,
+                                           AtomicWord new_value) {
+  ((AtomicLocationIntptr)ptr)
+      ->compare_exchange_strong(old_value,
+                                new_value,
+                                std::memory_order_release,
+                                std::memory_order_relaxed);
+  return old_value;
+}
+
+inline void NoBarrier_Store(volatile AtomicWord* ptr, AtomicWord value) {
+  ((AtomicLocationIntptr)ptr)->store(value, std::memory_order_relaxed);
+}
+
+inline void Release_Store(volatile AtomicWord* ptr, AtomicWord value) {
+  ((AtomicLocationIntptr)ptr)->store(value, std::memory_order_release);
+}
+
+inline AtomicWord NoBarrier_Load(volatile const AtomicWord* ptr) {
+  return ((AtomicLocationIntptr)ptr)->load(std::memory_order_relaxed);
+}
+
+inline AtomicWord Acquire_Load(volatile const AtomicWord* ptr) {
+  return ((AtomicLocationIntptr)ptr)->load(std::memory_order_acquire);
+}
+
+#endif   // __CHERI_PURE_CAPABILITY__
+
 }  // namespace subtle
 }  // namespace base
 
