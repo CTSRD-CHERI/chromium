@@ -42,7 +42,11 @@ static_assert(sizeof(void*) != 8, "");
 
 #if BUILDFLAG(HAS_64_BIT_POINTERS) && \
     (defined(__ARM_NEON) || defined(__ARM_NEON__)) && defined(__ARM_FP)
+#if defined(__CHERI_PURE_CAPABILITY__)
+#define PA_CONFIG_STARSCAN_NEON_SUPPORTED() 0
+#else   // !__CHERI_PURE_CAPABILITY__
 #define PA_CONFIG_STARSCAN_NEON_SUPPORTED() 1
+#endif  // !__CHERI_PURE_CAPABILITY__
 #else
 #define PA_CONFIG_STARSCAN_NEON_SUPPORTED() 0
 #endif
