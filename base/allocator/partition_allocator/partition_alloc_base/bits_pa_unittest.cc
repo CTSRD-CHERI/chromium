@@ -57,7 +57,8 @@ TEST(BitsTest, AlignUp) {
   EXPECT_EQ(4096ul, AlignUp(4095, 4096));
   EXPECT_EQ(8192ul, AlignUp(4097, 4096));
   EXPECT_EQ(kSizeTMax - 31, AlignUp(kSizeTMax - 62, 32));
-  EXPECT_EQ(kSizeTMax / 2 + 1, AlignUp(1, kSizeTMax / 2 + 1));
+  EXPECT_EQ(kSizeTMax / 2 + 1,
+            AlignUp(static_cast<size_t>(1), kSizeTMax / 2 + 1));
 }
 
 TEST(BitsTest, AlignUpPointer) {
