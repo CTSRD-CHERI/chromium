@@ -670,7 +670,11 @@ TEST_F(ProcessUtilTest, MAYBE_GetTerminationStatusCrash) {
   int signaled = WIFSIGNALED(exit_code);
   EXPECT_NE(0, signaled);
   int signal = WTERMSIG(exit_code);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_EQ(SIGPROT, signal);
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_EQ(SIGSEGV, signal);
+#endif  // !__CHERI_PURE_CAPABILITY__
 #endif
 
   // Reset signal handlers back to "normal".
