@@ -19,6 +19,10 @@
 #include "base/pickle.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
+    
+#if BUILDFLAG(IS_BSD)
+#include <sys/ucred.h>
+#endif
 
 namespace base {
 
@@ -212,8 +216,15 @@ ssize_t UnixDomainSocket::RecvMsgWithFlags(int fd,
     if (getsockopt(fd, SOL_LOCAL, LOCAL_PEERPID, &pid, &pid_size) != 0)
       pid = -1;
 #elif BUILDFLAG(IS_BSD)
-    NOTIMPLEMENTED();
-    pid = -1;
+    struct xucred cred;
+    socklen_t cred_len;
+    memset (&cred, 0, sizeof (cred));
+    cred_len = sizeof (cred);
+    if (getsockopt(fd, SOL_LOCAL, LOCAL_PEERCRED, &cred, &cred_len) != 0) {
+      pid = -1;
+    } else {
+      pid = cred.cr_pid;
+    }
 #else
     // |pid| will legitimately be -1 if we read EOF, so only DCHECK if we
     // actually received a message.  Unfortunately, Linux allows sending zero
