@@ -38,10 +38,18 @@ static bool CompareParameter(const ReplacementOffset& elem1,
 
 // Assuming that a pointer is the size of a "machine word", then
 // uintptr_t is an integer type that is also a machine word.
+#if defined(__CHERI_PURE_CAPABILITY__)
+using MachineWord = ptraddr_t;
+#else   // !__CHERI_PURE_CAPABILITY__
 using MachineWord = uintptr_t;
+#endif  // !__CHERI_PURE_CAPABILITY__
 
 inline bool IsMachineWordAligned(const void* pointer) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  return !(reinterpret_cast<uintptr_t>(pointer) & (sizeof(uintptr_t) - 1));
+#else   // !__CHERI_PURE_CAPABILITY__
   return !(reinterpret_cast<MachineWord>(pointer) & (sizeof(MachineWord) - 1));
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 template <typename T, typename CharT = typename T::value_type>
