@@ -37,7 +37,11 @@ bool IsInFreeList(DiscardableSharedMemoryHeap::Span* span) {
 
 DiscardableSharedMemoryHeap::Span::Span(
     base::DiscardableSharedMemory* shared_memory,
+#if defined(__CHERI_PURE_CAPABILITY__)
+    uintptr_t start,
+#else   // !__CHERI_PURE_CAPABILITY__
     size_t start,
+#endif  // !__CHERI_PURE_CAPABILITY__
     size_t length,
     DiscardableSharedMemoryHeap::ScopedMemorySegment* memory_segment)
     : memory_segment_(memory_segment),

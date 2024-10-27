@@ -44,7 +44,11 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
     ~Span() = default;
 
     base::DiscardableSharedMemory* shared_memory() { return shared_memory_; }
+#if defined(__CHERI_PURE_CAPABILITY__)
+    uintptr_t start() const { return start_; }
+#else   // !__CHERI_PURE_CAPABILITY__
     size_t start() const { return start_; }
+#endif  // !__CHERI_PURE_CAPABILITY__
     size_t length() const { return length_; }
     void set_is_locked(bool is_locked) { is_locked_ = is_locked; }
 
@@ -61,7 +65,11 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
     friend class DiscardableSharedMemoryHeap;
 
     Span(base::DiscardableSharedMemory* shared_memory,
+#if defined(__CHERI_PURE_CAPABILITY__)
+         uintptr_t start,
+#else   // !__CHERI_PURE_CAPABILITY__
          size_t start,
+#endif  // !__CHERI_PURE_CAPABILITY__
          size_t length,
          DiscardableSharedMemoryHeap::ScopedMemorySegment* memory_segment);
 
@@ -69,7 +77,11 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
                   DanglingUntriaged>
         memory_segment_;
     raw_ptr<base::DiscardableSharedMemory> shared_memory_;
+#if defined(__CHERI_PURE_CAPABILITY__)
+    uintptr_t start_;
+#else   // !__CHERI_PURE_CAPABILITY__
     size_t start_;
+#endif  // !__CHERI_PURE_CAPABILITY__
     size_t length_;
     bool is_locked_;
   };
