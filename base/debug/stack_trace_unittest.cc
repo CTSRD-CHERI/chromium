@@ -201,7 +201,11 @@ TEST_F(StackTraceTest, itoa_r) {
   EXPECT_EQ("-1", itoa_r_wrapper(-1, 128, 10, 0));
 
   // Test edge cases.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  if (sizeof(ssize_t) == 4) {
+#else   // !__CHERI_PURE_CAPABILITY__
   if (sizeof(intptr_t) == 4) {
+#endif // !__CHERI_PURE_CAPABILITY__
     EXPECT_EQ("ffffffff", itoa_r_wrapper(-1, 128, 16, 0));
     EXPECT_EQ("-2147483648",
               itoa_r_wrapper(std::numeric_limits<intptr_t>::min(), 128, 10, 0));
@@ -212,7 +216,11 @@ TEST_F(StackTraceTest, itoa_r) {
               itoa_r_wrapper(std::numeric_limits<intptr_t>::min(), 128, 16, 0));
     EXPECT_EQ("7fffffff",
               itoa_r_wrapper(std::numeric_limits<intptr_t>::max(), 128, 16, 0));
+#if defined(__CHERI_PURE_CAPABILITY__)
+  } else if (sizeof(ssize_t) == 8) {
+#else   // !__CHERI_PURE_CAPABILITY__
   } else if (sizeof(intptr_t) == 8) {
+#endif // !__CHERI_PURE_CAPABILITY__
     EXPECT_EQ("ffffffffffffffff", itoa_r_wrapper(-1, 128, 16, 0));
     EXPECT_EQ("-9223372036854775808",
               itoa_r_wrapper(std::numeric_limits<intptr_t>::min(), 128, 10, 0));
