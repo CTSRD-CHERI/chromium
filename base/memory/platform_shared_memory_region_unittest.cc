@@ -252,7 +252,7 @@ void CheckReadOnlyMapProtection(void* addr) {
   ASSERT_EQ(kr, KERN_SUCCESS);
   EXPECT_EQ(basic_info.protection & VM_PROT_ALL, VM_PROT_READ);
   EXPECT_EQ(basic_info.max_protection & VM_PROT_ALL, VM_PROT_READ);
-#elif BUILDFLAG(IS_POSIX)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_BSD)
   std::string proc_maps;
   ASSERT_TRUE(base::debug::ReadProcMaps(&proc_maps));
   std::vector<base::debug::MappedMemoryRegion> regions;
