@@ -39,6 +39,10 @@ config("common_sqlite3_compile_options") {
     # a source of cross-platform variation, and saves us from having to reason
     # about SQLite storing data in the operating system's temporary directory.
     "SQLITE_TEMP_STORE=3",
+
+    # The sqlite cheriabi introduces several changes that use the int64_t
+    # type, therefore HAVE_STDINT_H must be explicitly defined.
+    "HAVE_STDINT_H",
   ]
 
   # On OSX, SQLite has extra logic for detecting the use of network
