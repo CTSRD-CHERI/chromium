@@ -30,7 +30,11 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#if BUILDFLAG(IS_BSD)
+#include <event2/event.h>
+#else
 #include "third_party/libevent/event.h"
+#endif
 
 #if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
 #include "base/message_loop/message_pump_epoll.h"

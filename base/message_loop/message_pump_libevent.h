@@ -17,7 +17,12 @@
 #include "base/message_loop/message_pump_buildflags.h"
 #include "base/message_loop/watchable_io_message_pump_posix.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
+#if BUILDFLAG(IS_BSD)
+#include <event2/event.h>
+#else
 #include "third_party/libevent/event.h"
+#endif
 
 // Declare structs we need from libevent.h rather than including it
 struct event_base;
