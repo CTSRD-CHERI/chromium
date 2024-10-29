@@ -92,12 +92,8 @@ class BASE_EXPORT HistogramSamples {
   // Because of how this is used in persistent memory, it must be a POD object
   // that makes sense when initialized to all zeros.
   struct Metadata {
-#if defined(__CHERI_PURE_CAPABILITY__)
-    static constexpr size_t kExpectedInstanceSize = 32;
-#else // defined(__CHERI_PURE_CAPABILITY__)
     // Expected size for 32/64-bit check.
     static constexpr size_t kExpectedInstanceSize = 24;
-#endif // defined(__CHERI_PURE_CAPABILITY__)
 
     // Initialized when the sample-set is first created with a value provided
     // by the caller. It is generally used to identify the sample-set across
