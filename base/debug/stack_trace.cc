@@ -27,6 +27,10 @@
 #include <pthread.h>
 #endif
 
+#if BUILDFLAG(IS_BSD)
+#include <sys/sysctl.h>
+#endif
+
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(__GLIBC__)
 extern "C" void* __libc_stack_end;
 #endif
@@ -200,6 +204,15 @@ uintptr_t GetStackEnd() {
   // No easy way to get end of the stack for non-main threads,
   // see crbug.com/617730.
   return reinterpret_cast<uintptr_t>(pthread_get_stackaddr_np(pthread_self()));
+#elif BUILDFLAG(IS_BSD)
+  char *_stacktop;
+  int mib[2];
+  size_t len;
+  mib[0] = CTL_KERN;
+  mib[1] = KERN_USRSTACK;
+  if (sysctl(mib, 2, &_stacktop, &len, NULL, 0) == -1)
+    return 0;
+  return reinterpret_cast<uintptr_t>(_stacktop);
 #else
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(__GLIBC__)
