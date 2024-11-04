@@ -70,7 +70,7 @@ const char kDesktop[] =
     "X11; CrOS x86_64 14541.0.0"
 #elif BUILDFLAG(IS_FUCHSIA)
     "Fuchsia"
-#elif BUILDFLAG(IS_LINUX)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
     "X11; Linux x86_64"
 #elif BUILDFLAG(IS_MAC)
     "Macintosh; Intel Mac OS X 10_15_7"

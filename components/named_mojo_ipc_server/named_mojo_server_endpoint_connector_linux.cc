@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "build/buildflag.h"
 #include "base/check.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/functional/callback_forward.h"
@@ -22,6 +23,11 @@
 #include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
+
+#if BUILDFLAG(IS_BSD)
+#include <sys/types.h>
+#include <sys/un.h>
+#endif
 
 namespace named_mojo_ipc_server {
 namespace {
@@ -84,12 +90,20 @@ void NamedMojoServerEndpointConnectorLinux::OnSocketReady() {
 
   auto info = std::make_unique<ConnectionInfo>();
   socklen_t len = sizeof(info->credentials);
+#if BUILDFLAG(IS_BSD)
+  if (getsockopt(connection_fd.get(), 0, LOCAL_PEERCRED,
+#else
   if (getsockopt(connection_fd.get(), SOL_SOCKET, SO_PEERCRED,
+#endif
                  &info->credentials, &len) != 0) {
     PLOG(ERROR) << "getsockopt failed.";
     return;
   }
+#if BUILDFLAG(IS_BSD)
+  info->pid = info->credentials.cr_pid;
+#else
   info->pid = info->credentials.pid;
+#endif
 
   mojo::PlatformChannelEndpoint endpoint(
       mojo::PlatformHandle(std::move(connection_fd)));

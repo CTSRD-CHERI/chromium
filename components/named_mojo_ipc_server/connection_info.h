@@ -13,8 +13,10 @@
 #include "base/win/scoped_handle.h"
 #elif BUILDFLAG(IS_MAC)
 #include <bsm/libbsm.h>
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
+#elif BUILDFLAG(IS_LINUX)
 #include <sys/socket.h>
+#elif BUILDFLAG(IS_BSD)
+#include <sys/ucred.h>
 #endif
 
 namespace named_mojo_ipc_server {
@@ -32,8 +34,10 @@ struct ConnectionInfo {
   absl::optional<base::win::ScopedHandle> impersonation_token{};
 #elif BUILDFLAG(IS_MAC)
   audit_token_t audit_token{};
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
+#elif BUILDFLAG(IS_LINUX)
   ucred credentials{};
+#elif  BUILDFLAG(IS_BSD)
+  xucred credentials{};
 #endif
 };
 
