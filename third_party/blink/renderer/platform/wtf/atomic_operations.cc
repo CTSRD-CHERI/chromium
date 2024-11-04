@@ -11,9 +11,17 @@ namespace {
 template <typename AlignmentType>
 void AtomicReadMemcpyImpl(void* to, const void* from, size_t bytes) {
   // Check alignment of |to| and |from|.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  DCHECK_EQ(0u, static_cast<AlignmentType>(reinterpret_cast<uintptr_t>(to)) &
+#else   // !__CHERI_PURE_CAPABILITY__
   DCHECK_EQ(0u, static_cast<AlignmentType>(reinterpret_cast<size_t>(to)) &
+#endif  // !__CHERI_PURE_CAPABILITY__
                     (sizeof(AlignmentType) - 1));
+#if defined(__CHERI_PURE_CAPABILITY__)
+  DCHECK_EQ(0u, static_cast<AlignmentType>(reinterpret_cast<uintptr_t>(from)) &
+#else   // !__CHERI_PURE_CAPABILITY__
   DCHECK_EQ(0u, static_cast<AlignmentType>(reinterpret_cast<size_t>(from)) &
+#endif  // !__CHERI_PURE_CAPABILITY__
                     (sizeof(AlignmentType) - 1));
   auto* sizet_to = reinterpret_cast<AlignmentType*>(to);
   const auto* sizet_from = reinterpret_cast<const AlignmentType*>(from);
@@ -42,9 +50,17 @@ void AtomicReadMemcpyImpl(void* to, const void* from, size_t bytes) {
 template <typename AlignmentType>
 void AtomicWriteMemcpyImpl(void* to, const void* from, size_t bytes) {
   // Check alignment of |to| and |from|.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  DCHECK_EQ(0u, static_cast<AlignmentType>(reinterpret_cast<uintptr_t>(to)) &
+#else   // !__CHERI_PURE_CAPABILITY__
   DCHECK_EQ(0u, static_cast<AlignmentType>(reinterpret_cast<size_t>(to)) &
+#endif  // !__CHERI_PURE_CAPABILITY__
                     (sizeof(AlignmentType) - 1));
+#if defined(__CHERI_PURE_CAPABILITY__)
+  DCHECK_EQ(0u, static_cast<AlignmentType>(reinterpret_cast<uintptr_t>(from)) &
+#else   // !__CHERI_PURE_CAPABILITY__
   DCHECK_EQ(0u, static_cast<AlignmentType>(reinterpret_cast<size_t>(from)) &
+#endif  // !__CHERI_PURE_CAPABILITY__
                     (sizeof(AlignmentType) - 1));
   auto* sizet_to = reinterpret_cast<AlignmentType*>(to);
   const auto* sizet_from = reinterpret_cast<const AlignmentType*>(from);
@@ -73,7 +89,11 @@ void AtomicWriteMemcpyImpl(void* to, const void* from, size_t bytes) {
 template <typename AlignmentType>
 void AtomicMemzeroImpl(void* buf, size_t bytes) {
   // Check alignment of |buf|.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  DCHECK_EQ(0u, static_cast<AlignmentType>(reinterpret_cast<uintptr_t>(buf)) &
+#else   // !__CHERI_PURE_CAPABILITY__
   DCHECK_EQ(0u, static_cast<AlignmentType>(reinterpret_cast<size_t>(buf)) &
+#endif  // !__CHERI_PURE_CAPABILITY__
                     (sizeof(AlignmentType) - 1));
   auto* sizet_buf = reinterpret_cast<AlignmentType*>(buf);
   for (; bytes >= sizeof(AlignmentType);
@@ -99,8 +119,13 @@ void AtomicMemzeroImpl(void* buf, size_t bytes) {
 
 void AtomicReadMemcpy(void* to, const void* from, size_t bytes) {
 #if defined(ARCH_CPU_64_BITS)
+#if defined(__CHERI_PURE_CAPABILITY__)
+  const uintptr_t mod_to = reinterpret_cast<uintptr_t>(to) & (sizeof(uintptr_t) - 1);
+  const uintptr_t mod_from = reinterpret_cast<uintptr_t>(from) & (sizeof(uintptr_t) - 1);
+#else   // !__CHERI_PURE_CAPABILITY__
   const size_t mod_to = reinterpret_cast<size_t>(to) & (sizeof(size_t) - 1);
   const size_t mod_from = reinterpret_cast<size_t>(from) & (sizeof(size_t) - 1);
+#endif  // !__CHERI_PURE_CAPABILITY__
   if (mod_to != 0 || mod_from != 0) {
     AtomicReadMemcpyImpl<uint32_t>(to, from, bytes);
     return;
@@ -111,8 +136,13 @@ void AtomicReadMemcpy(void* to, const void* from, size_t bytes) {
 
 void AtomicWriteMemcpy(void* to, const void* from, size_t bytes) {
 #if defined(ARCH_CPU_64_BITS)
+#if defined(__CHERI_PURE_CAPABILITY__)
+  const size_t mod_to = reinterpret_cast<size_t>(to) & (sizeof(uintptr_t) - 1);
+  const size_t mod_from = reinterpret_cast<size_t>(from) & (sizeof(uintptr_t) - 1);
+#else   // !__CHERI_PURE_CAPABILITY__
   const size_t mod_to = reinterpret_cast<size_t>(to) & (sizeof(size_t) - 1);
   const size_t mod_from = reinterpret_cast<size_t>(from) & (sizeof(size_t) - 1);
+#endif  // !__CHERI_PURE_CAPABILITY__
   if (mod_to != 0 || mod_from != 0) {
     AtomicWriteMemcpyImpl<uint32_t>(to, from, bytes);
     return;
@@ -123,7 +153,11 @@ void AtomicWriteMemcpy(void* to, const void* from, size_t bytes) {
 
 void AtomicMemzero(void* buf, size_t bytes) {
 #if defined(ARCH_CPU_64_BITS)
+#if defined(__CHERI_PURE_CAPABILITY__)
+  const size_t mod = reinterpret_cast<uintptr_t>(buf) & (sizeof(uintptr_t) - 1);
+#else   // !__CHERI_PURE_CAPABILITY__
   const size_t mod = reinterpret_cast<size_t>(buf) & (sizeof(size_t) - 1);
+#endif  // !__CHERI_PURE_CAPABILITY__
   if (mod != 0) {
     AtomicMemzeroImpl<uint32_t>(buf, bytes);
     return;
