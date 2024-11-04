@@ -278,12 +278,12 @@ template <>
 struct ParamTraits<intptr_t> {
   typedef intptr_t param_type;
   static void Write(base::Pickle* m, const param_type& p) {
-    m->WriteIntptr(p);
+    m->WriteUIntptr(static_cast<uintptr_t>(p));
   }
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r) {
-    return iter->ReadIntptr(r);
+    return iter->ReadUIntptr(reinterpret_cast<uintptr_t*>(r));
   }
   COMPONENT_EXPORT(IPC) static void Log(const param_type& p, std::string* l);
 };

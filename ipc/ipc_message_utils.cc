@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
-
+#include <inttypes.h>
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -378,6 +378,16 @@ void ParamTraits<long long>::Log(const param_type& p, std::string* l) {
 void ParamTraits<unsigned long long>::Log(const param_type& p, std::string* l) {
   l->append(base::NumberToString(p));
 }
+
+#if defined(__CHERI_PURE_CAPABILITY__)
+void ParamTraits<intptr_t>::Log(const param_type& p, std::string* l) {
+  l->append(base::StringPrintf("%" PRIxPTR, p));
+}
+
+void ParamTraits<uintptr_t>::Log(const param_type& p, std::string* l) {
+  l->append(base::StringPrintf("%" PRIXPTR, p));
+}
+#endif  // !__CHERI_PURE_CAPABILITY__
 
 void ParamTraits<float>::Log(const param_type& p, std::string* l) {
   l->append(base::StringPrintf("%e", p));
