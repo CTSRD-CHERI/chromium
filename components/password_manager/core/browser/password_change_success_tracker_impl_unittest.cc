@@ -151,19 +151,19 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     PasswordChangeMetricsRecorderUmaParametrizedStartEvent,
     testing::Values(
-        StartEventAndCorrespondingUmaString(
+        StartEventAndCorrespondingUmaString{
             PasswordChangeSuccessTracker::StartEvent::
                 kManualChangePasswordUrlFlow,
-            "ManualChangePasswordUrlFlow"),
-        StartEventAndCorrespondingUmaString(
+            "ManualChangePasswordUrlFlow"},
+        StartEventAndCorrespondingUmaString{
             PasswordChangeSuccessTracker::StartEvent::kManualHomepageFlow,
-            "ManualHomepageFlow"),
-        StartEventAndCorrespondingUmaString(
+            "ManualHomepageFlow"},
+        StartEventAndCorrespondingUmaString{
             PasswordChangeSuccessTracker::StartEvent::kManualUnknownFlow,
-            "ManualUnknownFlow"),
-        StartEventAndCorrespondingUmaString(
+            "ManualUnknownFlow"},
+        StartEventAndCorrespondingUmaString{
             PasswordChangeSuccessTracker::StartEvent::kManualWellKnownUrlFlow,
-            "ManualWellKnownUrlFlow")));
+            "ManualWellKnownUrlFlow"}));
 
 TEST_F(PasswordChangeMetricsRecorderUmaTest,
        RecordMultipleMetricsEventsWithDifferentDurations) {

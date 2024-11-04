@@ -561,8 +561,8 @@ TEST_P(ContentAutofillDriverTest, FormsSeen_UpdatedForm) {
 TEST_P(ContentAutofillDriverTest, FormsSeen_RemovedForm) {
   FormRendererId form_renderer_id = test::MakeFormRendererId();
   EXPECT_CALL(*manager(),
-              OnFormsSeen(IsEmpty(), ElementsAre(FormGlobalId(
-                                         frame_token(), form_renderer_id))));
+              OnFormsSeen(IsEmpty(), ElementsAre(FormGlobalId{
+                                         frame_token(), form_renderer_id})));
   driver()->renderer_events().FormsSeen(/*updated_forms=*/{},
                                         /*removed_forms=*/{form_renderer_id});
 }
@@ -586,7 +586,7 @@ TEST_P(ContentAutofillDriverTest, FormsSeen_UpdatedAndRemovedForm) {
                     &FormData::unique_renderer_id, form.unique_renderer_id),
               Field("FormData::fields", &FormData::fields,
                     SizeIs(form.fields.size())))),
-          ElementsAre(FormGlobalId(frame_token(), other_form_renderer_id))));
+          ElementsAre(FormGlobalId{frame_token(), other_form_renderer_id})));
   driver()->renderer_events().FormsSeen(
       /*updated_forms=*/{form},
       /*removed_forms=*/{other_form_renderer_id});
