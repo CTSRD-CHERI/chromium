@@ -161,7 +161,8 @@ class BrotliSourceStream : public FilterSourceStream {
       used_memory_maximum_ = used_memory_;
     array[0] = size;
 #if defined(__CHERI_PURE_CAPABILITY__)
-    return base::bits::AlignUp(reinterpret_cast<char*>(array) + size, alignof(max_align_t));
+    return base::bits::AlignUp(
+        reinterpret_cast<char*>(array) + sizeof(size_t), alignof(max_align_t));
 #else   // !__CHERI_PURE_CAPABILITY__
     return &array[1];
 #endif  // !__CHERI_PURE_CAPABILITY__
@@ -170,14 +171,14 @@ class BrotliSourceStream : public FilterSourceStream {
   void FreeMemoryInternal(void* address) {
     if (!address)
       return;
-    size_t* array = reinterpret_cast<size_t*>(address);
 #if defined(__CHERI_PURE_CAPABILITY__)
-    used_memory_ -= array[-1];
-    free(base::bits::AlignUp(reinterpret_cast<char*>(array), alignof(max_align_t)));
+    uintptr_t* array = reinterpret_cast<uintptr_t*>(address);
+    used_memory_ -= static_cast<size_t>(array[-1]);
 #else   // !__CHERI_PURE_CAPABILITY__
+    size_t* array = reinterpret_cast<size_t*>(address);
     used_memory_ -= array[-1];
-    free(&array[-1]);
 #endif  // !__CHERI_PURE_CAPABILITY__
+    free(&array[-1]);
   }
 
   raw_ptr<BrotliDecoderState, DanglingUntriaged> brotli_state_;
