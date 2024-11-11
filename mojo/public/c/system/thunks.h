@@ -29,7 +29,7 @@
 //     (e.g. an optional "Options" structure as many functions here have).
 //
 #if defined(__CHERI_PURE_CAPABILITY__)
-#pragma pack(push, alignof(max_align_t))
+#pragma pack(push, max_align_t)
 #else   // !__CHERI_PURE_CAPABILITY__
 #pragma pack(push, 8)
 #endif  // !__CHERI_PURE_CAPABILITY__
