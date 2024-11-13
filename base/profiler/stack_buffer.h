@@ -25,7 +25,11 @@ class BASE_EXPORT StackBuffer {
   // up the stack during function calls (between pushing the return address
   // and the end of the function prologue). The profiler will sometimes
   // encounter this exceptional case for leaf frames.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static constexpr size_t kPlatformStackAlignment = 2* sizeof(ptraddr_t);
+#else   // !__CHERI_PURE_CAPABILITY__
   static constexpr size_t kPlatformStackAlignment = 2 * sizeof(uintptr_t);
+#endif  // !__CHERI_PURE_CAPABILITY__
 
   explicit StackBuffer(size_t buffer_size);
 
