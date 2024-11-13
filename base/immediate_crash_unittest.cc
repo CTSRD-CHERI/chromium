@@ -6,6 +6,10 @@
 
 #include <stdint.h>
 
+#if defined(__CHERI_PURE_CAPABILITY__) 
+#include "gtest/gtest-spi.h"
+#endif   // __CHERI_PURE_CAPABILITY__
+
 #include "base/base_paths.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/containers/span.h"
@@ -137,7 +141,6 @@ void GetTestFunctionInstructions(std::vector<Instruction>* body) {
   // and use the address of the other to figure out where it ends.
   const Instruction* const start = static_cast<Instruction*>(std::min(a, b));
   const Instruction* const end = static_cast<Instruction*>(std::max(a, b));
-
   for (const Instruction& instruction : make_span(start, end))
     body->push_back(instruction);
 }
@@ -216,6 +219,11 @@ std::vector<Instruction> MaybeSkipCoverageHook(
 // the two functions will be laid out contiguously as a heuristic for finding
 // the size of the function.
 TEST(ImmediateCrashTest, ExpectedOpcodeSequence) {
+#if defined(__CHERI_PURE_CAPABILITY__) 
+  GTEST_SKIP() << "As the call to make_span acts on sentry values this "
+                  "results in a CHERI protection fault when an "
+                  "instruction in the span is added to the result vector.";
+#endif  // __CHERI_PURE_CAPABILITY__
   std::vector<Instruction> body;
   ASSERT_NO_FATAL_FAILURE(GetTestFunctionInstructions(&body));
   SCOPED_TRACE(HexEncode(body.data(), body.size() * sizeof(Instruction)));
