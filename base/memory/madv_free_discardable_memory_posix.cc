@@ -28,6 +28,10 @@
 #include <sys/prctl.h>
 #endif
 
+#if BUILDFLAG(IS_BSD)
+#include <sys/mman.h>
+#endif
+
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 #include "base/trace_event/memory_allocator_dump.h"  // no-presubmit-check
 #include "base/trace_event/memory_dump_manager.h"    // no-presubmit-check
@@ -306,11 +310,9 @@ void MadvFreeDiscardableMemoryPosix::SetKeepMemoryForTesting(bool keep_memory) {
 
 bool MadvFreeDiscardableMemoryPosix::IsResident() const {
   DFAKE_SCOPED_RECURSIVE_LOCK(thread_collision_warner_);
-// XXX mincore
-#if BUILDFLAG(IS_BSD)
-  return false;
-#else
 #if BUILDFLAG(IS_APPLE)
+  std::vector<char> vec(allocated_pages_);
+#elif BUILDFLAG(IS_BSD)
   std::vector<char> vec(allocated_pages_);
 #else
   std::vector<unsigned char> vec(allocated_pages_);
@@ -325,7 +327,6 @@ bool MadvFreeDiscardableMemoryPosix::IsResident() const {
       return false;
   }
   return true;
-#endif
 }
 
 bool MadvFreeDiscardableMemoryPosix::IsDiscarded() const {
