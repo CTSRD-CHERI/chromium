@@ -396,6 +396,9 @@ TEST(StackSamplerTest, AuxUnwinderInvokedWhileRecordingStackFrames) {
 }
 
 TEST(StackSamplerTest, WalkStack_Completed) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  GTEST_SKIP() << "Capability permission fault accessing dli_saddr ";
+#endif   // __CHERI_PURE_CAPABILITY__)
   ModuleCache module_cache;
   RegisterContext thread_context;
   RegisterContextInstructionPointer(&thread_context) =
@@ -414,6 +417,9 @@ TEST(StackSamplerTest, WalkStack_Completed) {
 }
 
 TEST(StackSamplerTest, WalkStack_Aborted) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  GTEST_SKIP() << "Capability permission fault accessing dli_saddr ";
+#endif   // __CHERI_PURE_CAPABILITY__)
   ModuleCache module_cache;
   RegisterContext thread_context;
   RegisterContextInstructionPointer(&thread_context) =
@@ -432,6 +438,9 @@ TEST(StackSamplerTest, WalkStack_Aborted) {
 }
 
 TEST(StackSamplerTest, WalkStack_NotUnwound) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  GTEST_SKIP() << "Capability permission fault accessing dli_saddr ";
+#endif   // __CHERI_PURE_CAPABILITY__)
   ModuleCache module_cache;
   RegisterContext thread_context;
   RegisterContextInstructionPointer(&thread_context) =
