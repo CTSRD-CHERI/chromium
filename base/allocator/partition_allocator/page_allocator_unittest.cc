@@ -457,6 +457,11 @@ TEST(PartitionAllocPageAllocatorTest, InaccessiblePages) {
   FreePages(buffer, PageAllocationGranularity());
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+// TODO(https://github.com/CTSRD-CHERI/cheribsd/issues/1818): Reinstate
+// disabled test once fix is deployed and verified.
+#define MAYBE_ReadExecutePages DISABLED_ReadExecutePages
+#else   // !__CHERI_PURE_CAPABILITY__)
 // TODO(crbug.com/1291888): Understand why we can't read from Read-Execute pages
 // on iOS.
 #if BUILDFLAG(IS_IOS)
@@ -464,6 +469,7 @@ TEST(PartitionAllocPageAllocatorTest, InaccessiblePages) {
 #else
 #define MAYBE_ReadExecutePages ReadExecutePages
 #endif  // BUILDFLAG(IS_IOS)
+#endif  // !__CHERI_PURE_CAPABILITY__
 TEST(PartitionAllocPageAllocatorTest, MAYBE_ReadExecutePages) {
   uintptr_t buffer =
       AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
