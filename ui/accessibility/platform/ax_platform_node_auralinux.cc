@@ -2261,8 +2261,8 @@ void ClassInit(gpointer class_pointer, gpointer /* class_data */) {
 GType GetType() {
   AXPlatformNodeAuraLinux::EnsureGTypeInit();
 
-  static gsize type_id = 0;
-  if (g_once_init_enter(&type_id)) {
+  static GType type_id = 0;
+  if (g_once_init_enter_pointer(&type_id)) {
     static const GTypeInfo type_info = {
         sizeof(AXPlatformNodeAuraLinuxClass),  // class_size
         nullptr,                               // base_init
@@ -2278,7 +2278,7 @@ GType GetType() {
 
     GType type = g_type_register_static(
         ATK_TYPE_OBJECT, "AXPlatformNodeAuraLinux", &type_info, GTypeFlags(0));
-    g_once_init_leave(&type_id, type);
+    g_once_init_leave_pointer(&type_id, type);
   }
 
   return type_id;

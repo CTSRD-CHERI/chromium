@@ -120,15 +120,15 @@ void GtkKeyBindingsHandler::HandlerClassInit(HandlerClass* klass) {
 }
 
 GType GtkKeyBindingsHandler::HandlerGetType() {
-  static gsize type_id = 0;
-  if (g_once_init_enter(&type_id)) {
+  static GType type_id = 0;
+  if (g_once_init_enter_pointer(&type_id)) {
     GType type = g_type_register_static_simple(
         GTK_TYPE_TEXT_VIEW, g_intern_static_string("GtkKeyBindingsHandler"),
         sizeof(HandlerClass),
         reinterpret_cast<GClassInitFunc>(HandlerClassInit), sizeof(Handler),
         reinterpret_cast<GInstanceInitFunc>(HandlerInit),
         static_cast<GTypeFlags>(0));
-    g_once_init_leave(&type_id, type);
+    g_once_init_leave_pointer(&type_id, type);
   }
   return type_id;
 }
