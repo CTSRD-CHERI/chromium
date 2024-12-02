@@ -26,6 +26,10 @@
 #endif
 
 // Produce the value, which is equal or larger than 'v' and aligned to 'a'.
+#if __has_builtin(__builtin_align_up)
+#define ALIGN_VALUE(v,a) __builtin_align_up(v, a)
+#else
 #define ALIGN_VALUE(v,a) (size_t(v) + ( (~size_t(v) + 1) & (a - 1) ) )
+#endif
 
 #endif
