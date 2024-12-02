@@ -187,6 +187,10 @@ test("shell_dialogs_unittests") {
     "//ui/strings",
   ]
 
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
+
   if (is_mac) {
     deps += [ "//components/remote_cocoa/app_shim" ]
   }

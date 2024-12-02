@@ -49,6 +49,10 @@ component("snapshot") {
     "//ui/gfx/geometry",
   ]
 
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
+
   if (is_android) {
     deps += [ "//ui/android" ]
   }

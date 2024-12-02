@@ -188,6 +188,10 @@ test("env_chromium_unittests") {
     "//base/test:test_support",
     "//testing/gtest",
   ]
+
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
 }
 
 static_library("leveldb_testutil") {
@@ -259,6 +263,10 @@ test("leveldb_unittests") {
     "//base",
     "//base/test:test_support",
   ]
+
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
 }
 
 if (!is_ios && !is_android) {

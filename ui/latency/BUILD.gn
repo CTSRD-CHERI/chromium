@@ -62,6 +62,10 @@ test("latency_unittests") {
     "//testing/gtest",
   ]
 
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
+
   if (!is_ios) {
     sources += [
       "ipc/latency_info_param_traits_unittest.cc",

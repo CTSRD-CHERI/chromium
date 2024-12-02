@@ -318,6 +318,10 @@ test("accessibility_unittests") {
     "//ui/accessibility/mojom",
     "//ui/gfx:test_support",
   ]
+  
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
 
   if (enable_extensions) {
     sources += [

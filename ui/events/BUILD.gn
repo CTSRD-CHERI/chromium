@@ -685,6 +685,10 @@ if (use_blink) {
       "//ui/gfx/geometry/mojom:mojom_traits",
       "//ui/gfx/ipc/geometry",
     ]
+  
+    if (is_bsd) {
+      deps += [ "//sandbox/policy" ]
+    }
 
     if (is_android) {
       sources += [ "android/motion_event_android_unittest.cc" ]

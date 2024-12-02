@@ -324,6 +324,10 @@ if (is_chromeos || is_linux || is_android || is_win || is_fuchsia) {
         "//testing/gtest",
       ]
 
+      if (is_bsd) {
+        deps += [ "//sandbox/policy" ]
+      }
+
       data_deps = [ ":shared_library" ]
     }
   }

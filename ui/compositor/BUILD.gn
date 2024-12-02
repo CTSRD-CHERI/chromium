@@ -270,6 +270,10 @@ test("compositor_unittests") {
   if (is_linux || is_chromeos) {
     deps += [ "//third_party/mesa_headers" ]
   }
+  
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
 
   if (is_fuchsia) {
     # TODO(https://crbug.com/1185811): Investigate removing the requirement for

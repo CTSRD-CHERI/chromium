@@ -184,6 +184,10 @@ test("native_theme_unittests") {
     "//ui/gfx/geometry:geometry",
   ]
 
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
+
   if (is_mac) {
     sources += [
       "native_theme_mac_unittest.mm",

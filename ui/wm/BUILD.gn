@@ -183,6 +183,10 @@ test("wm_unittests") {
     "//ui/wm/public",
   ]
 
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
+
   data_deps = [ "//ui/resources:ui_test_pak_data" ]
 
   if (enable_hidpi) {

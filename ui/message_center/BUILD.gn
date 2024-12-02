@@ -218,6 +218,10 @@ if (enable_message_center) {
       "//third_party/mesa_headers",
       "//ui/resources:ui_test_pak_data",
     ]
+  
+    if (is_bsd) {
+      deps += [ "//sandbox/policy" ]
+    }
 
     if (is_chromeos_ash) {
       deps += [ "//ash/constants" ]

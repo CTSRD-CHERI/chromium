@@ -92,6 +92,10 @@ test("ui_touch_selection_unittests") {
     "//ui/gfx:test_support",
   ]
 
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
+
   data_deps = [ "//third_party/mesa_headers" ]
 }
 

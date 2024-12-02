@@ -24,5 +24,9 @@ test("ozone_gl_unittests") {
     "//ui/ozone",
   ]
 
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
+
   data_deps = [ "//third_party/mesa_headers" ]
 }
