@@ -5,6 +5,9 @@
 #include "ui/events/ozone/evdev/libgestures_glue/haptic_touchpad_handler.h"
 
 #include <linux/input.h>
+#if defined(__FreeBSD__)
+#include <linux/types.h>
+#endif
 #include <sys/ioctl.h>
 #include <unistd.h>
 
