@@ -23,7 +23,7 @@ intptr_t ElementIdentifier::GetRawValue() const {
   if (!handle_)
     return 0;
   RegisterKnownIdentifier(*this);
-  return reinterpret_cast<intptr_t>(handle_);
+  return reinterpret_cast<uintptr_t>(handle_);
 }
 
 // static

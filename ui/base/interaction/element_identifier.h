@@ -272,10 +272,17 @@ extern std::ostream& operator<<(std::ostream& os,
 template <>
 class ClassPropertyCaster<ui::ElementIdentifier> {
  public:
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static intptr_t ToIntptr(ui::ElementIdentifier x) { return x.GetRawValue(); }
+  static ui::ElementIdentifier FromIntptr(intptr_t x) {
+    return ui::ElementIdentifier::FromRawValue(base::checked_cast<intptr_t>(x));
+  }
+#else // defined(__CHERI_PURE_CAPABILITY__)
   static int64_t ToInt64(ui::ElementIdentifier x) { return x.GetRawValue(); }
   static ui::ElementIdentifier FromInt64(int64_t x) {
     return ui::ElementIdentifier::FromRawValue(base::checked_cast<intptr_t>(x));
   }
+#endif // defined(__CHERI_PURE_CAPABILITY__)
 };
 
 }  // namespace ui
