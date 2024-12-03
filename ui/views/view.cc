@@ -2714,7 +2714,11 @@ void View::AfterPropertyChange(const void* key, int64_t old_value) {
   if (key == kElementIdentifierKey) {
     const ui::ElementIdentifier old_element_id =
         ui::ElementIdentifier::FromRawValue(
+#if defined(__CHERI_PURE_CAPABILITY__)
+            base::checked_cast<uintptr_t>(old_value));
+#else   // !__CHERI_PURE_CAPABILITY__
             base::checked_cast<intptr_t>(old_value));
+#endif  // !__CHERI_PURE_CAPABILITY__
     if (old_element_id) {
       views::ElementTrackerViews::GetInstance()->UnregisterView(old_element_id,
                                                                 this);

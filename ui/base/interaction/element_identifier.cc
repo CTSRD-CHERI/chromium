@@ -18,15 +18,23 @@ std::string ElementIdentifier::GetName() const {
   return handle_->name;
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+uintptr_t ElementIdentifier::GetRawValue() const {
+#else // defined(__CHERI_PURE_CAPABILITY__)
 intptr_t ElementIdentifier::GetRawValue() const {
+#endif // defined(__CHERI_PURE_CAPABILITY__)
   if (!handle_)
     return 0;
   RegisterKnownIdentifier(*this);
-  return reinterpret_cast<intptr_t>(handle_);
+  return reinterpret_cast<uintptr_t>(handle_);
 }
 
 // static
+#if defined(__CHERI_PURE_CAPABILITY__)
+ElementIdentifier ElementIdentifier::FromRawValue(uintptr_t value) {
+#else // defined(__CHERI_PURE_CAPABILITY__)
 ElementIdentifier ElementIdentifier::FromRawValue(intptr_t value) {
+#endif // defined(__CHERI_PURE_CAPABILITY__)
   if (!value)
     return ElementIdentifier();
   const auto* impl =
