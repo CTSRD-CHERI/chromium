@@ -63,20 +63,36 @@ void TestOnRangeWithAlignment(TestScanLoop& sl,
 TEST(PartitionAllocScanLoopTest, UnvectorizedWithRegularPool) {
   {
     TestScanLoop sl(SimdSupport::kUnvectorized);
+#if defined(__CHERI_PURE_CAPABILITY__)
+    TestOnRangeWithAlignment<alignof(max_align_t)>(sl, 0u, kInvalidPtr, kInvalidPtr, kInvalidPtr);
+#else   // !__CHERI_PURE_CAPABILITY__
     TestOnRangeWithAlignment<8>(sl, 0u, kInvalidPtr, kInvalidPtr, kInvalidPtr);
+#endif  // !__CHERI_PURE_CAPABILITY__
   }
   {
     TestScanLoop sl(SimdSupport::kUnvectorized);
+#if defined(__CHERI_PURE_CAPABILITY__)
+    TestOnRangeWithAlignment<alignof(max_align_t)>(sl, 1u, kValidPtr, kInvalidPtr, kInvalidPtr);
+#else   // !__CHERI_PURE_CAPABILITY__
     TestOnRangeWithAlignment<8>(sl, 1u, kValidPtr, kInvalidPtr, kInvalidPtr);
+#endif  // !__CHERI_PURE_CAPABILITY__
   }
   {
     TestScanLoop sl(SimdSupport::kUnvectorized);
+#if defined(__CHERI_PURE_CAPABILITY__)
+    TestOnRangeWithAlignment<alignof(max_align_t)>(sl, 2u, kValidPtr, kValidPtr, kInvalidPtr);
+#else   // !__CHERI_PURE_CAPABILITY__
     TestOnRangeWithAlignment<8>(sl, 2u, kValidPtr, kValidPtr, kInvalidPtr);
+#endif  // !__CHERI_PURE_CAPABILITY__
   }
   {
     // Make sure zeros are skipped.
     TestScanLoop sl(SimdSupport::kUnvectorized);
+#if defined(__CHERI_PURE_CAPABILITY__)
+    TestOnRangeWithAlignment<alignof(max_align_t)>(sl, 1u, kValidPtr, kInvalidPtr, kZeroPtr);
+#else   // !__CHERI_PURE_CAPABILITY__
     TestOnRangeWithAlignment<8>(sl, 1u, kValidPtr, kInvalidPtr, kZeroPtr);
+#endif  // !__CHERI_PURE_CAPABILITY__
   }
 }
 

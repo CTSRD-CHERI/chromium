@@ -76,8 +76,14 @@ struct hash<base::trace_event::TraceSourceLocation> {
   std::size_t operator()(
       const base::trace_event::TraceSourceLocation& loc) const {
     return base::HashInts(
+#if defined(__CHERI_PURE_CAPABILITY__)
+        base::HashInts(
+            static_cast<ptraddr_t>(reinterpret_cast<uintptr_t>(loc.file_name)),
+            static_cast<ptraddr_t>(reinterpret_cast<uintptr_t>(loc.function_name))),
+#else   // @__CHERI_PURE_CAPABILITY__
         base::HashInts(reinterpret_cast<uintptr_t>(loc.file_name),
                        reinterpret_cast<uintptr_t>(loc.function_name)),
+#endif  // !__CHERI_PURE_CAPABILITY__
         static_cast<size_t>(loc.line_number));
   }
 };
