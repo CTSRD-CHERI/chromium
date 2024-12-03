@@ -857,14 +857,18 @@ std::unique_ptr<ScopedKeyboardHook> Window::CaptureSystemKeyEvents(
 
 void Window::SetNativeWindowProperty(const char* key, void* value) {
 #if defined(__CHERI_PURE_CAPABILITY__)
-  SetPropertyInternal(key, key, nullptr, reinterpret_cast<intptr_t>(value), 0);
+  SetPropertyInternal(key, key, nullptr, reinterpret_cast<uintptr_t>(value), 0);
 #else   // !__CHERI_PURE_CAPABILITY__
   SetPropertyInternal(key, key, nullptr, reinterpret_cast<int64_t>(value), 0);
 #endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 void* Window::GetNativeWindowProperty(const char* key) const {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  return reinterpret_cast<void*>(GetPropertyInternal(key, 0ULL,
+#else   // !__CHERI_PURE_CAPABILITY__
   return reinterpret_cast<void*>(GetPropertyInternal(key, 0,
+#endif  // !__CHERI_PURE_CAPABILITY__
                                                      /*search_parent=*/false));
 }
 

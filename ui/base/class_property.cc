@@ -76,7 +76,7 @@ PropertyHandler* PropertyHandler::GetParentHandler() const {
 
 #if defined(__CHERI_PURE_CAPABILITY__)
 uintptr_t PropertyHandler::GetPropertyInternal(const void* key,
-                                             uintptr_t default_value,
+                                               uintptr_t default_value,
 #else   // !__CHERI_PURE_CAPABILITY__
 int64_t PropertyHandler::GetPropertyInternal(const void* key,
                                              int64_t default_value,
