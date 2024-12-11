@@ -181,7 +181,11 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
     // Used for dumping memory statistics from the segment to chrome://tracing.
     void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) const;
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+    size_t MarkPages(uintptr_t start, size_t length, bool value);
+#else   // !__CHERI_PURE_CAPABILITY__
     size_t MarkPages(size_t start, size_t length, bool value);
+#endif  // !__CHERI_PURE_CAPABILITY_)
 
    private:
     std::vector<bool> dirty_pages_;

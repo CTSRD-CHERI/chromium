@@ -85,7 +85,11 @@ DiscardableSharedMemoryHeap::ScopedMemorySegment::~ScopedMemorySegment() {
 }
 
 size_t DiscardableSharedMemoryHeap::ScopedMemorySegment::MarkPages(
+#if defined(__CHERI_PURE_CAPABILITY__)
+    uintptr_t start,
+#else   // !__CHERI_PURE_CAPABILITY__
     size_t start,
+#endif  // !__CHERI_PURE_CAPABILITY_)
     size_t length,
     bool value) {
   if (!shared_memory_)
@@ -175,7 +179,11 @@ DiscardableSharedMemoryHeap::Grow(
       this, std::move(shared_memory), size, id, std::move(deleted_callback));
   std::unique_ptr<Span> span(new Span(
       raw_shared_memory,
+#if defined(__CHERI_PURE_CAPABILITY__)
+      reinterpret_cast<uintptr_t>(raw_shared_memory->memory()) / block_size_,
+#else   // !__CHERI_PURE_CAPABILITY__
       reinterpret_cast<size_t>(raw_shared_memory->memory()) / block_size_,
+#endif  // !__CHERI_PURE_CAPABILITY__
       size / block_size_, scoped_memory_segment.get()));
   DCHECK(spans_.find(span->start_) == spans_.end());
   DCHECK(spans_.find(span->start_ + span->length_ - 1) == spans_.end());
