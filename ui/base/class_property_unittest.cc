@@ -103,7 +103,11 @@ class TestPropertyHandler : public PropertyHandler {
   int num_events() const { return num_events_; }
 
  protected:
+#if defined(__CHERI_PURE_CAPABILITY__)
+  void AfterPropertyChange(const void* key, uintptr_t old_value) override {
+#else   // !__CHERI_PURE_CAPABILITY__
   void AfterPropertyChange(const void* key, int64_t old_value) override {
+#endif  // !__CHERI_PURE_CAPABILITY__
     ++num_events_;
   }
   PropertyHandler* GetParentHandler() const override { return parent_; }
