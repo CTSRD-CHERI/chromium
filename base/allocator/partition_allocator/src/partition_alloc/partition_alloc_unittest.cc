@@ -2084,43 +2084,85 @@ TEST_P(PartitionAllocTest, PartialPageFreelists) {
   size_t total_slots =
       (slot_span->bucket->num_system_pages_per_slot_span * SystemPageSize()) /
       (big_size + ExtraAllocSize(allocator));
+#if PA_BUILDFLAG(IS_CHERI)
+  EXPECT_EQ(8u, total_slots);
+#else
   EXPECT_EQ(4u, total_slots);
+#endif  // !PA_BUILDFLAG(IS_CHERI)
   // The freelist should have one entry, because we were able to exactly fit
   // one object slot and one freelist pointer (the null that the head points
   // to) into a system page.
   EXPECT_FALSE(slot_span->get_freelist_head());
   EXPECT_EQ(1u, slot_span->num_allocated_slots);
+#if PA_BUILDFLAG(IS_CHERI)
+  EXPECT_EQ(7u, slot_span->num_unprovisioned_slots);
+#else
   EXPECT_EQ(3u, slot_span->num_unprovisioned_slots);
+#endif  // !PA_BUILDFLAG(IS_CHERI)
 
   void* ptr2 = allocator.root()->Alloc(big_size, type_name);
   EXPECT_TRUE(ptr2);
   EXPECT_FALSE(slot_span->get_freelist_head());
   EXPECT_EQ(2u, slot_span->num_allocated_slots);
+#if PA_BUILDFLAG(IS_CHERI)
+  EXPECT_EQ(6u, slot_span->num_unprovisioned_slots);
+#else
   EXPECT_EQ(2u, slot_span->num_unprovisioned_slots);
+#endif  // !PA_BUILDFLAG(IS_CHERI)
 
   void* ptr3 = allocator.root()->Alloc(big_size, type_name);
   EXPECT_TRUE(ptr3);
   EXPECT_FALSE(slot_span->get_freelist_head());
   EXPECT_EQ(3u, slot_span->num_allocated_slots);
+#if PA_BUILDFLAG(IS_CHERI)
+  EXPECT_EQ(5u, slot_span->num_unprovisioned_slots);
+#else
   EXPECT_EQ(1u, slot_span->num_unprovisioned_slots);
+#endif  // !PA_BUILDFLAG(IS_CHERI)
 
   void* ptr4 = allocator.root()->Alloc(big_size, type_name);
   EXPECT_TRUE(ptr4);
   EXPECT_FALSE(slot_span->get_freelist_head());
   EXPECT_EQ(4u, slot_span->num_allocated_slots);
+#if PA_BUILDFLAG(IS_CHERI)
+  EXPECT_EQ(4u, slot_span->num_unprovisioned_slots);
+#else
   EXPECT_EQ(0u, slot_span->num_unprovisioned_slots);
+#endif  // !PA_BUILDFLAG(IS_CHERI)
 
   void* ptr5 = allocator.root()->Alloc(big_size, type_name);
   EXPECT_TRUE(ptr5);
+#if PA_BUILDFLAG(IS_CHERI)
+  void* ptr6 = allocator.root()->Alloc(big_size, type_name);
+  EXPECT_TRUE(ptr6);
 
+  void* ptr7 = allocator.root()->Alloc(big_size, type_name);
+  EXPECT_TRUE(ptr7);
+
+  void* ptr8 = allocator.root()->Alloc(big_size, type_name);
+  EXPECT_TRUE(ptr8);
+
+  void* ptr9 = allocator.root()->Alloc(big_size, type_name);
+  EXPECT_TRUE(ptr9);
+#endif  // __CHERI_PURE_CAPABILITY__
+
+#if PA_BUILDFLAG(IS_CHERI)
+  auto* slot_span2 = SlotSpan::FromSlotStart(SlotStart::Unchecked(ptr9).Untag(),
+                                             allocator.root());
+#else
   auto* slot_span2 = SlotSpan::FromSlotStart(SlotStart::Unchecked(ptr5).Untag(),
                                              allocator.root());
+#endif  // !PA_BUILDFLAG(IS_CHERI)
   EXPECT_EQ(1u, slot_span2->num_allocated_slots);
 
   // Churn things a little whilst there's a partial slot span freelist.
   allocator.root()->Free(ptr);
   ptr = allocator.root()->Alloc(big_size, type_name);
+#if PA_BUILDFLAG(IS_CHERI)
+  void* ptr10 = allocator.root()->Alloc(big_size, type_name);
+#else
   void* ptr6 = allocator.root()->Alloc(big_size, type_name);
+#endif  // !PA_BUILDFLAG(IS_CHERI)
 
   allocator.root()->Free(ptr);
   allocator.root()->Free(ptr2);
@@ -2128,6 +2170,12 @@ TEST_P(PartitionAllocTest, PartialPageFreelists) {
   allocator.root()->Free(ptr4);
   allocator.root()->Free(ptr5);
   allocator.root()->Free(ptr6);
+#if PA_BUILDFLAG(IS_CHERI)
+  allocator.root()->Free(ptr7);
+  allocator.root()->Free(ptr8);
+  allocator.root()->Free(ptr9);
+  allocator.root()->Free(ptr10);
+#endif  // !PA_BUILDFLAG(IS_CHERI)
   EXPECT_TRUE(slot_span->in_empty_cache());
   EXPECT_TRUE(slot_span2->in_empty_cache());
   EXPECT_TRUE(slot_span2->get_freelist_head());
@@ -3206,7 +3254,11 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
 
   // This test checks large-but-not-quite-direct allocations.
   {
+#if PA_BUILDFLAG(IS_CHERI)
+    size_t requested_size = 32 * SystemPageSize() + 1;
+#else
     size_t requested_size = 16 * SystemPageSize() + 1;
+#endif  // !PA_BUILDFLAG(IS_CHERI)
     void* ptr = allocator.root()->Alloc(requested_size, type_name);
 
     {
@@ -3347,7 +3399,11 @@ TEST_P(PartitionAllocTest, Purge) {
 // empty one. This is an important aspect of minimizing memory usage for some
 // allocation sizes, particularly larger ones.
 TEST_P(PartitionAllocTest, PreferActiveOverEmpty) {
+#if PA_BUILDFLAG(IS_CHERI)
+  size_t size = (SystemPageSize() * 4) - ExtraAllocSize(allocator);
+#else
   size_t size = (SystemPageSize() * 2) - ExtraAllocSize(allocator);
+#endif  // !PA_BUILDFLAG(IS_CHERI)
   // Allocate 3 full slot spans worth of 8192-byte allocations.
   // Each slot span for this size is 16384 bytes, or 1 partition page and 2
   // slots.
@@ -3404,7 +3460,11 @@ TEST_P(PartitionAllocTest, PurgeDiscardableSecondPage) {
   allocator.root()->Free(ptr2);
   const SlotSpan* slot_span = SlotSpan::FromSlotStart(
       SlotStart::Unchecked(ptr1).Untag(), allocator.root());
+#if PA_BUILDFLAG(IS_CHERI)
+  EXPECT_EQ(6u, slot_span->num_unprovisioned_slots);
+#else
   EXPECT_EQ(2u, slot_span->num_unprovisioned_slots);
+#endif  // !PA_BUILDFLAG(IS_CHERI)
   {
     MockPartitionStatsDumper dumper;
     allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
@@ -3423,7 +3483,11 @@ TEST_P(PartitionAllocTest, PurgeDiscardableSecondPage) {
   CHECK_PAGE_IN_CORE(ptr2 - kPointerOffset, true);
   allocator.root()->PurgeMemory(PurgeFlags::kDiscardUnusedSystemPages);
   CHECK_PAGE_IN_CORE(ptr2 - kPointerOffset, false);
+#if PA_BUILDFLAG(IS_CHERI)
+  EXPECT_EQ(7u, slot_span->num_unprovisioned_slots);
+#else
   EXPECT_EQ(3u, slot_span->num_unprovisioned_slots);
+#endif  // !PA_BUILDFLAG(IS_CHERI)
 
   allocator.root()->Free(ptr1);
 }
@@ -3635,7 +3699,11 @@ TEST_P(PartitionAllocTest, PurgeDiscardableWithFreeListStraightening) {
   allocator.root()->Free(ptr2);
   allocator.root()->Free(ptr4);
   allocator.root()->Free(ptr1);
+#if PA_BUILDFLAG(IS_CHERI)
+  EXPECT_EQ(4u, slot_span->num_unprovisioned_slots);
+#else
   EXPECT_EQ(0u, slot_span->num_unprovisioned_slots);
+#endif  // !PA_BUILDFLAG(IS_CHERI)
 
   {
     MockPartitionStatsDumper dumper;
@@ -3661,7 +3729,11 @@ TEST_P(PartitionAllocTest, PurgeDiscardableWithFreeListStraightening) {
   CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), true);
   CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 3), true);
   allocator.root()->PurgeMemory(PurgeFlags::kDiscardUnusedSystemPages);
+#if PA_BUILDFLAG(IS_CHERI)
+  EXPECT_EQ(5u, slot_span->num_unprovisioned_slots);
+#else
   EXPECT_EQ(1u, slot_span->num_unprovisioned_slots);
+#endif  // !PA_BUILDFLAG(IS_CHERI)
   CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
   CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), false);
   CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), true);
@@ -3773,7 +3845,11 @@ TEST_P(PartitionAllocTest, PurgeDiscardableDoubleTruncateFreeList) {
       SlotStart::Unchecked(ptr1).Untag(), allocator.root());
   allocator.root()->Free(ptr4);
   allocator.root()->Free(ptr3);
+#if PA_BUILDFLAG(IS_CHERI)
+  EXPECT_EQ(4u, slot_span->num_unprovisioned_slots);
+#else
   EXPECT_EQ(0u, slot_span->num_unprovisioned_slots);
+#endif  // !PA_BUILDFLAG(IS_CHERI)
 
   {
     MockPartitionStatsDumper dumper;
@@ -3795,7 +3871,11 @@ TEST_P(PartitionAllocTest, PurgeDiscardableDoubleTruncateFreeList) {
   CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), true);
   CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 3), true);
   allocator.root()->PurgeMemory(PurgeFlags::kDiscardUnusedSystemPages);
+#if PA_BUILDFLAG(IS_CHERI)
+  EXPECT_EQ(6u, slot_span->num_unprovisioned_slots);
+#else
   EXPECT_EQ(2u, slot_span->num_unprovisioned_slots);
+#endif  // !PA_BUILDFLAG(IS_CHERI)
   CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
   CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), true);
   CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), false);
@@ -3821,7 +3901,11 @@ TEST_P(PartitionAllocTest, PurgeDiscardableSmallSlotsWithTruncate) {
   allocator.root()->Free(ptr4);
   const SlotSpan* slot_span = SlotSpan::FromSlotStart(
       SlotStart::Unchecked(ptr1).Untag(), allocator.root());
+#if PA_BUILDFLAG(IS_CHERI)
+  EXPECT_EQ(12u, slot_span->num_unprovisioned_slots);
+#else
   EXPECT_EQ(4u, slot_span->num_unprovisioned_slots);
+#endif  // !PA_BUILDFLAG(IS_CHERI)
   {
     MockPartitionStatsDumper dumper;
     allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
@@ -3842,7 +3926,11 @@ TEST_P(PartitionAllocTest, PurgeDiscardableSmallSlotsWithTruncate) {
   allocator.root()->PurgeMemory(PurgeFlags::kDiscardUnusedSystemPages);
   CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
   CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), false);
+#if PA_BUILDFLAG(IS_CHERI)
+  EXPECT_EQ(14u, slot_span->num_unprovisioned_slots);
+#else
   EXPECT_EQ(6u, slot_span->num_unprovisioned_slots);
+#endif  // !PA_BUILDFLAG(IS_CHERI)
 
   allocator.root()->Free(ptr1);
   allocator.root()->Free(ptr2);
@@ -5868,7 +5956,11 @@ TEST_P(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
   // Allocate some memory, don't free it to keep committed memory.
   std::vector<void*> allocated_memory;
   const size_t size = SystemPageSize();
+#if PA_BUILDFLAG(IS_CHERI)
+  const size_t count = 800;
+#else
   const size_t count = 400;
+#endif  // !PA_BUILDFLAG(IS_CHERI)
   for (size_t i = 0; i < count; i++) {
     void* ptr = root->Alloc(size);
     allocated_memory.push_back(ptr);
