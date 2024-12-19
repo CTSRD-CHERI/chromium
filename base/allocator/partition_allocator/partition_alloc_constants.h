@@ -391,8 +391,11 @@ DirectMapAllocationGranularityOffsetMask() {
 //
 // Keep in sync with //tools/memory/partition_allocator/objects_per_size_py.
 constexpr size_t kMinBucketedOrder =
-#if defined(__CHERI_PURE_CAPABILITY__)
-    kAlignment == 16 ? 6 : 5;  // 2^(order - 1), that is 32  or 16.
+#if defined(__CHERI_PURE_CAPABILITY__) && 0
+// Increase the smallest bucket size to account for the increase in the size of
+// PartitionFreelistEntry (due to capabilities):
+// kSmallestBucket >= sizeof(partition_alloc::internal::PartitionFreelistEntry)
+    kAlignment == 16 ? 6 : 5;  // 2^(order - 1), that is 32 or 16.
 #else // defined(__CHERI_PURE_CAPABILITY__)
     kAlignment == 16 ? 5 : 4;  // 2^(order - 1), that is 16 or 8.
 #endif // (__CHERI_PURE_CAPABILITY__)

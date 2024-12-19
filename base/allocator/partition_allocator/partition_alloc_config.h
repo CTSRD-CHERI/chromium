@@ -158,7 +158,8 @@ static_assert(sizeof(void*) != 8, "");
 // ready-to-use pointer.
 #define PA_CONFIG_HAS_FREELIST_SHADOW_ENTRY()    \
   (!BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && \
-   defined(ARCH_CPU_LITTLE_ENDIAN))
+   defined(ARCH_CPU_LITTLE_ENDIAN)) && \
+   !defined(__CHERI_PURE_CAPABILITY__)
 
 #define PA_CONFIG_HAS_MEMORY_TAGGING()              \
   (defined(ARCH_CPU_ARM64) && defined(__clang__) && \

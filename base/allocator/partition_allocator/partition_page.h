@@ -395,6 +395,7 @@ struct PartitionPage {
   PA_ALWAYS_INLINE static PartitionPage* FromAddr(uintptr_t address);
 };
 #pragma pack(pop)
+
 static_assert(sizeof(PartitionPage<ThreadSafe>) == kPageMetadataSize,
               "PartitionPage must be able to fit in a metadata slot");
 
@@ -576,8 +577,13 @@ PartitionPage<thread_safe>::FromAddr(uintptr_t address) {
                                          extent->root->IsQuarantineAllowed()));
 #endif
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+  ptraddr_t partition_page_index =
+      static_cast<ptraddr_t>(address & kSuperPageOffsetMask) >> PartitionPageShift();
+#else  // !__CHERI_PURE_CAPABILITY__
   uintptr_t partition_page_index =
       (address & kSuperPageOffsetMask) >> PartitionPageShift();
+#endif  // !__CHERI_PURE_CAPABILITY__
   // Index 0 is invalid because it is the super page extent metadata and the
   // last index is invalid because the whole PartitionPage is set as guard
   // pages. This repeats part of the payload PA_DCHECK above, which also checks
