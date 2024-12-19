@@ -150,16 +150,30 @@ class COMPONENT_EXPORT(UI_BASE) PropertyHandler {
 
   // Implements `SetProperty()`. Returns the old value of the property; for
   // owned properties, the caller must deallocate this.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  intptr_t SetPropertyInternal(const void* key,
+#else
   int64_t SetPropertyInternal(const void* key,
+#endif
                               const char* name,
                               PropertyDeallocator deallocator,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                              intptr_t value,
+                              intptr_t default_value);
+#else
                               int64_t value,
                               int64_t default_value);
+#endif
 
   // Implements `GetProperty()`. If `search_parent` is true, uses
   // `GetParentHandler()` to traverse cascading values.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  intptr_t GetPropertyInternal(const void* key,
+                              intptr_t default_value,
+#else
   int64_t GetPropertyInternal(const void* key,
                               int64_t default_value,
+#endif
                               bool search_parent) const;
 
  private:
@@ -204,8 +218,17 @@ class ClassPropertyCaster<T*> {
 template <>
 class ClassPropertyCaster<base::TimeDelta> {
  public:
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static intptr_t ToIntptr(base::TimeDelta x) {
+    return static_cast<intptr_t>(x.InMicroseconds());
+  }
+  static base::TimeDelta FromIntptr(intptr_t x) {
+    return base::Microseconds(static_cast<int64_t>(x));
+  }
+#else
   static int64_t ToInt64(base::TimeDelta x) { return x.InMicroseconds(); }
   static base::TimeDelta FromInt64(int64_t x) { return base::Microseconds(x); }
+#endif
 };
 template <>
 class ClassPropertyCaster<float> {
