@@ -150,7 +150,12 @@ void* ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::data()
     DCHECK(is_locked());
   }
 #endif
+#if defined(__CHERI_PURE_CAPABILITY__)
+  auto temp = span_->shared_memory()->memory();
+  return __builtin_cheri_address_set(temp, span_->start() * base::GetPageSize());
+#else   // !__CHERI_PURE_CAPABILITY__
   return reinterpret_cast<void*>(span_->start() * base::GetPageSize());
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 bool ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::is_locked()
