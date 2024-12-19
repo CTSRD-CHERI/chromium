@@ -175,7 +175,7 @@ class COMPONENT_EXPORT(UI_BASE) PropertyHandler {
   // notification.
 #if defined(__CHERI_PURE_CAPABILITY__)
   uintptr_t GetPropertyInternal(const void* key,
-                              uintptr_t default_value,
+                                uintptr_t default_value,
 #else // defined(__CHERI_PURE_CAPABILITY__)
   int64_t GetPropertyInternal(const void* key,
                               int64_t default_value,
@@ -229,7 +229,9 @@ template <>
 class ClassPropertyCaster<base::TimeDelta> {
  public:
 #if defined(__CHERI_PURE_CAPABILITY__)
-  static uintptr_t ToUIntptr(base::TimeDelta x) { return x.InMicroseconds(); }
+  static uintptr_t ToUIntptr(base::TimeDelta x) {
+    return static_cast<uintptr_t>(x.InMicroseconds());
+  }
   static base::TimeDelta FromUIntptr(uintptr_t x) {
     return base::Microseconds(static_cast<uint64_t>(x));
   }
