@@ -50,4 +50,8 @@ test("media_learning_mojo_unittests") {
     ":unit_tests",
     "//mojo/core/test:run_all_unittests",
   ]
+
+  if (is_bsd) {
+    deps += [ "//sandbox/policy" ]
+  }
 }
