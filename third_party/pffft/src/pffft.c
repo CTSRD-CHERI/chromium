@@ -249,11 +249,15 @@ void validate_pffft_simd() {
 void *pffft_aligned_malloc(size_t nb_bytes) {
   void *p, *p0 = malloc(nb_bytes + MALLOC_V4SF_ALIGNMENT);
   if (!p0) return (void *) 0;
+#if defined(__CHERI_PURE_CAPABILITY__)
 #if __has_builtin(__builtin_align_up) 
-  p = __builtin_align_up(p0, MALLOC_V4SF_ALIGNMENT);
+  p = __builtin_align_up(p0 + 1, MALLOC_V4SF_ALIGNMENT);
 #else
+#error("__builtin_align_up required to preserve capability provenenace");
+#endif 
+#else   // !__CHERI_PURE_CAPABILITY__
   p = (void *) (((size_t) p0 + MALLOC_V4SF_ALIGNMENT) & (~((size_t) (MALLOC_V4SF_ALIGNMENT-1))));
-#endif
+#endif  // !__CHERI_PURE_CArequires PABILITY__
   *((void **) p - 1) = p0;
   return p;
 }
