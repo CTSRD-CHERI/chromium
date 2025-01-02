@@ -69,7 +69,11 @@ StarView::StarView(CommandUpdater* command_updater,
 
 StarView::~StarView() = default;
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+void StarView::AfterPropertyChange(const void* key, uintptr_t old_value) {
+#else   // !__CHERI_PURE_CAPABILITY__
 void StarView::AfterPropertyChange(const void* key, int64_t old_value) {
+#endif  // !__CHERI_PURE_CAPABILITY__
   View::AfterPropertyChange(key, old_value);
   if (key == user_education::kHasInProductHelpPromoKey) {
     views::InkDropState next_state;

@@ -569,7 +569,11 @@ void ToolbarButton::ShowContextMenuForViewImpl(View* source,
   ShowDropDownMenu(source_type);
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+void ToolbarButton::AfterPropertyChange(const void* key, uintptr_t old_value) {
+#else   // !__CHERI_PURE_CAPABILITY__
 void ToolbarButton::AfterPropertyChange(const void* key, int64_t old_value) {
+#endif  // !__CHERI_PURE_CAPABILITY__
   View::AfterPropertyChange(key, old_value);
   if (key == user_education::kHasInProductHelpPromoKey)
     SetHasInProductHelpPromo(

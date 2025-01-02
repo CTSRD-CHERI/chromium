@@ -266,7 +266,11 @@ void AvatarToolbarButton::ButtonPressed() {
 }
 
 void AvatarToolbarButton::AfterPropertyChange(const void* key,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                                              uintptr_t old_value) {
+#else   // !__CHERI_PURE_CAPABILITY__
                                               int64_t old_value) {
+#endif  // !__CHERI_PURE_CAPABILITY__
   if (key == user_education::kHasInProductHelpPromoKey)
     delegate_->SetHasInProductHelpPromo(
         GetProperty(user_education::kHasInProductHelpPromoKey));

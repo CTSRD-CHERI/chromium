@@ -452,7 +452,11 @@ class WebUITabCounterButton : public views::Button,
  private:
   // views::Button:
   void AddedToWidget() override;
+#if defined(__CHERI_PURE_CAPABILITY__)
+  void AfterPropertyChange(const void* key, uintptr_t old_value) override;
+#else   // !__CHERI_PURE_CAPABILITY__
   void AfterPropertyChange(const void* key, int64_t old_value) override;
+#endif  // !__CHERI_PURE_CAPABILITY__
   void AddLayerToRegion(ui::Layer* new_layer,
                         views::LayerRegion region) override;
   void RemoveLayerFromRegions(ui::Layer* old_layer) override;
@@ -598,7 +602,11 @@ void WebUITabCounterButton::AddedToWidget() {
 }
 
 void WebUITabCounterButton::AfterPropertyChange(const void* key,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                                                uintptr_t old_value) {
+#else   // !__CHERI_PURE_CAPABILITY__
                                                 int64_t old_value) {
+#endif  // !__CHERI_PURE_CAPABILITY__
   View::AfterPropertyChange(key, old_value);
   if (key != user_education::kHasInProductHelpPromoKey)
     return;
