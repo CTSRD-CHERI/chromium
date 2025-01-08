@@ -257,7 +257,9 @@ SK_API void SkDebugf_FileLine(const char* file,
 #define SK_STRIKE_CACHE_DOESNT_AUTO_CHECK_PINNERS
 
 #define SK_IGNORE_BLURRED_RRECT_OPT
+#if !defined(__CHERI_PURE_CAPABILITY__)
 #define SK_USE_DISCARDABLE_SCALEDIMAGECACHE
+#endif   // !__CHERI_PURE_CAPABILITY__
 
 #define SK_ATTR_DEPRECATED          SK_NOTHING_ARG1
 #define GR_GL_CUSTOM_SETUP_HEADER   "GrGLConfig_chrome.h"
