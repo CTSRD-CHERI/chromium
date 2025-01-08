@@ -298,7 +298,13 @@ class ProcessNodeImpl
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Inline storage for FrozenFrameAggregator user data.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  constexpr static size_t FrozenFrameDataSize = __builtin_align_up(
+      sizeof(uintptr_t) + 8, alignof(max_align_t));
+  InternalNodeAttachedDataStorage<FrozenFrameDataSize> frozen_frame_data_
+#else   // !__CHERI_PURE_CAPABILITY__
   InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 8> frozen_frame_data_
+#endif  // !__CHERI_PURE_CAPABILITY__
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Inline storage for ProcessPriorityAggregator user data.

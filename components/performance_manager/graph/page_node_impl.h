@@ -34,8 +34,15 @@ class PageNodeImpl
       public TypedNodeBase<PageNodeImpl, PageNode, PageNodeObserver> {
  public:
   using PassKey = base::PassKey<PageNodeImpl>;
+#if defined(__CHERI_PURE_CAPABILITY__)
+  constexpr static size_t FrozenFrameDataStorageSize = __builtin_align_up(
+      sizeof(uintptr_t) + 8, alignof(max_align_t));
+  using FrozenFrameDataStorage =
+      InternalNodeAttachedDataStorage<FrozenFrameDataStorageSize>;
+#else   // !__CHERI_PURE_CAPABILITY__
   using FrozenFrameDataStorage =
       InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 8>;
+#endif  // !__CHERI_PURE_CAPABILITY__
   using PageAggregatorDataStorage =
       InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 16>;
 
