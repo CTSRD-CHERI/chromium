@@ -53,13 +53,21 @@ class ScopedGObject {
   void RefSink() {
     // Remove the floating reference from |obj_| if it has one.
     if (obj_ && g_object_is_floating(obj_))
+#if defined(glib_typeof) && GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_56
+      g_object_ref_sink(obj_.get());
+#else
       g_object_ref_sink(obj_);
+#endif
   }
 
   void Ref() {
     if (obj_) {
       DCHECK(!g_object_is_floating(obj_));
+#if defined(glib_typeof) && GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_56
+      g_object_ref(obj_.get());
+#else
       g_object_ref(obj_);
+#endif
     }
   }
 

@@ -237,7 +237,11 @@ void PrintDialogGtk::UpdateSettings(
   printer_ = printer_list->GetPrinterWithName(
       base::UTF16ToUTF8(settings->device_name()));
   if (printer_) {
+#if defined(glib_typeof) && GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_56
+    g_object_ref(printer_.get());
+#else
     g_object_ref(printer_);
+#endif
     gtk_print_settings_set_printer(gtk_settings_,
                                    gtk_printer_get_name(printer_));
     if (!page_setup_) {
@@ -493,13 +497,21 @@ void PrintDialogGtk::OnResponse(GtkWidget* dialog, int response_id) {
         g_object_unref(printer_);
       printer_ = gtk_print_unix_dialog_get_selected_printer(
           GTK_PRINT_UNIX_DIALOG(dialog_));
+#if defined(glib_typeof) && GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_56
+      g_object_ref(printer_.get());
+#else
       g_object_ref(printer_);
+#endif
 
       if (page_setup_)
         g_object_unref(page_setup_);
       page_setup_ =
           gtk_print_unix_dialog_get_page_setup(GTK_PRINT_UNIX_DIALOG(dialog_));
+#if defined(glib_typeof) && GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_56
+      g_object_ref(page_setup_.get());
+#else
       g_object_ref(page_setup_);
+#endif
 
       // Handle page ranges.
       PageRanges ranges_vector;

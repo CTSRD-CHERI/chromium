@@ -233,7 +233,7 @@ class TestDragDropClient : public aura::client::DragDropClient {
                                  const gfx::Point& screen_location,
                                  int allowed_operations,
                                  ui::mojom::DragEventSource source) override;
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
   void UpdateDragImage(const gfx::ImageSkia& image,
                        const gfx::Vector2d& offset) override {}
 #endif
