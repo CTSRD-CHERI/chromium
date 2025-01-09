@@ -6439,14 +6439,22 @@ class MockViewObserver : public ViewObserver {
   // ViewObserver:
   MOCK_METHOD(void,
               OnViewPropertyChanged,
+#if defined(__CHERI_PURE_CAPABILITY__)
+              (View * observed_view, const void* key, uintptr_t old_value),
+#else   // !__CHERI_PURE_CAPABILITY__
               (View * observed_view, const void* key, int64_t old_value),
+#endif  // !__CHERI_PURE_CAPABILITY__
               (override));
 };
 
 ACTION_TEMPLATE(ExpectThatViewProperty,
                 HAS_1_TEMPLATE_PARAMS(typename, T),
                 AND_1_VALUE_PARAMS(Matcher)) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_THAT(ui::ClassPropertyCaster<T*>::FromUIntptr(arg0), Matcher);
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_THAT(ui::ClassPropertyCaster<T*>::FromInt64(arg0), Matcher);
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 TEST_F(ViewObserverTest, ViewPropertyChanged) {
