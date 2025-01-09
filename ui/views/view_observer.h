@@ -94,7 +94,11 @@ class VIEWS_EXPORT ViewObserver {
   // cast to the appropriate type before use, see |ui::ClassPropertyCaster|.
   virtual void OnViewPropertyChanged(View* observed_view,
                                      const void* key,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                                     intptr_t old_value) {}
+#else   // !__CHERI_PURE_CAPABILITY__
                                      int64_t old_value) {}
+#endif  // !__CHERI_PURE_CAPABILITY__
 
   // Called when the observed view's layout is invalidated.
   // This is useful to invalidate other views in response to the observed

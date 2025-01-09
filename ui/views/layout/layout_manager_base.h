@@ -68,7 +68,11 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager,
   // ViewObserver:
   void OnViewPropertyChanged(View* observed_view,
                              const void* key,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                             intptr_t old_value) final;
+#else
                              int64_t old_value) final;
+#endif
 
   // Returns whether the specified child view can be visible. To be able to be
   // visible, |child| must be a child of the host view, and must have been

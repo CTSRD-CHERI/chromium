@@ -7322,7 +7322,11 @@ class MockViewObserver : public ViewObserver {
   // ViewObserver:
   MOCK_METHOD(void,
               OnViewPropertyChanged,
+#if defined(__CHERI_PURE_CAPABILITY__)
+              (View * observed_view, const void* key, intptr_t old_value),
+#else
               (View * observed_view, const void* key, int64_t old_value),
+#endif
               (override));
 };
 

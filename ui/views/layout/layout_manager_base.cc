@@ -118,7 +118,11 @@ void LayoutManagerBase::Layout(View* host) {
 
 void LayoutManagerBase::OnViewPropertyChanged(View* observed_view,
                                               const void* key,
+#if defined(__CHERI_PURE_CAPABILITY__)
+                                              intptr_t old_value) {
+#else
                                               int64_t old_value) {
+#endif
   if (key != kViewIgnoredByLayoutKey) {
     return;
   }
