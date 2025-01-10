@@ -45,12 +45,21 @@ struct TestClass1 {
 };
 
 struct TestClass2 {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  TestClass2() : padding{0} {
+#else   // !__CHERI_PURE_CAPABILITY__
   TestClass2() : padding(0) {
+#endif  // !__CHERI_PURE_CAPABILITY__
     static int test_ids = 0;
     id = test_ids++;
   }
   int id;
+#if defined(__CHERI_PURE_CAPABILITY__)
+  constexpr static size_t padding_size = sizeof(void *) - sizeof(int);
+  uint8_t padding[padding_size];
+#else   // !__CHERI_PURE_CAPABILITY__
   int padding;
+#endif  // !__CHERI_PURE_CAPABILITY__
 };
 
 }  // anonymous namespace
