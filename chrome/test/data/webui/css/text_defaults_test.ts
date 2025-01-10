@@ -11,7 +11,7 @@ function getExpectedFontFamily(expectingSystemFont: boolean): string {
   }
 
   const fontFamily =
-      // <if expr="is_linux">
+      // <if expr="is_linux or is_bsd">
       '"DejaVu Sans"';
       // </if>
       // <if expr="is_macosx">

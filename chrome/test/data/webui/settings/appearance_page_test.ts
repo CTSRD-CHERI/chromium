@@ -22,7 +22,7 @@ class TestAppearanceBrowserProxy extends TestBrowserProxy implements
       'getThemeInfo',
       'isChildAccount',
       'useDefaultTheme',
-      // <if expr="is_linux">
+      // <if expr="is_linux or is_bsd">
       'useGtkTheme',
       'useQtTheme',
       // </if>
@@ -62,7 +62,7 @@ class TestAppearanceBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('useDefaultTheme');
   }
 
-  // <if expr="is_linux">
+  // <if expr="is_linux or is_bsd">
   useGtkTheme() {
     this.methodCalled('useGtkTheme');
   }
@@ -141,7 +141,7 @@ suite('AppearanceHandler', function() {
 
   const THEME_ID_PREF = 'prefs.extensions.theme.id.value';
 
-  // <if expr="is_linux">
+  // <if expr="is_linux or is_bsd">
   const SYSTEM_THEME_PREF = 'prefs.extensions.theme.system_theme.value';
 
   test('useDefaultThemeLinux', function() {
@@ -204,7 +204,7 @@ suite('AppearanceHandler', function() {
   });
   // </if>
 
-  // <if expr="not is_linux">
+  // <if expr="not is_linux and not is_bsd">
   test('useDefaultTheme', function() {
     assertFalse(!!appearancePage.get(THEME_ID_PREF));
     assertFalse(!!appearancePage.shadowRoot!.querySelector('#useDefault'));
