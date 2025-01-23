@@ -190,6 +190,16 @@ class DumpReaderLinux(DumpReaderMultipart):
         return 'dmp'
 
 
+class DumpReaderFreeBsd(DumpReaderMultipart):
+    """Linux breakpad dump reader."""
+
+    def _binaries_to_symbolize(self):
+        return ['content_shell']
+
+    def _file_extension(self):
+        return 'dmp'
+
+
 class DumpReaderAndroid(DumpReaderMultipart):
     """Android breakpad dump reader."""
 

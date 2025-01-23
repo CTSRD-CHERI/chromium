@@ -39,6 +39,7 @@ from blinkpy.common.path_finder import PathFinder
 class PortFactory(object):
     PORT_CLASSES = (
         'android.AndroidPort',
+        'freebsd.FreeBsdPort',
         'fuchsia.FuchsiaPort',
         'linux.LinuxPort',
         'mac.MacPort',
@@ -52,8 +53,10 @@ class PortFactory(object):
 
     def _default_port(self):
         platform = self._host.platform
-        if platform.is_linux() or platform.is_freebsd():
+        if platform.is_linux():
             return 'linux'
+        elif platform.is_freebsd():
+            return 'freebsd'
         elif platform.is_mac():
             return 'mac'
         elif platform.is_win():
