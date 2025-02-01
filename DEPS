@@ -594,6 +594,7 @@ deps = {
       }
     ],
     'dep_type': 'cipd',
+    'condition': 'host_os != freebsd',
   },
 
   # We don't know target_cpu at deps time. At least until there's a universal
@@ -969,6 +970,7 @@ deps = {
         },
       ],
       'dep_type': 'cipd',
+      'condition': 'host_os != freebsd',
   },
 
   'src/third_party/accessibility_test_framework': {
@@ -1678,6 +1680,7 @@ deps = {
       }
     ],
     'dep_type': 'cipd',
+    'condition': 'host_os != freebsd',
   },
   'src/third_party/siso': {
     'packages': [
@@ -2093,6 +2096,7 @@ deps = {
           },
       ],
       'dep_type': 'cipd',
+      'condition': 'host_os != freebsd',
   },
 
   # === ANDROID_DEPS Generated Code Start ===
@@ -3922,6 +3926,7 @@ deps = {
         },
       ],
       'dep_type': 'cipd',
+      'condition': 'host_os != freebsd',
   },
 
   'src/tools/bazel/linux-amd64': {
