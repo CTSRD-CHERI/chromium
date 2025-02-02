@@ -296,6 +296,7 @@ vars = {
   'boringssl_git': 'https://boringssl.googlesource.com',
   'chrome_git': 'https://chrome-internal.googlesource.com',
   'chromium_git': 'https://chromium.googlesource.com',
+  'ctsrd_cheri_url': 'https://github.com/CTSRD-CHERI',
   'dawn_git': 'https://dawn.googlesource.com',
   'pdfium_git': 'https://pdfium.googlesource.com',
   'quiche_git': 'https://quiche.googlesource.com',
@@ -1244,7 +1245,7 @@ deps = {
   },
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '63d20c330ba3ba5f644ade9e50b22ef3be09c1b8',
+    Var('ctsrd_cheri_url') + '/depot_tools.git' + '@' + '64627e0fa5f1d07e86ba4f173ecd4c4997859cd4',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
