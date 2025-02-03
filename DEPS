@@ -1245,7 +1245,7 @@ deps = {
   },
 
   'src/third_party/depot_tools':
-    Var('ctsrd_cheri_url') + '/depot_tools.git' + '@' + '64627e0fa5f1d07e86ba4f173ecd4c4997859cd4',
+    Var('ctsrd_cheri_url') + '/depot_tools.git' + '@' + '3f56b6cd5ec3f38232ab81a8cab2e3794d7d2149',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
@@ -4475,6 +4475,26 @@ hooks = [
     ],
   },
   {
+    'name': 'esbuild_link_system',
+    'pattern': '.',
+    'condition': 'host_os == "freebsd"',
+    'action': [ 'python3',
+                'src/third_party/depot_tools/link_system_dependencies.py',
+                '--source', '/usr/local64/bin/esbuild',
+                '--target', 'src/third_party/devtools-frontend/src/third_party/esbuild/esbuild',
+    ],
+  },
+  {
+    'name': 'gn_link_system',
+    'pattern': '.',
+    'condition': 'host_os == "freebsd"',
+    'action': [ 'python3',
+                'src/third_party/depot_tools/link_system_dependencies.py',
+                '--source', '/usr/local64/bin/gn',
+                '--target', 'src/buildtools/freebsd/gn',
+    ],
+  },
+  {
     # This clobbers when necessary (based on get_landmines.py). This should
     # run as early as possible so that other things that get/generate into the
     # output directory will not subsequently be clobbered.
@@ -4961,7 +4981,18 @@ hooks = [
                 '--bucket', 'chromium-nodejs/16.13.0',
                 '-s', 'src/third_party/node/win/node.exe.sha1',
     ],
+  }, 
+  {
+    'name': 'node_freebsd',
+    'pattern': '.',
+    'condition': 'host_os == "freebsd"',
+    'action': [ 'python3',
+                'src/third_party/depot_tools/link_system_dependencies.py',
+                '--source', '/usr/local64/bin/node',
+                '--target', 'src/third_party/node/freebsd/node-freebsd/bin/node',
+    ],
   },
+
 
   # Pull down NPM dependencies for WebUI toolchain.
   {
