@@ -154,7 +154,7 @@ static void SetControlsToMaxValues(int device_fd) {
 
 static void VerifyUserControlsAreSetToDefaultValues(int device_fd) {
   auto do_ioctl = base::BindRepeating(
-      [](int device_fd, int request, void* argp) {
+      [](int device_fd, unsigned long request, void* argp) {
         return HANDLE_EINTR(ioctl(device_fd, request, argp));
       },
       device_fd);
