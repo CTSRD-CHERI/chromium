@@ -1,0 +1,106 @@
+##############################################################################
+# Common
+##############################################################################
+clang_use_chrome_plugins                = false
+is_clang                                = true
+is_component_build                      = true
+use_aura                                = true
+use_lld                                 = true
+use_custom_libcxx                       = false
+
+##############################################################################
+# Chromium
+##############################################################################
+arm_control_flow_integrity              = "none"
+build_tflite_with_ruy                   = false
+build_with_tflite_lib                   = false
+blink_gc_plugin                         = false
+use_layout_plugin                       = false
+enable_backup_ref_ptr_support           = false
+enable_hangout_services_extension       = true
+enable_nacl                             = false
+enable_raw_ptr_exclusion_non_official   = false
+enable_remoting                         = false
+enable_rust                             = false
+fatal_linker_warnings                   = false
+icu_use_data_file                       = false
+optimize_webui                          = true
+toolkit_views                           = true
+treat_warnings_as_errors                = false
+use_allocator_shim                      = false
+use_gnome_keyring                       = false
+use_partition_alloc                     = true
+use_partition_alloc_as_malloc           = false
+use_sysroot                             = false
+use_system_freetype                     = false 
+use_system_harfbuzz                     = true
+use_system_libffi                       = true
+use_system_libjpeg                      = true
+use_udev                                = false
+ffmpeg_branding                         = "Chromium"
+use_v8_context_snapshot                 = false
+is_purecap                              = true
+mojo_media_services                     = ["renderer", "video_decoder"] 
+google_api_key                          = "AIzaSyBsp9n41JLW8jCokwn7vhoaMejDFRd1mp8"
+
+##############################################################################
+# Chromium dependencies
+##############################################################################
+
+##############################################################################
+# Swiftshader
+##############################################################################
+angle_enable_swiftshader                = false
+dawn_use_swiftshader                    = false
+enable_swiftshader                      = false
+enable_swiftshader_vulkan               = false
+
+##############################################################################
+# libyuv 
+##############################################################################
+libyuv_use_neon                         = false
+
+##############################################################################
+# V8
+##############################################################################
+
+# RelWithDebInfo equivalent
+is_debug                                = true
+v8_optimized_debug                      = true
+
+# We hit a lot of errors since we're compiling for ~unsupported platforms
+treat_warnings_as_errors                = false
+
+v8_use_snapshot                         = false
+v8_use_external_snapshot_data           = false
+
+# Disable WASM for now.
+v8_enable_webassembly                   = false
+
+# Uncompressed build
+v8_enable_pointer_compression           = false
+v8_enable_external_code_space           = false
+v8_enable_sandbox                       = false
+v8_enable_sandboxed_external_pointers   = false
+
+cppgc_enable_young_generation           = true
+arm_control_flow_integrity              = "none"
+cppgc_enable_caged_heap                 = true
+v8_annotate_torque_ir                   = true
+v8_enable_slow_dchecks                  = true
+v8_enable_snapshot_code_comments        = false # broken on purecap
+v8_verify_deterministic_mksnapshot      = false # broken on purecap
+v8_value_deserializer_hard_fail         = true
+v8_enable_verify_csa                    = false # broken on purecap
+
+##############################################################################
+# Build 
+##############################################################################
+
+# Needed because we don't use the wrapper on FreeBSD Morello builds.
+clang_base_path                         = "/usr/local64"
+cc_wrapper                              = "env CCACHE_PREFIX=distcc CCACHE_SLOPPINESS=time_macros ccache" # Uncomment for distcc and ccache
+extra_cflags                            = "-I/usr/local/include -I/usr/local/include/libepoll-shim --target=aarch64c-unknown-freebsd -mabi=purecap -march=morello -Xclang -morello-vararg=new -Xclang -morello-bounded-memargs -fno-stack-protector -fdebug-types-section -std=c11 -Wno-thread-safety-analysis"
+extra_cxxflags = "-I/usr/local/include -I/usr/local/include/libepoll-shim --target=aarch64c-unknown-freebsd -mabi=purecap -march=morello -Xclang -morello-vararg=new -Xclang -morello-bounded-memargs -fno-stack-protector -fdebug-types-section -std=c++20 -Wno-thread-safety-analysis"
+extra_ldflags                           = "-mabi=purecap"
+extra_asmflags                          = "-march=morello -mabi=purecap"
