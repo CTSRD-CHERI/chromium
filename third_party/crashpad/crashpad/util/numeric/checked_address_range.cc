@@ -135,6 +135,12 @@ template class CheckedAddressRangeGeneric<WinVMAddress, WinVMSize>;
 template class CheckedAddressRangeGeneric<LinuxVMAddress, LinuxVMSize>;
 #elif BUILDFLAG(IS_FUCHSIA)
 template class CheckedAddressRangeGeneric<zx_vaddr_t, size_t>;
+#elif BUILDFLAG(IS_BSD)
+#if defined(__CHERI_PURE_CAPABILITY__)
+template class CheckedAddressRangeGeneric<ptraddr_t, size_t>;
+#else   // !__CHERI_PURE_CAPABILITY__
+template class CheckedAddressRangeGeneric<LinuxVMAddress, LinuxVMSize>;
+#endif  // !__CHERI_PURE_CAPABILITY__
 #endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace internal
