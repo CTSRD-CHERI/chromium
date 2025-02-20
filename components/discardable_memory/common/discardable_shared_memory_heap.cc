@@ -351,7 +351,12 @@ absl::optional<size_t> DiscardableSharedMemoryHeap::GetResidentSize() const {
       // A given span over a piece of Shared Memory (which we will call
       // |shared_memory|) has Span::start_ initialized to a value equivalent
       // to reinterpret_cast<shared_memory->memory()) / block_size_.
+#if defined(__CHERI_PURE_CAPABILITY__)
+      auto temp = free_span->shared_memory()->memory();
+      void* mem = __builtin_cheri_address_set(temp, free_span->start() * block_size_);
+#else   // !__CHERI_PURE_CAPABILITY__
       void* mem = reinterpret_cast<void*>(free_span->start() * block_size_);
+#endif  // !__CHERI_PURE_CAPABILITY__
       absl::optional<size_t> resident_in_span =
           base::trace_event::ProcessMemoryDump::CountResidentBytes(
               mem, free_span->length() * base::GetPageSize());
