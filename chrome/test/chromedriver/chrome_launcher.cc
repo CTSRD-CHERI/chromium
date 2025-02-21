@@ -1364,6 +1364,10 @@ std::string GetTerminationReason(base::TerminationStatus status) {
 #endif
     case base::TERMINATION_STATUS_EVICTED_FOR_MEMORY:
       return "evicted for memory";
+#if defined(__CHERI_PURE_CAPABILITY__)
+    case base::TERMINATION_STATUS_CHERI_PROT_VIOLATION:
+      return "cheri protection failure";
+#endif
     case base::TERMINATION_STATUS_MAX_ENUM:
       NOTREACHED();
   }

@@ -200,6 +200,10 @@ static std::string TerminationStatusToString(base::TerminationStatus status) {
 #endif
     case base::TERMINATION_STATUS_EVICTED_FOR_MEMORY:
       return "evicted for memory";
+#if defined(__CHERI_PURE_CAPABILITY__)
+    case base::TERMINATION_STATUS_CHERI_PROT_VIOLATION:
+      return "crashed (cheri violation)";
+#endif
     case base::TERMINATION_STATUS_MAX_ENUM:
       break;
   }

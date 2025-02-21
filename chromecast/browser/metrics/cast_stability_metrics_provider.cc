@@ -99,6 +99,9 @@ void CastStabilityMetricsProvider::LogRendererCrash(
     return;
 
   if (status == base::TERMINATION_STATUS_PROCESS_CRASHED ||
+#if defined(__CHERI_PURE_CAPABILITY__)
+      status == base::TERMINATION_STATUS_CHERI_PROT_VIOLATION ||
+#endif
       status == base::TERMINATION_STATUS_ABNORMAL_TERMINATION) {
     ::metrics::StabilityMetricsHelper::RecordStabilityEvent(
         ::metrics::StabilityEventType::kRendererCrash);
