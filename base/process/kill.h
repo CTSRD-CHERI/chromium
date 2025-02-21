@@ -71,6 +71,10 @@ enum TerminationStatus {
   // On Windows, the OS terminated process due to code integrity failure.
   TERMINATION_STATUS_INTEGRITY_FAILURE,
 #endif
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // CHERI-specific violation caused the process to crash.
+  TERMINATION_STATUS_CHERI_PROT_VIOLATION,
+#endif
   TERMINATION_STATUS_MAX_ENUM
   // clang-format on
 };
