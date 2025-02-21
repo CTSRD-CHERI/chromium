@@ -87,6 +87,9 @@ bool SadTab::ShouldShow(base::TerminationStatus status) {
 #endif
     case base::TERMINATION_STATUS_OOM:
     case base::TERMINATION_STATUS_EVICTED_FOR_MEMORY:
+#if defined(__CHERI_PURE_CAPABILITY__)
+    case base::TERMINATION_STATUS_CHERI_PROT_VIOLATION:
+#endif
       return true;
     case base::TERMINATION_STATUS_NORMAL_TERMINATION:
     case base::TERMINATION_STATUS_STILL_RUNNING:
@@ -116,6 +119,10 @@ int SadTab::GetTitle() {
     case SAD_TAB_KIND_CRASHED:
     case SAD_TAB_KIND_KILLED:
       return IDS_SAD_TAB_RELOAD_TITLE;
+#if defined(__CHERI_PURE_CAPABILITY__)
+    case SAD_TAB_KIND_CHERI_PROT_VIOLATION:
+      return IDS_SAD_TAB_TITLE;
+#endif
   }
   NOTREACHED();
 }
@@ -140,6 +147,10 @@ int SadTab::GetInfoMessage() {
     case SAD_TAB_KIND_KILLED:
       return is_repeatedly_crashing_ ? IDS_SAD_TAB_RELOAD_TRY
                                      : IDS_SAD_TAB_MESSAGE;
+#if defined(__CHERI_PURE_CAPABILITY__)
+    case SAD_TAB_KIND_CHERI_PROT_VIOLATION:
+      return IDS_SAD_TAB_CHERI_MESSAGE;
+#endif
   }
   NOTREACHED();
 }
@@ -172,6 +183,9 @@ std::vector<int> SadTab::GetSubMessages() {
       return std::vector<int>();
     case SAD_TAB_KIND_CRASHED:
     case SAD_TAB_KIND_KILLED:
+#if defined(__CHERI_PURE_CAPABILITY__)
+    case SAD_TAB_KIND_CHERI_PROT_VIOLATION:
+#endif
       std::vector<int> message_ids = {IDS_SAD_TAB_RELOAD_RESTART_BROWSER,
                                       IDS_SAD_TAB_RELOAD_RESTART_DEVICE};
       // Only show Incognito suggestion if not already in Incognito mode.
@@ -256,6 +270,11 @@ SadTab::SadTab(content::WebContents* web_contents, SadTabKind kind)
       LOG(WARNING) << "Tab Killed: "
                    << web_contents->GetURL().DeprecatedGetOriginAsURL().spec();
       break;
+#if defined(__CHERI_PURE_CAPABILITY__)
+    case SAD_TAB_KIND_CHERI_PROT_VIOLATION:
+      LOG(WARNING) << "Tab Killed as a result of a CHERI fault";
+      break;
+#endif
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
