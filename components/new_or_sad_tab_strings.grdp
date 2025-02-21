@@ -109,6 +109,9 @@
           </message>
 	</else>
       </if>
+      <message name="IDS_SAD_TAB_CHERI_MESSAGE" desc="The message displayed on the sad tab page when the renderer crashes due to a CHERI protection violation.">
+	This webpage detected a CHERI memory-safety protection violation and was terminated.
+      </message>
 
       <!-- New Tab -->
       <message name="IDS_NEW_TAB_TITLE"

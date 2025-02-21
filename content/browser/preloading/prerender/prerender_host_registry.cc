@@ -1713,6 +1713,9 @@ void PrerenderHostRegistry::OnVisibilityChanged(Visibility visibility) {
 void PrerenderHostRegistry::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   CancelAllHosts(
+#if defined(__CHERI_PURE_CAPABILITY__)
+      status == base::TERMINATION_STATUS_CHERI_PROT_VIOLATION ||
+#endif
       status == base::TERMINATION_STATUS_PROCESS_CRASHED
           ? PrerenderFinalStatus::kPrimaryMainFrameRendererProcessCrashed
           : PrerenderFinalStatus::kPrimaryMainFrameRendererProcessKilled);

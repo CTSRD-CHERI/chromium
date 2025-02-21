@@ -13,7 +13,10 @@ enum SadTabKind {
   SAD_TAB_KIND_KILLED_BY_OOM,  // Tab killed by oom killer.
 #endif
   SAD_TAB_KIND_OOM,    // Tab ran out of memory.
-  SAD_TAB_KIND_KILLED  // Tab killed.
+  SAD_TAB_KIND_KILLED,  // Tab killed.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  SAD_TAB_KIND_CHERI_PROT_VIOLATION // Tab crashed due to CHERI violation
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_SAD_TAB_TYPES_H_
