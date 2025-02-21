@@ -84,7 +84,13 @@ enum TerminationStatus : int {
 #endif
   // The process was proactively terminated by the browser to reclaim memory.
   TERMINATION_STATUS_EVICTED_FOR_MEMORY = 10,
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // CHERI-specific violation caused the process to crash.
+  TERMINATION_STATUS_CHERI_PROT_VIOLATION = 11,
+  TERMINATION_STATUS_MAX_ENUM = 12,
+#else
   TERMINATION_STATUS_MAX_ENUM = 11,
+#endif
 };
 
 // Attempts to kill all the processes on the current machine that were launched
