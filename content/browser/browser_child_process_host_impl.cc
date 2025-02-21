@@ -491,6 +491,9 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
 #else  // BUILDFLAG(IS_ANDROID)
     switch (info.status) {
       case base::TERMINATION_STATUS_PROCESS_CRASHED:
+#if defined(__CHERI_PURE_CAPABILITY__)
+      case base::TERMINATION_STATUS_CHERI_PROT_VIOLATION:
+#endif
       case base::TERMINATION_STATUS_ABNORMAL_TERMINATION: {
         exited_abnormally_ = true;
         delegate_->OnProcessCrashed(info.exit_code);

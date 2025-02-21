@@ -123,6 +123,10 @@ static std::string TerminationStatusToString(base::TerminationStatus status) {
       return "crashed";
     case base::TERMINATION_STATUS_STILL_RUNNING:
       return "still running";
+#if defined(__CHERI_PURE_CAPABILITY__)
+    case base::TERMINATION_STATUS_CHERI_PROT_VIOLATION:
+      return "crashed (cheri violation)";
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
     // Used for the case when oom-killer kills a process on ChromeOS.
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:

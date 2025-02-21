@@ -135,6 +135,9 @@ void BrowserPluginGuest::PrimaryMainFrameRenderProcessGone(
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED:
       RecordAction(base::UserMetricsAction("BrowserPlugin.Guest.Killed"));
       break;
+#if defined(__CHERI_PURE_CAPABILITY__)
+      case base::TERMINATION_STATUS_CHERI_PROT_VIOLATION:
+#endif
     case base::TERMINATION_STATUS_PROCESS_CRASHED:
       RecordAction(base::UserMetricsAction("BrowserPlugin.Guest.Crashed"));
       break;

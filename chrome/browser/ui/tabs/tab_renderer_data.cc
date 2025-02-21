@@ -144,6 +144,9 @@ bool TabRendererData::IsCrashed() const {
           crashed_status ==
               base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM ||
 #endif
+#if defined(__CHERI_PURE_CAPABILITY__)
+          crashed_status == base::TERMINATION_STATUS_CHERI_PROT_VIOLATION ||
+#endif
           crashed_status == base::TERMINATION_STATUS_PROCESS_CRASHED ||
           crashed_status == base::TERMINATION_STATUS_ABNORMAL_TERMINATION ||
           crashed_status == base::TERMINATION_STATUS_LAUNCH_FAILED);

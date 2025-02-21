@@ -200,6 +200,9 @@ GpuTerminationStatus ConvertToGpuTerminationStatus(
     // Treat integrity failure as a crash on Windows.
     case base::TERMINATION_STATUS_INTEGRITY_FAILURE:
 #endif
+#if defined(__CHERI_PURE_CAPABILITY__)
+    case base::TERMINATION_STATUS_CHERI_PROT_VIOLATION:
+#endif
       return GpuTerminationStatus::PROCESS_CRASHED;
     case base::TERMINATION_STATUS_STILL_RUNNING:
       return GpuTerminationStatus::STILL_RUNNING;
@@ -777,6 +780,9 @@ GpuProcessHost::~GpuProcessHost() {
 
       if (info.status == base::TERMINATION_STATUS_NORMAL_TERMINATION ||
           info.status == base::TERMINATION_STATUS_ABNORMAL_TERMINATION ||
+#if defined(__CHERI_PURE_CAPABILITY__)
+          info.status == base::TERMINATION_STATUS_CHERI_PROT_VIOLATION ||
+#endif
           info.status == base::TERMINATION_STATUS_PROCESS_CRASHED) {
         // Windows always returns PROCESS_CRASHED on abnormal termination, as it
         // doesn't have a way to distinguish the two.

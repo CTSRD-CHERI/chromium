@@ -605,6 +605,9 @@ void DevToolsUIBindings::FrontendWebContentsObserver::
 #if BUILDFLAG(IS_WIN)
     case base::TERMINATION_STATUS_INTEGRITY_FAILURE:
 #endif
+#if defined(__CHERI_PURE_CAPABILITY__)
+    case base::TERMINATION_STATUS_CHERI_PROT_VIOLATION:
+#endif
       if (devtools_bindings_->agent_host_.get())
         devtools_bindings_->Detach();
       break;

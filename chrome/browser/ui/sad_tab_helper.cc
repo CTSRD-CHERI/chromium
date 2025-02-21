@@ -24,6 +24,10 @@ SadTabKind SadTabKindFromTerminationStatus(base::TerminationStatus status) {
       return SAD_TAB_KIND_KILLED;
     case base::TERMINATION_STATUS_OOM:
       return SAD_TAB_KIND_OOM;
+#if defined(__CHERI_PURE_CAPABILITY__)
+    case base::TERMINATION_STATUS_CHERI_PROT_VIOLATION:
+      return SAD_TAB_KIND_CHERI_PROT_VIOLATION;
+#endif
     default:
       return SAD_TAB_KIND_CRASHED;
   }

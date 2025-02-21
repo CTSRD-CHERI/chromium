@@ -3099,6 +3099,9 @@ void RenderFrameHostImpl::RenderProcessGone(
 
   if (IsInBackForwardCache()) {
     EvictFromBackForwardCacheWithReason(
+#if defined(__CHERI_PURE_CAPABILITY__)
+        info.status == base::TERMINATION_STATUS_CHERI_PROT_VIOLATION ||
+#endif
         info.status == base::TERMINATION_STATUS_PROCESS_CRASHED
             ? BackForwardCacheMetrics::NotRestoredReason::
                   kRendererProcessCrashed
@@ -3107,6 +3110,9 @@ void RenderFrameHostImpl::RenderProcessGone(
   }
 
   CancelPrerendering(PrerenderCancellationReason(
+#if defined(__CHERI_PURE_CAPABILITY__)
+      info.status == base::TERMINATION_STATUS_CHERI_PROT_VIOLATION ||
+#endif
       info.status == base::TERMINATION_STATUS_PROCESS_CRASHED
           ? PrerenderFinalStatus::kRendererProcessCrashed
           : PrerenderFinalStatus::kRendererProcessKilled));
@@ -13004,6 +13010,11 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
 #endif
       reason = "oom";
       break;
+#if defined(__CHERI_PURE_CAPABILITY__)
+    case base::TERMINATION_STATUS_CHERI_PROT_VIOLATION:
+      reason = "cheri violation";
+      break;
+#endif
     default:
       // Other termination statuses do not indicate a crash.
       return;

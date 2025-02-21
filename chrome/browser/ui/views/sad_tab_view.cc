@@ -164,6 +164,11 @@ std::u16string ErrorToString(int error_code) {
     case 140:
       error_string = "SIGSYS";
       break;
+#if defined(__CHERI_PURE_CAPABILITY__)
+    case 162:
+      error_string = "SIGPROT";
+      break;
+#endif
     case 258:
       error_string = "WAIT_TIMEOUT";
       break;

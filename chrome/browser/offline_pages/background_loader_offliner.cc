@@ -266,6 +266,9 @@ void BackgroundLoaderOffliner::PrimaryMainFrameRenderProcessGone(
       case base::TERMINATION_STATUS_OOM:
       case base::TERMINATION_STATUS_PROCESS_CRASHED:
       case base::TERMINATION_STATUS_STILL_RUNNING:
+#if defined(__CHERI_PURE_CAPABILITY__)
+      case base::TERMINATION_STATUS_CHERI_PROT_VIOLATION:
+#endif
         std::move(completion_callback_)
             .Run(request, Offliner::RequestStatus::LOADING_FAILED_NO_NEXT);
         break;

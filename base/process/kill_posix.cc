@@ -51,9 +51,6 @@ TerminationStatus GetTerminationStatusImpl(ProcessHandle handle,
       case SIGSEGV:
       case SIGTRAP:
       case SIGSYS:
-#if defined(__CHERI_PURE_CAPABILITY__)
-      case SIGPROT:
-#endif   // __CHERI_PURE_CAPABILITY__
         return TERMINATION_STATUS_PROCESS_CRASHED;
       case SIGKILL:
 #if BUILDFLAG(IS_CHROMEOS)
@@ -64,6 +61,10 @@ TerminationStatus GetTerminationStatusImpl(ProcessHandle handle,
       case SIGINT:
       case SIGTERM:
         return TERMINATION_STATUS_PROCESS_WAS_KILLED;
+#if defined(__CHERI_PURE_CAPABILITY__)
+      case SIGPROT:
+	return TERMINATION_STATUS_CHERI_PROT_VIOLATION;
+#endif   // __CHERI_PURE_CAPABILITY__
       default:
         break;
     }
