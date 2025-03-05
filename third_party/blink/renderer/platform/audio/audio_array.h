@@ -135,10 +135,16 @@ class AudioArray {
  private:
   // Return an address that is aligned to an |alignment| boundary.
   // |alignment| MUST be a power of two!
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static T* AlignedAddress(T* address, size_t alignment) {
+    return __builtin_align_up(address, alignment);
+  }
+#else   // !__CHERI_PURE_CAPABILITY__
   static T* AlignedAddress(T* address, intptr_t alignment) {
     intptr_t value = reinterpret_cast<intptr_t>(address);
     return reinterpret_cast<T*>((value + alignment - 1) & ~(alignment - 1));
   }
+#endif  // !__CHERI_PURE_CAPABILITY__
 
   T* allocation_;
   T* aligned_data_;
