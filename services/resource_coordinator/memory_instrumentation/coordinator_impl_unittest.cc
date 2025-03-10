@@ -454,7 +454,7 @@ TEST_F(CoordinatorImplTest, TimeOutStuckChildMultiProcess) {
 // This ifdef is here to match the sandboxing behavior of the client.
 // On Linux, all memory dumps come from the browser client. On all other
 // platforms, they are expected to come from each individual client.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
   EXPECT_CALL(browser_client,
               RequestOSMemoryDumpMock(
                   _, AllOf(Contains(kBrowserPid), Contains(kRendererPid)), _))
@@ -484,7 +484,7 @@ TEST_F(CoordinatorImplTest, TimeOutStuckChildMultiProcess) {
             results[0] = FillRawOSDump(kRendererPid);
             std::move(callback).Run(true, std::move(results));
           }));
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
 
   // Make the browser respond correctly but pretend the renderer is "stuck"
   // by storing a callback.
@@ -631,7 +631,7 @@ TEST_F(CoordinatorImplTest, GlobalMemoryDumpStruct) {
                            MemoryAllocatorDump::kUnitsBytes, 1024 * 2);
             std::move(callback).Run(true, args.dump_guid, std::move(pmd));
           }));
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
   EXPECT_CALL(browser_client,
               RequestOSMemoryDumpMock(_, AllOf(Contains(1), Contains(2)), _))
       .WillOnce(Invoke(
@@ -672,7 +672,7 @@ TEST_F(CoordinatorImplTest, GlobalMemoryDumpStruct) {
             results[0]->resident_set_kb = 2;
             std::move(callback).Run(true, std::move(results));
           }));
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
 
   MockGlobalMemoryDumpCallback callback;
   EXPECT_CALL(callback, OnCall(true, NotNull()))
@@ -716,7 +716,7 @@ TEST_F(CoordinatorImplTest, VmRegionsForHeapProfiler) {
 // This ifdef is here to match the sandboxing behavior of the client.
 // On Linux, all memory dumps come from the browser client. On all other
 // platforms, they are expected to come from each individual client.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
   EXPECT_CALL(browser_client,
               RequestOSMemoryDumpMock(
                   _, AllOf(Contains(kBrowserPid), Contains(kRendererPid)), _))
@@ -746,7 +746,7 @@ TEST_F(CoordinatorImplTest, VmRegionsForHeapProfiler) {
             results[0] = FillRawOSDump(kRendererPid);
             std::move(callback).Run(true, std::move(results));
           }));
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
 
   MockGetVmRegionsForHeapProfilerCallback callback;
   EXPECT_CALL(callback, OnCall(_))
@@ -891,7 +891,7 @@ TEST_F(CoordinatorImplTest, DumpByPidSuccess) {
 // This ifdef is here to match the sandboxing behavior of the client.
 // On Linux, all memory dumps come from the browser client. On all other
 // platforms, they are expected to come from each individual client.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
   EXPECT_CALL(client_process_1, RequestOSMemoryDumpMock(_, _, _))
       .WillOnce(Invoke(
           [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
@@ -939,7 +939,7 @@ TEST_F(CoordinatorImplTest, DumpByPidSuccess) {
             results[0] = FillRawOSDump(kGpuPid);
             std::move(callback).Run(true, std::move(results));
           }));
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
 
   base::RunLoop run_loop;
 
@@ -1019,7 +1019,8 @@ TEST_F(CoordinatorImplTest, GlobalDumpWithSubTrees) {
 
             std::move(callback).Run(true, args.dump_guid, std::move(pmd));
           }));
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
+
   EXPECT_CALL(browser_client, RequestOSMemoryDumpMock(_, Contains(1), _))
       .WillOnce(Invoke(
           [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
@@ -1043,8 +1044,8 @@ TEST_F(CoordinatorImplTest, GlobalDumpWithSubTrees) {
             results[0]->resident_set_kb = 1;
             std::move(callback).Run(true, std::move(results));
           }));
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
+ 
   base::test::TestFuture<bool,
                          memory_instrumentation::mojom::GlobalMemoryDumpPtr>
       result;
