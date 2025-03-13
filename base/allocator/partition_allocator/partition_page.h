@@ -479,9 +479,10 @@ ReservedStateBitmapSize() {
 #endif  // BUILDFLAG(USE_STARSCAN)
 
 #if defined(__CHERI_PURE_CAPABILITY__)
-__attribute__((cheri_no_provenance))
-#endif //defined(__CHERI_PURE_CAPABILITY__)
+PA_ALWAYS_INLINE size_t
+#else   // !__CHERI_PURE_CAPABILITY__
 PA_ALWAYS_INLINE uintptr_t
+#endif  //!__CHERI_PURE_CAPABILITY__
 SuperPagePayloadStartOffset(bool is_managed_by_normal_buckets,
                             bool with_quarantine) {
   return PartitionPageSize() +
@@ -498,9 +499,10 @@ PA_ALWAYS_INLINE uintptr_t SuperPagePayloadBegin(uintptr_t super_page,
 }
 
 #if defined(__CHERI_PURE_CAPABILITY__)
-__attribute__((cheri_no_provenance))
-#endif //defined(__CHERI_PURE_CAPABILITY__)
+PA_ALWAYS_INLINE size_t SuperPagePayloadEndOffset() {
+#else   // !__CHERI_PURE_CAPABILITY__
 PA_ALWAYS_INLINE uintptr_t SuperPagePayloadEndOffset() {
+#endif  //!__CHERI_PURE_CAPABILITY__
   return kSuperPageSize - PartitionPageSize();
 }
 
