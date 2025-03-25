@@ -1068,7 +1068,11 @@ inline bool CSSSelector::IsIdClassOrAttributeSelector() const {
 }
 
 inline void swap(CSSSelector& a, CSSSelector& b) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  alignas(max_align_t) char tmp[sizeof(CSSSelector)];
+#else   // !__CHERI_PURE_CAPABILITY__
   char tmp[sizeof(CSSSelector)];
+#endif  // !__CHERI_PURE_CAPABILITY__
   UNSAFE_BUFFERS({
     memcpy(tmp, &a, sizeof(CSSSelector));
     memcpy(&a, &b, sizeof(CSSSelector));
