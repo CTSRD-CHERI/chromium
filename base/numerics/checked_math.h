@@ -341,18 +341,26 @@ BASE_NUMERIC_ARITHMETIC_VARIADIC(Checked, Check, Min)
 // bad, we trigger the CHECK condition here.
 template <typename L, typename R>
 L* operator+(L* lhs, const StrictNumeric<R> rhs) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  return lhs + static_cast<R>(rhs);
+#else   // !__CHERI_PURE_CAPABILITY__
   const uintptr_t result = CheckAdd(reinterpret_cast<uintptr_t>(lhs),
                                     CheckMul(sizeof(L), static_cast<R>(rhs)))
                                .template ValueOrDie<uintptr_t>();
   return reinterpret_cast<L*>(result);
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 template <typename L, typename R>
 L* operator-(L* lhs, const StrictNumeric<R> rhs) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  return lhs - static_cast<R>(rhs);
+#else   // !__CHERI_PURE_CAPABILITY__
   const uintptr_t result = CheckSub(reinterpret_cast<uintptr_t>(lhs),
                                     CheckMul(sizeof(L), static_cast<R>(rhs)))
                                .template ValueOrDie<uintptr_t>();
   return reinterpret_cast<L*>(result);
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 }  // namespace internal
