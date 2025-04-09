@@ -428,7 +428,7 @@ class DragStartWaiter : public aura::client::DragDropClient {
     ADD_FAILURE() << "Unexpected call to DragCancel";
   }
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
   void UpdateDragImage(const gfx::ImageSkia& image,
                        const gfx::Vector2d& offset) override {}
 #endif
