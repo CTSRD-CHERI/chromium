@@ -1821,7 +1821,7 @@ if (is_linux || is_chromeos) {
     }
     if (!is_chromeos) {
       extract_symbols("angle_libvulkan_symbols") {
-        binary = "$root_out_dir/libvulkan.so.1"
+        binary = "$root_out_dir/libvulkan.so"
 
         if (current_cpu == "x86") {
           # GYP used "ia32" so keep that naming for back-compat.
