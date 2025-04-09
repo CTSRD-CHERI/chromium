@@ -48,7 +48,7 @@
 #include "base/win/current_module.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
 #include "base/nix/xdg_util.h"
 #include "base/scoped_environment_variable_override.h"
 #endif
@@ -192,7 +192,7 @@ TEST_F(MetricsLogTest, BasicRecord) {
   command_line->AppendSwitch("mock-flag-1");
   command_line->AppendSwitchASCII("mock-flag-2", "unused_value");
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
   base::ScopedEnvironmentVariableOverride scoped_desktop_override(
       base::nix::kXdgCurrentDesktopEnvVar, "GNOME");
   metrics::SystemProfileProto::OS::XdgCurrentDesktop expected_current_desktop =
@@ -258,7 +258,7 @@ TEST_F(MetricsLogTest, BasicRecord) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   system_profile->mutable_os()->set_kernel_version(
       base::SysInfo::KernelVersion());
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_BSD)
   system_profile->mutable_os()->set_kernel_version(
       base::SysInfo::OperatingSystemVersion());
 #elif BUILDFLAG(IS_ANDROID)
@@ -270,7 +270,7 @@ TEST_F(MetricsLogTest, BasicRecord) {
       base::SysInfo::GetIOSBuildNumber());
 #endif
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
   system_profile->mutable_os()->set_xdg_session_type(expected_session_type);
   system_profile->mutable_os()->set_xdg_current_desktop(
       expected_current_desktop);
