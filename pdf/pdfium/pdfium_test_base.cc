@@ -22,7 +22,7 @@
 #include "third_party/pdfium/public/fpdfview.h"
 #include "ui/gfx/geometry/size.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
 #include "base/environment.h"
 #endif
 
@@ -30,7 +30,7 @@ namespace chrome_pdf {
 
 namespace {
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
 base::FilePath GetTestFontsDir() {
   // base::TestSuite::Initialize() should have already set this.
   std::unique_ptr<base::Environment> env(base::Environment::Create());
@@ -48,7 +48,7 @@ PDFiumTestBase::~PDFiumTestBase() = default;
 
 // static
 bool PDFiumTestBase::UsingTestFonts() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
   return true;
 #else
   return false;
