@@ -37,7 +37,7 @@ TEST_F('TextDefaultsTest', 'All', function() {
   runMochaSuite('TextDefaults')
 });
 
-GEN('#if !BUILDFLAG(IS_LINUX)');
+GEN('#if !BUILDFLAG(IS_LINUX) || !BUILDFLAG(IS_BSD)');
 var TextDefaultsNoSystemFontTest = class extends TextDefaultsTest {
   /** @override */
   get featureList() {
