@@ -369,7 +369,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   FakeAccountManagerUI* GetFakeAccountManagerUI() const;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_BSD)
   std::unique_ptr<display::Screen> screen_;
 #endif
 

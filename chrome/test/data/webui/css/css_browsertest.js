@@ -5,7 +5,7 @@
 GEN('#include "build/chromeos_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-GEN('#if !BUILDFLAG(IS_LINUX)');
+GEN('#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_BSD)');
 GEN('#include "ui/base/ui_base_features.h"');
 GEN('#endif');
 
@@ -37,7 +37,7 @@ TEST_F('TextDefaultsTest', 'All', function() {
   runMochaSuite('TextDefaults')
 });
 
-GEN('#if !BUILDFLAG(IS_LINUX) || !BUILDFLAG(IS_BSD)');
+GEN('#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_BSD)');
 var TextDefaultsNoSystemFontTest = class extends TextDefaultsTest {
   /** @override */
   get featureList() {

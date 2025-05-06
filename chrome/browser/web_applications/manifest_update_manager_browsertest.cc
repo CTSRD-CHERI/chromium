@@ -123,7 +123,7 @@
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #endif
 
@@ -4171,7 +4171,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
                                       ManifestUpdateResult::kAppUpdated, 1);
   // Check that origin association validation succeeded with extension.com.
   ScopeExtensions expected_extensions = ScopeExtensions(
-      {ScopeExtensionInfo(url::Origin::Create(GURL("https://extension.com")))});
+      {ScopeExtensionInfo{url::Origin::Create(GURL("https://extension.com"))}});
   EXPECT_EQ(GetScopeExtensions(app_id), expected_extensions);
   EXPECT_EQ(GetValidatedScopeExtensions(app_id), expected_extensions);
 }
@@ -4202,7 +4202,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
   ScopeExtensions expected_extensions = ScopeExtensions(
-      {ScopeExtensionInfo(url::Origin::Create(GURL("https://extension.com")))});
+      {ScopeExtensionInfo{url::Origin::Create(GURL("https://extension.com"))}});
   EXPECT_EQ(GetValidatedScopeExtensions(app_id), ScopeExtensions());
 }
 
@@ -4222,7 +4222,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
                                  GetAppURL().GetWithoutFilename())}});
   AppId app_id = InstallWebApp();
   ScopeExtensions expected_extensions = ScopeExtensions(
-      {ScopeExtensionInfo(url::Origin::Create(GURL("https://extension.com")))});
+      {ScopeExtensionInfo{url::Origin::Create(GURL("https://extension.com"))}});
   EXPECT_EQ(GetScopeExtensions(app_id), expected_extensions);
 
   // Update with empty scope_extensions.
@@ -4254,8 +4254,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
             GetAppURL().GetWithoutFilename())}});
   AppId app_id = InstallWebApp();
 
-  ScopeExtensions expected_extensions = ScopeExtensions({ScopeExtensionInfo(
-      url::Origin::Create(GURL("https://extension_1.com")))});
+  ScopeExtensions expected_extensions = ScopeExtensions({ScopeExtensionInfo{
+      url::Origin::Create(GURL("https://extension_1.com"))}});
   EXPECT_EQ(GetScopeExtensions(app_id), expected_extensions);
   EXPECT_EQ(GetValidatedScopeExtensions(app_id), expected_extensions);
 
@@ -4277,8 +4277,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
   // Check that origin association validation succeeded with extension.com.
-  expected_extensions = ScopeExtensions({ScopeExtensionInfo(
-      url::Origin::Create(GURL("https://extension_2.com")))});
+  expected_extensions = ScopeExtensions({ScopeExtensionInfo{
+      url::Origin::Create(GURL("https://extension_2.com"))}});
   EXPECT_EQ(GetScopeExtensions(app_id), expected_extensions);
   EXPECT_EQ(GetValidatedScopeExtensions(app_id), expected_extensions);
 }
@@ -4299,7 +4299,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
 
   AppId app_id = InstallWebApp();
   ScopeExtensions expected_extensions = ScopeExtensions(
-      {ScopeExtensionInfo(url::Origin::Create(GURL("https://extension.com")))});
+      {ScopeExtensionInfo{url::Origin::Create(GURL("https://extension.com"))}});
   EXPECT_EQ(GetScopeExtensions(app_id), expected_extensions);
 
   // Check that failure to validate origin associations caused successful
@@ -4311,7 +4311,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
                                       ManifestUpdateResult::kAppUpdated, 1);
   // Check that origin association validation succeeded with extension.com.
   expected_extensions = ScopeExtensions(
-      {ScopeExtensionInfo(url::Origin::Create(GURL("https://extension.com")))});
+      {ScopeExtensionInfo{url::Origin::Create(GURL("https://extension.com"))}});
   EXPECT_EQ(GetScopeExtensions(app_id), expected_extensions);
   EXPECT_EQ(GetValidatedScopeExtensions(app_id), ScopeExtensions());
 }
@@ -4330,7 +4330,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
   SetOriginAssociationData({});
   AppId app_id = InstallWebApp();
   ScopeExtensions expected_extensions = ScopeExtensions(
-      {ScopeExtensionInfo(url::Origin::Create(GURL("https://extension.com")))});
+      {ScopeExtensionInfo{url::Origin::Create(GURL("https://extension.com"))}});
   EXPECT_EQ(GetScopeExtensions(app_id), expected_extensions);
   EXPECT_EQ(GetValidatedScopeExtensions(app_id), ScopeExtensions());
 
@@ -4361,7 +4361,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
   SetOriginAssociationData({});
   AppId app_id = InstallWebApp();
   ScopeExtensions expected_extensions = ScopeExtensions(
-      {ScopeExtensionInfo(url::Origin::Create(GURL("https://extension.com")))});
+      {ScopeExtensionInfo{url::Origin::Create(GURL("https://extension.com"))}});
   EXPECT_EQ(GetScopeExtensions(app_id), expected_extensions);
   EXPECT_EQ(GetValidatedScopeExtensions(app_id), ScopeExtensions());
 

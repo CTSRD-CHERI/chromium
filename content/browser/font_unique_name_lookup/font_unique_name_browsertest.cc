@@ -59,7 +59,7 @@ const char* const kExpectedFontFamilyNames[] = {"AndroidClock",
                                                 "Roboto Condensed",
                                                 "Roboto Condensed",
                                                 "Roboto"};
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
 const char* const kExpectedFontFamilyNames[] = {"Ahem",
                                                 "Arimo",
                                                 "Arimo",
