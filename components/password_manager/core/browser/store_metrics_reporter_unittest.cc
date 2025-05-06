@@ -244,14 +244,14 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     StoreMetricsReporterTestWithEnableStateParams,
     ::testing::Values(
-        EnableStateParam(true, EnableSettingManageState::kUser, 1),
-        EnableStateParam(true, EnableSettingManageState::kExtension, 2),
-        EnableStateParam(true, EnableSettingManageState::kPolicy, 3),
-        EnableStateParam(true, EnableSettingManageState::kRecommended, 4),
-        EnableStateParam(false, EnableSettingManageState::kUser, 6),
-        EnableStateParam(false, EnableSettingManageState::kExtension, 7),
-        EnableStateParam(false, EnableSettingManageState::kPolicy, 8),
-        EnableStateParam(false, EnableSettingManageState::kRecommended, 9)));
+        EnableStateParam{true, EnableSettingManageState::kUser, 1},
+        EnableStateParam{true, EnableSettingManageState::kExtension, 2},
+        EnableStateParam{true, EnableSettingManageState::kPolicy, 3},
+        EnableStateParam{true, EnableSettingManageState::kRecommended, 4},
+        EnableStateParam{false, EnableSettingManageState::kUser, 6},
+        EnableStateParam{false, EnableSettingManageState::kExtension, 7},
+        EnableStateParam{false, EnableSettingManageState::kPolicy, 8},
+        EnableStateParam{false, EnableSettingManageState::kRecommended, 9}));
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
