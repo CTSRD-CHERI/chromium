@@ -1585,7 +1585,7 @@ test("content_browsertests") {
     "../test/url_loader_interceptor_browsertest.cc",
   ]
 
-  if (is_linux) {
+  if (is_linux && !is_bsd) {
     sources += [ "../browser/network/address_map_linux_browsertest.cc" ]
   }
 
