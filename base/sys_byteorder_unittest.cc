@@ -41,6 +41,7 @@ TEST(ByteOrderTest, ByteSwap64) {
   EXPECT_EQ(k64BitTestData, reswapped);
 }
 
+#if !defined(__CHERI_PURE_CAPABILITY__)
 TEST(ByteOrderTest, ByteSwapUintPtrT) {
 #if defined(ARCH_CPU_64_BITS)
   const uintptr_t test_data = static_cast<uintptr_t>(k64BitTestData);
@@ -59,6 +60,7 @@ TEST(ByteOrderTest, ByteSwapUintPtrT) {
   uintptr_t reswapped = base::ByteSwapUintPtrT(swapped);
   EXPECT_EQ(test_data, reswapped);
 }
+#endif
 
 TEST(ByteOrderTest, ByteSwapToLE16) {
   uint16_t le = base::ByteSwapToLE16(k16BitTestData);
