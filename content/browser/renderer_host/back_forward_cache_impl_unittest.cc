@@ -170,7 +170,7 @@ class BackForwardCacheDefaultSizeTest : public ::testing::Test {
 
 TEST_F(BackForwardCacheDefaultSizeTest, DefaultCacheSize) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
   // Default cache sizes are specified by kBackForwardCacheSize.
   EXPECT_EQ(BackForwardCacheImpl::GetCacheSize(), 6u);
   EXPECT_EQ(BackForwardCacheImpl::GetForegroundedEntriesCacheSize(), 0u);
