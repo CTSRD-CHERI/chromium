@@ -38,7 +38,7 @@ size_t VarIntDecode(const uint8_t* in, size_t in_len, uintptr_t* out) {
 
     shift += 7;
     // Disallow overflowing the range of the output integer.
-    if (shift >= sizeof(uintptr_t) * 8)
+    if (shift >= sizeof(size_t) * 8)
       return 0;
   }
 
