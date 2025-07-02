@@ -385,7 +385,7 @@ bool PlatformThreadBase::CanChangeThreadType(ThreadType from, ThreadType to) {
 // static
 ThreadType PlatformThreadBase::GetCurrentEffectiveThreadTypeForTest() {
 #if BUILDFLAG(IS_BSD)
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return ThreadType::kDefault;
 #else
   // Mirrors SetCurrentThreadPriority()'s implementation.
