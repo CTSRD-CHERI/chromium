@@ -367,7 +367,7 @@ int SysInfo::NumberOfEfficientProcessorsImpl() {
                                      max_core_frequencies.end(),
                                      *min_max_core_frequencies_it));
 #else
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return 0;
 #endif
 }
