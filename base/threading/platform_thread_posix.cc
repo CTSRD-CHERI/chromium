@@ -376,7 +376,7 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
   NOTIMPLEMENTED();
 // avoid pledge(2) violation
 #elif BUILDFLAG(IS_BSD)
-   NOTIMPLEMENTED();
+   NOTIMPLEMENTED_LOG_ONCE();
 #else
   if (internal::SetCurrentThreadTypeForPlatform(thread_type, pump_type_hint))
     return;
