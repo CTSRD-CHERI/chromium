@@ -75,6 +75,10 @@
 #include <sys/syscall.h>
 #endif
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+#include <cheriintrin.h>
+#endif
+
 // In the MTE world, the upper bits of a pointer can be decorated with a tag,
 // thus allowing many versions of the same pointer to exist. These macros take
 // that into account when comparing.
@@ -1321,7 +1325,14 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
 
   // Allocate a size that should be a perfect match for a bucket, because it
   // is an exact power of 2.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // Round down to a size with representable bounds.
+  auto original_requested_size = (256 * 1024) - ExtraAllocSize(allocator);
+  requested_size = original_requested_size &
+      cheri_representable_alignment_mask(original_requested_size);
+#else   // !__CHERI_PURE_CAPABILITY__
   requested_size = (256 * 1024) - ExtraAllocSize(allocator);
+#endif  // !__CHERI_PURE_CAPABILITY__
   predicted_capacity =
       allocator.root()->AllocationCapacityFromRequestedSize(requested_size);
   ptr = allocator.root()->Alloc(requested_size, type_name);
@@ -1330,7 +1341,11 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
   actual_capacity =
       allocator.root()->AllocationCapacityFromSlotStart(slot_start);
   EXPECT_EQ(predicted_capacity, actual_capacity);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_EQ(original_requested_size, actual_capacity);
+#else  // !__CHERI_PURE_CAPABILITY__
   EXPECT_EQ(requested_size, actual_capacity);
+#endif // !__CHERI_PURE_CAPABILITY__
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   if (UseBRPPool()) {
     uintptr_t address = UntagPtr(ptr);
@@ -1349,8 +1364,16 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
   while (num * SystemPageSize() >= 1024 * 1024) {
     num /= 2;
   }
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // Round down to a size with representable bounds.
+  original_requested_size =
+      num * SystemPageSize() - SystemPageSize() - ExtraAllocSize(allocator);
+  requested_size = original_requested_size &
+      cheri_representable_alignment_mask(original_requested_size);
+#else   // !__CHERI_PURE_CAPABILITY__
   requested_size =
       num * SystemPageSize() - SystemPageSize() - ExtraAllocSize(allocator);
+#endif   // __CHERI_PURE_CAPABILITY__
   predicted_capacity =
       allocator.root()->AllocationCapacityFromRequestedSize(requested_size);
   ptr = allocator.root()->Alloc(requested_size, type_name);
@@ -1359,7 +1382,11 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
   actual_capacity =
       allocator.root()->AllocationCapacityFromSlotStart(slot_start);
   EXPECT_EQ(predicted_capacity, actual_capacity);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_LE(original_requested_size + SystemPageSize(), actual_capacity);
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_EQ(requested_size + SystemPageSize(), actual_capacity);
+#endif  // !__CHERI_PURE_CAPABILITY__
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   if (UseBRPPool()) {
     uintptr_t address = UntagPtr(ptr);
@@ -1373,6 +1400,9 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
 
   // Allocate the maximum allowed bucketed size.
   requested_size = kMaxBucketed - ExtraAllocSize(allocator);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_EQ(kMaxBucketed, cheri_representable_length(kMaxBucketed));
+#endif   // __CHERI_PURE_CAPABILITY__
   predicted_capacity =
       allocator.root()->AllocationCapacityFromRequestedSize(requested_size);
   ptr = allocator.root()->Alloc(requested_size, type_name);
@@ -1427,7 +1457,13 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
   requested_size = MaxDirectMapped() + 1;
   predicted_capacity =
       allocator.root()->AllocationCapacityFromRequestedSize(requested_size);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_EQ(
+      cheri_representable_length(requested_size) - ExtraAllocSize(allocator),
+      predicted_capacity);
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_EQ(requested_size, predicted_capacity);
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
@@ -1712,7 +1748,19 @@ TEST_P(PartitionAllocTest, Realloc) {
   EXPECT_EQ('A', char_ptr[0]);
   EXPECT_EQ('A', char_ptr[size - 2]);
 #if BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+#if defined(__CHERI_PURE_CAPABILITY__)
+  {
+    auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(
+        reinterpret_cast<uintptr_t>(char_ptr));
+    auto widened_char_ptr = reinterpret_cast<char*>(
+        cheri_bounds_set(cheri_address_set(base,
+	cheri_address_get(char_ptr)), size));
+    EXPECT_EQ(kUninitializedByte,
+              static_cast<unsigned char>(widened_char_ptr[size - 1]));
+  }
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_EQ(kUninitializedByte, static_cast<unsigned char>(char_ptr[size - 1]));
+#endif  // !__CHERI_PURE_CAPABILITY__
 #endif
 
   allocator.root()->Free(ptr);
@@ -1750,7 +1798,22 @@ TEST_P(PartitionAllocTest, Realloc) {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
   // For single-slot slot spans, the cookie is always placed immediately after
   // the allocation.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  {
+    // The cookie is placed immediately after the bounded allocation (that is
+    // after the usable size). This requires widening of the bounds in order to
+    // check the cookie value.
+    auto base = internal::AddressPoolManager::GetInstance().GetPoolBaseAddress(
+        reinterpret_cast<uintptr_t>(char_ptr2));
+    auto usable_size = allocator.root()->GetUsableSize(ptr2);
+    auto widened_char_ptr2 = reinterpret_cast<char *>(
+      cheri_bounds_set(cheri_address_set(base, cheri_address_get(char_ptr2)),
+      usable_size + kCookieSize));
+    EXPECT_EQ(kCookieValue[0], static_cast<unsigned char>(widened_char_ptr2[usable_size]));
+  }
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_EQ(kCookieValue[0], static_cast<unsigned char>(char_ptr2[size / 2]));
+#endif  // !__CHERI_PURE_CAPABILITY__
 #endif
   allocator.root()->Free(ptr2);
 
@@ -1773,7 +1836,11 @@ TEST_P(PartitionAllocTest, Realloc) {
       allocator.root()->Realloc(ptr2, size - 32 * SystemPageSize(), type_name);
   uintptr_t slot_start3 = allocator.root()->ObjectToSlotStart(ptr3);
   EXPECT_EQ(slot_start2, slot_start3);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_EQ(actual_capacity - 31 * SystemPageSize(),
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_EQ(actual_capacity - 32 * SystemPageSize(),
+#endif  // !__CHERI_PURE_CAPABILITY__
             allocator.root()->AllocationCapacityFromSlotStart(slot_start3));
 
   // Test that a previously in-place shrunk direct mapped allocation can be
@@ -1781,14 +1848,22 @@ TEST_P(PartitionAllocTest, Realloc) {
   ptr = allocator.root()->Realloc(ptr3, size, type_name);
   slot_start = allocator.root()->ObjectToSlotStart(ptr);
   EXPECT_EQ(slot_start3, slot_start);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_EQ(actual_capacity + SystemPageSize(),
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_EQ(actual_capacity,
+#endif  // !__CHERI_PURE_CAPABILITY__
             allocator.root()->AllocationCapacityFromSlotStart(slot_start));
 
   // Test that the allocation can be expanded in place up to its capacity.
   ptr2 = allocator.root()->Realloc(ptr, actual_capacity, type_name);
   slot_start2 = allocator.root()->ObjectToSlotStart(ptr2);
   EXPECT_EQ(slot_start, slot_start2);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_EQ(actual_capacity + SystemPageSize(),
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_EQ(actual_capacity,
+#endif   // __CHERI_PURE_CAPABILITY__
             allocator.root()->AllocationCapacityFromSlotStart(slot_start2));
 
   // Test that a direct mapped allocation is performed not in-place when the
@@ -1830,7 +1905,11 @@ TEST_P(PartitionAllocTest, ReallocDirectMapAligned) {
                                            type_name);
     uintptr_t slot_start3 = allocator.root()->ObjectToSlotStart(ptr3);
     EXPECT_EQ(slot_start2, slot_start3);
+#if defined(__CHERI_PURE_CAPABILITY__)
+    EXPECT_EQ(actual_capacity - 31 * SystemPageSize(),
+#else   // !__CHERI_PURE_CAPABILITY__
     EXPECT_EQ(actual_capacity - 32 * SystemPageSize(),
+#endif  // !__CHERI_PURE_CAPABILITY__
               allocator.root()->AllocationCapacityFromSlotStart(slot_start3));
 
     // Test that a previously in-place shrunk direct mapped allocation can be
@@ -1838,14 +1917,22 @@ TEST_P(PartitionAllocTest, ReallocDirectMapAligned) {
     ptr = allocator.root()->Realloc(ptr3, size, type_name);
     slot_start = allocator.root()->ObjectToSlotStart(ptr);
     EXPECT_EQ(slot_start3, slot_start);
+#if defined(__CHERI_PURE_CAPABILITY__)
+    EXPECT_EQ(actual_capacity + SystemPageSize(),
+#else   // !__CHERI_PURE_CAPABILITY__
     EXPECT_EQ(actual_capacity,
+#endif  // !__CHERI_PURE_CAPABILITY__
               allocator.root()->AllocationCapacityFromSlotStart(slot_start));
 
     // Test that the allocation can be expanded in place up to its capacity.
     ptr2 = allocator.root()->Realloc(ptr, actual_capacity, type_name);
     slot_start2 = allocator.root()->ObjectToSlotStart(ptr2);
     EXPECT_EQ(slot_start, slot_start2);
+#if defined(__CHERI_PURE_CAPABILITY__)
+    EXPECT_EQ(actual_capacity + SystemPageSize(),
+#else   // !__CHERI_PURE_CAPABILITY__
     EXPECT_EQ(actual_capacity,
+#endif  // !__CHERI_PURE_CAPABILITY__
               allocator.root()->AllocationCapacityFromSlotStart(slot_start2));
 
     // Test that a direct mapped allocation is performed not in-place when the
@@ -2240,14 +2327,23 @@ TEST_P(PartitionAllocTest, MappingCollision) {
   // Map a single system page either side of the mapping for our allocations,
   // with the goal of tripping up alignment of the next mapping.
   uintptr_t map1 =
+#if defined(__CHERI_PURE_CAPABILITY__)
+      AllocPages(cheri_address_get(super_page - PageAllocationGranularity()),
+#else   // !__CHERI_PURE_CAPABILITY__
       AllocPages(super_page - PageAllocationGranularity(),
+#endif  // !__CHERI_PURE_CAPABILITY__
                  PageAllocationGranularity(), PageAllocationGranularity(),
                  PageAccessibilityConfiguration(
                      PageAccessibilityConfiguration::kInaccessible),
                  PageTag::kPartitionAlloc);
   EXPECT_TRUE(map1);
   uintptr_t map2 =
+#if defined(__CHERI_PURE_CAPABILITY__)
+      AllocPages(cheri_address_get(super_page + kSuperPageSize),
+                 PageAllocationGranularity(),
+#else   // !__CHERI_PURE_CAPABILITY__
       AllocPages(super_page + kSuperPageSize, PageAllocationGranularity(),
+#endif  // !__CHERI_PURE_CAPABILITY__
                  PageAllocationGranularity(),
                  PageAccessibilityConfiguration(
                      PageAccessibilityConfiguration::kInaccessible),
@@ -2269,13 +2365,22 @@ TEST_P(PartitionAllocTest, MappingCollision) {
                 partition_alloc::internal::ReservedFreeSlotBitmapSize();
   // Map a single system page either side of the mapping for our allocations,
   // with the goal of tripping up alignment of the next mapping.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  map1 = AllocPages(cheri_address_get(super_page - PageAllocationGranularity()),
+#else   // !__CHERI_PURE_CAPABILITY__
   map1 = AllocPages(super_page - PageAllocationGranularity(),
+#endif  // !__CHERI_PURE_CAPABILITY__
                     PageAllocationGranularity(), PageAllocationGranularity(),
                     PageAccessibilityConfiguration(
                         PageAccessibilityConfiguration::kReadWriteTagged),
                     PageTag::kPartitionAlloc);
   EXPECT_TRUE(map1);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  map2 = AllocPages(cheri_address_get(super_page + kSuperPageSize),
+                    PageAllocationGranularity(),
+#else   // !__CHERI_PURE_CAPABILITY__
   map2 = AllocPages(super_page + kSuperPageSize, PageAllocationGranularity(),
+#endif  // !__CHERI_PURE_CAPABILITY__
                     PageAllocationGranularity(),
                     PageAccessibilityConfiguration(
                         PageAccessibilityConfiguration::kReadWriteTagged),
@@ -2967,7 +3072,12 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
       EXPECT_TRUE(stats->is_valid);
       EXPECT_FALSE(stats->is_direct_map);
       EXPECT_EQ(slot_size, stats->bucket_slot_size);
+#if defined(__CHERI_PURE_CAPABILITY__)
+      EXPECT_EQ(cheri_representable_length(requested_size + 1 +
+                ExtraAllocSize(allocator)),
+#else   // !__CHERI_PURE_CAPABILITY__
       EXPECT_EQ(requested_size + 1 + ExtraAllocSize(allocator),
+#endif  // !__CHERI_PURE_CAPABILITY__
                 stats->active_bytes);
       EXPECT_EQ(1u, stats->active_count);
       EXPECT_EQ(slot_size, stats->resident_bytes);
@@ -3025,7 +3135,12 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
       EXPECT_FALSE(stats->is_direct_map);
       EXPECT_EQ(slot_size, stats->bucket_slot_size);
       EXPECT_EQ(
+#if defined(__CHERI_PURE_CAPABILITY__)
+          cheri_representable_length(
+          requested_size + SystemPageSize() + 1 + ExtraAllocSize(allocator)),
+#else   // !__CHERI_PURE_CAPABILITY__
           requested_size + SystemPageSize() + 1 + ExtraAllocSize(allocator),
+#endif  // !__CHERI_PURE_CAPABILITY__
           stats->active_bytes);
       EXPECT_EQ(1u, stats->active_count);
       EXPECT_EQ(slot_size, stats->resident_bytes);
@@ -3389,9 +3504,13 @@ TEST_P(PartitionAllocTest, PurgeDiscardableWithFreeListRewrite) {
   void* ptr4 = allocator.root()->Alloc(
       SystemPageSize() - ExtraAllocSize(allocator), type_name);
   ptr1[0] = 'A';
+#if !defined(__CHERI_PURE_CAPABILITY__)
+  // On CHERI allocated objects are bound by the request size (rounded to the
+  // representatble length).
   ptr1[SystemPageSize()] = 'A';
   ptr1[SystemPageSize() * 2] = 'A';
   ptr1[SystemPageSize() * 3] = 'A';
+#endif  // !__CHERI_PURE_CAPABILITY__
   SlotSpanMetadata<internal::ThreadSafe>* slot_span =
       SlotSpanMetadata<internal::ThreadSafe>::FromSlotStart(
           allocator.root()->ObjectToSlotStart(ptr1));
@@ -3464,9 +3583,13 @@ TEST_P(PartitionAllocTest, PurgeDiscardableDoubleTruncateFreeList) {
   void* ptr4 = allocator.root()->Alloc(
       SystemPageSize() - ExtraAllocSize(allocator), type_name);
   ptr1[0] = 'A';
+#if !defined(__CHERI_PURE_CAPABILITY__)
+  // On CHERI allocated objects are bound by the request size (rounded to the
+  // representatble length).
   ptr1[SystemPageSize()] = 'A';
   ptr1[SystemPageSize() * 2] = 'A';
   ptr1[SystemPageSize() * 3] = 'A';
+#endif   // !__CHERI_PURE_CAPABILITY__
   SlotSpanMetadata<internal::ThreadSafe>* slot_span =
       SlotSpanMetadata<internal::ThreadSafe>::FromSlotStart(
           allocator.root()->ObjectToSlotStart(ptr1));
@@ -3907,8 +4030,16 @@ TEST_P(PartitionAllocTest, GetUsableSize) {
 #if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
     if (size != internal::kMac11MallocSizeHackRequestedSize)
 #endif
-      EXPECT_EQ(usable_size_with_hack, usable_size);
+    EXPECT_EQ(usable_size_with_hack, usable_size);
     EXPECT_LE(size, usable_size);
+#if defined(__CHERI_PURE_CAPABILITY__)
+    // Rederive ptr capability with the bounds widened to usable_size.
+    auto ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
+    auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(ptr_as_uintptr);
+    ptr = reinterpret_cast<void *>(
+        cheri_address_set(base, cheri_address_get(ptr)));
+    ptr = cheri_bounds_set(ptr, usable_size);
+#endif   // __CHERI_PURE_CAPABILITY__
     memset(ptr, 0xDE, usable_size);
     // Should not crash when free the ptr.
     allocator.root()->Free(ptr);
@@ -4919,6 +5050,9 @@ TEST_P(PartitionAllocTest, CheckReservationType) {
 TEST_P(PartitionAllocTest, CrossPartitionRootRealloc) {
   // Size is large enough to satisfy it from a single-slot slot span
   size_t test_size = MaxRegularSlotSpanSize() - ExtraAllocSize(allocator);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  test_size &= cheri_representable_alignment_mask(test_size);
+#endif   // __CHERI_PURE_CAPABILITY__)
   void* ptr = allocator.root()->AllocWithFlags(AllocFlags::kReturnNull,
                                                test_size, nullptr);
   EXPECT_TRUE(ptr);
@@ -5486,7 +5620,7 @@ TEST_P(PartitionAllocTest, SmallSlotSpanWaste) {
 
 TEST_P(PartitionAllocTest, SortActiveSlotSpans) {
   auto run_test = [](size_t count) {
-    PartitionBucket<ThreadSafe> bucket;
+    alignas(max_align_t) PartitionBucket<ThreadSafe> bucket;
     bucket.Init(16);
     bucket.active_slot_spans_head = nullptr;
 
@@ -5496,7 +5630,7 @@ TEST_P(PartitionAllocTest, SortActiveSlotSpans) {
     // Add slot spans with random freelist length.
     for (size_t i = 0; i < count; i++) {
       slot_spans.emplace_back(&bucket);
-      auto& slot_span = slot_spans.back();
+      alignas(max_align_t) auto& slot_span = slot_spans.back();
       slot_span.num_unprovisioned_slots =
           partition_alloc::internal::base::RandGenerator(
               bucket.get_slots_per_span() / 2);

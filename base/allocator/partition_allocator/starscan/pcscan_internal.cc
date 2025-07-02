@@ -55,6 +55,10 @@
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #endif
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+#include <cheriintrin.h>
+#endif
+
 #if PA_CONFIG(STARSCAN_NOINLINE_SCAN_FUNCTIONS)
 #define PA_SCAN_INLINE PA_NOINLINE
 #else
@@ -126,8 +130,20 @@ class QuarantineCardTable final {
   // Avoid the load of the base of the regular pool.
   PA_ALWAYS_INLINE static QuarantineCardTable& GetFrom(uintptr_t address) {
     PA_SCAN_DCHECK(IsManagedByPartitionAllocRegularPool(address));
+#if defined(__CHERI_PURE_CAPABILITY__)
+    // Rederive the quarantine_card_table capability and enforce the bounds to
+    // sizeof(QuarantineCardTable).
+    auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(address);
+    auto quarantine_card_table = reinterpret_cast<QuarantineCardTable *>(
+        cheri_address_set(base,
+        cheri_address_get(address) & PartitionAddressSpace::RegularPoolBaseMask()));
+    quarantine_card_table = cheri_bounds_set(quarantine_card_table,
+                                             sizeof(QuarantineCardTable));
+    return *quarantine_card_table;
+#else   // !__CHERI_PURE_CAPABILITY__
     return *reinterpret_cast<QuarantineCardTable*>(
         address & PartitionAddressSpace::RegularPoolBaseMask());
+#endif  // !__CHERI_PURE_CAPABILITY__
   }
 
   PA_ALWAYS_INLINE void Quarantine(uintptr_t begin, size_t size) {
@@ -154,7 +170,12 @@ class QuarantineCardTable final {
   QuarantineCardTable() = default;
 
   PA_ALWAYS_INLINE static size_t Byte(uintptr_t address) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    return (cheri_address_get(address) &
+           ~PartitionAddressSpace::RegularPoolBaseMask()) /
+#else    // __CHERI_PURE_CAPABILITY__
     return (address & ~PartitionAddressSpace::RegularPoolBaseMask()) /
+#endif   // __CHERI_PURE_CAPABILITY__
            kCardSize;
   }
 
@@ -210,12 +231,29 @@ GetSlotStartInSuperPage(uintptr_t maybe_inner_address) {
   // Don't use SlotSpanMetadata/PartitionPage::FromAddr() and family, because
   // they expect an address within a super page payload area, which we don't
   // know yet if |maybe_inner_address| is.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // Rederive the super_page capability and enforce the bounds to
+  // size of the super page (kSuperPageSize).
+  auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(maybe_inner_address);
+  auto maybe_inner_address_as_ptraddr = cheri_address_get(maybe_inner_address);
+  auto super_page_as_ptraddr = maybe_inner_address_as_ptraddr & kSuperPageBaseMask;
+  const uintptr_t super_page =
+      cheri_bounds_set(cheri_address_set(base, super_page_as_ptraddr),
+                       kSuperPageSize);
+
+  const auto partition_page_index =
+      (maybe_inner_address_as_ptraddr & kSuperPageOffsetMask) >>
+      PartitionPageShift();
+  auto* page = PartitionSuperPageToMetadataArea<ThreadSafe>(super_page,
+               partition_page_index);
+#else   // !__CHERI_PURE_CAPABILITY__
   const uintptr_t super_page = maybe_inner_address & kSuperPageBaseMask;
 
   const uintptr_t partition_page_index =
       (maybe_inner_address & kSuperPageOffsetMask) >> PartitionPageShift();
   auto* page = PartitionSuperPageToMetadataArea<ThreadSafe>(super_page) +
                partition_page_index;
+#endif  // !__CHERI_PURE_CAPABILITY__
   // Check if page is valid. The check also works for the guard pages and the
   // metadata page.
   if (!page->is_valid) {
@@ -223,6 +261,17 @@ GetSlotStartInSuperPage(uintptr_t maybe_inner_address) {
   }
 
   page -= page->slot_span_metadata_offset;
+#if defined(__CHERI_PURE_CAPABILITY__)
+  {
+    // Rederive the page capability and enforce the bounds to
+    // sizeof(PartitionPage<ThreadSafe>).
+    auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(
+        reinterpret_cast<uintptr_t>(page));
+    page = reinterpret_cast<PartitionPage<ThreadSafe>*>(
+        cheri_address_set(base, cheri_address_get(page)));
+    page = cheri_bounds_set(page, sizeof(PartitionPage<ThreadSafe>));
+  }
+#endif   // __CHERI_PURE_CAPABILITY__
   PA_SCAN_DCHECK(page->is_valid);
   PA_SCAN_DCHECK(!page->slot_span_metadata_offset);
   auto* slot_span = &page->slot_span_metadata;

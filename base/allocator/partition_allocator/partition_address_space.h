@@ -26,6 +26,10 @@
 #include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
 #include "build/build_config.h"
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+#include <cheriintrin.h>
+#endif
+
 // The feature is not applicable to 32-bit address space.
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
 
@@ -38,11 +42,19 @@ namespace internal {
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
  public:
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
+#if defined(__CHERI_PURE_CAPABILITY__)
+  PA_ALWAYS_INLINE static ptraddr_t RegularPoolBaseMask() {
+#else   // !__CHERI_PURE_CAPABILITY__
   PA_ALWAYS_INLINE static uintptr_t RegularPoolBaseMask() {
+#endif  // !__CHERI_PURE_CAPABILITY__
     return setup_.regular_pool_base_mask_;
   }
 #else
+#if defined(__CHERI_PURE_CAPABILITY__)
+  PA_ALWAYS_INLINE static constexpr ptraddr_t RegularPoolBaseMask() {
+#else   // !__CHERI_PURE_CAPABILITY__
   PA_ALWAYS_INLINE static constexpr uintptr_t RegularPoolBaseMask() {
+#endif  // !__CHERI_PURE_CAPABILITY__
     return kRegularPoolBaseMask;
   }
 #endif
@@ -127,15 +139,16 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
   // Returns false for nullptr.
   PA_ALWAYS_INLINE static bool IsInRegularPool(uintptr_t address) {
-#if defined(__CHERI_PURE_CAPABILITY__)
-    __attribute__((cheri_no_provenance))
-#endif // defined(__CHERI_PURE_CAPABILITY__)
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-    const uintptr_t regular_pool_base_mask = setup_.regular_pool_base_mask_;
+    const auto regular_pool_base_mask = setup_.regular_pool_base_mask_;
 #else
-    constexpr uintptr_t regular_pool_base_mask = kRegularPoolBaseMask;
+    constexpr auto regular_pool_base_mask = kRegularPoolBaseMask;
 #endif
+#if defined(__CHERI_PURE_CAPABILITY__)
+    return (cheri_address_get(address) & regular_pool_base_mask) ==
+#else   // !__CHERI_PURE_CAPABILITY__
     return (address & regular_pool_base_mask) ==
+#endif  // !__CHERI_PURE_CAPABILITY__
            setup_.regular_pool_base_address_;
   }
 
@@ -145,15 +158,17 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
   // Returns false for nullptr.
   PA_ALWAYS_INLINE static bool IsInBRPPool(uintptr_t address) {
-#if defined(__CHERI_PURE_CAPABILITY__)
-    __attribute__((cheri_no_provenance))
-#endif // defined(__CHERI_PURE_CAPABILITY__)
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-    const uintptr_t brp_pool_base_mask = setup_.brp_pool_base_mask_;
+    const auto brp_pool_base_mask = setup_.brp_pool_base_mask_;
 #else
-    constexpr uintptr_t brp_pool_base_mask = kBRPPoolBaseMask;
+    constexpr auto brp_pool_base_mask = kBRPPoolBaseMask;
 #endif
+#if defined(__CHERI_PURE_CAPABILITY__)
+    return (cheri_address_get(address) & brp_pool_base_mask) ==
+            setup_.brp_pool_base_address_;
+#else   // !__CHERI_PURE_CAPABILITY__
     return (address & brp_pool_base_mask) == setup_.brp_pool_base_address_;
+#endif  // !__CHERI_PURE_CAPABILITY__
   }
 
 #if BUILDFLAG(GLUE_CORE_POOLS)
@@ -161,15 +176,20 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // Returns false for nullptr.
   PA_ALWAYS_INLINE static bool IsInCorePools(uintptr_t address) {
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-    const uintptr_t core_pools_base_mask = setup_.core_pools_base_mask_;
+    const auto core_pools_base_mask = setup_.core_pools_base_mask_;
 #else
     // When PA_GLUE_CORE_POOLS is on, the BRP pool is placed at the end of the
     // regular pool, effectively forming one virtual pool of a twice bigger
     // size. Adjust the mask appropriately.
-    constexpr uintptr_t core_pools_base_mask = kRegularPoolBaseMask << 1;
+    constexpr auto core_pools_base_mask = kRegularPoolBaseMask << 1;
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
     bool ret =
+#if defined(__CHERI_PURE_CAPABILITY__)
+        (cheri_address_get(address) & core_pools_base_mask) ==
+        setup_.regular_pool_base_address_;
+#else   // !__CHERI_PURE_CAPABILITY__
         (address & core_pools_base_mask) == setup_.regular_pool_base_address_;
+#endif  // !__CHERI_PURE_CAPABILITY__
     PA_DCHECK(ret == (IsInRegularPool(address) || IsInBRPPool(address)));
     return ret;
   }
@@ -191,7 +211,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
   // Returns false for nullptr.
   PA_ALWAYS_INLINE static bool IsInConfigurablePool(uintptr_t address) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    return (cheri_address_get(address) & setup_.configurable_pool_base_mask_) ==
+#else   // !__CHERI_PURE_CAPABILITY__
     return (address & setup_.configurable_pool_base_mask_) ==
+#endif  // !__CHERI_PURE_CAPABILITY__
            setup_.configurable_pool_base_address_;
   }
 
@@ -300,19 +324,35 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
 #if !PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
   // Masks used to easy determine belonging to a pool.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static constexpr ptraddr_t kRegularPoolOffsetMask =
+      static_cast<ptraddr_t>(kRegularPoolSize) - 1;
+  static constexpr ptraddr_t kRegularPoolBaseMask = ~kRegularPoolOffsetMask;
+  static constexpr ptraddr_t kBRPPoolOffsetMask =
+      static_cast<ptraddr_t>(kBRPPoolSize) - 1;
+  static constexpr ptraddr_t kBRPPoolBaseMask = ~kBRPPoolOffsetMask;
+ #else   // !__CHERI_PURE_CAPABILITY__
   static constexpr uintptr_t kRegularPoolOffsetMask =
       static_cast<uintptr_t>(kRegularPoolSize) - 1;
   static constexpr uintptr_t kRegularPoolBaseMask = ~kRegularPoolOffsetMask;
   static constexpr uintptr_t kBRPPoolOffsetMask =
       static_cast<uintptr_t>(kBRPPoolSize) - 1;
   static constexpr uintptr_t kBRPPoolBaseMask = ~kBRPPoolOffsetMask;
+#endif  // !__CHERI_PURE_CAPABILITY__
 #endif  // !PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static constexpr ptraddr_t kThreadIsolatedPoolOffsetMask =
+      static_cast<ptraddr_t>(kThreadIsolatedPoolSize) - 1;
+  static constexpr ptraddr_t kThreadIsolatedPoolBaseMask =
+      ~kThreadIsolatedPoolOffsetMask;
+#else   // !__CHERI_PURE_CAPABILITY__
   static constexpr uintptr_t kThreadIsolatedPoolOffsetMask =
       static_cast<uintptr_t>(kThreadIsolatedPoolSize) - 1;
   static constexpr uintptr_t kThreadIsolatedPoolBaseMask =
       ~kThreadIsolatedPoolOffsetMask;
+#endif  // !__CHERI_PURE_CAPABILITY__
 #endif
 
   // This must be set to such a value that IsIn*Pool() always returns false when
@@ -335,16 +375,26 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
           kUninitializedPoolBaseAddress;
 #endif
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
+#if defined(__CHERI_PURE_CAPABILITY__)
+      ptraddr_t regular_pool_base_mask_ = 0;
+      ptraddr_t brp_pool_base_mask_ = 0;
+#else   // !__CHERI_PURE_CAPABILITY__
       uintptr_t regular_pool_base_mask_ = 0;
       uintptr_t brp_pool_base_mask_ = 0;
+#endif  // !__CHERI_PURE_CAPABILITY__
 #if BUILDFLAG(GLUE_CORE_POOLS)
+#if defined(__CHERI_PURE_CAPABILITY__)
+      ptraddr_t core_pools_base_mask_ = 0;
+#else   // !__CHERI_PURE_CAPABILITY__
       uintptr_t core_pools_base_mask_ = 0;
+#endif  // !__CHERI_PURE_CAPABILITY__
 #endif
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 #if defined(__CHERI_PURE_CAPABILITY__)
-    __attribute__((cheri_no_provenance))
-#endif // defined(__CHERI_PURE_CAPABILITY__)
+      ptraddr_t configurable_pool_base_mask_ = 0;
+#else   // !__CHERI_PURE_CAPABILITY__
       uintptr_t configurable_pool_base_mask_ = 0;
+#endif  // !__CHERI_PURE_CAPABILITY__
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
       ThreadIsolationOption thread_isolation_;
 #endif

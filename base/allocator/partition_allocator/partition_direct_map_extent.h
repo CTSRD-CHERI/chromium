@@ -10,6 +10,10 @@
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+#include <cheriintrin.h>
+#endif
+
 namespace partition_alloc::internal {
 
 template <bool thread_safe>
@@ -55,8 +59,19 @@ PartitionDirectMapMetadata<thread_safe>::FromSlotSpan(
     SlotSpanMetadata<thread_safe>* slot_span) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
   // |*slot_span| is the first field of |PartitionDirectMapMetadata|, just cast.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // Rederive the metadata capability and enforce the bounds to
+  // sizeof(PartitionDirectMapMetadara<thread_safe>).
+  auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(
+      reinterpret_cast<uintptr_t>(slot_span));
+  auto metadata = reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(
+      cheri_address_set(base, cheri_address_get(slot_span)));
+  metadata = cheri_bounds_set(metadata,
+                              sizeof(PartitionDirectMapMetadata<thread_safe>));
+#else   // !__CHERI_PURE_CAPABILITY__
   auto* metadata =
       reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(slot_span);
+#endif  // !__CHERI_PURE_CAPABILITY__
   PA_DCHECK(&metadata->page.slot_span_metadata == slot_span);
   return metadata;
 }

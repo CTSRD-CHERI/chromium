@@ -746,7 +746,11 @@ PersistentMemoryAllocator::Reference PersistentMemoryAllocator::AllocateImpl(
     volatile char* mem_begin = reinterpret_cast<volatile char*>(
         (reinterpret_cast<uintptr_t>(block) + sizeof(BlockHeader) +
          (vm_page_size_ - 1)) &
+#if defined(__CHERI_PURE_CAPABILITY__)
+        ~static_cast<ptraddr_t>(vm_page_size_ - 1));
+#else   // !__CHERI_PURE_CAPABILITY__
         ~static_cast<uintptr_t>(vm_page_size_ - 1));
+#endif  // !__CHERI_PURE_CAPABILITY__
     for (volatile char* memory = mem_begin; memory < mem_end;
          memory += vm_page_size_) {
       // It's required that a memory segment start as all zeros and thus the

@@ -78,6 +78,13 @@ uintptr_t AddressPoolManager::GetPoolBaseAddress(pool_handle handle) {
   return pool->GetBaseAddress();
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+uintptr_t AddressPoolManager::GetPoolBaseAddress(uintptr_t address) {
+  auto [pool, offset] = GetPoolAndOffset(address);
+  return GetPoolBaseAddress(pool);
+}
+#endif   // __CHERI_PURE_CAPABILITY__
+
 void AddressPoolManager::ResetForTesting() {
   for (size_t i = 0; i < std::size(pools_); ++i) {
     pools_[i].Reset();

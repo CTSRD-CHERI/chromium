@@ -37,6 +37,10 @@
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #endif
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+#include <cheriintrin.h>
+#endif
+
 namespace partition_alloc::internal {
 
 // An "extent" is a span of consecutive superpages. We link the partition's next
@@ -72,7 +76,18 @@ PA_ALWAYS_INLINE uintptr_t SuperPagesBeginFromExtent(
   PA_DCHECK(0 < extent->number_of_consecutive_super_pages);
   uintptr_t extent_as_uintptr = reinterpret_cast<uintptr_t>(extent);
   PA_DCHECK(IsManagedByNormalBuckets(extent_as_uintptr));
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // Rederive the super page capability and enforce the bounds to the size of a
+  // super page (kSuperPageSize).
+  auto super_page_as_ptraddr =
+      base::bits::AlignDown(cheri_address_get(extent_as_uintptr), kSuperPageAlignment);
+  auto super_page = cheri_address_set(
+      GET_POOL_BASE_ADDRESS_FROM_ADDRESS(extent_as_uintptr),
+      super_page_as_ptraddr);
+  return cheri_bounds_set(super_page, kSuperPageSize);
+#else   // !__CHERI_PURE_CAPABILITY__
   return base::bits::AlignDown(extent_as_uintptr, kSuperPageAlignment);
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 // Returns the end of the last super page in the range of consecutive super
@@ -408,33 +423,89 @@ static_assert(offsetof(PartitionPage<ThreadSafe>, subsequent_page_metadata) ==
 
 template <bool thread_safe>
 PA_ALWAYS_INLINE PartitionPage<thread_safe>* PartitionSuperPageToMetadataArea(
+#if defined(__CHERI_PURE_CAPABILITY__)
+    uintptr_t super_page, size_t partition_page_index = 0) {
+#else   // !__CHERI_PURE_CAPABILITY__
     uintptr_t super_page) {
+#endif  // !__CHERI_PURE_CAPABILITY__
   // This can't be just any super page, but it has to be the first super page of
   // the reservation, as we assume here that the metadata is near its beginning.
   PA_DCHECK(IsReservationStart(super_page));
   PA_DCHECK(!(super_page & kSuperPageOffsetMask));
   // The metadata area is exactly one system page (the guard page) into the
   // super page.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // Rederive the metadata capability.
+  auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(super_page);
+  auto metadata_as_ptraddr = cheri_address_get(super_page) + SystemPageSize();
+  auto metadata = reinterpret_cast<PartitionPage<thread_safe>*>(
+      cheri_address_set(base, metadata_as_ptraddr));
+  metadata += partition_page_index;
+  // Narrow the bounds of the metadata capability to the size of a partition
+  // page.
+  return cheri_bounds_set(metadata, PartitionPageSize());
+#else   // !__CHERI_PURE_CAPABILITY__
   return reinterpret_cast<PartitionPage<thread_safe>*>(super_page +
                                                        SystemPageSize());
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 PA_ALWAYS_INLINE const SubsequentPageMetadata* GetSubsequentPageMetadata(
     const PartitionPage<ThreadSafe>* page) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // Rederive the subsequent_page_metadata capability and enforce the bounds to
+  // sizeof(SubsequentPageMetadata).
+  auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(
+      reinterpret_cast<uintptr_t>(page));
+  auto subsequent_page_metadata_as_ptraddr = cheri_address_get(
+      reinterpret_cast<uintptr_t>(&(page + 1)->subsequent_page_metadata));
+  auto subsequent_page_metadata = reinterpret_cast<SubsequentPageMetadata*>(
+      cheri_address_set(base, subsequent_page_metadata_as_ptraddr));
+  subsequent_page_metadata = cheri_bounds_set(
+      subsequent_page_metadata, sizeof(SubsequentPageMetadata));
+  return subsequent_page_metadata;
+#else   // !__CHERI_PURE_CAPABILITY__
   return &(page + 1)->subsequent_page_metadata;
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 PA_ALWAYS_INLINE SubsequentPageMetadata* GetSubsequentPageMetadata(
     PartitionPage<ThreadSafe>* page) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // Rederive the subsequent page metadata capability and enforce the bounds to
+  // sizeof(SubsequentPageMetadata).
+  auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(
+      reinterpret_cast<uintptr_t>(page));
+  auto subsequent_page_metadata_as_ptraddr = cheri_address_get(
+      reinterpret_cast<uintptr_t>(&(page + 1)->subsequent_page_metadata));
+  auto subsequent_page_metadata = reinterpret_cast<SubsequentPageMetadata*>(
+      cheri_address_set(base, subsequent_page_metadata_as_ptraddr));
+  subsequent_page_metadata = cheri_bounds_set(
+      subsequent_page_metadata, sizeof(SubsequentPageMetadata));
+  return subsequent_page_metadata;
+#else   // !__CHERI_PURE_CAPABILITY__
   return &(page + 1)->subsequent_page_metadata;
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 template <bool thread_safe>
 PA_ALWAYS_INLINE PartitionSuperPageExtentEntry<thread_safe>*
 PartitionSuperPageToExtent(uintptr_t super_page) {
   // The very first entry of the metadata is the super page extent entry.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // Rederive the partition super page extent entry capability and enforce the
+  // bounds to sizeof(PartitionSuperPageExtentEntry<thread_safe>).
+  auto metadata = PartitionSuperPageToMetadataArea<thread_safe>(super_page);
+  auto extent_entry = cheri_address_set(
+      GET_POOL_BASE_ADDRESS_FROM_ADDRESS(super_page),
+      cheri_address_get(metadata));
+  return reinterpret_cast<PartitionSuperPageExtentEntry<thread_safe>*>(
+      cheri_bounds_set(extent_entry,
+      sizeof(PartitionSuperPageExtentEntry<thread_safe>)));
+#else   // !__CHERI_PURE_CAPABILITY__
   return reinterpret_cast<PartitionSuperPageExtentEntry<thread_safe>*>(
       PartitionSuperPageToMetadataArea<thread_safe>(super_page));
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 #if BUILDFLAG(USE_STARSCAN)
@@ -478,11 +549,7 @@ ReservedStateBitmapSize() {
 
 #endif  // BUILDFLAG(USE_STARSCAN)
 
-#if defined(__CHERI_PURE_CAPABILITY__)
 PA_ALWAYS_INLINE size_t
-#else   // !__CHERI_PURE_CAPABILITY__
-PA_ALWAYS_INLINE uintptr_t
-#endif  //!__CHERI_PURE_CAPABILITY__
 SuperPagePayloadStartOffset(bool is_managed_by_normal_buckets,
                             bool with_quarantine) {
   return PartitionPageSize() +
@@ -498,11 +565,7 @@ PA_ALWAYS_INLINE uintptr_t SuperPagePayloadBegin(uintptr_t super_page,
                                      with_quarantine);
 }
 
-#if defined(__CHERI_PURE_CAPABILITY__)
 PA_ALWAYS_INLINE size_t SuperPagePayloadEndOffset() {
-#else   // !__CHERI_PURE_CAPABILITY__
-PA_ALWAYS_INLINE uintptr_t SuperPagePayloadEndOffset() {
-#endif  //!__CHERI_PURE_CAPABILITY__
   return kSuperPageSize - PartitionPageSize();
 }
 
@@ -551,7 +614,17 @@ PA_ALWAYS_INLINE bool IsWithinSuperPagePayload(uintptr_t address,
                                                bool with_quarantine) {
   // Quarantine can only be enabled for normal buckets in the current code.
   PA_DCHECK(!with_quarantine || IsManagedByNormalBuckets(address));
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // Ensure the super_page calculated from the address is a valid capability by
+  // rederiving it from the base address.
+  auto super_page = cheri_address_set(
+      GET_POOL_BASE_ADDRESS_FROM_ADDRESS(address),
+      (cheri_address_get(address) & internal::kSuperPageBaseMask));
+  // Narrow the bounds to the super page size (kSuperPageSize).
+  super_page = cheri_bounds_set(super_page, kSuperPageSize);
+#else   // !__CHERI_PURE_CAPABILITY__
   uintptr_t super_page = address & kSuperPageBaseMask;
+#endif  // !__CHERI_PURE_CAPABILITY__
   uintptr_t payload_start = SuperPagePayloadBegin(super_page, with_quarantine);
   uintptr_t payload_end = SuperPagePayloadEnd(super_page);
   return address >= payload_start && address < payload_end;
@@ -569,7 +642,17 @@ PA_ALWAYS_INLINE bool IsWithinSuperPagePayload(uintptr_t address,
 template <bool thread_safe>
 PA_ALWAYS_INLINE PartitionPage<thread_safe>*
 PartitionPage<thread_safe>::FromAddr(uintptr_t address) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // Ensure the super_page calculated from the address is a valid capability by
+  // rederiving it from the base address.
+  auto super_page = cheri_address_set(
+      GET_POOL_BASE_ADDRESS_FROM_ADDRESS(address),
+      cheri_address_get(address) & internal::kSuperPageBaseMask);
+  // Narrow the bounds to the super page size (kSuperPageSize).
+  super_page = cheri_bounds_set(super_page, kSuperPageSize);
+#else   // !__CHERI_PURE_CAPABILITY__
   uintptr_t super_page = address & kSuperPageBaseMask;
+#endif  // !__CHERI_PURE_CAPABILITY__
 
 #if BUILDFLAG(PA_DCHECK_IS_ON)
   PA_DCHECK(IsReservationStart(super_page));
@@ -580,8 +663,9 @@ PartitionPage<thread_safe>::FromAddr(uintptr_t address) {
 #endif
 
 #if defined(__CHERI_PURE_CAPABILITY__)
-  ptraddr_t partition_page_index =
-      static_cast<ptraddr_t>(address & kSuperPageOffsetMask) >> PartitionPageShift();
+  auto partition_page_index =
+      (cheri_address_get(address) & kSuperPageOffsetMask) >>
+      PartitionPageShift();
 #else  // !__CHERI_PURE_CAPABILITY__
   uintptr_t partition_page_index =
       (address & kSuperPageOffsetMask) >> PartitionPageShift();
@@ -592,8 +676,13 @@ PartitionPage<thread_safe>::FromAddr(uintptr_t address) {
   // for other exclusions.
   PA_DCHECK(partition_page_index);
   PA_DCHECK(partition_page_index < NumPartitionPagesPerSuperPage() - 1);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  return PartitionSuperPageToMetadataArea<thread_safe>(super_page,
+                                                       partition_page_index);
+#else   // !__CHERI_PURE_CAPABILITY__
   return PartitionSuperPageToMetadataArea<thread_safe>(super_page) +
          partition_page_index;
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 // Converts from a pointer to the SlotSpanMetadata object (within a super
@@ -603,7 +692,12 @@ template <bool thread_safe>
 PA_ALWAYS_INLINE uintptr_t SlotSpanMetadata<thread_safe>::ToSlotSpanStart(
     const SlotSpanMetadata* slot_span) {
   uintptr_t pointer_as_uint = reinterpret_cast<uintptr_t>(slot_span);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  auto super_page_offset =
+      (cheri_address_get(pointer_as_uint) & kSuperPageOffsetMask);
+#else   // !__CHERI_PURE_CAPABILITY__
   uintptr_t super_page_offset = (pointer_as_uint & kSuperPageOffsetMask);
+#endif  // !__CHERI_PURE_CAPABILITY__
 
   // A valid |page| must be past the first guard System page and within
   // the following metadata region.
@@ -612,18 +706,27 @@ PA_ALWAYS_INLINE uintptr_t SlotSpanMetadata<thread_safe>::ToSlotSpanStart(
   PA_DCHECK(super_page_offset <
             SystemPageSize() +
                 (NumPartitionPagesPerSuperPage() * kPageMetadataSize));
-#if defined(__CHERI_PURE_CAPABILITY__)
-  __attribute__((cheri_no_provenance))
-#endif //defined(__CHERI_PURE_CAPABILITY__)
-  uintptr_t partition_page_index =
+  auto partition_page_index =
       (super_page_offset - SystemPageSize()) >> kPageMetadataShift;
   // Index 0 is invalid because it is the super page extent metadata and the
   // last index is invalid because the whole PartitionPage is set as guard
   // pages.
   PA_DCHECK(partition_page_index);
   PA_DCHECK(partition_page_index < NumPartitionPagesPerSuperPage() - 1);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // Rederive the slot_span_start capability and enforce the bounds to size of
+  // the slot.
+  auto super_page_base_as_ptraddr =
+      (cheri_address_get(pointer_as_uint) & kSuperPageBaseMask);
+  auto slot_span_as_ptraddr = super_page_base_as_ptraddr +
+      (partition_page_index << PartitionPageShift());
+  auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(pointer_as_uint);
+  auto slot_span_start = cheri_address_set(base, slot_span_as_ptraddr); 
+  return cheri_bounds_set(slot_span_start, slot_span->bucket->slot_size);
+#else   // !__CHERI_PURE_CAPABILITY__
   uintptr_t super_page_base = (pointer_as_uint & kSuperPageBaseMask);
   return super_page_base + (partition_page_index << PartitionPageShift());
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 // Converts an address inside a slot span into a pointer to the SlotSpanMetadata
@@ -641,6 +744,13 @@ SlotSpanMetadata<thread_safe>::FromAddr(uintptr_t address) {
   // object (located in the first PartitionPage object of that span). Adjust
   // for that.
   page -= page->slot_span_metadata_offset;
+#if defined(__CHERI_PURE_CAPABILITY__)
+  auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(
+      reinterpret_cast<uintptr_t>(page));
+  page = reinterpret_cast<PartitionPage<thread_safe>*>(
+      cheri_address_set(base, cheri_address_get(page)));
+  page = cheri_bounds_set(page, sizeof(PartitionPage<thread_safe>));
+#endif   // __CHERI_PURE_CAPABILITY__
   PA_DCHECK(page->is_valid);
   PA_DCHECK(!page->slot_span_metadata_offset);
   auto* slot_span = &page->slot_span_metadata;
@@ -678,6 +788,7 @@ PA_ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
 SlotSpanMetadata<thread_safe>::FromObject(void* object) {
   uintptr_t object_addr = ObjectPtr2Addr(object);
   auto* slot_span = FromAddr(object_addr);
+
 #if BUILDFLAG(PA_DCHECK_IS_ON)
   // Checks that the object is exactly |extras_offset| away from a multiple of
   // slot size (i.e. from a slot start).
@@ -905,7 +1016,17 @@ PA_ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::Reset() {
 // It's the caller's responsibility to ensure that the bitmap exists.
 PA_ALWAYS_INLINE AllocationStateMap* StateBitmapFromAddr(uintptr_t address) {
   PA_DCHECK(IsManagedByNormalBuckets(address));
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // Ensure the super_page calculated from the address is a valid capability by
+  // rederiving it from the base address.
+  auto super_page = cheri_address_set(
+      GET_POOL_BASE_ADDRESS_FROM_ADDRESS(address),
+      (cheri_address_get(address) & internal::kSuperPageBaseMask));
+  // Narrow the bounds to the super page size.
+  super_page = cheri_bounds_set(super_page, kSuperPageSize);
+#else   // !__CHERI_PURE_CAPABILITY__
   uintptr_t super_page = address & kSuperPageBaseMask;
+#endif  // !__CHERI_PURE_CAPABILITY__
   return SuperPageStateBitmap(super_page);
 }
 #endif  // BUILDFLAG(USE_STARSCAN)
@@ -930,7 +1051,18 @@ void IterateSlotSpans(uintptr_t super_page,
       Page::FromAddr(SuperPagePayloadEnd(super_page) - PartitionPageSize());
   Page* page;
   SlotSpan* slot_span;
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // Ensure the page capability is valid and that the bounds cover the set of
+  // pages.
+  page = reinterpret_cast<PartitionPage<thread_safe>*>(
+      cheri_address_set(GET_POOL_BASE_ADDRESS_FROM_ADDRESS(super_page),
+      cheri_address_get(first_page)));
+  auto pages_size = cheri_address_get(last_page + 1) - cheri_address_get(first_page);
+  page = cheri_bounds_set(page, pages_size);
+  for (; page <= last_page;) {
+#else   // !__CHERI_PURE_CAPABILITY__
   for (page = first_page; page <= last_page;) {
+#endif  // !__CHERI_PURE_CAPABILITY__
     PA_DCHECK(!page->slot_span_metadata_offset);  // Ensure slot span beginning.
     if (!page->is_valid) {
       if (page->has_valid_span_after_this) {

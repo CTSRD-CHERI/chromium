@@ -36,6 +36,11 @@ struct PoolStats;
 
 namespace partition_alloc::internal {
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+#define GET_POOL_BASE_ADDRESS_FROM_ADDRESS(address) \
+  internal::AddressPoolManager::GetInstance().GetPoolBaseAddress(address)
+#endif   // __CHERI_PURE_CAPABILITY__
+
 // (64bit version)
 // AddressPoolManager takes a reserved virtual address space and manages address
 // space allocation.
@@ -69,6 +74,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 
   // Return the base address of a pool.
   uintptr_t GetPoolBaseAddress(pool_handle handle);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  uintptr_t GetPoolBaseAddress(uintptr_t address);
+#endif   // __CHERI_PURE_CAPABILITY__
 #endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 
   // Reserves address space from the pool.
