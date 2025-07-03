@@ -379,9 +379,7 @@ void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
     }
     return;
   }
-#if !BUILDFLAG(IS_BSD)
   OutputToStreamWithPrefixImpl(os, prefix_string);
-#endif
 }
 
 std::string StackTrace::ToString() const {
@@ -390,7 +388,7 @@ std::string StackTrace::ToString() const {
 
 std::string StackTrace::ToStringWithPrefix(cstring_view prefix_string) const {
   std::stringstream stream;
-#if !defined(__UCLIBC__) && !defined(_AIX) && !BUILDFLAG(IS_BSD)
+#if !defined(__UCLIBC__) && !defined(_AIX)
   OutputToStreamWithPrefix(&stream, prefix_string);
 #endif
   return stream.str();
