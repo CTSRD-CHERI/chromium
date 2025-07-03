@@ -2161,6 +2161,8 @@ component("base") {
       "files/file_path_watcher_kqueue.h",
       "files/file_path_watcher_bsd.cc",
     ]
+
+    defines -= [ "USE_SYMBOLIZE" ]
   }
 
   if (is_openbsd) {
