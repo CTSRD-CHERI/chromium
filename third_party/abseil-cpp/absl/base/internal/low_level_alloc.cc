@@ -67,7 +67,13 @@
 #endif  // __APPLE__
 
 #if defined(__CHERI_PURE_CAPABILITY__)
-#include <cheri/cheric.h>
+#include <cheriintrin.h>
+
+/* Get the top of a capability (i.e. one byte past the last accessible one) */
+#define cheri_top_get(cap)      __extension__({                 \
+        __typeof__(cap) c = (cap);                              \
+        (cheri_base_get(c) + cheri_length_get(c));              \
+})
 #endif
 
 namespace absl {
@@ -533,8 +539,8 @@ static void Coalesce(AllocList *a) {
     // This is a workaround that will cause fragmentation, we shoud find a
     // way to re-derive capabilities, as long as they don't belong to
     // different reservations.
-    if (cheri_gettop(a) < static_cast<ptraddr_t>(reinterpret_cast<intptr_t>(n) +
-                                                 n->header.size)) {
+    if (cheri_top_get(a) < static_cast<ptraddr_t>(
+        reinterpret_cast<intptr_t>(n) + n->header.size)) {
       return;
     }
 #endif
