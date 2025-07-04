@@ -662,7 +662,11 @@ TEST_F(ProcessUtilTest, MAYBE_GetTerminationStatusCrash) {
   exit_code = 42;
   TerminationStatus status =
       WaitForChildTermination(process.Handle(), &exit_code);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_EQ(TERMINATION_STATUS_CHERI_PROT_VIOLATION, status);
+#else   // !__CHERI_PURE_CAPABILITY__
   EXPECT_EQ(TERMINATION_STATUS_PROCESS_CRASHED, status);
+#endif  // !__CHERI_PURE_CAPABILITY__
 
 #if BUILDFLAG(IS_WIN)
   EXPECT_EQ(static_cast<int>(0xc0000005), exit_code);
