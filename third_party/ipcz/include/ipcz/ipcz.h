@@ -265,7 +265,7 @@ struct IPCZ_ALIGN(8) IpczSharedMemoryInfo {
 // as well as by ipcz itself to delegate creation and management of new
 // transports which ipcz brokers between nodes.
 #if defined(__CHERI_PURE_CAPABILITY__)
-struct IPCZ_ALIGN(alignof(max_align_t)) IpczDriver {
+struct IPCZ_ALIGN(16) IpczDriver {
 #else // defined(__CHERI_PURE_CAPABILITY__)
 struct IPCZ_ALIGN(8) IpczDriver {
 #endif // defined(__CHERI_PURE_CAPABILITY__)
@@ -563,7 +563,11 @@ typedef uint32_t IpczMemoryFlags;
 #define IPCZ_MEMORY_FIXED_PARCEL_CAPACITY ((IpczMemoryFlags)(1 << 0))
 
 // Options given to CreateNode() to configure the new node's behavior.
+#if defined(__CHERI_PURE_CAPABILITY__)
+struct IPCZ_ALIGN(16) IpczCreateNodeOptions {
+#else // defined(__CHERI_PURE_CAPABILITY__)
 struct IPCZ_ALIGN(8) IpczCreateNodeOptions {
+#endif // defined(__CHERI_PURE_CAPABILITY__)
   // The exact size of this structure in bytes. Must be set accurately before
   // passing the structure to CreateNode().
   size_t size;
@@ -648,7 +652,7 @@ struct IPCZ_ALIGN(8) IpczPutLimits {
 
 // Options given to Put() to modify its default behavior.
 #if defined(__CHERI_PURE_CAPABILITY__)
-struct IPCZ_ALIGN(alignof(max_align_t)) IpczPutOptions {
+struct IPCZ_ALIGN(16) IpczPutOptions {
 #else // defined(__CHERI_PURE_CAPABILITY__)
 struct IPCZ_ALIGN(8) IpczPutOptions {
 #endif // defined(__CHERI_PURE_CAPABILITY__)
@@ -674,7 +678,7 @@ typedef uint32_t IpczBeginPutFlags;
 
 // Options given to BeginPut() to modify its default behavior.
 #if defined(__CHERI_PURE_CAPABILITY__)
-struct IPCZ_ALIGN(alignof(max_align_t)) IpczBeginPutOptions {
+struct IPCZ_ALIGN(16) IpczBeginPutOptions {
 #else // defined(__CHERI_PURE_CAPABILITY__)
 struct IPCZ_ALIGN(8) IpczBeginPutOptions {
 #endif // defined(__CHERI_PURE_CAPABILITY__)
@@ -764,7 +768,7 @@ typedef void (*IpczApplicationObjectDestructor)(uintptr_t object,
 // application-defined objects, or collections of bytes and ipcz handles
 // (portals or other boxes).
 #if defined(__CHERI_PURE_CAPABILITY__)
-struct IPCZ_ALIGN(alignof(max_align_t)) IpczBoxContents {
+struct IPCZ_ALIGN(16) IpczBoxContents {
 #else // defined(__CHERI_PURE_CAPABILITY__)
 struct IPCZ_ALIGN(8) IpczBoxContents {
 #endif // defined(__CHERI_PURE_CAPABILITY__)
@@ -947,7 +951,7 @@ struct IPCZ_ALIGN(8) IpczTrapConditions {
 // Structure passed to each IpczTrapEventHandler invocation with details about
 // the event.
 #if defined(__CHERI_PURE_CAPABILITY__)
-struct IPCZ_ALIGN(alignof(max_align_t)) IpczTrapEvent {
+struct IPCZ_ALIGN(16) IpczTrapEvent {
 #else // defined(__CHERI_PURE_CAPABILITY__)
 struct IPCZ_ALIGN(8) IpczTrapEvent {
 #endif // defined(__CHERI_PURE_CAPABILITY__)
@@ -998,7 +1002,7 @@ extern "C" {
 // The order and signature (ABI) of functions defined here must never change,
 // but new functions may be added to the end.
 #if defined(__CHERI_PURE_CAPABILITY__)
-struct IPCZ_ALIGN(alignof(max_align_t)) IpczAPI {
+struct IPCZ_ALIGN(16) IpczAPI {
 #else // defined(__CHERI_PURE_CAPABILITY__)
 struct IPCZ_ALIGN(8) IpczAPI {
 #endif // defined(__CHERI_PURE_CAPABILITY__)
