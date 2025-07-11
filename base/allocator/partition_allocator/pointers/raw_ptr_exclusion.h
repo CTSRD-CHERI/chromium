@@ -29,9 +29,9 @@
 // For additional guidance please see the "When to use raw_ptr<T>" section of
 // `//base/memory/raw_ptr.md`.
 #if BUILDFLAG(ENABLE_RAW_PTR_EXCLUSION_NON_OFFICIAL)
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(IS_CHERI)
 #error "RAW_PTR_EXCLUSION is not currently supported on CHERI architectures."
-#endif
+#endif  // PA_CONFIG(IS_CHERI)
 #define RAW_PTR_EXCLUSION __attribute__((annotate("raw_ptr_exclusion")))
 #else
 #define RAW_PTR_EXCLUSION

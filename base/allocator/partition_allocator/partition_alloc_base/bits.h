@@ -42,7 +42,7 @@ template <typename T>
 inline constexpr T AlignUp(T value, size_t alignment) {
   return __builtin_align_up(value, alignment);
 }
-#else  // !__CHERI_PURE_CAPABILITY__
+#else
 // Round down |size| to a multiple of alignment, which must be a power of two.
 inline constexpr size_t AlignDown(size_t size, size_t alignment) {
   PA_DCHECK(IsPowerOfTwo(alignment));
@@ -70,7 +70,7 @@ inline T* AlignUp(T* ptr, size_t alignment) {
   return reinterpret_cast<T*>(
       AlignUp(reinterpret_cast<size_t>(ptr), alignment));
 }
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif
 
 // CountLeadingZeroBits(value) returns the number of zero bits following the
 // most significant 1 bit in |value| if |value| is non-zero, otherwise it

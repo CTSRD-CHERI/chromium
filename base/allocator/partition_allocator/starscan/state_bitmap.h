@@ -18,6 +18,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 
 namespace partition_alloc::internal {
 
@@ -66,11 +67,11 @@ class StateBitmap final {
     kNumOfStates = 4,
   };
 
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(IS_CHERI)
   using CellType = ptraddr_t;
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(IS_CHERI)
   using CellType = uintptr_t;
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
   static constexpr size_t kBitsPerCell = sizeof(CellType) * CHAR_BIT;
   static constexpr size_t kBitsNeededForAllocation =
       base::bits::Log2Floor(static_cast<size_t>(State::kNumOfStates));
@@ -198,11 +199,11 @@ class StateBitmap final {
 
   PA_ALWAYS_INLINE CellType LoadCell(size_t cell_index) const;
   PA_ALWAYS_INLINE static constexpr std::pair<size_t, size_t>
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(IS_CHERI)
       AllocationIndexAndBit(ptraddr_t);
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(IS_CHERI)
       AllocationIndexAndBit(uintptr_t);
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
 
   std::array<CellType, kBitmapSize> bitmap_;
 };
@@ -218,11 +219,12 @@ PA_ALWAYS_INLINE void
 StateBitmap<PageSize, PageAlignment, AllocationAlignment>::Allocate(
     uintptr_t address) {
   PA_SCAN_DCHECK(IsFreed(address));
-#if defined(__CHERI_PURE_CAPABILITY__)
-  auto [cell_index, object_bit] = AllocationIndexAndBit(static_cast<ptraddr_t>(address));
-#else   // !__CHERI_PURE_CAPABILITY__
+#if PA_CONFIG(IS_CHERI)
+  auto [cell_index, object_bit] = AllocationIndexAndBit(
+      static_cast<ptraddr_t>(address));
+#else  // !PA_CONFIG(IS_CHERI)
   auto [cell_index, object_bit] = AllocationIndexAndBit(address);
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
   const CellType mask = static_cast<CellType>(State::kAlloced) << object_bit;
   auto& cell = AsAtomicCell(cell_index);
   cell.fetch_or(mask, std::memory_order_relaxed);
@@ -241,11 +243,12 @@ StateBitmap<PageSize, PageAlignment, AllocationAlignment>::Quarantine(
                 "kQuarantined1 must be inverted kQuarantined2");
   const State quarantine_state =
       epoch & 0b1 ? State::kQuarantined1 : State::kQuarantined2;
-#if defined(__CHERI_PURE_CAPABILITY__)
-  auto [cell_index, object_bit] = AllocationIndexAndBit(static_cast<ptraddr_t>(address));
-#else   // !__CHERI_PURE_CAPABILITY__
+#if PA_CONFIG(IS_CHERI)
+  auto [cell_index, object_bit] = AllocationIndexAndBit(
+      static_cast<ptraddr_t>(address));
+#else  // !PA_CONFIG(IS_CHERI)
   auto [cell_index, object_bit] = AllocationIndexAndBit(address);
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
   const CellType mask =
       ~(static_cast<CellType>(quarantine_state) << object_bit);
   auto& cell = AsAtomicCell(cell_index);
@@ -264,11 +267,12 @@ StateBitmap<PageSize, PageAlignment, AllocationAlignment>::
                 "kQuarantined1 must be inverted kQuarantined2");
   const State quarantine_state_old =
       epoch & 0b1 ? State::kQuarantined2 : State::kQuarantined1;
-#if defined(__CHERI_PURE_CAPABILITY__)
-  auto [cell_index, object_bit] = AllocationIndexAndBit(static_cast<ptraddr_t>(address));
-#else   // !__CHERI_PURE_CAPABILITY__
+#if PA_CONFIG(IS_CHERI)
+  auto [cell_index, object_bit] = AllocationIndexAndBit(
+      static_cast<ptraddr_t>(address));
+#else  // !PA_CONFIG(IS_CHERI)
   auto [cell_index, object_bit] = AllocationIndexAndBit(address);
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
   const CellType clear_mask =
       ~(static_cast<CellType>(State::kAlloced) << object_bit);
   const CellType set_mask_old = static_cast<CellType>(quarantine_state_old)
@@ -307,11 +311,12 @@ StateBitmap<PageSize, PageAlignment, AllocationAlignment>::Free(
   static_assert((~static_cast<CellType>(State::kAlloced) & kStateMask) ==
                     (static_cast<CellType>(State::kFreed) & kStateMask),
                 "kFreed must be inverted kAlloced");
-#if defined(__CHERI_PURE_CAPABILITY__)
-  auto [cell_index, object_bit] = AllocationIndexAndBit(static_cast<ptraddr_t>(address));
-#else   // !__CHERI_PURE_CAPABILITY__
+#if PA_CONFIG(IS_CHERI)
+  auto [cell_index, object_bit] = AllocationIndexAndBit(
+      static_cast<ptraddr_t>(address));
+#else  // !PA_CONFIG(IS_CHERI)
   auto [cell_index, object_bit] = AllocationIndexAndBit(address);
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
   const CellType mask = ~(static_cast<CellType>(State::kAlloced) << object_bit);
   auto& cell = AsAtomicCell(cell_index);
   cell.fetch_and(mask, std::memory_order_relaxed);
@@ -351,13 +356,13 @@ PA_ALWAYS_INLINE
 template <size_t PageSize, size_t PageAlignment, size_t AllocationAlignment>
 PA_ALWAYS_INLINE constexpr std::pair<size_t, size_t>
 StateBitmap<PageSize, PageAlignment, AllocationAlignment>::
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(IS_CHERI)
     AllocationIndexAndBit(ptraddr_t address) {
   const ptraddr_t offset_in_page = address & kPageOffsetMask;
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(IS_CHERI)
     AllocationIndexAndBit(uintptr_t address) {
   const uintptr_t offset_in_page = address & kPageOffsetMask;
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
   const size_t allocation_number =
       (offset_in_page / kAllocationAlignment) * kBitsNeededForAllocation;
   const size_t cell_index = allocation_number / kBitsPerCell;
@@ -369,11 +374,12 @@ StateBitmap<PageSize, PageAlignment, AllocationAlignment>::
 template <size_t PageSize, size_t PageAlignment, size_t AllocationAlignment>
 unsigned StateBitmap<PageSize, PageAlignment, AllocationAlignment>::GetBits(
     uintptr_t address) const {
-#if defined(__CHERI_PURE_CAPABILITY__)
-  auto [cell_index, object_bit] = AllocationIndexAndBit(static_cast<ptraddr_t>(address));
-#else   // !__CHERI_PURE_CAPABILITY__
+#if PA_CONFIG(IS_CHERI)
+  auto [cell_index, object_bit] = AllocationIndexAndBit(
+      static_cast<ptraddr_t>(address));
+#else  // !PA_CONFIG(IS_CHERI)
   auto [cell_index, object_bit] = AllocationIndexAndBit(address);
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
   return (LoadCell(cell_index) >> object_bit) & kStateMask;
 }
 
@@ -437,12 +443,12 @@ StateBitmap<PageSize, PageAlignment, AllocationAlignment>::IterateImpl(
     CellType value = LoadCell(cell_index);
     while (value) {
       const size_t trailing_zeroes =
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(IS_CHERI)
           static_cast<size_t>(base::bits::CountTrailingZeroBits(
             static_cast<ptraddr_t>(value)) & ~0b1);
-#else // defined(__CHERI_PURE_CAPABILITY__)
+#else  // !PA_CONFIG(IS_CHERI)
           static_cast<size_t>(base::bits::CountTrailingZeroBits(value) & ~0b1);
-#endif // defined(__CHERI_PURE_CAPABILITY__)
+#endif // !PA_CONFIG(IS_CHERI)
       const size_t clear_value_mask =
           ~(static_cast<CellType>(kStateMask) << trailing_zeroes);
       const CellType bits = (value >> trailing_zeroes) & kStateMask;

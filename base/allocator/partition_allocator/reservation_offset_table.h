@@ -22,7 +22,7 @@
 #include "base/allocator/partition_allocator/thread_isolation/alignment.h"
 #include "build/build_config.h"
 
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
 #include <cheriintrin.h>
 #endif
 
@@ -171,18 +171,18 @@ PA_ALWAYS_INLINE uint16_t* ReservationOffsetPointer(uintptr_t address) {
 
 PA_ALWAYS_INLINE uintptr_t ComputeReservationStart(uintptr_t address,
                                                    uint16_t* offset_ptr) {
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   auto start_as_ptraddr = (cheri_address_get(address) & kSuperPageBaseMask) -
       (static_cast<size_t>(*offset_ptr) << kSuperPageShift);
   auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(address);
   auto start = cheri_address_set(base, start_as_ptraddr);
   return start;
 }
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   return (address & kSuperPageBaseMask) -
          (static_cast<size_t>(*offset_ptr) << kSuperPageShift);
 }
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
 
 // If the given address doesn't point to direct-map allocated memory,
 // returns 0.

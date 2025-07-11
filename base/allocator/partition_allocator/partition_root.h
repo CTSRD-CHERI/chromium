@@ -73,7 +73,7 @@
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #endif
 
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
 #include <cheriintrin.h>
 #endif
 
@@ -753,7 +753,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return size - flags.extras_size;
   }
 
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   PA_ALWAYS_INLINE size_t AdjustSizeForImpreciseBounds(size_t size) const {
     return cheri_representable_length(size);
   }
@@ -761,7 +761,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE size_t AdjustSizeForImpreciseBoundsSubtract(size_t size) const {
     return size &= cheri_representable_alignment_mask(size);
   }
-#endif   // __CHERI_PURE_CAPABILITY__
+#endif  // PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
 
   PA_ALWAYS_INLINE uintptr_t SlotStartToObjectAddr(uintptr_t slot_start) const {
     // TODO(bartekn): Check that |slot_start| is indeed a slot start.
@@ -774,15 +774,16 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   }
 
   PA_ALWAYS_INLINE uintptr_t ObjectToSlotStart(void* object) const {
-#if defined(__CHERI_PURE_CAPABILITY__)
-    // TODO(gcjenkinson): What bounds should be applied to the slot start?
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     auto object_as_uintptr = reinterpret_cast<uintptr_t>(object);
-    return cheri_address_set(
+    auto slot_span_start = cheri_address_set(
         GET_POOL_BASE_ADDRESS_FROM_ADDRESS(object_as_uintptr),
         cheri_address_get(UntagPtr(object)) - flags.extras_offset);
-#else   // !__CHERI_PURE_CAPABILITY__
+    auto slot_span = internal::SlotSpanMetadata<thread_safe>::FromSlotStart(slot_span_start); 
+    return cheri_bounds_set(slot_span_start, slot_span->bucket->slot_size);
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     return UntagPtr(object) - flags.extras_offset;
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     // TODO(bartekn): Check that the result is indeed a slot start.
   }
 
@@ -1331,7 +1332,7 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   if (flags.allow_cookie) {
     // Verify the cookie after the allocated region.
     // If this assert fires, you probably corrupted memory.
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     // Rederive the address of the cookie from the object address using the
     // pool's base address (bound the cookie ptr to kCookieSize).
     auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(reinterpret_cast<uintptr_t>(object));
@@ -1341,10 +1342,10 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
         cheri_address_set(base, cookie_as_ptraddr));
     cookie = cheri_bounds_set(cookie, internal::kCookieSize);
     internal::PartitionCookieCheckValue(cookie);
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     internal::PartitionCookieCheckValue(static_cast<unsigned char*>(object) +
                                         slot_span->GetUsableSize(this));
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   }
 #endif
 
@@ -1574,7 +1575,7 @@ PA_ALWAYS_INLINE bool PartitionRoot<thread_safe>::IsValidSlotSpan(
 template <bool thread_safe>
 PA_ALWAYS_INLINE PartitionRoot<thread_safe>*
 PartitionRoot<thread_safe>::FromSlotSpan(SlotSpan* slot_span) {
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   // Rederive the extent_entry capability and enforce the bounds to the
   // sizeof(SuperPageExtentEntry).
   auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(reinterpret_cast<uintptr_t>(slot_span));
@@ -1582,10 +1583,10 @@ PartitionRoot<thread_safe>::FromSlotSpan(SlotSpan* slot_span) {
   auto* extent_entry = reinterpret_cast<SuperPageExtentEntry*>(
       cheri_address_set(base, slot_span_as_ptraddr & internal::SystemPageBaseMask()));
   extent_entry = cheri_bounds_set(extent_entry, sizeof(SuperPageExtentEntry));
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   auto* extent_entry = reinterpret_cast<SuperPageExtentEntry*>(
       reinterpret_cast<uintptr_t>(slot_span) & internal::SystemPageBaseMask());
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   return extent_entry->root;
 }
 
@@ -1603,16 +1604,16 @@ PartitionRoot<thread_safe>::FromFirstSuperPage(uintptr_t super_page) {
 template <bool thread_safe>
 PA_ALWAYS_INLINE PartitionRoot<thread_safe>*
 PartitionRoot<thread_safe>::FromAddrInFirstSuperpage(uintptr_t address) {
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   // Rederive the super_page capability and enforce the bounds to the size of
   // the super pahe (kSuperPageSize).
   auto super_page = cheri_address_set(
     GET_POOL_BASE_ADDRESS_FROM_ADDRESS(address),
     cheri_address_get(address) & internal::kSuperPageBaseMask);
   super_page = cheri_bounds_set(super_page, kSuperPageSize);
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   uintptr_t super_page = address & internal::kSuperPageBaseMask;
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   PA_DCHECK(internal::IsReservationStart(super_page));
   return FromFirstSuperPage(super_page);
 }
@@ -1906,15 +1907,15 @@ PA_ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
   //   b. Otherwise, call the "raw" allocator <-- Locking
   // 3. Handle cookie/ref-count, zero allocation if required
 
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   size_t requested_size_with_extras = AdjustSizeForExtrasAdd(requested_size);
   PA_CHECK(requested_size_with_extras >= requested_size);  // check for overflows
   size_t raw_size = AdjustSizeForImpreciseBounds(requested_size_with_extras);
   PA_CHECK(raw_size >= requested_size); // check ofr overflows
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
   PA_CHECK(raw_size >= requested_size);  // check for overflows
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
 
   // We should only call |SizeToBucketIndex| at most once when allocating.
   // Otherwise, we risk having |bucket_distribution| changed
@@ -2056,10 +2057,11 @@ PA_ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
   } else if (!is_already_zeroed) {
     memset(object, 0, usable_size);
   }
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
+  // Bound the allocated object.
   object = cheri_bounds_set_exact(object,
        AdjustSizeForImpreciseBounds(requested_size));
-#endif   // __CHERI_PURE_CAPABILITY__
+#endif  // PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   // TODO(keishi): Add PA_LIKELY when brp is fully enabled as |brp_enabled| will
@@ -2236,12 +2238,12 @@ PartitionRoot<thread_safe>::AllocationCapacityFromRequestedSize(
   return size;
 #else
   PA_DCHECK(PartitionRoot<thread_safe>::initialized);
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   auto size_with_extras = AdjustSizeForExtrasAdd(size);
   size = AdjustSizeForImpreciseBounds(size_with_extras);
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   size = AdjustSizeForExtrasAdd(size);
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   auto& bucket = bucket_at(SizeToBucketIndex(size, GetBucketDistribution()));
   PA_DCHECK(!bucket.slot_size || bucket.slot_size >= size);
   PA_DCHECK(!(bucket.slot_size % internal::kSmallestBucket));

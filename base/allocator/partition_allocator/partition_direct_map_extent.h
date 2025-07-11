@@ -10,7 +10,7 @@
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
 #include <cheriintrin.h>
 #endif
 
@@ -59,7 +59,7 @@ PartitionDirectMapMetadata<thread_safe>::FromSlotSpan(
     SlotSpanMetadata<thread_safe>* slot_span) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
   // |*slot_span| is the first field of |PartitionDirectMapMetadata|, just cast.
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   // Rederive the metadata capability and enforce the bounds to
   // sizeof(PartitionDirectMapMetadara<thread_safe>).
   auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(
@@ -68,10 +68,10 @@ PartitionDirectMapMetadata<thread_safe>::FromSlotSpan(
       cheri_address_set(base, cheri_address_get(slot_span)));
   metadata = cheri_bounds_set(metadata,
                               sizeof(PartitionDirectMapMetadata<thread_safe>));
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   auto* metadata =
       reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(slot_span);
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   PA_DCHECK(&metadata->page.slot_span_metadata == slot_span);
   return metadata;
 }

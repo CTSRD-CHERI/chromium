@@ -475,6 +475,7 @@ buildflag_header("partition_alloc_buildflags") {
 
     "ENABLE_PKEYS=$enable_pkeys",
     "ENABLE_THREAD_ISOLATION=$enable_pkeys",
+    "ENABLE_ALLOCATOR_BOUNDS=$enable_allocator_bounds",
   ]
 
   if (is_apple) {

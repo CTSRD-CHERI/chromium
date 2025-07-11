@@ -63,36 +63,40 @@ void TestOnRangeWithAlignment(TestScanLoop& sl,
 TEST(PartitionAllocScanLoopTest, UnvectorizedWithRegularPool) {
   {
     TestScanLoop sl(SimdSupport::kUnvectorized);
-#if defined(__CHERI_PURE_CAPABILITY__)
-    TestOnRangeWithAlignment<alignof(max_align_t)>(sl, 0u, kInvalidPtr, kInvalidPtr, kInvalidPtr);
-#else   // !__CHERI_PURE_CAPABILITY__
+#if PA_CONFIG(IS_CHERI)
+    TestOnRangeWithAlignment<alignof(max_align_t)>(
+        sl, 0u, kInvalidPtr, kInvalidPtr, kInvalidPtr);
+#else  // !PA_CONFIG(IS_CHERI)
     TestOnRangeWithAlignment<8>(sl, 0u, kInvalidPtr, kInvalidPtr, kInvalidPtr);
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
   }
   {
     TestScanLoop sl(SimdSupport::kUnvectorized);
-#if defined(__CHERI_PURE_CAPABILITY__)
-    TestOnRangeWithAlignment<alignof(max_align_t)>(sl, 1u, kValidPtr, kInvalidPtr, kInvalidPtr);
-#else   // !__CHERI_PURE_CAPABILITY__
+#if PA_CONFIG(IS_CHERI)
+    TestOnRangeWithAlignment<alignof(max_align_t)>(
+        sl, 1u, kValidPtr, kInvalidPtr, kInvalidPtr);
+#else  // !PA_CONFIG(IS_CHERI)
     TestOnRangeWithAlignment<8>(sl, 1u, kValidPtr, kInvalidPtr, kInvalidPtr);
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
   }
   {
     TestScanLoop sl(SimdSupport::kUnvectorized);
-#if defined(__CHERI_PURE_CAPABILITY__)
-    TestOnRangeWithAlignment<alignof(max_align_t)>(sl, 2u, kValidPtr, kValidPtr, kInvalidPtr);
-#else   // !__CHERI_PURE_CAPABILITY__
+#if PA_CONFIG(IS_CHERI)
+    TestOnRangeWithAlignment<alignof(max_align_t)>(
+        sl, 2u, kValidPtr, kValidPtr, kInvalidPtr);
+#else  // !PA_CONFIG(IS_CHERI)
     TestOnRangeWithAlignment<8>(sl, 2u, kValidPtr, kValidPtr, kInvalidPtr);
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
   }
   {
     // Make sure zeros are skipped.
     TestScanLoop sl(SimdSupport::kUnvectorized);
-#if defined(__CHERI_PURE_CAPABILITY__)
-    TestOnRangeWithAlignment<alignof(max_align_t)>(sl, 1u, kValidPtr, kInvalidPtr, kZeroPtr);
-#else   // !__CHERI_PURE_CAPABILITY__
+#if PA_CONFIG(IS_CHERI)
+    TestOnRangeWithAlignment<alignof(max_align_t)>(
+        sl, 1u, kValidPtr, kInvalidPtr, kZeroPtr);
+#else  // !PA_CONFIG(IS_CHERI)
     TestOnRangeWithAlignment<8>(sl, 1u, kValidPtr, kInvalidPtr, kZeroPtr);
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
   }
 }
 

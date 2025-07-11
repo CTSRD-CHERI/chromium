@@ -106,13 +106,13 @@ uintptr_t TrimMapping(uintptr_t base_address,
 //   1089 -> 2112
 //   2048 -> 2112
 uintptr_t NextAlignedWithOffset(uintptr_t address,
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(IS_CHERI)
                                 size_t alignment,
                                 size_t requested_offset) {
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(IS_CHERI)
                                 uintptr_t alignment,
                                 uintptr_t requested_offset) {
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
   PA_DCHECK(internal::base::bits::IsPowerOfTwo(alignment));
   PA_DCHECK(requested_offset < alignment);
 
@@ -192,13 +192,13 @@ uintptr_t AllocPagesWithAlignOffset(
   PA_DCHECK(align_offset < align);
   PA_DCHECK(!(align_offset & internal::PageAllocationGranularityOffsetMask()));
   PA_DCHECK(!(address & internal::PageAllocationGranularityOffsetMask()));
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(IS_CHERI)
   size_t align_offset_mask = align - 1;
   size_t align_base_mask = ~align_offset_mask;
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(IS_CHERI)
   uintptr_t align_offset_mask = align - 1;
   uintptr_t align_base_mask = ~align_offset_mask;
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
   PA_DCHECK(!address || (address & align_offset_mask) == align_offset);
 
   // If the client passed null as the address, choose a good one.

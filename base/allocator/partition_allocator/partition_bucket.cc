@@ -39,7 +39,7 @@
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #endif
 
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(IS_CHERI)
 #include <cheriintrin.h>
 #endif
 
@@ -368,7 +368,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
 
     PartitionPage<thread_safe>* first_page =
         reinterpret_cast<PartitionPage<thread_safe>*>(super_page_extent) + 1;
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     {
       auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(
           reinterpret_cast<uintptr_t>(first_page));
@@ -377,7 +377,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
       first_page = cheri_bounds_set(first_page,
                                     sizeof(PartitionPage<thread_safe>));
     }
-#endif   // __CHERI_PURE_CAPABILITY__
+#endif  // PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     page = PartitionPage<thread_safe>::FromAddr(slot_start);
     // |first_page| and |page| may be equal, if there is no alignment padding.
     if (page != first_page) {
@@ -388,7 +388,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
       first_page->has_valid_span_after_this = true;
       first_page->slot_span_metadata_offset = page - first_page;
     }
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     // Rederive the metadata capability and enforce the bounds to
     // sizeof(PartitionDirectMapMetadata<thread_safe>).
     auto metadata_as_ptraddr = cheri_address_get(page);
@@ -398,10 +398,10 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
         cheri_address_set(base, metadata_as_ptraddr));
     metadata = cheri_bounds_set(metadata,
         sizeof(PartitionDirectMapMetadata<thread_safe>));
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     auto* metadata =
         reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(page);
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     // Since direct map metadata is larger than PartitionPage, make sure the
     // first and the last bytes are on the same system page, i.e. within the
     // super page metadata region.
@@ -701,7 +701,7 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
       PartitionPage<thread_safe>::FromAddr(root->next_partition_page);
   auto* gap_end_page =
       PartitionPage<thread_safe>::FromAddr(adjusted_next_partition_page);
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   // Rederive the gap_start capability and enforce the bounds to the size of
   // the gap (gap_end_page - gap_start_page).
   auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(
@@ -711,7 +711,7 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
   auto gap_size =
      cheri_address_get(gap_end_page) - cheri_address_get(gap_start_page);
   gap_start_page = cheri_bounds_set(gap_start_page, gap_size);
-#endif   // __CHERI_PURE_CAPABILITY__
+#endif  // PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   for (auto* page = gap_start_page; page < gap_end_page; ++page) {
     PA_DCHECK(!page->is_valid);
     page->has_valid_span_after_this = 1;
@@ -961,7 +961,7 @@ PA_ALWAYS_INLINE void PartitionBucket<thread_safe>::InitializeSlotSpan(
 
   uint16_t num_partition_pages = get_pages_per_slot_span();
   auto* page = reinterpret_cast<PartitionPage<thread_safe>*>(slot_span);
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   // Rederive the page capability and enforce the bounds to the number of
   // partition_pages (num_partitition_pages).
   auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(
@@ -970,7 +970,7 @@ PA_ALWAYS_INLINE void PartitionBucket<thread_safe>::InitializeSlotSpan(
       cheri_address_set(base, cheri_address_get(page)));
   page = cheri_bounds_set(page,
       num_partition_pages * sizeof(PartitionPage<thread_safe>));
-#endif   // __CHERI_PURE_CAPABILITY__
+#endif  // PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
 
   for (uint16_t i = 0; i < num_partition_pages; ++i, ++page) {
     PA_DCHECK(i <= PartitionPage<thread_safe>::kMaxSlotSpanMetadataOffset);
@@ -1001,7 +1001,7 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
       SlotSpanMetadata<thread_safe>::ToSlotSpanStart(slot_span);
   // If we got here, the first unallocated slot is either partially or fully on
   // an uncommitted page. If the latter, it must be at the start of that page.
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   // Rederive the return_slot capability and enforce the bounds to size of the
   // slot.
   auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(slot_span_start);
@@ -1009,15 +1009,15 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
       (slot_size * slot_span->num_allocated_slots);
   auto return_slot = cheri_address_set(
     GET_POOL_BASE_ADDRESS_FROM_ADDRESS(slot_span_start),
-    return_slot_as_ptraddr); 
+    return_slot_as_ptraddr);
   return_slot = cheri_bounds_set(return_slot, slot_span->bucket->slot_size);
 
   // Rederive the next_slot capability and enforce the bounds to the size of
   // the slot.
   auto next_slot_as_ptraddr = return_slot_as_ptraddr + slot_size;
-  auto next_slot = cheri_address_set(base, next_slot_as_ptraddr); 
+  auto next_slot = cheri_address_set(base, next_slot_as_ptraddr);
   next_slot = cheri_bounds_set(next_slot, slot_span->bucket->slot_size);
-    
+
   // Rederive the commit_start capability and enforce the bounds to the size of
   // slots between the commit_end and _start (commit_end - commit_start).
   auto commit_start_as_ptraddr =
@@ -1025,37 +1025,38 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   PA_DCHECK(next_slot_as_ptraddr > commit_start_as_ptraddr);
   auto commit_end_as_ptraddr =
       base::bits::AlignUp(next_slot_as_ptraddr, SystemPageSize());
-  auto commit_start = cheri_address_set(base, commit_start_as_ptraddr); 
+  auto commit_start = cheri_address_set(base, commit_start_as_ptraddr);
+  auto commit_end = cheri_address_set(base, commit_end_as_ptraddr);
   commit_start = cheri_bounds_set(commit_start,
       commit_end_as_ptraddr - commit_start_as_ptraddr);
-#else    // __CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   uintptr_t return_slot =
       slot_span_start + (slot_size * slot_span->num_allocated_slots);
   uintptr_t next_slot = return_slot + slot_size;
   uintptr_t commit_start = base::bits::AlignUp(return_slot, SystemPageSize());
   PA_DCHECK(next_slot > commit_start);
   uintptr_t commit_end = base::bits::AlignUp(next_slot, SystemPageSize());
-#endif   // __CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   // If the slot was partially committed, |return_slot| and |next_slot| fall
   // in different pages. If the slot was fully uncommitted, |return_slot| points
   // to the page start and |next_slot| doesn't, thus only the latter gets
   // rounded up.
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   PA_DCHECK(commit_end_as_ptraddr > commit_start_as_ptraddr);
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   PA_DCHECK(commit_end > commit_start);
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
 
   // The slot being returned is considered allocated.
   slot_span->num_allocated_slots++;
   // Round down, because a slot that doesn't fully fit in the new page(s) isn't
   // provisioned.
-#if defined(__CHERI_PURE_CAPABILITY__)
-  size_t slots_to_provision = 
-      (commit_end_as_ptraddr - return_slot_as_ptraddr) / slot_size;
-#else   // !__CHERI_PURE_CAPABILITY__
+#if PA_CONFIG(IS_CHERI)
+  size_t slots_to_provision =
+      (cheri_address_get(commit_end) - cheri_address_get(return_slot)) / slot_size;
+#else  // !PA_CONFIG(IS_CHERI)
   size_t slots_to_provision = (commit_end - return_slot) / slot_size;
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
   slot_span->num_unprovisioned_slots -= slots_to_provision;
   PA_DCHECK(slot_span->num_allocated_slots +
                 slot_span->num_unprovisioned_slots <=
@@ -1069,11 +1070,12 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   if (kUseLazyCommit) {
     // TODO(lizeb): Handle commit failure.
     root->RecommitSystemPagesForData(
-#if defined(__CHERI_PURE_CAPABILITY__)
-        commit_start, commit_end_as_ptraddr - commit_start_as_ptraddr,
-#else   // !__CHERI_PURE_CAPABILITY__
+#if PA_CONFIG(IS_CHERI)
+        commit_start,
+	cheri_address_get(commit_end) - cheri_address_get(commit_start),
+#else  // !PA_CONFIG(IS_CHERI)
         commit_start, commit_end - commit_start,
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
         PageAccessibilityDisposition::kRequireUpdate,
         slot_size <= kMaxMemoryTaggingSize);
   }
@@ -1088,17 +1090,13 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
 #endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
   // Add all slots that fit within so far committed pages to the free list.
   PartitionFreelistEntry* prev_entry = nullptr;
-#if defined(__CHERI_PURE_CAPABILITY__)
-  auto next_slot_end_as_ptraddr = next_slot_as_ptraddr + slot_size;
-#else   // !__CHERI_PURE_CAPABILITY__
   uintptr_t next_slot_end = next_slot + slot_size;
-#endif  // !__CHERI_PURE_CAPABILITY__
   size_t free_list_entries_added = 0;
-#if defined(__CHERI_PURE_CAPABILITY__)
-  while (next_slot_end_as_ptraddr <= commit_end_as_ptraddr) {
-#else   // !__CHERI_PURE_CAPABILITY__
+#if PA_CONFIG(IS_CHERI)
+  while (cheri_address_get(next_slot_end) <= cheri_address_get(commit_end)) {
+#else  // !PA_CONFIG(IS_CHERI)
   while (next_slot_end <= commit_end) {
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
     void* next_slot_ptr;
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
     if (PA_LIKELY(use_tagging)) {
@@ -1126,14 +1124,13 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
 #if BUILDFLAG(USE_FREESLOT_BITMAP)
     FreeSlotBitmapMarkSlotAsFree(next_slot);
 #endif
-#if defined(__CHERI_PURE_CAPABILITY__)
-    next_slot = cheri_address_set(base, next_slot_end_as_ptraddr); 
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
+    next_slot = cheri_address_set(base, cheri_address_get(next_slot_end));
     next_slot = cheri_bounds_set(next_slot, slot_span->bucket->slot_size);
-    next_slot_end_as_ptraddr = cheri_address_get(next_slot) + slot_size;
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     next_slot = next_slot_end;
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     next_slot_end = next_slot + slot_size;
-#endif  // !__CHERI_PURE_CAPABILITY__
     prev_entry = entry;
 #if BUILDFLAG(PA_DCHECK_IS_ON)
     free_list_entries_added++;

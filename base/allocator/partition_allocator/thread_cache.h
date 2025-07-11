@@ -405,11 +405,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // We choose 0x1 as the value as it is an invalid pointer value, since it is
   // not aligned, and too low. Also, checking !(ptr & kTombstoneMask) checks for
   // nullptr and kTombstone at the same time.
+#if PA_CONFIG(IS_CHERI)
+  static constexpr ptraddr_t kTombstone = 0x1;
+  static constexpr ptraddr_t kTombstoneMask = ~kTombstone;
+#else  // !PA_CONFIG(IS_CHERI)
   static constexpr uintptr_t kTombstone = 0x1;
-#if defined(__CHERI_PURE_CAPABILITY__)
-__attribute__((cheri_no_provenance))
-#endif //defined(__CHERI_PURE_CAPABILITY__)
   static constexpr uintptr_t kTombstoneMask = ~kTombstone;
+#endif // !PA_CONFIG(IS_CHERI)
 
   static uint8_t global_limits_[kBucketCount];
   // Index of the largest active bucket. Not all processes/platforms will use

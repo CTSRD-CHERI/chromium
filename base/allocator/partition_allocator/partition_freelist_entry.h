@@ -72,7 +72,7 @@ class EncodedPartitionFreelistEntryPtr {
     //    corrupt a freelist pointer, partial pointer overwrite attacks are
     //    thwarted.
     // For big endian, similar guarantees are arrived at with a negation.
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(IS_CHERI)
     // FIXME(gcjenkinson): The encoding scheme invalidates the capability.
     // Later versions of parition_alloc use a difference encoding scheme based
     // on offsets, which looks like it is more suited to CHERI architectures.
@@ -80,14 +80,14 @@ class EncodedPartitionFreelistEntryPtr {
     // the wider taks of securing partition_alloc, for example, in narrowing
     // allocation bounds.
     return address;
-#else   // !__CHERI_PURE_CAPABILITY__)
+#else  // !PA_CONFIG(IS_CHERI)
 #if defined(ARCH_CPU_BIG_ENDIAN)
     uintptr_t transformed = ~address;
 #else
     uintptr_t transformed = ReverseBytes(address);
 #endif
     return transformed;
-#endif   // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
   }
 
   uintptr_t encoded_;

@@ -50,7 +50,7 @@
 #include <pthread.h>
 #endif
 
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(IS_CHERI)
 #include <cheriintrin.h>
 #endif
 
@@ -391,11 +391,11 @@ static size_t PartitionPurgeSlotSpan(
   // what the run time page size is, kMaxSlotCount can always be simplified
   // to this expression.
   constexpr size_t kMaxSlotCount =
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(IS_CHERI)
       8 * kMaxPurgeableSlotsPerSystemPage *
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(IS_CHERI)
       4 * kMaxPurgeableSlotsPerSystemPage *
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
       internal::kMaxPartitionPagesPerRegularSlotSpan;
   PA_CHECK(kMaxSlotCount == (PartitionPageSize() *
                              internal::kMaxPartitionPagesPerRegularSlotSpan) /
@@ -461,25 +461,26 @@ static size_t PartitionPurgeSlotSpan(
       ++num_slots;
     }
     begin_addr = rounded_up_truncatation_begin_addr;
- #if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     // Rederive the begin_addr capability and enforce the bounds to
     // end_addr - begin_addr.
     auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(slot_span_start);
     begin_addr = cheri_bounds_set(
         cheri_address_set(base, cheri_address_get(begin_addr)),
         (cheri_address_get(end_addr) - cheri_address_get(begin_addr)));
-#endif   // __CHERI_PURE_CAPABILITY__
+#endif  // PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
 
     // We round the end address here up and not down because we're at the end of
     // a slot span, so we "own" all the way up the page boundary.
     end_addr = RoundUpToSystemPage(end_addr);
     PA_DCHECK(end_addr <= slot_span_start + bucket->get_bytes_per_span());
     if (begin_addr < end_addr) {
-#if defined(__CHERI_PURE_CAPABILITY__)
-      unprovisioned_bytes = cheri_address_get(end_addr) - cheri_address_get(begin_addr);
-#else   // !__CHERI_PURE_CAPABILITY__
+#if PA_CONFIG(IS_CHERI)
+      unprovisioned_bytes =
+          cheri_address_get(end_addr) - cheri_address_get(begin_addr);
+#else  // !PA_CONFIG(IS_CHERI)
       unprovisioned_bytes = end_addr - begin_addr;
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
       discardable_bytes += unprovisioned_bytes;
     }
     if (unprovisioned_bytes && discard) {
@@ -493,13 +494,13 @@ static size_t PartitionPurgeSlotSpan(
       internal::PartitionFreelistEntry* head = nullptr;
       internal::PartitionFreelistEntry* back = head;
       size_t num_new_entries = 0;
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
       // Rederive the slot_span_start capability and enforce the bounds to the
       // number of slots.
       slot_span_start = cheri_bounds_set(
           cheri_address_set(base, cheri_address_get(slot_span_start)),
           (slot_size * num_slots));
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif  // PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
       for (size_t slot_index = 0; slot_index < num_slots; ++slot_index) {
         if (slot_usage[slot_index]) {
           continue;
@@ -541,14 +542,14 @@ static size_t PartitionPurgeSlotSpan(
     return discardable_bytes;
   }
 
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   // Rederive the slot_span_start capability and enforce the bounds to the
   // number of slots.
   auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(slot_span_start);
   slot_span_start = cheri_bounds_set(
       cheri_address_set(base, cheri_address_get(slot_span_start)),
       (slot_size * num_slots));
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif  // PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   // Next, walk the slots and for any not in use, consider which system pages
   // are no longer needed. We can release any system pages back to the system as
   // long as we don't interfere with a freelist pointer or an adjacent used
@@ -1136,12 +1137,12 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
   PA_DCHECK(
       internal::IsManagedByDirectMap(reinterpret_cast<uintptr_t>(slot_span)));
 
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   size_t bounded_request_size = AdjustSizeForImpreciseBounds(requested_size);
   size_t raw_size = AdjustSizeForExtrasAdd(bounded_request_size);
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   auto* extent = DirectMapExtent::FromSlotSpan(slot_span);
   size_t current_reservation_size = extent->reservation_size;
   // Calculate the new reservation size the way PartitionDirectMap() would, but
@@ -1201,15 +1202,16 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
   } else if (new_slot_size < current_slot_size) {
     // Shrink by decommitting unneeded pages and making them inaccessible.
     size_t decommit_size = current_slot_size - new_slot_size;
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(slot_start);
-    auto new_slot_start_as_ptraddr = cheri_address_get(slot_start) + new_slot_size;
+    auto new_slot_start_as_ptraddr =
+        cheri_address_get(slot_start) + new_slot_size;
     auto new_slot_start = cheri_bounds_set(
         cheri_address_set(base, new_slot_start_as_ptraddr), new_slot_size);
     DecommitSystemPagesForData(new_slot_start, decommit_size,
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     DecommitSystemPagesForData(slot_start + new_slot_size, decommit_size,
-#endif  // !__CHERI_PURE_CAPABILITY__)
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
                                PageAccessibilityDisposition::kRequireUpdate);
     // Since the decommited system pages are still reserved, we don't need to
     // change the entries for decommitted pages in the reservation offset table.
@@ -1218,28 +1220,31 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
     // pages accessible again.
     size_t recommit_slot_size_growth = new_slot_size - current_slot_size;
     // Direct map never uses tagging, as size is always >kMaxMemoryTaggingSize.
-#if defined(__CHERI_PURE_CAPABILITY__)
-    auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(slot_start);
-    auto current_slot_start_as_ptraddr = cheri_address_get(slot_start) + current_slot_size;
-    auto current_slot_start = cheri_address_set(base, current_slot_start_as_ptraddr);
-    current_slot_start = cheri_bounds_set(current_slot_start, recommit_slot_size_growth);
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
+    auto current_slot_start_as_ptraddr =
+        cheri_address_get(slot_start) + current_slot_size;
+    auto current_slot_start = cheri_address_set(
+        GET_POOL_BASE_ADDRESS_FROM_ADDRESS(slot_start),
+	current_slot_start_as_ptraddr);
+    current_slot_start =
+        cheri_bounds_set(current_slot_start, recommit_slot_size_growth);
     RecommitSystemPagesForData(
         current_slot_start, recommit_slot_size_growth,
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     RecommitSystemPagesForData(
         slot_start + current_slot_size, recommit_slot_size_growth,
-#endif  // !__CHERI_PURE_CAPABILITY__)
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
         PageAccessibilityDisposition::kRequireUpdate, false);
     // The recommited system pages had been already reserved and all the
     // entries in the reservation offset table (for entire reservation_size
     // region) have been already initialized.
 
 #if BUILDFLAG(PA_DCHECK_IS_ON)
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     memset(reinterpret_cast<void*>(current_slot_start),
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     memset(reinterpret_cast<void*>(slot_start + current_slot_size),
-#endif  // !__CHERI_PURE_CAPABILITY__)
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
            internal::kUninitializedByte, recommit_slot_size_growth);
 #endif
   } else {
@@ -1269,20 +1274,21 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
   // Write a new trailing cookie.
   if (flags.allow_cookie) {
     auto* object = static_cast<unsigned char*>(SlotStartToObject(slot_start));
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     // Rederive the address of the cookie from the object address using the
     // poll's base address (bound the cookie ptr to kCookieSize).
-    auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(reinterpret_cast<uintptr_t>(object));
+    auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(
+        reinterpret_cast<uintptr_t>(object));
     auto cookie_as_ptraddr = cheri_address_get(object) +
         slot_span->GetUsableSize(this);
     auto cookie = reinterpret_cast<unsigned char*>(
         cheri_address_set(base, cookie_as_ptraddr));
     cookie = cheri_bounds_set(cookie, internal::kCookieSize);
     internal::PartitionCookieWriteValue(cookie);
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     internal::PartitionCookieWriteValue(object +
                                         slot_span->GetUsableSize(this));
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   }
 #endif
 
@@ -1331,7 +1337,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
     // Write a new trailing cookie only when it is possible to keep track
     // raw size (otherwise we wouldn't know where to look for it later).
     if (flags.allow_cookie) {
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
       // Rederive the address of the cookie from the object address using the
       // poll's base address (bound the cookie ptr to kCookieSize).
       auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(
@@ -1342,10 +1348,10 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
           cheri_address_set(base, cookie_as_ptraddr));
       cookie = cheri_bounds_set(cookie, internal::kCookieSize);
       internal::PartitionCookieWriteValue(cookie);
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
       internal::PartitionCookieWriteValue(static_cast<unsigned char*>(object) +
                                           slot_span->GetUsableSize(this));
-#endif  // !__CHERI_PURyyE_CAPABILITY__
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     }
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON)
   }
@@ -1450,9 +1456,10 @@ void* PartitionRoot<thread_safe>::ReallocWithFlags(unsigned int flags,
     internal::PartitionExcessiveAllocationSize(new_size);
   }
 
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   if (PA_LIKELY(!overridden)) {
-    auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(reinterpret_cast<uintptr_t>(ptr));
+    auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(
+        reinterpret_cast<uintptr_t>(ptr));
     auto widened_ptr = reinterpret_cast<void *>(
         cheri_address_set(base, cheri_address_get(ptr)));
     widened_ptr = cheri_bounds_set(widened_ptr,
@@ -1462,9 +1469,9 @@ void* PartitionRoot<thread_safe>::ReallocWithFlags(unsigned int flags,
   } else {
     memcpy(ret, ptr, std::min(old_usable_size, new_size));
   }
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   memcpy(ret, ptr, std::min(old_usable_size, new_size));
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   Free(ptr);  // Implicitly protects the old ptr on MTE systems.
   return ret;
 #endif

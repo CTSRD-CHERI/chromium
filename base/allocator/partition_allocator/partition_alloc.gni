@@ -183,6 +183,11 @@ declare_args() {
   }
 }
 
+declare_args() { 
+  # Enable/disable enforcement of bounds on allocations with CHERI.
+  enable_allocator_bounds = false
+}
+
 # *Scan is currently only used by Chromium, and supports only 64-bit.
 use_starscan = build_with_chromium && has_64_bit_pointers
 
@@ -211,6 +216,7 @@ if (!use_partition_alloc) {
   enable_pointer_subtraction_check = false
   backup_ref_ptr_poison_oob_ptr = false
   use_starscan = false
+  enable_allocator_bounds = false
 }
 
 # put_ref_count_in_previous_slot can only be used if

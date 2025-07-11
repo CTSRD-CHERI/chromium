@@ -24,7 +24,7 @@
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
 
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(IS_CHERI)
 #include <cheriintrin.h>
 #endif
 
@@ -68,12 +68,12 @@ PA_ALWAYS_INLINE void PartitionDirectUnmap(
   // The mapping may start at an unspecified location within a super page, but
   // we always reserve memory aligned to super page size.
   reservation_start = base::bits::AlignDown(reservation_start, kSuperPageSize);
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   reservation_start = cheri_address_set(
       GET_POOL_BASE_ADDRESS_FROM_ADDRESS(reservation_start),
       cheri_address_get(reservation_start));
   reservation_start = cheri_bounds_set(reservation_start, reservation_size);
-#endif   // __CHERI_PURE_CAPABILITY__
+#endif  // PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
 
   // All the metadata have been updated above, in particular the mapping has
   // been unlinked. We can safely release the memory outside the lock, which is
@@ -240,14 +240,14 @@ void SlotSpanMetadata<thread_safe>::Decommit(PartitionRoot<thread_safe>* root) {
       base::bits::AlignUp(GetProvisionedSize(), SystemPageSize());
   size_t size_to_decommit =
       kUseLazyCommit ? dirty_size : bucket->get_bytes_per_span();
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   // Rederive the slot_span_start capability and enforce the bounds to
   // size_to_decommit.
   slot_span_start = cheri_address_set(
       GET_POOL_BASE_ADDRESS_FROM_ADDRESS(slot_span_start),
       cheri_address_get(slot_span_start));
   slot_span_start = cheri_bounds_set(slot_span_start, size_to_decommit);
-#endif   // __CHERI_PURE_CAPABILITY__
+#endif  // PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
 
   PA_DCHECK(root->empty_slot_spans_dirty_bytes >= dirty_size);
   root->empty_slot_spans_dirty_bytes -= dirty_size;
@@ -313,7 +313,7 @@ void SlotSpanMetadata<thread_safe>::SortFreelist() {
     PartitionFreelistEntry* back = nullptr;
     PartitionFreelistEntry* head = nullptr;
 
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     // Rederive the slot_span_start capability and enforce the bounds to the
     // number of provisioned slots.
     slot_span_start = cheri_address_set(
@@ -321,7 +321,7 @@ void SlotSpanMetadata<thread_safe>::SortFreelist() {
 	cheri_address_get(slot_span_start)),
     slot_span_start =
         cheri_bounds_set(slot_span_start,(slot_size * num_provisioned_slots));
-#endif   // __CHERI_PURE_CAPABILITY__)
+#endif  // PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     for (size_t slot_number = 0; slot_number < num_provisioned_slots;
          slot_number++) {
       if (free_slots[slot_number]) {

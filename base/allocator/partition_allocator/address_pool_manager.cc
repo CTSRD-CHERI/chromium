@@ -78,12 +78,12 @@ uintptr_t AddressPoolManager::GetPoolBaseAddress(pool_handle handle) {
   return pool->GetBaseAddress();
 }
 
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
 uintptr_t AddressPoolManager::GetPoolBaseAddress(uintptr_t address) {
   auto [pool, offset] = GetPoolAndOffset(address);
   return GetPoolBaseAddress(pool);
 }
-#endif   // __CHERI_PURE_CAPABILITY__
+#endif  // PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
 
 void AddressPoolManager::ResetForTesting() {
   for (size_t i = 0; i < std::size(pools_); ++i) {

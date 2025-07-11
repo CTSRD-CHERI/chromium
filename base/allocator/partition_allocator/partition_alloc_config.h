@@ -337,4 +337,18 @@ constexpr bool kUseLazyCommit = false;
 #define PA_CONFIG_IS_NONCLANG_MSVC() 0
 #endif
 
+// PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS): enables enforcement of CHERI bounds on
+// allocations, and bounds internal PartitionAlloc abstractions.
+#if defined(__CHERI_PURE_CAPABILITY__)
+#define PA_CONFIG_IS_CHERI() 1
+#if BUILDFLAG(ENABLE_ALLOCATOR_BOUNDS)
+#define PA_CONFIG_ENABLE_ALLOCATOR_BOUNDS() 1
+#else
+#define PA_CONFIG_ENABLE_ALLOCATOR_BOUNDS() 0
+#endif
+#else
+#define PA_CONFIG_IS_CHERI() 0
+#define PA_CONFIG_ENABLE_ALLOCATOR_BOUNDS() 0
+#endif
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_

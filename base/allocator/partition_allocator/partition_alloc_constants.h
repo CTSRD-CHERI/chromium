@@ -95,11 +95,11 @@ PartitionPageShift() {
     ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)) && defined(ARCH_CPU_ARM64))
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PartitionPageShift() {
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(IS_CHERI)
   return PageAllocationGranularityShift() + 3;
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(IS_CHERI)
   return PageAllocationGranularityShift() + 2;
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
 }
 #else
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
@@ -391,14 +391,7 @@ DirectMapAllocationGranularityOffsetMask() {
 //
 // Keep in sync with //tools/memory/partition_allocator/objects_per_size_py.
 constexpr size_t kMinBucketedOrder =
-#if defined(__CHERI_PURE_CAPABILITY__) && 0
-// Increase the smallest bucket size to account for the increase in the size of
-// PartitionFreelistEntry (due to capabilities):
-// kSmallestBucket >= sizeof(partition_alloc::internal::PartitionFreelistEntry)
-    kAlignment == 16 ? 6 : 5;  // 2^(order - 1), that is 32 or 16.
-#else // defined(__CHERI_PURE_CAPABILITY__)
     kAlignment == 16 ? 5 : 4;  // 2^(order - 1), that is 16 or 8.
-#endif // (__CHERI_PURE_CAPABILITY__)
 // The largest bucketed order is 1 << (20 - 1), storing [512 KiB, 1 MiB):
 constexpr size_t kMaxBucketedOrder = 20;
 constexpr size_t kNumBucketedOrders =

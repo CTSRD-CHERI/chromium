@@ -55,7 +55,7 @@
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #endif
 
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(IS_CHERI)
 #include <cheriintrin.h>
 #endif
 
@@ -130,7 +130,7 @@ class QuarantineCardTable final {
   // Avoid the load of the base of the regular pool.
   PA_ALWAYS_INLINE static QuarantineCardTable& GetFrom(uintptr_t address) {
     PA_SCAN_DCHECK(IsManagedByPartitionAllocRegularPool(address));
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     // Rederive the quarantine_card_table capability and enforce the bounds to
     // sizeof(QuarantineCardTable).
     auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(address);
@@ -140,10 +140,10 @@ class QuarantineCardTable final {
     quarantine_card_table = cheri_bounds_set(quarantine_card_table,
                                              sizeof(QuarantineCardTable));
     return *quarantine_card_table;
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
     return *reinterpret_cast<QuarantineCardTable*>(
         address & PartitionAddressSpace::RegularPoolBaseMask());
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   }
 
   PA_ALWAYS_INLINE void Quarantine(uintptr_t begin, size_t size) {
@@ -170,12 +170,12 @@ class QuarantineCardTable final {
   QuarantineCardTable() = default;
 
   PA_ALWAYS_INLINE static size_t Byte(uintptr_t address) {
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(IS_CHERI)
     return (cheri_address_get(address) &
            ~PartitionAddressSpace::RegularPoolBaseMask()) /
-#else    // __CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(IS_CHERI)
     return (address & ~PartitionAddressSpace::RegularPoolBaseMask()) /
-#endif   // __CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(IS_CHERI)
            kCardSize;
   }
 
@@ -231,7 +231,7 @@ GetSlotStartInSuperPage(uintptr_t maybe_inner_address) {
   // Don't use SlotSpanMetadata/PartitionPage::FromAddr() and family, because
   // they expect an address within a super page payload area, which we don't
   // know yet if |maybe_inner_address| is.
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   // Rederive the super_page capability and enforce the bounds to
   // size of the super page (kSuperPageSize).
   auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(maybe_inner_address);
@@ -246,14 +246,14 @@ GetSlotStartInSuperPage(uintptr_t maybe_inner_address) {
       PartitionPageShift();
   auto* page = PartitionSuperPageToMetadataArea<ThreadSafe>(super_page,
                partition_page_index);
-#else   // !__CHERI_PURE_CAPABILITY__
+#else  // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   const uintptr_t super_page = maybe_inner_address & kSuperPageBaseMask;
 
   const uintptr_t partition_page_index =
       (maybe_inner_address & kSuperPageOffsetMask) >> PartitionPageShift();
   auto* page = PartitionSuperPageToMetadataArea<ThreadSafe>(super_page) +
                partition_page_index;
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif // !PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   // Check if page is valid. The check also works for the guard pages and the
   // metadata page.
   if (!page->is_valid) {
@@ -261,7 +261,7 @@ GetSlotStartInSuperPage(uintptr_t maybe_inner_address) {
   }
 
   page -= page->slot_span_metadata_offset;
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   {
     // Rederive the page capability and enforce the bounds to
     // sizeof(PartitionPage<ThreadSafe>).
@@ -271,7 +271,7 @@ GetSlotStartInSuperPage(uintptr_t maybe_inner_address) {
         cheri_address_set(base, cheri_address_get(page)));
     page = cheri_bounds_set(page, sizeof(PartitionPage<ThreadSafe>));
   }
-#endif   // __CHERI_PURE_CAPABILITY__
+#endif  // PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
   PA_SCAN_DCHECK(page->is_valid);
   PA_SCAN_DCHECK(!page->slot_span_metadata_offset);
   auto* slot_span = &page->slot_span_metadata;
