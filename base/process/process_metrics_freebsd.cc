@@ -72,7 +72,6 @@ base::expected<TimeDelta, ProcessCPUUsageError>
 ProcessMetrics::GetCumulativeCPUUsage() {
   struct kinfo_proc info;
   size_t length = sizeof(struct kinfo_proc);
-  struct timeval tv;
 
   int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_PID, process_ };
 
