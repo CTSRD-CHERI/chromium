@@ -104,7 +104,12 @@ TEST_F(StackTraceTest, TruncatedTrace) {
 
   StackTrace truncated(2);
   truncated.Addresses(&count);
+#if BUILDFLAG(IS_BSD)
+  // Skip frame below __start
+  EXPECT_EQ(1u, count);
+#else
   EXPECT_EQ(2u, count);
+#endif
 }
 #endif  // !defined(OFFICIAL_BUILD) && !defined(NO_UNWIND_TABLES)
 

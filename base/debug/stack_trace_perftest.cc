@@ -40,7 +40,12 @@ class StackTracer {
     // make sure a valid array of stack frames is returned
     EXPECT_NE(addresses, nullptr);
     // make sure the test generates the intended count of stack frames
+#if BUILDFLAG(IS_BSD)
+    // Skip frame below __start
+    EXPECT_EQ(trace_count - 1, tmp);
+#else
     EXPECT_EQ(trace_count, tmp);
+#endif
   }
 
  private:
