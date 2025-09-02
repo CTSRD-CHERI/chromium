@@ -177,7 +177,13 @@ class VectorBuffer {
     const auto to_uintptr = get_uintptr(to);
     return !(
         to >= from_end ||
+#if defined(__CHERI_PURE_CAPABILITY__)
+        CheckAdd(to_uintptr, CheckSub(
+                __builtin_cheri_address_get(from_end_uintptr),
+                __builtin_cheri_address_get(from_begin_uintptr)))
+#else   // !__CHERI_PURE_CAPABILITY__
         CheckAdd(to_uintptr, CheckSub(from_end_uintptr, from_begin_uintptr))
+#endif  // !__CHERI_PURE_CAPABILITY__
                 .ValueOrDie() <= from_begin_uintptr);
   }
 
