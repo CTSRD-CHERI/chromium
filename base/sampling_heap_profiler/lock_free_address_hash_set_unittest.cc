@@ -93,7 +93,11 @@ TEST_P(LockFreeAddressHashSetTest, BasicOperations) {
 
   AutoLock auto_lock(lock);
   for (size_t i = 1; i <= 100; ++i) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    void* ptr = reinterpret_cast<void*>(static_cast<uintptr_t>(i));
+#else   // !__CHERI_PURE_CAPABILITY__
     void* ptr = reinterpret_cast<void*>(i);
+#endif  // !__CHERI_PURE_CAPABILITY__
     set.Insert(ptr);
     EXPECT_EQ(i, set.size());
     EXPECT_EQ(set.Contains(ptr), ContainsResult::kFound);
@@ -105,7 +109,11 @@ TEST_P(LockFreeAddressHashSetTest, BasicOperations) {
   EXPECT_EQ(size / 8., set.load_factor());
 
   for (size_t i = 99; i >= 3; i -= 3) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    void* ptr = reinterpret_cast<void*>(static_cast<uintptr_t>(i));
+#else   // !__CHERI_PURE_CAPABILITY__
     void* ptr = reinterpret_cast<void*>(i);
+#endif  // !__CHERI_PURE_CAPABILITY__
     set.Remove(ptr);
     EXPECT_EQ(--size, set.size());
     EXPECT_NE(set.Contains(ptr), ContainsResult::kFound);
@@ -114,7 +122,11 @@ TEST_P(LockFreeAddressHashSetTest, BasicOperations) {
   EXPECT_EQ(set.size(), 67u);
 
   for (size_t i = 1; i <= 100; ++i) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    void* ptr = reinterpret_cast<void*>(static_cast<uintptr_t>(i));
+#else   // !__CHERI_PURE_CAPABILITY__
     void* ptr = reinterpret_cast<void*>(i);
+#endif  // !__CHERI_PURE_CAPABILITY__
     EXPECT_EQ(i % 3 != 0, set.Contains(ptr) == ContainsResult::kFound);
   }
 }
@@ -125,7 +137,11 @@ TEST_P(LockFreeAddressHashSetTest, Copy) {
 
   AutoLock auto_lock(lock);
   for (size_t i = 1000; i <= 16000; i += 1000) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    void* ptr = reinterpret_cast<void*>(static_cast<uintptr_t>(i));
+#else   // !__CHERI_PURE_CAPABILITY__
     void* ptr = reinterpret_cast<void*>(i);
+#endif  // !__CHERI_PURE_CAPABILITY__
     set.Insert(ptr);
   }
 
@@ -138,7 +154,11 @@ TEST_P(LockFreeAddressHashSetTest, Copy) {
   EXPECT_TRUE(Equals(set, set3));
   EXPECT_TRUE(Equals(set2, set3));
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+  set.Insert(reinterpret_cast<void*>(static_cast<uintptr_t>(42)));
+#else   // !__CHERI_PURE_CAPABILITY__
   set.Insert(reinterpret_cast<void*>(42));
+#endif  // !__CHERI_PURE_CAPABILITY__
 
   EXPECT_FALSE(Equals(set, set2));
   EXPECT_FALSE(Equals(set, set3));
@@ -158,7 +178,11 @@ class WriterThread : public SimpleThread {
   void Run() override {
     for (size_t value = 42; !cancel_->load(std::memory_order_acquire);
          ++value) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+      void* ptr = reinterpret_cast<void*>(static_cast<uintptr_t>(value));
+#else   // !__CHERI_PURE_CAPABILITY__
       void* ptr = reinterpret_cast<void*>(value);
+#endif  // !__CHERI_PURE_CAPABILITY__
       {
         AutoLock auto_lock(*lock_);
         set_->Insert(ptr);
@@ -172,7 +196,11 @@ class WriterThread : public SimpleThread {
     }
     // Leave a key for reader to test.
     AutoLock auto_lock(*lock_);
+#if defined(__CHERI_PURE_CAPABILITY__)
+    set_->Insert(reinterpret_cast<void*>(static_cast<uintptr_t>(0x1337)));
+#else   // !__CHERI_PURE_CAPABILITY__
     set_->Insert(reinterpret_cast<void*>(0x1337));
+#endif  // !__CHERI_PURE_CAPABILITY__
   }
 
  private:
@@ -190,11 +218,19 @@ TEST_P(LockFreeAddressHashSetTest, ConcurrentAccess) {
   {
     AutoLock auto_lock(lock);
     for (size_t i = 1; i <= 20; ++i) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+      set.Insert(reinterpret_cast<void*>(static_cast<uintptr_t>(i)));
+#else
       set.Insert(reinterpret_cast<void*>(i));
+#endif
     }
     // Remove some items to test empty nodes.
     for (size_t i = 16; i <= 20; ++i) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+      set.Remove(reinterpret_cast<void*>(static_cast<uintptr_t>(i)));
+#else
       set.Remove(reinterpret_cast<void*>(i));
+#endif
     }
   }
 
@@ -204,17 +240,32 @@ TEST_P(LockFreeAddressHashSetTest, ConcurrentAccess) {
 
   for (size_t k = 0; k < 100000; ++k) {
     for (size_t i = 1; i <= 30; ++i) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+      EXPECT_EQ(i < 16,
+          set.Contains(reinterpret_cast<void*>(static_cast<uintptr_t>(i))) ==
+              ContainsResult::kFound);
+#else   // !__CHERI_PURE_CAPABILITY__
       EXPECT_EQ(i < 16, set.Contains(reinterpret_cast<void*>(i)) ==
                             ContainsResult::kFound);
+#endif  // !__CHERI_PURE_CAPABILITY__
     }
   }
   cancel.store(true, std::memory_order_release);
   thread->Join();
 
-  EXPECT_EQ(set.Contains(reinterpret_cast<void*>(0x1337)),
-            ContainsResult::kFound);
-  EXPECT_NE(set.Contains(reinterpret_cast<void*>(0xbadf00d)),
-            ContainsResult::kFound);
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_TRUE(
+      set.Contains(reinterpret_cast<void*>(static_cast<uintptr_t>(0x1337))) ==
+          ContainsResult::kFound);
+  EXPECT_FALSE(
+      set.Contains(reinterpret_cast<void*>(static_cast<uintptr_t>(0xbadf00d))) ==
+          ContainsResult::kFound);
+#else   // !__CHERI_PURE_CAPABILITY__
+  EXPECT_TRUE(set.Contains(reinterpret_cast<void*>(0x1337)) ==
+                  ContainsResult::kFound);
+  EXPECT_FALSE(set.Contains(reinterpret_cast<void*>(0xbadf00d)) ==
+                   ContainsResult::kFound);
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 TEST_P(LockFreeAddressHashSetTest, BucketsUsage) {
@@ -225,7 +276,11 @@ TEST_P(LockFreeAddressHashSetTest, BucketsUsage) {
   AutoLock auto_lock(lock);
   EXPECT_EQ(set.GetBucketStats().chi_squared, 1.00);
   for (size_t i = 0; i < count; ++i) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    set.Insert(reinterpret_cast<void*>(static_cast<uintptr_t>(0x10000 + 0x10 * i)));
+#else
     set.Insert(reinterpret_cast<void*>(0x10000 + 0x10 * i));
+#endif
   }
   size_t average_per_bucket = count / set.buckets_count();
   for (size_t i = 0; i < set.buckets_count(); ++i) {
