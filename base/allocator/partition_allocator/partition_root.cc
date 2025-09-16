@@ -461,14 +461,6 @@ static size_t PartitionPurgeSlotSpan(
       ++num_slots;
     }
     begin_addr = rounded_up_truncatation_begin_addr;
-#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
-    // Rederive the begin_addr capability and enforce the bounds to
-    // end_addr - begin_addr.
-    auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(slot_span_start);
-    begin_addr = cheri_bounds_set(
-        cheri_address_set(base, cheri_address_get(begin_addr)),
-        (cheri_address_get(end_addr) - cheri_address_get(begin_addr)));
-#endif  // PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
 
     // We round the end address here up and not down because we're at the end of
     // a slot span, so we "own" all the way up the page boundary.
@@ -497,6 +489,7 @@ static size_t PartitionPurgeSlotSpan(
 #if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
       // Rederive the slot_span_start capability and enforce the bounds to the
       // number of slots.
+      auto base = GET_POOL_BASE_ADDRESS_FROM_ADDRESS(slot_span_start);
       slot_span_start = cheri_bounds_set(
           cheri_address_set(base, cheri_address_get(slot_span_start)),
           (slot_size * num_slots));
@@ -532,6 +525,14 @@ static size_t PartitionPurgeSlotSpan(
 
       // Discard the memory.
       ScopedSyscallTimer timer{root};
+#if PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
+      // Rederive the begin_addr capability and enforce the bounds to
+      // unprovisioned_bytes.
+      begin_addr = cheri_bounds_set(
+          cheri_address_set(base, cheri_address_get(begin_addr)),
+          unprovisioned_bytes);
+#endif  // PA_CONFIG(ENABLE_ALLOCATOR_BOUNDS)
+
       DiscardSystemPages(begin_addr, unprovisioned_bytes);
     }
   }
