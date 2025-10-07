@@ -17,6 +17,7 @@ import("//build/config/host_byteorder.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
+import("//build/config/cheri.gni")
 import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
@@ -205,10 +206,6 @@ declare_args() {
             !(is_android && use_order_profiling) &&
             (use_lld || (use_gold && (is_chromeos || !(current_cpu == "x86" ||
                                                        current_cpu == "x64"))))
-}
-
-declare_args() {
-  is_purecap=true
 }
 
 if (is_android || (is_chromeos_ash && is_chromeos_device)) {
@@ -1015,6 +1012,10 @@ config("compiler") {
       "-Cpanic=abort",
       "-Zpanic_abort_tests",
     ]
+  }
+
+  if (is_cheri) {
+    configs += [ ":purecap" ]
   }
 }
 
@@ -2603,7 +2604,7 @@ config("symbols") {
         # libcomponents_unittests over the 4gb size limit.
         !(is_android && !use_debug_fission && current_cpu != "x64" &&
           current_cpu != "arm64") &&
-        !is_purecap
+        !is_cheri
     if (_enable_gdb_index) {
       if (is_clang) {
         # This flag enables the GNU-format pubnames and pubtypes sections,
@@ -2840,4 +2841,27 @@ config("cet_shadow_stack") {
     assert(target_cpu == "x64")
     ldflags = [ "/CETCOMPAT" ]
   }
+}
+
+config("purecap") {
+  assert(is_cheri)
+  assert(target_cpu == "arm64")
+  asmflags = [
+    "-mabi=purecap",
+    "-march=morello"
+  ]
+  cflags = [
+    "-mabi=purecap",
+    "-march=morello",
+    "-Xclang", "-morello-vararg=new",
+    "-Xclang", "-morello-bounded-memargs",
+    "-cheri-codeptr-relocs",
+    "-fno-stack-protector",
+    "-I/usr/local/include",
+    "--target=aarch64c-unknown-freebsd"
+  ]
+  ldflags = [
+    "-L/usr/local/lib",
+    "-mabi=purecap",
+    "-cheri-codeptr-relocs" ]
 }

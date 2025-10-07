@@ -51,6 +51,24 @@ gcc_toolchain("x64") {
   }
 }
 
+gcc_toolchain("morello-buildroot") {
+  toolprefix = "$clang_base_path/bin"
+  cc = "${toolprefix}/clang"
+  cxx = "${toolprefix}/clang++"
+
+  readelf = "${toolprefix}/llvm-readelf"
+  nm = "${toolprefix}/llvm-nm"
+  ar = "${toolprefix}/llvm-ar"
+  ld = cxx
+
+  toolchain_args = {
+    current_cpu = "arm64"
+    current_os = "freebsd"
+    is_cheri = true
+    is_clang = true
+  }
+}
+
 clang_toolchain("clang_arm") {
   toolchain_args = {
     current_cpu = "arm64"
