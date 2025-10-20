@@ -439,45 +439,18 @@ int Process::GetOSPriority() const {
 
 #if BUILDFLAG(IS_BSD)
 Time Process::CreationTime() const {
-// avoid ps pledge in the network process
-#if !BUILDFLAG(IS_BSD)
-  int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid(),
-               sizeof(struct kinfo_proc), 0 };
-  struct kinfo_proc *info = nullptr;
-  size_t info_size;
-#endif
   Time ct = Time();
 
-#if !BUILDFLAG(IS_BSD)
-  if (sysctl(mib, std::size(mib), NULL, &info_size, NULL, 0) < 0)
-    goto out;
-
-  mib[5] = (info_size / sizeof(struct kinfo_proc));
-  if ((info = reinterpret_cast<kinfo_proc*>(malloc(info_size))) == NULL)
-    goto out;
-
-  if (sysctl(mib, std::size(mib), info, &info_size, NULL, 0) < 0)
-    goto out;
-
-  ct = Time::FromTimeT(info->p_ustart_sec);
-
-out:
-  if (info)
-    free(info);
-#endif
   return ct;
 }
 
-#if BUILDFLAG(IS_BSD)
 Process::Priority Process::GetPriority() const {
   return Priority::kUserBlocking;
 }
-#endif
 
 bool Process::SetPriority(Priority priority) {
   return false;
 }
-#endif
 
 bool Process::CanSetPriority() {
   return false;
