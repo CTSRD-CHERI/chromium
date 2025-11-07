@@ -437,6 +437,7 @@ int Process::GetOSPriority() const {
 #endif
 }
 
+#if BUILDFLAG(IS_BSD)
 Time Process::CreationTime() const {
 // avoid ps pledge in the network process
 #if !BUILDFLAG(IS_BSD)
@@ -475,6 +476,7 @@ Process::Priority Process::GetPriority() const {
 bool Process::SetPriority(Priority priority) {
   return false;
 }
+#endif
 
 bool Process::CanSetPriority() {
   return false;
