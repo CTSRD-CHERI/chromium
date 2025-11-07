@@ -23,7 +23,15 @@ config("wayland_config") {
   ]
 
   if (is_bsd) {
-    include_dirs += [ "/usr/local/include/libepoll-shim" ]
+    if (sysroot != "") {
+      include_dirs += [
+        "${sysroot}/usr/local/include/libepoll-shim"
+      ]
+    } else {
+      include_dirs += [
+        "/usr/local/include/libepoll-shim"
+      ]
+    }
     libs = [ "epoll-shim" ]
   }
 
