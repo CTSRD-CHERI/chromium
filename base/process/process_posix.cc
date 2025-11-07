@@ -400,6 +400,7 @@ int Process::GetPriority() const {
 #endif
 }
 
+#if BUILDFLAG(IS_BSD)
 Time Process::CreationTime() const {
   Time ct = Time();
 
@@ -418,5 +419,6 @@ bool Process::SetProcessBackgrounded(bool value) {
 bool Process::CanBackgroundProcesses() {
   return false;
 }
+#endif
 
 }  // namespace base
