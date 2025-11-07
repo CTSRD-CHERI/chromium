@@ -376,6 +376,8 @@ config("compiler") {
         } else if (current_os != "aix") {
           # Not available on aix.
           cflags += [ "-fstack-protector" ]
+        } else if (is_cheri) {
+          cflags += [ "-fno-stack-protector" ]
         }
       }
     }
@@ -1013,10 +1015,6 @@ config("compiler") {
       "-Zpanic_abort_tests",
     ]
   }
-
-  if (is_cheri) {
-    configs += [ ":purecap" ]
-  }
 }
 
 # The BUILDCONFIG file sets this config on targets by default, which means when
@@ -1126,6 +1124,8 @@ config("compiler_cpu_abi") {
           !(is_chromeos_lacros && is_chromeos_device)) {
         cflags += [ "--target=aarch64-linux-gnu" ]
         ldflags += [ "--target=aarch64-linux-gnu" ]
+      } else if (is_clang && is_bsd && is_cheri) {
+        configs += [ ":purecap" ]
       }
     } else if (current_cpu == "mipsel" && !is_nacl) {
       ldflags += [ "-Wl,--hash-style=sysv" ]
@@ -2844,11 +2844,11 @@ config("cet_shadow_stack") {
 }
 
 config("purecap") {
-  assert(is_cheri)
   assert(target_cpu == "arm64")
   asmflags = [
     "-mabi=purecap",
-    "-march=morello"
+    "-march=morello",
+    "--target=aarch64c-unknown-freebsd"
   ]
   cflags = [
     "-mabi=purecap",
@@ -2856,12 +2856,11 @@ config("purecap") {
     "-Xclang", "-morello-vararg=new",
     "-Xclang", "-morello-bounded-memargs",
     "-cheri-codeptr-relocs",
-    "-fno-stack-protector",
-    "-I/usr/local/include",
     "--target=aarch64c-unknown-freebsd"
   ]
   ldflags = [
-    "-L/usr/local/lib",
     "-mabi=purecap",
-    "-cheri-codeptr-relocs" ]
+    "-cheri-codeptr-relocs",
+    "--target=aarch64c-unknown-freebsd"
+  ]
 }

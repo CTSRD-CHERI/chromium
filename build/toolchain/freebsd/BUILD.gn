@@ -61,6 +61,16 @@ gcc_toolchain("morello-buildroot") {
   ar = "${toolprefix}/llvm-ar"
   ld = cxx
 
+  if (sysroot != "") {
+    extra_cflags = "-isystem ${sysroot}/usr/local/include"
+    extra_cxxflags = "-isystem ${sysroot}/usr/local/include"
+    extra_ldflags = "-L${sysroot}/usr/local/lib"
+  } else {
+    extra_cflags = "-isystem /usr/local/include"
+    extra_cxxflags = "-isystem /usr/local/include"
+    extra_ldflags = "-L/usr/local/lib"
+  }
+
   toolchain_args = {
     current_cpu = "arm64"
     current_os = "freebsd"
