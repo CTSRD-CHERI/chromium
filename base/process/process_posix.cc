@@ -472,6 +472,7 @@ out:
 Process::Priority Process::GetPriority() const {
   return Priority::kUserBlocking;
 }
+#endif
 
 bool Process::SetPriority(Priority priority) {
   return false;
