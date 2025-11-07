@@ -77,6 +77,14 @@ if (target_sysroot != "" && sysroot == target_sysroot) {
     "--system_libdir",
     system_libdir,
   ]
+  if (is_bsd) {
+    pkg_config_args += [
+      "--system_libdir",
+      "libdata",
+      "--system_libdir",
+      "local/libdata",
+    ]
+  }
 }
 
 if (host_pkg_config != "") {
