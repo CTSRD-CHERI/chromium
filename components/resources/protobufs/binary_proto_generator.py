@@ -9,7 +9,7 @@
 """
 from __future__ import print_function
 import abc
-import imp
+import importlib.machinery
 import optparse
 import os
 import re
@@ -67,8 +67,8 @@ class GoogleProtobufModuleImporter:
       # but is included for completeness.
       raise ImportError(fullname)
 
-    filepath = self._fullname_to_filepath(fullname)
-    return imp.load_source(fullname, filepath)
+    loader = importlib.machinery.SourceFileLoader(fullname, filepath)
+    return loader.load_module()
 
 class BinaryProtoGenerator:
 
