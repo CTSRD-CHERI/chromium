@@ -81,7 +81,7 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
       const gfx::Rect& bounding_rect) const override {}
   bool IsTranslucentWindowOpacitySupported() const override { return true; }
   bool ShouldDrawRestoredFrameShadow() const override { return true; }
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_BSD)
   ui::WindowTiledEdges GetTiledEdges() const override { return {}; }
 #endif
   int WebAppButtonHeight() const override { return 0; }
