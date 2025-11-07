@@ -58,8 +58,9 @@ def SetConfigPath(options):
     print("You must specify an architecture via -a if using a sysroot.")
     sys.exit(1)
 
-  libdir = sysroot + '/usr/' + options.system_libdir + '/pkgconfig'
-  libdir += ':' + sysroot + '/usr/share/pkgconfig'
+  libdir = sysroot + '/usr/share/pkgconfig'
+  for tmp_libdir in options.system_libdir:
+      libdir += ':' + sysroot + '/usr/' + tmp_libdir + '/pkgconfig'
   os.environ['PKG_CONFIG_LIBDIR'] = libdir
   return libdir
 
@@ -119,8 +120,8 @@ def main():
   parser.add_option('-v', action='append', dest='strip_out', type='string')
   parser.add_option('-s', action='store', dest='sysroot', type='string')
   parser.add_option('-a', action='store', dest='arch', type='string')
-  parser.add_option('--system_libdir', action='store', dest='system_libdir',
-                    type='string', default='lib')
+  parser.add_option('--system_libdir', action='append', dest='system_libdir',
+                    type='string', default=[])
   parser.add_option('--atleast-version', action='store',
                     dest='atleast_version', type='string')
   parser.add_option('--libdir', action='store_true', dest='libdir')
