@@ -301,7 +301,8 @@ vars = {
   'dawn_git': 'https://github.com/chromium-cheri',
   'pdfium_git': 'https://github.com/chromium-cheri',
   'quiche_git': 'https://github.com/chromium-cheri',
-  'skia_git': 'https://github.com/chromium-cheri',
+  'cheri_skia_git': 'https://github.com/chromium-cheri',
+  'skia_git': 'https://skia.googlesource.com',
   'swiftshader_git': 'https://swiftshader.googlesource.com',
   'webrtc_git': 'https://github.com/chromium-cheri',
   'betocore_git': 'https://beto-core.googlesource.com',
@@ -1802,7 +1803,7 @@ deps = {
     Var('cheri_chromium_git') + '/ruy.git' + '@' + 'f30738cde26ef40b88305c367af48fb5736cc18c',
 
   'src/third_party/skia':
-    Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
+    Var('cheri_skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
 
   'src/third_party/smhasher/src':
     Var('chromium_git') + '/external/smhasher.git' + '@' + 'e87738e57558e0ec472b2fc3a643b838e5b6e88f',
