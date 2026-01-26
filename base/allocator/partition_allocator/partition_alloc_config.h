@@ -30,7 +30,7 @@
 // configurations.
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
 #if defined(__CHERI_PURE_CAPABILITY__)
-#include <stdint.h>
+#include <stddef.h>
 static_assert(sizeof(ptraddr_t) == 8, "");
 static_assert(sizeof(void*) == 16, "");
 #else // defined(__CHERI_PURE_CAPABILITY__)
