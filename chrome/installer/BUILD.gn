@@ -13,4 +13,8 @@ group("installer") {
   if (enable_mac_installer) {
     deps = [ "//chrome/installer/mac" ]
   }
+
+  if (enable_freebsd_installer) {
+    deps = [ "//chrome/installer/freebsd" ]
+  }
 }

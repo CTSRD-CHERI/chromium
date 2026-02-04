@@ -1,0 +1,105 @@
+name: "@@PACKAGE@@"
+version: "@@VERSION@@"
+origin: "www/chromium"
+comment: "Google web browser based on WebKit"
+www: "@@PRODUCTURL@@"
+maintainer: @@MAINTMAIL@@
+prefix: @@PREFIX@@
+desc: <<EOD
+"@@FULLDESC@@"
+EOD
+arch: "@@ARCHITECTURE@@"
+abi: "@@ABI@@"
+deps: {
+  "at-spi2-core":{"origin":"accessibility/at-spi2-core","version":"2.48.0"},
+  "cairo":{"origin":"graphics/cairo","version":"1.17.4_3,3"},
+  "cups":{"origin":"print/cups","version":"2.4.6"},
+  "dav1d":{"origin":"multimedia/dav1d","version":"1.2.1_1"},
+  "dbus":{"origin":"devel/dbus","version":"1.14.6,1"},
+  "dbus-glib":{"origin":"devel/dbus-glib","version":"0.112"},
+  #"dconf":{"origin":"devel/dconf","version":"0.40.0_3"},
+  #"desktop-file-utils":{"origin":"devel/desktop-file-utils","version":"0.26_1"},
+  "expat":{"origin":"textproc/expat2","version":"2.5.0"},
+  "flac":{"origin":"audio/flac","version":"1.4.3,1"},
+  "fontconfig":{"origin":"x11-fonts/fontconfig","version":"2.14.2,1"},
+  "freetype2":{"origin":"print/freetype2","version":"2.13.1"},
+  "gdk-pixbuf2":{"origin":"graphics/gdk-pixbuf2","version":"2.42.10_1"},
+  "gettext-runtime":{"origin":"devel/gettext-runtime","version":"0.22_1"},
+  "glib":{"origin":"devel/glib20","version":"2.76.4,2"},
+  "gtk3":{"origin":"x11-toolkits/gtk30","version":"3.24.34_3"},
+  "harfbuzz":{"origin":"print/harfbuzz","version":"8.1.1"},
+  #"harfbuzz-icu":{"origin":"print/harfbuzz-icu","version":"8.1.1"},
+  "icu":{"origin":"devel/icu","version":"73.2,1"},
+  "jpeg-turbo":{"origin":"graphics/jpeg-turbo","version":"3.0.0"},
+  "jsoncpp":{"origin":"devel/jsoncpp","version":"1.9.5"},
+  "libX11":{"origin":"x11/libX11","version":"1.8.6,1"},
+  "libXScrnSaver":{"origin":"x11/libXScrnSaver","version":"1.2.4"},
+  "libXcomposite":{"origin":"x11/libXcomposite","version":"0.4.6,1"},
+  "libXcursor":{"origin":"x11/libXcursor","version":"1.2.0"},
+  "libXdamage":{"origin":"x11/libXdamage","version":"1.1.6"},
+  "libXext":{"origin":"x11/libXext","version":"1.3.4,1"},
+  "libXfixes":{"origin":"x11/libXfixes","version":"6.0.0"},
+  "libXi":{"origin":"x11/libXi","version":"1.8,1"},
+  "libXrandr":{"origin":"x11/libXrandr","version":"1.5.2"},
+  "libXrender":{"origin":"x11/libXrender","version":"0.9.10_2"},
+  "libXtst":{"origin":"x11/libXtst","version":"1.2.3_2"},
+  "libdrm":{"origin":"graphics/libdrm","version":"2.4.115,1"},
+  "libepoll-shim":{"origin":"devel/libepoll-shim","version":"0.0.20230411"},
+  "libevent":{"origin":"devel/libevent","version":"2.1.12"},
+  #"libexif":{"origin":"graphics/libexif","version":"0.6.24"},
+  "libffi":{"origin":"devel/libffi","version":"3.4.4_1"},
+  "libgcrypt":{"origin":"security/libgcrypt","version":"1.10.2"},
+  "libglvnd":{"origin":"graphics/libglvnd","version":"1.6.0"},
+  "libiconv":{"origin":"converters/libiconv","version":"1.17"},
+  "libpci":{"origin":"devel/libpci","version":"3.10.0"},
+  #"libsecret":{"origin":"security/libsecret","version":"0.20.5_2"},
+  "libxcb":{"origin":"x11/libxcb","version":"1.15_1"},
+  "libxkbcommon":{"origin":"x11/libxkbcommon","version":"1.5.0"},
+  "libxml2":{"origin":"textproc/libxml2","version":"2.10.4_1"},
+  "libxshmfence":{"origin":"x11/libxshmfence","version":"1.3.2"},
+  "libxslt":{"origin":"textproc/libxslt","version":"1.1.37"},
+  "mesa-libs":{"origin":"graphics/mesa-libs","version":"22.3.7_1"},
+  "noto-basic":{"origin":"x11-fonts/noto-basic","version":"2.0_1"},
+  "nspr":{"origin":"devel/nspr","version":"4.35_1"},
+  "nss":{"origin":"security/nss","version":"3.92"},
+  "openh264":{"origin":"multimedia/openh264","version":"2.3.0,2"},
+  "opus":{"origin":"audio/opus","version":"1.4"},
+  "pango":{"origin":"x11-toolkits/pango","version":"1.50.14_1"},
+  "png":{"origin":"graphics/png","version":"1.6.40"},
+  #"re2":{"origin":"devel/re2","version":"20230301"},
+  #"snappy":{"origin":"archivers/snappy","version":"1.1.10"},
+  #"speech-dispatcher":{"origin":"accessibility/speech-dispatcher","version":"0.11.2_2"},
+  #"speex":{"origin":"audio/speex","version":"1.2.1,1"},
+  "wayland":{"origin":"graphics/wayland","version":"1.22.0"},
+  "webp":{"origin":"graphics/webp","version":"1.3.1_1"},
+  "xdg-utils":{"origin":"devel/xdg-utils","version":"1.1.3_2"}
+}
+scripts: {
+  post-install: <<EOD
+    #!/bin/sh
+    # Add icons to the system icons
+    XDG_ICON_RESOURCE="`command -v xdg-icon-resource 2> /dev/null || true`"
+    if [ ! -x "$XDG_ICON_RESOURCE" ]; then
+      echo "Error: Could not find xdg-icon-resource" >&2
+      exit 1
+    fi
+    for icon in @@LOGO_RESOURCES_PNG@@; do
+      size="$(echo ${icon} | sed 's/[^0-9]//g')"
+      "$XDG_ICON_RESOURCE" install --novendor --size "${size}" "@@INSTALLDIR@@/${icon}" \
+        "@@PACKAGE@@"
+    done
+EOD
+  post-deinstall: <<EOD
+    #!/bin/sh
+    # Remove icons from the system icons
+    XDG_ICON_RESOURCE="`command -v xdg-icon-resource 2> /dev/null || true`"
+    if [ ! -x "$XDG_ICON_RESOURCE" ]; then
+      echo "Error: Could not find xdg-icon-resource" >&2
+      exit 1
+    fi
+    for icon in @@LOGO_RESOURCES_PNG@@; do
+      size="$(echo ${icon} | sed 's/[^0-9]//g')"
+      "$XDG_ICON_RESOURCE" uninstall --size "${size}" "@@PACKAGE@@"
+    done
+EOD
+}

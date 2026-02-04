@@ -1,0 +1,254 @@
+import("//build/config/c++/c++.gni")
+import("//build/config/cheri.gni")
+import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+import("//build/config/sysroot.gni")
+import("//build/linux/strip_binary.gni")
+import("//build/util/lastchange.gni")
+import("//build/util/process_version.gni")
+import("//chrome/version.gni")
+import("//components/nacl/features.gni")
+import("//components/optimization_guide/features.gni")
+import("//third_party/angle/gni/angle.gni")
+import("//third_party/widevine/cdm/widevine.gni")
+import("//ui/gl/features.gni")
+import("//ui/qt/qt.gni")
+
+assert(is_freebsd)
+assert(!use_custom_libcxx)
+assert(!enable_nacl)
+
+packaging_files_executables = [
+  "$root_out_dir/chrome",
+]
+packaging_files_shlibs = []
+
+if (use_egl) {
+  packaging_files_shlibs += [
+    "$root_out_dir/libEGL.so",
+    "$root_out_dir/libGLESv2.so",
+  ]
+  if (angle_shared_libvulkan && !is_chromeos) {
+    #packaging_files_shlibs += [ "$root_out_dir/libvulkan.so.1" ]
+  }
+}
+
+if (enable_swiftshader) {
+  assert(!is_cheri)
+  packaging_files_shlibs += [ "$root_out_dir/libvk_swiftshader.so" ]
+}
+
+if (build_with_internal_optimization_guide) {
+  packaging_files_shlibs +=
+      [ "$root_out_dir/liboptimization_guide_internal.so" ]
+}
+
+if (use_qt) {
+  strip_binary("strip_qt5_shim") {
+    binary_input = "$root_out_dir/libqt5_shim.so"
+    deps = [ "//ui/qt:qt5_shim" ]
+  }
+}
+if (use_qt6) {
+  strip_binary("strip_qt6_shim") {
+    binary_input = "$root_out_dir/libqt6_shim.so"
+    deps = [ "//ui/qt:qt6_shim" ]
+  }
+}
+
+packaging_files_binaries = packaging_files_executables + packaging_files_shlibs
+
+packaging_files = packaging_files_binaries + [
+                    "$root_out_dir/xdg-mime",
+                    "$root_out_dir/xdg-settings",
+                    "$root_out_dir/locales/en-US.pak",
+                    "$root_out_dir/MEIPreload/manifest.json",
+                    "$root_out_dir/MEIPreload/preloaded_data.pb",
+                  ]
+if (enable_swiftshader) {
+  assert(!is_cheri)
+  packaging_files += [ "$root_out_dir/vk_swiftshader_icd.json" ]
+}
+
+if (use_qt) {
+  # Even though this is a shared library, add it to `packaging_files` instead of
+  # `packaging_files_shlibs` to skip the dependency check.  This is intentional
+  # to prevent a hard dependency on QT for the package.
+  packaging_files += [ "$root_out_dir/libqt5_shim.so" ]
+}
+if (use_qt6) {
+  packaging_files += [ "$root_out_dir/libqt6_shim.so" ]
+}
+
+# NOTE: As FreeBSD is built with is_sysroot = false, the installer cannot
+# depend on targets in the Linux installer (as the default sysroot is not
+# set this causes errors when interpretting an empty string as a path). 
+
+strip_binary("strip_chrome_binary") {
+  binary_input = "$root_out_dir/chrome"
+  deps = [ "//chrome" ]
+}
+
+strip_binary("strip_libEGL_shlib") {
+  binary_input = "$root_out_dir/libEGL.so"
+  deps = [ "//third_party/angle:libEGL" ]
+}
+
+strip_binary("strip_libGLESv2_shlib") {
+  binary_input = "$root_out_dir/libGLESv2.so"
+  deps = [ "//third_party/angle:libGLESv2" ]
+}
+
+group("freebsd") {
+  deps = [
+    ":freebsd_package",
+  ]
+}
+
+branding_dir = "//chrome/app/theme/$branding_path_component"
+branding_dir_100 =
+    "//chrome/app/theme/default_100_percent/$branding_path_component"
+
+copy("common_packaging_files") {
+  visibility = [ ":*" ]
+  sources = [
+    "//chrome/app/resources/manpage.1.in",
+    "desktop.template",
+    "installer.include",
+    "wrapper",
+  ]
+
+  sources += [
+    "chromium-browser/chromium-browser.appdata.xml",
+    "chromium-browser/chromium-browser.info",
+  ]
+
+  sources += [ "//buildtools/third_party/eu-strip/bin/eu-strip" ]
+
+  outputs = [ "$root_out_dir/installer/freebsd/{{source_file_part}}" ]
+}
+
+copy("freebsd_packaging_files") {
+  visibility = [ ":*" ]
+  sources = [
+    "build.sh",
+    "manifest.template",
+  ]
+  outputs = [ "$root_out_dir/installer/freebsd/{{source_file_part}}" ]
+}
+
+copy("theme_files") {
+  visibility = [ ":*" ]
+  sources = [
+    "$branding_dir/BRANDING",
+    "$branding_dir/linux/product_logo_128.png",
+    "$branding_dir/linux/product_logo_24.png",
+    "$branding_dir/linux/product_logo_256.png",
+    "$branding_dir/linux/product_logo_32.xpm",
+    "$branding_dir/linux/product_logo_48.png",
+    "$branding_dir/linux/product_logo_64.png",
+    "$branding_dir_100/linux/product_logo_16.png",
+    "$branding_dir_100/linux/product_logo_32.png",
+  ]
+  outputs = [ "$root_out_dir/installer/theme/{{source_file_part}}" ]
+}
+
+process_version("save_build_info") {
+  # Just output the default version info variables (no template).
+  process_only = true
+  sources = [
+    "//chrome/VERSION",
+    branding_file_path,
+    lastchange_file,
+  ]
+  output = "$root_out_dir/installer/version.txt"
+}
+
+# Dependencies for all FreeBSD installer targets.
+group("installer_deps") {
+  public_deps = [
+    ":common_packaging_files",
+    ":freebsd_packaging_files",
+    ":save_build_info",
+    ":strip_chrome_binary",
+    ":theme_files",
+    "//chrome",
+    "//chrome:packed_resources",
+    "//chrome/browser/resources/media/mei_preload:component",
+  ]
+
+  if (use_egl) {
+    public_deps += [
+      ":strip_libEGL_shlib",
+      ":strip_libGLESv2_shlib",
+      "//third_party/angle:libEGL",
+      "//third_party/angle:libGLESv2",
+    ]
+  }
+  if (use_qt) {
+    public_deps += [
+      ":strip_qt5_shim",
+      "//ui/qt:qt5_shim",
+    ]
+  }
+  if (use_qt6) {
+    public_deps += [
+      ":strip_qt6_shim",
+      "//ui/qt:qt6_shim",
+    ]
+  }
+}
+
+action("freebsd_package") {
+  visibility = [ ":*" ]
+  package = "chromium-browser"
+
+  #pkg_target_name = "${target_name}_deb"
+    
+  script = "//build/gn_run_binary.py"
+    
+  inputs = packaging_files
+  outputs = [ "$root_out_dir/${package}_${chrome_version_full}-1_${current_cpu}.pkg" ]
+
+  if (current_cpu == "x86") {
+    pkg_arch = "i386"
+  } else if (current_cpu == "x64") {
+    pkg_arch = "amd64"
+  } else if (current_cpu == "arm") {
+    pkg_arch = "armhf"
+  } else if (current_cpu == "arm64") {
+    pkg_arch = "arm64"
+  } else if (current_cpu == "mipsel") {
+    pkg_arch = "mipsel"
+  } else if (current_cpu == "mips64el") {
+    pkg_arch = "mips64el"
+  } else if (current_cpu == "loong64") {
+    pkg_arch = "loongarch64"
+  } else {
+    assert(false, "FreeBSD installer not configured for this architecture.")
+  }
+  if (pkg_arch == "arm64" && is_cheri) {
+    pkg_abi = "CheriBSD:20250301:aarch64c"
+  } else {
+    pkg_abi = "FreeBSD:13:*"
+  }
+
+  args = [
+    rebase_path("$root_out_dir/installer/freebsd/build.sh", root_build_dir),
+    "-a",
+    pkg_arch,
+    "-b",
+    pkg_abi,
+    "-d",
+    branding_path_component,
+    "-o",
+    rebase_path(root_out_dir, root_build_dir),
+    "-t",
+    target_os,
+  ]
+  deps = [
+    ":installer_deps",
+  ]
+}

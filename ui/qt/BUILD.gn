@@ -62,6 +62,11 @@ template("qt_shim") {
       ":qt",
       "//chrome/installer/linux:*",
     ]
+    if (is_freebsd) {
+      visibility += [
+        "//chrome/installer/freebsd:*",
+      ]
+    }
 
     # Since qt_shim is a shared library even in non-component builds, it shouldn't
     # depend on any other targets since that would duplicate code between binaries

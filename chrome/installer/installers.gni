@@ -14,3 +14,5 @@ declare_args() {
 }
 
 enable_mac_installer = is_mac && !is_chrome_for_testing
+
+enable_freebsd_installer = is_freebsd

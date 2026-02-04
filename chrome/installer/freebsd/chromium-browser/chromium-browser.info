@@ -1,0 +1,35 @@
+# Copyright 2009 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# This file provides common configuration information for building
+# chromium-browser packages for various platforms.
+
+# Base name of the package.
+PACKAGE="chromium"
+
+# Filename of the main executable (for generating launcher scripts, etc.)
+PROGNAME=chrome
+
+# Prefix directory for Pkg
+PREFIX=/usr/local
+
+# Base directory for package installation.
+INSTALLDIR=/usr/local/share/chromium
+
+# Directory for device policy enrollments.
+ENROLLMENTDIR=/usr/local/etc/chromium/policies/enrollment
+
+# Display string for desktop menu/icon.
+MENUNAME="Chromium Web Browser"
+
+# Brief package description.
+SHORTDESC="The web browser from Chromium.org"
+
+# Detailed package description.
+FULLDESC="Chromium is a browser that combines a minimal design with sophisticated technology to make the web faster, safer, and easier."
+
+# Package maintainer information.
+MAINTNAME="Graeme Jenkinson"
+MAINTMAIL="graeme@capabilitieslimited.org"
+PRODUCTURL="http://www.github.com/cheri-chromium/"
