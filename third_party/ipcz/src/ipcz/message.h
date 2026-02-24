@@ -30,7 +30,7 @@ namespace internal {
 // Header which begins all messages. The header layout is versioned for
 // extensibility and long-term support.
 #if defined(__CHERI_PURE_CAPABILITY__)
-struct IPCZ_ALIGN(alignof(max_align_t)) MessageHeader {
+struct IPCZ_ALIGN(max_align_t) MessageHeader {
 #else // defined(__CHERI_PURE_CAPABILITY__)
 struct IPCZ_ALIGN(8) MessageHeader {
 #endif // defined(__CHERI_PURE_CAPABILITY__)
@@ -177,7 +177,7 @@ struct ParamMetadata {
 
 // Message helps build, serialize, and deserialize ipcz-internal messages.
 #if defined(__CHERI_PURE_CAPABILITY__)
-class IPCZ_ALIGN(alignof(max_align_t)) Message {
+class IPCZ_ALIGN(max_align_t) Message {
 #else // defined(__CHERI_PURE_CAPABILITY__)
 class IPCZ_ALIGN(8) Message {
 #endif // defined(__CHERI_PURE_CAPABILITY__)

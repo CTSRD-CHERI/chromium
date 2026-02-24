@@ -11,7 +11,7 @@
 #define IPCZ_MSG_VERSION(x) static constexpr uint32_t kVersion = x
 
 #define IPCZ_MSG_BEGIN(name, id_decl, version_decl)              \
-  class name : public MessageWithParams<name##_Params> {         \
+  class IPCZ_ALIGN(max_align_t) name : public MessageWithParams<name##_Params> {         \
    public:                                                       \
     using ParamsType = name##_Params;                            \
     static_assert(sizeof(ParamsType) % 8 == 0, "Invalid size");  \
