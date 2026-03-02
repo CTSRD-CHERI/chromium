@@ -934,6 +934,11 @@ if (is_clang_or_gcc) {
         no_default_deps = true
       }
     }
+    if (is_bsd) {
+      shim_headers += [ "shim/allocator_shim_override_bsd_symbols.h" ]
+      shim_sources -= [ "shim/allocator_shim.cc" ]
+      shim_sources += [ "shim/allocator_shim_bsd.cc" ]
+    }
 
     if (!use_partition_alloc_as_malloc) {
       if (is_android) {
@@ -944,6 +949,10 @@ if (is_clang_or_gcc) {
       if (is_apple) {
         shim_sources +=
             [ "shim/allocator_shim_default_dispatch_to_apple_zoned_malloc.cc" ]
+      }
+      if (is_bsd) {
+        shim_sources +=
+            [ "shim/allocator_shim_default_dispatch_to_bsd_libc.cc" ]
       }
       if (is_chromeos || is_linux) {
         shim_sources += [ "shim/allocator_shim_default_dispatch_to_glibc.cc" ]
