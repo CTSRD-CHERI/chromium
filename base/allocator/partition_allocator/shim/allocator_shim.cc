@@ -407,6 +407,8 @@ ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 #else  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/partition_allocator/shim/allocator_shim_override_mac_symbols.h"
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#elif BUILDFLAG(IS_BSD)
+#include "base/allocator/partition_allocator/shim/allocator_shim_override_bsd_symbols.h"
 #else
 #include "base/allocator/partition_allocator/shim/allocator_shim_override_libc_symbols.h"
 #endif

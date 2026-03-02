@@ -1165,7 +1165,10 @@ component("base") {
       if (is_apple) {
         sources += [ "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_mac_zoned_malloc.cc" ]
       }
-      if (is_chromeos || is_linux) {
+      if (is_bsd) {
+        sources += [ "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_bsd_libc.cc" ]
+      }
+      if (is_chromeos || is_linux && !is_bsd) {
         sources += [ "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_glibc.cc" ]
       }
       if (is_win) {
