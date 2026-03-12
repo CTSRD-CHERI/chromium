@@ -87,6 +87,30 @@ const char* PageTagToName(PageTag tag) {
   }
 }
 #endif
+#elif BUILDFLAG(IS_BSD)
+const char* PageTagToName(PageTag tag) {
+  // Important: All the names should be string literals. As per prctl.h in
+  // //third_party/android_ndk the kernel keeps a pointer to the name instead
+  // of copying it.
+  //
+  // Having the name in .rodata ensures that the pointer remains valid as
+  // long as the mapping is alive.
+  switch (tag) {
+    case PageTag::kBlinkGC:
+      return "blink_gc";
+    case PageTag::kPartitionAlloc:
+      return "partition_alloc";
+    case PageTag::kChromium:
+      return "chromium";
+    case PageTag::kV8:
+      return "v8";
+    case PageTag::kV8Heap:
+      return "v8:heap";
+    default:
+      PA_DCHECK(false);
+      return "";
+  }
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
@@ -219,6 +243,8 @@ uintptr_t SystemAllocPagesInternal(uintptr_t hint,
           PageTagToName(page_tag));
   }
 #endif
+#elif BUILDFLAG(IS_BSD)
+  (void)msetname(ret, length, PageTagToName(page_tag));
 #endif
 
   return reinterpret_cast<uintptr_t>(ret);

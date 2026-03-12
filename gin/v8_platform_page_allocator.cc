@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "v8_platform_cheri.h"
 #include "v8_platform_page_allocator.h"
 
 #include "base/allocator/partition_allocator/address_space_randomization.h"
@@ -87,8 +88,15 @@ void* PageAllocator::AllocatePages(void* address,
 #endif // __CHERI_PURE_CAPABILITY__
   partition_alloc::PageAccessibilityConfiguration config =
       GetPageConfig(permissions);
+
+  partition_alloc::PageTag tmp_page_tag;
+  if (v8::base::CheriShouldMadvise()) {
+    tmp_page_tag = partition_alloc::PageTag::kV8Heap;
+  } else {
+    tmp_page_tag = partition_alloc::PageTag::kV8;
+  }
   return partition_alloc::AllocPages(address, length, alignment, config,
-                                     partition_alloc::PageTag::kV8);
+                                     tmp_page_tag);
 }
 
 bool PageAllocator::FreePages(void* address, size_t length) {

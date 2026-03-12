@@ -74,6 +74,7 @@ enum class PageTag {
   kPartitionAlloc = 253,  // PartitionAlloc, no matter the partition.
   kChromium = 254,        // Chromium page.
   kV8 = 255,              // V8 heap pages.
+  kV8Heap = 240,
   kLast = kV8             // Maximum tag value.
 };
 
