@@ -12,7 +12,7 @@ arch: "@@ARCHITECTURE@@"
 abi: "@@ABI@@"
 deps: {
   "at-spi2-core":{"origin":"accessibility/at-spi2-core","version":"2.48.0"},
-  "bash:{"origin":"shells/bash","version":"5.2.15"},
+  "bash":{"origin":"shells/bash","version":"5.2.15"},
   "cairo":{"origin":"graphics/cairo","version":"1.17.4_3,3"},
   "cups":{"origin":"print/cups","version":"2.4.6"},
   "dav1d":{"origin":"multimedia/dav1d","version":"1.2.1_1"},
