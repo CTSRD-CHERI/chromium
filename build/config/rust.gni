@@ -67,8 +67,7 @@ declare_args() {
   # set this to the output of `rustc -V`. Changing this string will cause all
   # Rust targets to be rebuilt, which allows you to update your toolchain and
   # not break incremental builds.
-  rustc_version = exec_script("//build/gn_run_binary.py",
-    [ "/usr/local/bin/rustc", "-V" ], "trim string")
+  rustc_version = ""
 
   # Whether artifacts produced by the Rust compiler can participate in ThinLTO.
   #
