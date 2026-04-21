@@ -5,7 +5,5 @@
 declare_args() {
   # Build for the Pure Capability ABI.
   is_cheri = false
-
-  v8_cheri_debug = false
 }
 
