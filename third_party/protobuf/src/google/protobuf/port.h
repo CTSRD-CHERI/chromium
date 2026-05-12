@@ -746,7 +746,7 @@ class NoopDebugCounter {
 // minimum alignment of 8 bytes to match the requirement of ArenaStringPtr.
 
 // Take advantage of C++20 constexpr support in std::string.
-class alignas(8) GlobalEmptyStringConstexpr {
+class alignas(max_align_t) GlobalEmptyStringConstexpr {
  public:
   const std::string& get() const { return value_; }
   // Nothing to init, or destroy.
@@ -770,7 +770,7 @@ class alignas(8) GlobalEmptyStringConstexpr {
   std::string value_;
 };
 
-class alignas(8) GlobalEmptyStringDynamicInit {
+class alignas(max_align_t) GlobalEmptyStringDynamicInit {
  public:
   const std::string& get() const {
     return *reinterpret_cast<const std::string*>(internal::Launder(buffer_));

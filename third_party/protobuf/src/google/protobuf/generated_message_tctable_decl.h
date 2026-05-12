@@ -259,7 +259,7 @@ struct MapAuxInfo {
 static_assert(sizeof(MapAuxInfo) <= 8, "");
 
 // Base class for message-level table with info for the tail-call parser.
-struct alignas(uint64_t) TcParseTableBase {
+struct alignas(max_align_t) TcParseTableBase {
   // Common attributes for message layout:
   uint16_t has_bits_offset;
   uint16_t extension_offset;
@@ -505,7 +505,11 @@ struct alignas(uint64_t) TcParseTableBase {
 #pragma warning(pop)
 #endif
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+static_assert(sizeof(TcParseTableBase::FastFieldEntry) <= 32,
+#else
 static_assert(sizeof(TcParseTableBase::FastFieldEntry) <= 16,
+#endif
               "Fast field entry is too big.");
 static_assert(sizeof(TcParseTableBase::FieldEntry) <= 16,
               "Field entry is too big.");
