@@ -8,6 +8,7 @@
 #ifndef UPB_MINI_TABLE_INTERNAL_MESSAGE_H_
 #define UPB_MINI_TABLE_INTERNAL_MESSAGE_H_
 
+#include <stdalign.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -43,7 +44,7 @@ typedef enum {
 } upb_ExtMode;
 
 enum {
-  kUpb_Message_Align = 8,
+  kUpb_Message_Align = alignof(max_align_t),
 };
 
 // upb_MiniTable represents the memory layout of a given upb_MessageDef.
