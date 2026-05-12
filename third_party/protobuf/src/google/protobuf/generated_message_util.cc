@@ -71,7 +71,11 @@ static void InitWeakDefaults() {
   // It contains a WeakDescriptorDefaultTail object.
   // As such, we iterate the section backwards.
   const char* start = &__start_pb_defaults;
+#if defined(__CHERI_PURE_CAPABILITY__)
+  const char* end = start + (&__stop_pb_defaults - &__start_pb_defaults);
+#else
   const char* end = &__stop_pb_defaults;
+#endif
   while (start != end) {
     auto* tail = reinterpret_cast<const WeakDescriptorDefaultTail*>(end) - 1;
     end -= tail->size;
