@@ -24,7 +24,7 @@ if (NOT TARGET absl::strings)
     include(FetchContent)
     FetchContent_Declare(
       absl
-      GIT_REPOSITORY "https://github.com/abseil/abseil-cpp.git"
+      GIT_REPOSITORY "https://github.com/CTSRD-CHERI/abseil-cpp.git"
       GIT_TAG "${abseil-cpp-version}"
     )
     if (protobuf_INSTALL)
