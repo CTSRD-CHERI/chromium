@@ -302,7 +302,11 @@ static void upb_MtDecoder_PushOneof(upb_MtDecoder* d,
 
 static size_t upb_MtDecoder_SizeOfRep(upb_FieldRep rep,
                                       upb_MiniTablePlatform platform) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  enum { string_view_size_32 = 16, string_view_size_64 = 32 };
+#else
   enum { string_view_size_32 = 8, string_view_size_64 = 16 };
+#endif
   UPB_STATIC_ASSERT(sizeof(upb_StringView) ==
                         UPB_SIZE(string_view_size_32, string_view_size_64),
                     "StringView size mismatch");
@@ -324,7 +328,11 @@ static size_t upb_MtDecoder_SizeOfRep(upb_FieldRep rep,
 
 static size_t upb_MtDecoder_AlignOfRep(upb_FieldRep rep,
                                        upb_MiniTablePlatform platform) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  enum { string_view_align_32 = 8, string_view_align_64 = 16 };
+#else
   enum { string_view_align_32 = 4, string_view_align_64 = 8 };
+#endif
   UPB_STATIC_ASSERT(UPB_ALIGN_OF(upb_StringView) ==
                         UPB_SIZE(string_view_align_32, string_view_align_64),
                     "StringView size mismatch");
