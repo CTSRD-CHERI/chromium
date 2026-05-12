@@ -134,9 +134,9 @@ class PROTOBUF_EXPORT InternalMetadata {
   intptr_t ptr_;
 
   // Tagged pointer implementation.
-  static constexpr intptr_t kUnknownFieldsTagMask = 1;
-  static constexpr intptr_t kPtrTagMask = kUnknownFieldsTagMask;
-  static constexpr intptr_t kPtrValueMask = ~kPtrTagMask;
+  static constexpr size_t kUnknownFieldsTagMask = 1;
+  static constexpr size_t kPtrTagMask = kUnknownFieldsTagMask;
+  static constexpr size_t kPtrValueMask = ~kPtrTagMask;
 
   // Accessors for pointer tag and pointer value.
   PROTOBUF_ALWAYS_INLINE bool HasUnknownFieldsTag() const {

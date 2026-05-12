@@ -306,11 +306,11 @@ class PROTOBUF_EXPORT MicroString {
   };
 
   static_assert(alignof(void*) >= 4, "We need two tag bits from pointers.");
-  static constexpr uintptr_t kIsLargeRepTag = 0x1;
+  static constexpr size_t kIsLargeRepTag = 0x1;
   static_assert(sizeof(UnownedPayload::for_tag) == kIsLargeRepTag,
                 "See comment in for_tag declaration above.");
 
-  static constexpr uintptr_t kIsMicroRepTag = 0x2;
+  static constexpr size_t kIsMicroRepTag = 0x2;
   static constexpr int kTagShift = 2;
   static constexpr size_t kMaxInlineCapacity = 255 >> kTagShift;
 

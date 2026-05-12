@@ -647,7 +647,7 @@ class MapFieldBaseForParse {
 
   ~MapFieldBaseForParse() = default;
 
-  static constexpr uintptr_t kHasPayloadBit = 1;
+  static constexpr size_t kHasPayloadBit = 1;
 
   static bool IsPayload(const void* p) {
     return reinterpret_cast<uintptr_t>(p) & kHasPayloadBit;

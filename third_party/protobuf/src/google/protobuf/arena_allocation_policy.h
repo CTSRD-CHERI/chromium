@@ -46,7 +46,11 @@ class TaggedAllocationPolicyPtr {
       : policy_(reinterpret_cast<uintptr_t>(policy)) {}
 
   void set_policy(AllocationPolicy* policy) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    auto bits = __builtin_cheri_address_get(policy_) & kTagsMask;
+#else
     auto bits = policy_ & kTagsMask;
+#endif
     policy_ = reinterpret_cast<uintptr_t>(policy) | bits;
   }
 
@@ -77,10 +81,10 @@ class TaggedAllocationPolicyPtr {
     kUserOwnedInitialBlock = 1,
   };
 
-  static constexpr uintptr_t kTagsMask = 7;
-  static constexpr uintptr_t kPtrMask = ~kTagsMask;
+  static constexpr size_t kTagsMask = 7;
+  static constexpr size_t kPtrMask = ~kTagsMask;
 
-  template <uintptr_t kMask>
+  template <size_t kMask>
   uintptr_t get_mask() const {
     return policy_ & kMask;
   }
