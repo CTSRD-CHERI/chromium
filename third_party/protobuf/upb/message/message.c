@@ -171,7 +171,7 @@ void _upb_Message_DiscardUnknown_shallow(upb_Message* msg) {
 
 upb_Message_DeleteUnknownStatus upb_Message_DeleteUnknown(upb_Message* msg,
                                                           upb_StringView* data,
-                                                          uintptr_t* iter,
+                                                          size_t* iter,
                                                           upb_Arena* arena) {
   UPB_ASSERT(!upb_Message_IsFrozen(msg));
   UPB_ASSERT(*iter != kUpb_Message_UnknownBegin);

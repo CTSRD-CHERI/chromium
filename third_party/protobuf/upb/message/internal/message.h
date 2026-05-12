@@ -205,7 +205,7 @@ bool UPB_PRIVATE(_upb_Message_ReserveSlot)(struct upb_Message* msg,
 #define kUpb_Message_ExtensionBegin 0
 
 UPB_INLINE bool upb_Message_NextUnknown(const struct upb_Message* msg,
-                                        upb_StringView* data, uintptr_t* iter) {
+                                        upb_StringView* data, size_t* iter) {
   const upb_Message_Internal* in = UPB_PRIVATE(_upb_Message_GetInternal)(msg);
   size_t i = *iter;
   if (in) {
@@ -226,16 +226,16 @@ UPB_INLINE bool upb_Message_NextUnknown(const struct upb_Message* msg,
 
 UPB_INLINE bool upb_Message_HasUnknown(const struct upb_Message* msg) {
   upb_StringView data;
-  uintptr_t iter = kUpb_Message_UnknownBegin;
+  size_t iter = kUpb_Message_UnknownBegin;
   return upb_Message_NextUnknown(msg, &data, &iter);
 }
 
 UPB_INLINE bool upb_Message_NextExtension(const struct upb_Message* msg,
                                           const upb_MiniTableExtension** out_e,
                                           upb_MessageValue* out_v,
-                                          uintptr_t* iter) {
+                                          size_t* iter) {
   const upb_Message_Internal* in = UPB_PRIVATE(_upb_Message_GetInternal)(msg);
-  uintptr_t i = *iter;
+  size_t i = *iter;
   if (in) {
     while (i < in->size) {
       upb_TaggedAuxPtr tagged_ptr = in->aux_data[i++];
@@ -259,10 +259,10 @@ UPB_INLINE bool upb_Message_NextExtension(const struct upb_Message* msg,
 
 UPB_INLINE bool UPB_PRIVATE(_upb_Message_NextExtensionReverse)(
     const struct upb_Message* msg, const upb_MiniTableExtension** out_e,
-    upb_MessageValue* out_v, uintptr_t* iter) {
+    upb_MessageValue* out_v, size_t* iter) {
   upb_Message_Internal* in = UPB_PRIVATE(_upb_Message_GetInternal)(msg);
   if (!in) return false;
-  uintptr_t i = *iter;
+  size_t i = *iter;
   uint32_t size = in->size;
   while (i < size) {
     upb_TaggedAuxPtr tagged_ptr = in->aux_data[size - 1 - i];
