@@ -206,9 +206,10 @@ TEST(MicroStringTest, ConstexprUnownedGlobal) {
 template <typename T>
 void TestInline() {
   Arena arena;
+  const char* input_str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   for (Arena* a : {static_cast<Arena*>(nullptr), &arena}) {
-    for (size_t size = 0; size <= T::kInlineCapacity; ++size) {
-      const absl::string_view input("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size);
+    for (size_t size = 0; size <= T::kInlineCapacity && size < sizeof(input_str); ++size) {
+      const absl::string_view input(input_str, size);
       T str;
       size_t used = arena.SpaceUsed();
       str.Set(input, a);
@@ -1019,7 +1020,9 @@ TEST_F(MicroStringExtraTest, ExtraRequestedInlineSpace) {
   TestExtraCapacity<2 * kStep - 1>(2 * kStep);
   TestExtraCapacity<2 * kStep + 0>(3 * kStep);
   TestExtraCapacity<3 * kStep - 1>(3 * kStep);
+#if !defined(__CHERI_PURE_CAPABILITY__)
   TestExtraCapacity<3 * kStep + 0>(4 * kStep);
+#endif
 }
 
 TEST_F(MicroStringExtraTest, SettersWithinInline) {
