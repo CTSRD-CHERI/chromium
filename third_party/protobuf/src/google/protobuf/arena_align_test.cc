@@ -19,26 +19,47 @@ using ::testing::Eq;
 
 TEST(ArenaAlignDefault, Align) {
   auto align_default = ArenaAlignDefault();
-  EXPECT_THAT(align_default.align, Eq(8));
+  if (ArenaAlignDefault::align == 8) {
+    EXPECT_THAT(align_default.align, Eq(8));
+  } else {
+    static_assert(ArenaAlignDefault::align == 16);
+    EXPECT_THAT(align_default.align, Eq(16));
+  }
 }
 
 TEST(ArenaAlignDefault, Floor) {
   auto align_default = ArenaAlignDefault();
   EXPECT_THAT(align_default.Floor(0), Eq(0));
-  EXPECT_THAT(align_default.Floor(1), Eq(0));
-  EXPECT_THAT(align_default.Floor(7), Eq(0));
-  EXPECT_THAT(align_default.Floor(8), Eq(8));
-  EXPECT_THAT(align_default.Floor(9), Eq(8));
-  EXPECT_THAT(align_default.Floor(15), Eq(8));
+  if (ArenaAlignDefault::align == 8) {
+    EXPECT_THAT(align_default.Floor(1), Eq(0));
+    EXPECT_THAT(align_default.Floor(7), Eq(0));
+    EXPECT_THAT(align_default.Floor(8), Eq(8));
+    EXPECT_THAT(align_default.Floor(9), Eq(8));
+    EXPECT_THAT(align_default.Floor(15), Eq(8));
+  } else {
+    static_assert(ArenaAlignDefault::align == 16);
+    EXPECT_THAT(align_default.Floor(1), Eq(0));
+    EXPECT_THAT(align_default.Floor(7), Eq(0));
+    EXPECT_THAT(align_default.Floor(8), Eq(0));
+    EXPECT_THAT(align_default.Floor(9), Eq(0));
+    EXPECT_THAT(align_default.Floor(15), Eq(0));
+  }
   EXPECT_THAT(align_default.Floor(16), Eq(16));
 }
 
 TEST(ArenaAlignDefault, Ceil) {
   auto align_default = ArenaAlignDefault();
   EXPECT_THAT(align_default.Ceil(0), Eq(0));
-  EXPECT_THAT(align_default.Ceil(1), Eq(8));
-  EXPECT_THAT(align_default.Ceil(7), Eq(8));
-  EXPECT_THAT(align_default.Ceil(8), Eq(8));
+  if (ArenaAlignDefault::align == 8) {
+    EXPECT_THAT(align_default.Ceil(1), Eq(8));
+    EXPECT_THAT(align_default.Ceil(7), Eq(8));
+    EXPECT_THAT(align_default.Ceil(8), Eq(8));
+  } else {
+    static_assert(ArenaAlignDefault::align == 16);
+    EXPECT_THAT(align_default.Ceil(1), Eq(16));
+    EXPECT_THAT(align_default.Ceil(7), Eq(16));
+    EXPECT_THAT(align_default.Ceil(8), Eq(16));
+  }
   EXPECT_THAT(align_default.Ceil(9), Eq(16));
   EXPECT_THAT(align_default.Ceil(15), Eq(16));
   EXPECT_THAT(align_default.Ceil(16), Eq(16));
@@ -47,7 +68,12 @@ TEST(ArenaAlignDefault, Ceil) {
 TEST(ArenaAlignDefault, Padded) {
   auto align_default = ArenaAlignDefault();
   EXPECT_THAT(align_default.Padded(0), Eq(0));
-  EXPECT_THAT(align_default.Padded(8), Eq(8));
+  if (ArenaAlignDefault::align == 8) {
+    EXPECT_THAT(align_default.Padded(8), Eq(8));
+  } else {
+    static_assert(ArenaAlignDefault::align == 16);
+    EXPECT_THAT(align_default.Padded(16), Eq(16));
+  }
   EXPECT_THAT(align_default.Padded(64), Eq(64));
 #if GTEST_HAS_DEATH_TEST
   EXPECT_DEBUG_DEATH(align_default.Padded(1), ".*");
@@ -55,45 +81,85 @@ TEST(ArenaAlignDefault, Padded) {
 }
 
 TEST(ArenaAlignDefault, CeilPtr) {
-  alignas(8) char p[17] = {0};
   auto align_default = ArenaAlignDefault();
-  EXPECT_THAT(align_default.Ceil(p + 0), Eq(p + 0));
-  EXPECT_THAT(align_default.Ceil(p + 1), Eq(p + 8));
-  EXPECT_THAT(align_default.Ceil(p + 7), Eq(p + 8));
-  EXPECT_THAT(align_default.Ceil(p + 8), Eq(p + 8));
-  EXPECT_THAT(align_default.Ceil(p + 9), Eq(p + 16));
-  EXPECT_THAT(align_default.Ceil(p + 15), Eq(p + 16));
-  EXPECT_THAT(align_default.Ceil(p + 16), Eq(p + 16));
+  if (ArenaAlignDefault::align == 8) {
+    alignas(8) char p[17] = {0};
+    EXPECT_THAT(align_default.Ceil(p + 0), Eq(p + 0));
+    EXPECT_THAT(align_default.Ceil(p + 1), Eq(p + 8));
+    EXPECT_THAT(align_default.Ceil(p + 7), Eq(p + 8));
+    EXPECT_THAT(align_default.Ceil(p + 8), Eq(p + 8));
+    EXPECT_THAT(align_default.Ceil(p + 9), Eq(p + 16));
+    EXPECT_THAT(align_default.Ceil(p + 15), Eq(p + 16));
+    EXPECT_THAT(align_default.Ceil(p + 16), Eq(p + 16));
+  } else {
+    static_assert(ArenaAlignDefault::align == 16);
+    alignas(16) char p[17] = {0};
+    EXPECT_THAT(align_default.Ceil(p + 0), Eq(__builtin_align_up(p + 0, 16)));
+    EXPECT_THAT(align_default.Ceil(p + 1), Eq(__builtin_align_up(p + 1, 16)));
+    EXPECT_THAT(align_default.Ceil(p + 7), Eq(__builtin_align_up(p + 7, 16)));
+    EXPECT_THAT(align_default.Ceil(p + 8), Eq(__builtin_align_up(p + 8, 16)));
+    EXPECT_THAT(align_default.Ceil(p + 9), Eq(__builtin_align_up(p + 9, 16)));
+    EXPECT_THAT(align_default.Ceil(p + 15), Eq(__builtin_align_up(p + 15, 16)));
+    EXPECT_THAT(align_default.Ceil(p + 16), Eq(__builtin_align_up(p + 16, 16)));
+  }
 }
 
 TEST(ArenaAlignDefault, CheckAligned) {
-  alignas(8) char p[17] = {0};
   auto align_default = ArenaAlignDefault();
-  EXPECT_THAT(align_default.CheckAligned(p + 0), Eq(p + 0));
-  EXPECT_THAT(align_default.CheckAligned(p + 8), Eq(p + 8));
-  EXPECT_THAT(align_default.CheckAligned(p + 16), Eq(p + 16));
+  if (ArenaAlignDefault::align == 8) {
+    alignas(8) char p[17] = {0};
+    EXPECT_THAT(align_default.CheckAligned(p + 0), Eq(p + 0));
+    EXPECT_THAT(align_default.CheckAligned(p + 8), Eq(p + 8));
+    EXPECT_THAT(align_default.CheckAligned(p + 16), Eq(p + 16));
 #if GTEST_HAS_DEATH_TEST
-  EXPECT_DEBUG_DEATH(align_default.CheckAligned(p + 1), ".*");
-  EXPECT_DEBUG_DEATH(align_default.CheckAligned(p + 7), ".*");
-  EXPECT_DEBUG_DEATH(align_default.CheckAligned(p + 9), ".*");
-  EXPECT_DEBUG_DEATH(align_default.CheckAligned(p + 15), ".*");
-  EXPECT_DEBUG_DEATH(align_default.CheckAligned(p + 17), ".*");
+    EXPECT_DEBUG_DEATH(align_default.CheckAligned(p + 1), ".*");
+    EXPECT_DEBUG_DEATH(align_default.CheckAligned(p + 7), ".*");
+    EXPECT_DEBUG_DEATH(align_default.CheckAligned(p + 9), ".*");
+    EXPECT_DEBUG_DEATH(align_default.CheckAligned(p + 15), ".*");
+    EXPECT_DEBUG_DEATH(align_default.CheckAligned(p + 17), ".*");
 #endif  // GTEST_HAS_DEATH_TEST
+  } else {
+    static_assert(ArenaAlignDefault::align == 16);
+    alignas(16) char p[16] = {0};
+    EXPECT_THAT(align_default.CheckAligned(p + 0), Eq(p + 0));
+    EXPECT_THAT(align_default.CheckAligned(p + 16), Eq(p + 16));
+#if GTEST_HAS_DEATH_TEST
+    EXPECT_DEBUG_DEATH(align_default.CheckAligned(p + 1), ".*");
+    EXPECT_DEBUG_DEATH(align_default.CheckAligned(p + 7), ".*");
+    EXPECT_DEBUG_DEATH(align_default.CheckAligned(p + 9), ".*");
+    EXPECT_DEBUG_DEATH(align_default.CheckAligned(p + 15), ".*");
+    EXPECT_DEBUG_DEATH(align_default.CheckAligned(p + 17), ".*");
+#endif  // GTEST_HAS_DEATH_TEST
+  }
 }
 
 TEST(ArenaAlignDefault, CeilDefaultAligned) {
-  alignas(8) char p[17] = {0};
   auto align_default = ArenaAlignDefault();
-  EXPECT_THAT(align_default.CeilDefaultAligned(p + 0), Eq(p + 0));
-  EXPECT_THAT(align_default.CeilDefaultAligned(p + 8), Eq(p + 8));
-  EXPECT_THAT(align_default.CeilDefaultAligned(p + 16), Eq(p + 16));
+  if (ArenaAlignDefault::align == 8) {
+    alignas(8) char p[17] = {0};
+    EXPECT_THAT(align_default.CeilDefaultAligned(p + 0), Eq(p + 0));
+    EXPECT_THAT(align_default.CeilDefaultAligned(p + 8), Eq(p + 8));
+    EXPECT_THAT(align_default.CeilDefaultAligned(p + 16), Eq(p + 16));
 #if GTEST_HAS_DEATH_TEST
-  EXPECT_DEBUG_DEATH(align_default.CeilDefaultAligned(p + 1), ".*");
-  EXPECT_DEBUG_DEATH(align_default.CeilDefaultAligned(p + 7), ".*");
-  EXPECT_DEBUG_DEATH(align_default.CeilDefaultAligned(p + 9), ".*");
-  EXPECT_DEBUG_DEATH(align_default.CeilDefaultAligned(p + 15), ".*");
-  EXPECT_DEBUG_DEATH(align_default.CeilDefaultAligned(p + 17), ".*");
+    EXPECT_DEBUG_DEATH(align_default.CeilDefaultAligned(p + 1), ".*");
+    EXPECT_DEBUG_DEATH(align_default.CeilDefaultAligned(p + 7), ".*");
+    EXPECT_DEBUG_DEATH(align_default.CeilDefaultAligned(p + 9), ".*");
+    EXPECT_DEBUG_DEATH(align_default.CeilDefaultAligned(p + 15), ".*");
+    EXPECT_DEBUG_DEATH(align_default.CeilDefaultAligned(p + 17), ".*");
 #endif  // GTEST_HAS_DEATH_TEST
+  } else {
+    static_assert(ArenaAlignDefault::align == 16);
+    alignas(16) char p[16] = {0};
+    EXPECT_THAT(align_default.CeilDefaultAligned(p + 0), Eq(p + 0));
+    EXPECT_THAT(align_default.CeilDefaultAligned(p + 16), Eq(p + 16));
+#if GTEST_HAS_DEATH_TEST
+    EXPECT_DEBUG_DEATH(align_default.CeilDefaultAligned(p + 1), ".*");
+    EXPECT_DEBUG_DEATH(align_default.CeilDefaultAligned(p + 7), ".*");
+    EXPECT_DEBUG_DEATH(align_default.CeilDefaultAligned(p + 9), ".*");
+    EXPECT_DEBUG_DEATH(align_default.CeilDefaultAligned(p + 15), ".*");
+    EXPECT_DEBUG_DEATH(align_default.CeilDefaultAligned(p + 17), ".*");
+#endif  // GTEST_HAS_DEATH_TEST
+  }
 }
 
 TEST(ArenaAlignDefault, IsAligned) {
@@ -101,7 +167,11 @@ TEST(ArenaAlignDefault, IsAligned) {
   EXPECT_TRUE(align_default.IsAligned(0));
   EXPECT_FALSE(align_default.IsAligned(1));
   EXPECT_FALSE(align_default.IsAligned(7));
-  EXPECT_TRUE(align_default.IsAligned(8));
+  if (ArenaAlignDefault::align == 8) {
+    EXPECT_TRUE(align_default.IsAligned(8));
+  } else {
+    EXPECT_FALSE(align_default.IsAligned(8));
+  }
   EXPECT_FALSE(align_default.IsAligned(9));
   EXPECT_FALSE(align_default.IsAligned(15));
   EXPECT_TRUE(align_default.IsAligned(16));
