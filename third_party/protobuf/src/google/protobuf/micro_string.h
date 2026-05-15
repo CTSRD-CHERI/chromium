@@ -292,9 +292,13 @@ class PROTOBUF_EXPORT MicroString {
 
   void InternalSwap(MicroString* other,
                     size_t inline_capacity = kInlineCapacity) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    std::swap(this->rep_, other->rep_);
+#else
     std::swap_ranges(reinterpret_cast<char*>(this),
                      reinterpret_cast<char*>(this) + inline_capacity + 1,
                      reinterpret_cast<char*>(other));
+#endif
   }
 
  protected:
@@ -619,6 +623,11 @@ class MicroStringExtraImpl : private MicroString {
 
   void InternalSwap(MicroStringExtraImpl* other) {
     MicroString::InternalSwap(other, kInlineCapacity);
+#if defined(__CHERI_PURE_CAPABILITY__)
+    std::swap_ranges(&this->extra_buffer_[0],
+                     &this->extra_buffer_[kInlineCapacity - MicroString::kInlineCapacity - 1],
+		     &other->extra_buffer_[0]);
+#endif
   }
 
   using MicroString::SpaceUsedExcludingSelfLong;
