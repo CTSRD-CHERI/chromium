@@ -90,11 +90,15 @@ void* PageAllocator::AllocatePages(void* address,
       GetPageConfig(permissions);
 
   partition_alloc::PageTag tmp_page_tag;
+#if defined(V8_CHERI_SHOULD_MADVISE)
   if (v8::base::CheriShouldMadvise()) {
     tmp_page_tag = partition_alloc::PageTag::kV8Heap;
   } else {
     tmp_page_tag = partition_alloc::PageTag::kV8;
   }
+#else
+  tmp_page_tag = partition_alloc::PageTag::kV8;
+#endif
   return partition_alloc::AllocPages(address, length, alignment, config,
                                      tmp_page_tag);
 }
