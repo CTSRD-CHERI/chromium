@@ -94,12 +94,25 @@ typedef bool eqlfunc_t(upb_key k1, lookupkey_t k2);
 /* Base table (shared code) ***************************************************/
 
 static uint32_t upb_inthash(uintptr_t key) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  UPB_STATIC_ASSERT(sizeof(ptraddr_t) == 4 || sizeof(ptraddr_t) == 8,
+                    "Pointers don't fit");
+  ptraddr_t key_val = __builtin_cheri_address_get(key);
+  if (sizeof(ptraddr_t) == 8) {
+    return (uint32_t)key_val ^ (uint32_t)(key_val >> 32);
+  } else {
+    return (uint32_t)key_val;
+  }
+#else
+  UPB_STATIC_ASSERT(sizeof(uintptr_t) == 4 || sizeof(uintptr_t) == 8,
+                    "Pointers don't fit");
   if (sizeof(uintptr_t) == 8) {
     return (uint32_t)key ^ (uint32_t)(key >> 32);
   } else {
     UPB_ASSERT(sizeof(uintptr_t) == 4);
     return (uint32_t)key;
   }
+#endif
 }
 
 static const upb_tabent* upb_getentry(const upb_table* t, uint32_t hash) {
