@@ -3341,12 +3341,9 @@ void FileDescriptorProto::InternalSwap(FileDescriptorProto* PROTOBUF_RESTRICT PR
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.name_, &other->_impl_.name_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.package_, &other->_impl_.package_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.syntax_, &other->_impl_.syntax_, arena);
-  ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(FileDescriptorProto, _impl_.edition_)
-      + sizeof(FileDescriptorProto::_impl_.edition_)
-      - PROTOBUF_FIELD_OFFSET(FileDescriptorProto, _impl_.options_)>(
-          reinterpret_cast<char*>(&_impl_.options_),
-          reinterpret_cast<char*>(&other->_impl_.options_));
+  swap(_impl_.options_, other->_impl_.options_);
+  swap(_impl_.source_code_info_, other->_impl_.source_code_info_);
+  swap(_impl_.edition_, other->_impl_.edition_);
 }
 
 ::google::protobuf::Metadata FileDescriptorProto::GetMetadata() const {
@@ -3687,12 +3684,13 @@ void DescriptorProto_ExtensionRange::InternalSwap(DescriptorProto_ExtensionRange
   using ::std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  swap(_impl_.options_, other->_impl_.options_);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(DescriptorProto_ExtensionRange, _impl_.end_)
       + sizeof(DescriptorProto_ExtensionRange::_impl_.end_)
-      - PROTOBUF_FIELD_OFFSET(DescriptorProto_ExtensionRange, _impl_.options_)>(
-          reinterpret_cast<char*>(&_impl_.options_),
-          reinterpret_cast<char*>(&other->_impl_.options_));
+      - PROTOBUF_FIELD_OFFSET(DescriptorProto_ExtensionRange, _impl_.start_)>(
+          reinterpret_cast<char*>(&_impl_.start_),
+          reinterpret_cast<char*>(&other->_impl_.start_));
 }
 
 ::google::protobuf::Metadata DescriptorProto_ExtensionRange::GetMetadata() const {
@@ -4676,12 +4674,8 @@ void DescriptorProto::InternalSwap(DescriptorProto* PROTOBUF_RESTRICT PROTOBUF_N
   _impl_.reserved_range_.InternalSwap(&other->_impl_.reserved_range_);
   _impl_.reserved_name_.InternalSwap(&other->_impl_.reserved_name_);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.name_, &other->_impl_.name_, arena);
-  ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(DescriptorProto, _impl_.visibility_)
-      + sizeof(DescriptorProto::_impl_.visibility_)
-      - PROTOBUF_FIELD_OFFSET(DescriptorProto, _impl_.options_)>(
-          reinterpret_cast<char*>(&_impl_.options_),
-          reinterpret_cast<char*>(&other->_impl_.options_));
+  swap(_impl_.options_, other->_impl_.options_);
+  swap(_impl_.visibility_, other->_impl_.visibility_);
 }
 
 ::google::protobuf::Metadata DescriptorProto::GetMetadata() const {
@@ -5477,12 +5471,8 @@ void ExtensionRangeOptions::InternalSwap(ExtensionRangeOptions* PROTOBUF_RESTRIC
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   _impl_.declaration_.InternalSwap(&other->_impl_.declaration_);
   _impl_.uninterpreted_option_.InternalSwap(&other->_impl_.uninterpreted_option_);
-  ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(ExtensionRangeOptions, _impl_.verification_)
-      + sizeof(ExtensionRangeOptions::_impl_.verification_)
-      - PROTOBUF_FIELD_OFFSET(ExtensionRangeOptions, _impl_.features_)>(
-          reinterpret_cast<char*>(&_impl_.features_),
-          reinterpret_cast<char*>(&other->_impl_.features_));
+  swap(_impl_.features_, other->_impl_.features_);
+  swap(_impl_.verification_, other->_impl_.verification_);
 }
 
 ::google::protobuf::Metadata ExtensionRangeOptions::GetMetadata() const {
@@ -6035,12 +6025,13 @@ void FieldDescriptorProto::InternalSwap(FieldDescriptorProto* PROTOBUF_RESTRICT 
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.type_name_, &other->_impl_.type_name_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.default_value_, &other->_impl_.default_value_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.json_name_, &other->_impl_.json_name_, arena);
+  swap(_impl_.options_, other->_impl_.options_);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(FieldDescriptorProto, _impl_.type_)
       + sizeof(FieldDescriptorProto::_impl_.type_)
-      - PROTOBUF_FIELD_OFFSET(FieldDescriptorProto, _impl_.options_)>(
-          reinterpret_cast<char*>(&_impl_.options_),
-          reinterpret_cast<char*>(&other->_impl_.options_));
+      - PROTOBUF_FIELD_OFFSET(FieldDescriptorProto, _impl_.number_)>(
+          reinterpret_cast<char*>(&_impl_.number_),
+          reinterpret_cast<char*>(&other->_impl_.number_));
 }
 
 ::google::protobuf::Metadata FieldDescriptorProto::GetMetadata() const {
@@ -7107,12 +7098,8 @@ void EnumDescriptorProto::InternalSwap(EnumDescriptorProto* PROTOBUF_RESTRICT PR
   _impl_.reserved_range_.InternalSwap(&other->_impl_.reserved_range_);
   _impl_.reserved_name_.InternalSwap(&other->_impl_.reserved_name_);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.name_, &other->_impl_.name_, arena);
-  ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(EnumDescriptorProto, _impl_.visibility_)
-      + sizeof(EnumDescriptorProto::_impl_.visibility_)
-      - PROTOBUF_FIELD_OFFSET(EnumDescriptorProto, _impl_.options_)>(
-          reinterpret_cast<char*>(&_impl_.options_),
-          reinterpret_cast<char*>(&other->_impl_.options_));
+  swap(_impl_.options_, other->_impl_.options_);
+  swap(_impl_.visibility_, other->_impl_.visibility_);
 }
 
 ::google::protobuf::Metadata EnumDescriptorProto::GetMetadata() const {
@@ -7453,12 +7440,8 @@ void EnumValueDescriptorProto::InternalSwap(EnumValueDescriptorProto* PROTOBUF_R
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.name_, &other->_impl_.name_, arena);
-  ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(EnumValueDescriptorProto, _impl_.number_)
-      + sizeof(EnumValueDescriptorProto::_impl_.number_)
-      - PROTOBUF_FIELD_OFFSET(EnumValueDescriptorProto, _impl_.options_)>(
-          reinterpret_cast<char*>(&_impl_.options_),
-          reinterpret_cast<char*>(&other->_impl_.options_));
+  swap(_impl_.options_, other->_impl_.options_);
+  swap(_impl_.number_, other->_impl_.number_);
 }
 
 ::google::protobuf::Metadata EnumValueDescriptorProto::GetMetadata() const {
@@ -8239,12 +8222,13 @@ void MethodDescriptorProto::InternalSwap(MethodDescriptorProto* PROTOBUF_RESTRIC
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.name_, &other->_impl_.name_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.input_type_, &other->_impl_.input_type_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.output_type_, &other->_impl_.output_type_, arena);
+  swap(_impl_.options_, other->_impl_.options_);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(MethodDescriptorProto, _impl_.server_streaming_)
       + sizeof(MethodDescriptorProto::_impl_.server_streaming_)
-      - PROTOBUF_FIELD_OFFSET(MethodDescriptorProto, _impl_.options_)>(
-          reinterpret_cast<char*>(&_impl_.options_),
-          reinterpret_cast<char*>(&other->_impl_.options_));
+      - PROTOBUF_FIELD_OFFSET(MethodDescriptorProto, _impl_.client_streaming_)>(
+          reinterpret_cast<char*>(&_impl_.client_streaming_),
+          reinterpret_cast<char*>(&other->_impl_.client_streaming_));
 }
 
 ::google::protobuf::Metadata MethodDescriptorProto::GetMetadata() const {
@@ -9058,12 +9042,13 @@ void FileOptions::InternalSwap(FileOptions* PROTOBUF_RESTRICT PROTOBUF_NONNULL o
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.php_namespace_, &other->_impl_.php_namespace_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.php_metadata_namespace_, &other->_impl_.php_metadata_namespace_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.ruby_package_, &other->_impl_.ruby_package_, arena);
+  swap(_impl_.features_, other->_impl_.features_);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(FileOptions, _impl_.cc_enable_arenas_)
       + sizeof(FileOptions::_impl_.cc_enable_arenas_)
-      - PROTOBUF_FIELD_OFFSET(FileOptions, _impl_.features_)>(
-          reinterpret_cast<char*>(&_impl_.features_),
-          reinterpret_cast<char*>(&other->_impl_.features_));
+      - PROTOBUF_FIELD_OFFSET(FileOptions, _impl_.java_multiple_files_)>(
+          reinterpret_cast<char*>(&_impl_.java_multiple_files_),
+          reinterpret_cast<char*>(&other->_impl_.java_multiple_files_));
   _impl_.uninterpreted_option_.InternalSwap(&other->_impl_.uninterpreted_option_);
 }
 
@@ -9508,12 +9493,13 @@ void MessageOptions::InternalSwap(MessageOptions* PROTOBUF_RESTRICT PROTOBUF_NON
   _impl_._extensions_.InternalSwap(&other->_impl_._extensions_);
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  swap(_impl_.features_, other->_impl_.features_);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(MessageOptions, _impl_.deprecated_legacy_json_field_conflicts_)
       + sizeof(MessageOptions::_impl_.deprecated_legacy_json_field_conflicts_)
-      - PROTOBUF_FIELD_OFFSET(MessageOptions, _impl_.features_)>(
-          reinterpret_cast<char*>(&_impl_.features_),
-          reinterpret_cast<char*>(&other->_impl_.features_));
+      - PROTOBUF_FIELD_OFFSET(MessageOptions, _impl_.message_set_wire_format_)>(
+          reinterpret_cast<char*>(&_impl_.message_set_wire_format_),
+          reinterpret_cast<char*>(&other->_impl_.message_set_wire_format_));
   _impl_.uninterpreted_option_.InternalSwap(&other->_impl_.uninterpreted_option_);
 }
 
@@ -10804,12 +10790,14 @@ void FieldOptions::InternalSwap(FieldOptions* PROTOBUF_RESTRICT PROTOBUF_NONNULL
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   _impl_.edition_defaults_.InternalSwap(&other->_impl_.edition_defaults_);
   _impl_.uninterpreted_option_.InternalSwap(&other->_impl_.uninterpreted_option_);
+  swap(_impl_.features_, other->_impl_.features_);
+  swap(_impl_.feature_support_, other->_impl_.feature_support_);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(FieldOptions, _impl_.retention_)
       + sizeof(FieldOptions::_impl_.retention_)
-      - PROTOBUF_FIELD_OFFSET(FieldOptions, _impl_.features_)>(
-          reinterpret_cast<char*>(&_impl_.features_),
-          reinterpret_cast<char*>(&other->_impl_.features_));
+      - PROTOBUF_FIELD_OFFSET(FieldOptions, _impl_.ctype_)>(
+          reinterpret_cast<char*>(&_impl_.ctype_),
+          reinterpret_cast<char*>(&other->_impl_.ctype_));
   _impl_.targets_.InternalSwap(&other->_impl_.targets_);
 }
 
@@ -11581,12 +11569,13 @@ void EnumOptions::InternalSwap(EnumOptions* PROTOBUF_RESTRICT PROTOBUF_NONNULL o
   _impl_._extensions_.InternalSwap(&other->_impl_._extensions_);
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  swap(_impl_.features_, other->_impl_.features_);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(EnumOptions, _impl_.deprecated_legacy_json_field_conflicts_)
       + sizeof(EnumOptions::_impl_.deprecated_legacy_json_field_conflicts_)
-      - PROTOBUF_FIELD_OFFSET(EnumOptions, _impl_.features_)>(
-          reinterpret_cast<char*>(&_impl_.features_),
-          reinterpret_cast<char*>(&other->_impl_.features_));
+      - PROTOBUF_FIELD_OFFSET(EnumOptions, _impl_.allow_alias_)>(
+          reinterpret_cast<char*>(&_impl_.allow_alias_),
+          reinterpret_cast<char*>(&other->_impl_.allow_alias_));
   _impl_.uninterpreted_option_.InternalSwap(&other->_impl_.uninterpreted_option_);
 }
 
@@ -12027,12 +12016,14 @@ void EnumValueOptions::InternalSwap(EnumValueOptions* PROTOBUF_RESTRICT PROTOBUF
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   _impl_.uninterpreted_option_.InternalSwap(&other->_impl_.uninterpreted_option_);
+  swap(_impl_.features_, other->_impl_.features_);
+  swap(_impl_.feature_support_, other->_impl_.feature_support_);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(EnumValueOptions, _impl_.debug_redact_)
       + sizeof(EnumValueOptions::_impl_.debug_redact_)
-      - PROTOBUF_FIELD_OFFSET(EnumValueOptions, _impl_.features_)>(
-          reinterpret_cast<char*>(&_impl_.features_),
-          reinterpret_cast<char*>(&other->_impl_.features_));
+      - PROTOBUF_FIELD_OFFSET(EnumValueOptions, _impl_.deprecated_)>(
+          reinterpret_cast<char*>(&_impl_.deprecated_),
+          reinterpret_cast<char*>(&other->_impl_.deprecated_));
 }
 
 ::google::protobuf::Metadata EnumValueOptions::GetMetadata() const {
@@ -12413,12 +12404,8 @@ void ServiceOptions::InternalSwap(ServiceOptions* PROTOBUF_RESTRICT PROTOBUF_NON
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   _impl_.uninterpreted_option_.InternalSwap(&other->_impl_.uninterpreted_option_);
-  ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(ServiceOptions, _impl_.deprecated_)
-      + sizeof(ServiceOptions::_impl_.deprecated_)
-      - PROTOBUF_FIELD_OFFSET(ServiceOptions, _impl_.features_)>(
-          reinterpret_cast<char*>(&_impl_.features_),
-          reinterpret_cast<char*>(&other->_impl_.features_));
+  swap(_impl_.features_, other->_impl_.features_);
+  swap(_impl_.deprecated_, other->_impl_.deprecated_);
 }
 
 ::google::protobuf::Metadata ServiceOptions::GetMetadata() const {
@@ -12834,12 +12821,13 @@ void MethodOptions::InternalSwap(MethodOptions* PROTOBUF_RESTRICT PROTOBUF_NONNU
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   _impl_.uninterpreted_option_.InternalSwap(&other->_impl_.uninterpreted_option_);
+  swap(_impl_.features_, other->_impl_.features_);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(MethodOptions, _impl_.idempotency_level_)
       + sizeof(MethodOptions::_impl_.idempotency_level_)
-      - PROTOBUF_FIELD_OFFSET(MethodOptions, _impl_.features_)>(
-          reinterpret_cast<char*>(&_impl_.features_),
-          reinterpret_cast<char*>(&other->_impl_.features_));
+      - PROTOBUF_FIELD_OFFSET(MethodOptions, _impl_.deprecated_)>(
+          reinterpret_cast<char*>(&_impl_.deprecated_),
+          reinterpret_cast<char*>(&other->_impl_.deprecated_));
 }
 
 ::google::protobuf::Metadata MethodOptions::GetMetadata() const {
@@ -14517,12 +14505,9 @@ void FeatureSetDefaults_FeatureSetEditionDefault::InternalSwap(FeatureSetDefault
   using ::std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
-  ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(FeatureSetDefaults_FeatureSetEditionDefault, _impl_.edition_)
-      + sizeof(FeatureSetDefaults_FeatureSetEditionDefault::_impl_.edition_)
-      - PROTOBUF_FIELD_OFFSET(FeatureSetDefaults_FeatureSetEditionDefault, _impl_.overridable_features_)>(
-          reinterpret_cast<char*>(&_impl_.overridable_features_),
-          reinterpret_cast<char*>(&other->_impl_.overridable_features_));
+  swap(_impl_.overridable_features_, other->_impl_.overridable_features_);
+  swap(_impl_.fixed_features_, other->_impl_.fixed_features_);
+  swap(_impl_.edition_, other->_impl_.edition_);
 }
 
 ::google::protobuf::Metadata FeatureSetDefaults_FeatureSetEditionDefault::GetMetadata() const {

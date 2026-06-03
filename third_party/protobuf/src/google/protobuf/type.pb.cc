@@ -906,12 +906,8 @@ void Type::InternalSwap(Type* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
   _impl_.options_.InternalSwap(&other->_impl_.options_);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.name_, &other->_impl_.name_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.edition_, &other->_impl_.edition_, arena);
-  ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(Type, _impl_.syntax_)
-      + sizeof(Type::_impl_.syntax_)
-      - PROTOBUF_FIELD_OFFSET(Type, _impl_.source_context_)>(
-          reinterpret_cast<char*>(&_impl_.source_context_),
-          reinterpret_cast<char*>(&other->_impl_.source_context_));
+  swap(_impl_.source_context_, other->_impl_.source_context_);
+  swap(_impl_.syntax_, other->_impl_.syntax_);
 }
 
 ::google::protobuf::Metadata Type::GetMetadata() const {
@@ -2030,12 +2026,8 @@ void Enum::InternalSwap(Enum* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
   _impl_.options_.InternalSwap(&other->_impl_.options_);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.name_, &other->_impl_.name_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.edition_, &other->_impl_.edition_, arena);
-  ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(Enum, _impl_.syntax_)
-      + sizeof(Enum::_impl_.syntax_)
-      - PROTOBUF_FIELD_OFFSET(Enum, _impl_.source_context_)>(
-          reinterpret_cast<char*>(&_impl_.source_context_),
-          reinterpret_cast<char*>(&other->_impl_.source_context_));
+  swap(_impl_.source_context_, other->_impl_.source_context_);
+  swap(_impl_.syntax_, other->_impl_.syntax_);
 }
 
 ::google::protobuf::Metadata Enum::GetMetadata() const {

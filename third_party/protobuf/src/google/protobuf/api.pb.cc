@@ -822,12 +822,8 @@ void Api::InternalSwap(Api* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.name_, &other->_impl_.name_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.version_, &other->_impl_.version_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.edition_, &other->_impl_.edition_, arena);
-  ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(Api, _impl_.syntax_)
-      + sizeof(Api::_impl_.syntax_)
-      - PROTOBUF_FIELD_OFFSET(Api, _impl_.source_context_)>(
-          reinterpret_cast<char*>(&_impl_.source_context_),
-          reinterpret_cast<char*>(&other->_impl_.source_context_));
+  swap(_impl_.source_context_, other->_impl_.source_context_);
+  swap(_impl_.syntax_, other->_impl_.syntax_);
 }
 
 ::google::protobuf::Metadata Api::GetMetadata() const {
