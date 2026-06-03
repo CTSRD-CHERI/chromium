@@ -9,6 +9,11 @@
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
+#if !__FreeBSD__
+// We request posix_close if available. See the comment on "robust_close".
+#define _POSIX_C_SOURCE 202405L
+#endif
+
 #ifndef _MSC_VER
 #include <fcntl.h>
 #include <sys/stat.h>
