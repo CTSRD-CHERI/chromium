@@ -160,6 +160,9 @@ UPB_NOINLINE static char* encode_longvarint_arm64(char* ptr, upb_encstate* e,
   ptr += skip;
   uintptr_t addr;
   uint64_t mask;
+#if defined(__CHERI_PURE_CAPABILITY__)
+  uint64_t addr_val;
+#endif
   __asm__ volatile(
       "adr %[addr], 0f\n"
       // Each arm64 instruction encodes to 4 bytes, and it takes two
@@ -174,25 +177,83 @@ UPB_NOINLINE static char* encode_longvarint_arm64(char* ptr, upb_encstate* e,
       // values before storing them.
       // The following stores are unsigned offset stores:
       // strb Wt, [Xn, #imm]
+#if defined(__CHERI_PURE_CAPABILITY__)
+      "gcvalue %[addr_val], %[addr]\n"
+      "orr %[addr_val], %[mask], %[val], lsr #56\n"
+      "scvalue %[addr], %[addr], %[addr_val]\n"
+#else
       "orr %[addr], %[mask], %[val], lsr #56\n"
+#endif
       "strb %w[addr], [%[ptr], #8]\n"
+#if defined(__CHERI_PURE_CAPABILITY__)
+      "gcvalue %[addr_val], %[addr]\n"
+      "orr %[addr_val], %[mask], %[val], lsr #49\n"
+      "scvalue %[addr], %[addr], %[addr_val]\n"
+#else
       "orr %[addr], %[mask], %[val], lsr #49\n"
+#endif
       "strb %w[addr], [%[ptr], #7]\n"
+#if defined(__CHERI_PURE_CAPABILITY__)
+      "gcvalue %[addr_val], %[addr]\n"
+      "orr %[addr_val], %[mask], %[val], lsr #42\n"
+      "scvalue %[addr], %[addr], %[addr_val]\n"
+#else
       "orr %[addr], %[mask], %[val], lsr #42\n"
+#endif
       "strb %w[addr], [%[ptr], #6]\n"
+#if defined(__CHERI_PURE_CAPABILITY__)
+      "gcvalue %[addr_val], %[addr]\n"
+      "orr %[addr_val], %[mask], %[val], lsr #35\n"
+      "scvalue %[addr], %[addr], %[addr_val]\n"
+#else
       "orr %[addr], %[mask], %[val], lsr #35\n"
+#endif
       "strb %w[addr], [%[ptr], #5]\n"
+#if defined(__CHERI_PURE_CAPABILITY__)
+      "gcvalue %[addr_val], %[addr]\n"
+      "orr %[addr_val], %[mask], %[val], lsr #28\n"
+      "scvalue %[addr], %[addr], %[addr_val]\n"
+#else
       "orr %[addr], %[mask], %[val], lsr #28\n"
+#endif
       "strb %w[addr], [%[ptr], #4]\n"
+#if defined(__CHERI_PURE_CAPABILITY__)
+      "gcvalue %[addr_val], %[addr]\n"
+      "orr %[addr_val], %[mask], %[val], lsr #21\n"
+      "scvalue %[addr], %[addr], %[addr_val]\n"
+#else
       "orr %w[addr], %w[mask], %w[val], lsr #21\n"
+#endif
       "strb %w[addr], [%[ptr], #3]\n"
+#if defined(__CHERI_PURE_CAPABILITY__)
+      "gcvalue %[addr_val], %[addr]\n"
+      "orr %[addr_val], %[mask], %[val], lsr #14\n"
+      "scvalue %[addr], %[addr], %[addr_val]\n"
+#else
       "orr %w[addr], %w[mask], %w[val], lsr #14\n"
+#endif
       "strb %w[addr], [%[ptr], #2]\n"
+#if defined(__CHERI_PURE_CAPABILITY__)
+      "gcvalue %[addr_val], %[addr]\n"
+      "orr %[addr_val], %[mask], %[val], lsr #7\n"
+      "scvalue %[addr], %[addr], %[addr_val]\n"
+#else
       "orr %w[addr], %w[mask], %w[val], lsr #7\n"
+#endif
       "strb %w[addr], [%[ptr], #1]\n"
+#if defined(__CHERI_PURE_CAPABILITY__)
+      "gcvalue %[addr_val], %[addr]\n"
+      "orr %w[addr_val], %w[val], #0x80\n"
+      "scvalue %[addr], %[addr], %[addr_val]\n"
+#else
       "orr %w[addr], %w[val], #0x80\n"
+#endif
       "strb %w[addr], [%[ptr]]\n"
+#if defined(__CHERI_PURE_CAPABILITY__)
+      : [addr] "=&r"(addr), [addr_val] "=&r"(addr_val), [mask] "=&r"(mask)
+#else
       : [addr] "=&r"(addr), [mask] "=&r"(mask)
+#endif
       : [val] "r"(val), [ptr] "r"(ptr), [cnt] "r"((uint64_t)skip)
       : "memory");
   // Encode the final byte after the continuation bytes.
