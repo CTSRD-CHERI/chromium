@@ -158,7 +158,8 @@ UPB_NOINLINE static char* encode_longvarint_arm64(char* ptr, upb_encstate* e,
       UPB_PRIVATE(upb_WireWriter_VarintUnusedSizeFromLeadingZeros64)(clz);
 
   ptr += skip;
-  uint64_t addr, mask;
+  uintptr_t addr;
+  uint64_t mask;
   __asm__ volatile(
       "adr %[addr], 0f\n"
       // Each arm64 instruction encodes to 4 bytes, and it takes two
