@@ -331,9 +331,14 @@ class PROTOBUF_EXPORT RepeatedPtrFieldBase {
   inline void InternalSwap(RepeatedPtrFieldBase* PROTOBUF_RESTRICT rhs) {
     ABSL_DCHECK(this != rhs);
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+    std::swap(this->tagged_rep_or_elem_, rhs->tagged_rep_or_elem_);
+    std::swap(this->current_size_, rhs->current_size_);
+#else
     // Swap all fields except arena pointer at once.
     internal::memswap<ArenaOffsetHelper<RepeatedPtrFieldBase>::value>(
         reinterpret_cast<char*>(this), reinterpret_cast<char*>(rhs));
+#endif
   }
 
   // Returns true if there are no preallocated elements in the array.
