@@ -278,9 +278,14 @@ INSTANTIATE_TEST_SUITE_P(WithParam, CordTest, testing::Bool(),
 TEST(CordRepFlat, AllFlatCapacities) {
   // Explicitly and redundantly assert built-in min/max limits
   static_assert(absl::cord_internal::kFlatOverhead < 32, "");
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static_assert(absl::cord_internal::kMinFlatSize == 56, "");
+  EXPECT_EQ(absl::cord_internal::TagToAllocatedSize(FLAT), 56);
+#else
   static_assert(absl::cord_internal::kMinFlatSize == 32, "");
-  static_assert(absl::cord_internal::kMaxLargeFlatSize == 256 << 10, "");
   EXPECT_EQ(absl::cord_internal::TagToAllocatedSize(FLAT), 32);
+#endif
+  static_assert(absl::cord_internal::kMaxLargeFlatSize == 256 << 10, "");
   EXPECT_EQ(absl::cord_internal::TagToAllocatedSize(MAX_FLAT_TAG), 256 << 10);
 
   // Verify all tags to map perfectly back and forth, and
@@ -757,7 +762,11 @@ TEST_P(CordTest, AppendEmptyBufferToTree) {
 TEST_P(CordTest, AppendSmallBuffer) {
   absl::Cord cord;
   absl::CordBuffer buffer = absl::CordBuffer::CreateWithDefaultLimit(3);
-  ASSERT_THAT(buffer.capacity(), Le(15));
+#if defined(__CHERI_PURE_CAPABILITY__)
+  ASSERT_THAT(buffer.capacity(), ::testing::Le(31));
+#else
+  ASSERT_THAT(buffer.capacity(), ::testing::Le(15));
+#endif
   memcpy(buffer.data(), "Abc", 3);
   buffer.SetLength(3);
   cord.Append(std::move(buffer));
@@ -794,10 +803,18 @@ TEST_P(CordTest, AppendAndPrependBufferArePrecise) {
 
 #ifndef NDEBUG
   // Allow 32 bytes new CordRepFlat, and 128 bytes for 'glue nodes'
+#if defined(__CHERI_PURE_CAPABILITY__)
+  constexpr size_t kMaxDelta = 128 + 56;
+#else
   constexpr size_t kMaxDelta = 128 + 32;
+#endif
 #else
   // Allow 256 bytes extra for 'allocation debug overhead'
+#if defined(__CHERI_PURE_CAPABILITY__)
+  constexpr size_t kMaxDelta = 128 + 56 + 256;
+#else
   constexpr size_t kMaxDelta = 128 + 32 + 256;
+#endif
 #endif
 
   EXPECT_LE(cord1.EstimatedMemoryUsage() - size1, kMaxDelta);
@@ -810,7 +827,11 @@ TEST_P(CordTest, AppendAndPrependBufferArePrecise) {
 TEST_P(CordTest, PrependSmallBuffer) {
   absl::Cord cord;
   absl::CordBuffer buffer = absl::CordBuffer::CreateWithDefaultLimit(3);
-  ASSERT_THAT(buffer.capacity(), Le(15));
+#if defined(__CHERI_PURE_CAPABILITY__)
+  ASSERT_THAT(buffer.capacity(), ::testing::Le(31));
+#else
+  ASSERT_THAT(buffer.capacity(), ::testing::Le(15));
+#endif
   memcpy(buffer.data(), "Abc", 3);
   buffer.SetLength(3);
   cord.Prepend(std::move(buffer));

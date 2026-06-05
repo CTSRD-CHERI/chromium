@@ -354,6 +354,14 @@ IntegralConvertResult FormatConvertImpl(T v, FormatConversionSpecImpl conv,
 
   return FormatConvertImpl(static_cast<int>(v), conv, sink);
 }
+#if defined(__CHERI_PURE_CAPABILITY__)
+template <typename T, enable_if_t<std::is_same<T, intptr_t>::value ||
+                                  std::is_same<T, uintptr_t>::value, int> = 0>
+IntegralConvertResult FormatConvertImpl(T v, FormatConversionSpecImpl conv,
+                                        FormatSinkImpl* sink) {
+  return FormatConvertImpl(static_cast<ptraddr_t>(v), conv, sink);
+}
+#endif
 
 // We provide this function to help the checker, but it is never defined.
 // FormatArgImpl will use the underlying Convert functions instead.
@@ -433,7 +441,11 @@ constexpr FormatConversionCharSet ArgumentToConv() {
 // A type-erased handle to a format argument.
 class FormatArgImpl {
  private:
+#if defined(__CHERI_PURE_CAPABILITY__)
+  enum { kInlinedSpace = sizeof(void*) };
+#else
   enum { kInlinedSpace = 8 };
+#endif
 
   using VoidPtr = str_format_internal::VoidPtr;
 

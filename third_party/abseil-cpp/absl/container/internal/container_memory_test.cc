@@ -74,6 +74,7 @@ std::map<std::type_index, int>& AllocationMap() {
   return *map;
 }
 
+#if defined(ABSL_INTERNAL_HAS_RTTI)
 template <typename T>
 struct TypeCountingAllocator {
   TypeCountingAllocator() = default;
@@ -101,6 +102,7 @@ TEST(Memory, AllocateDeallocateMatchType) {
   // Verify that the deallocation matched.
   EXPECT_THAT(AllocationMap(), ElementsAre(Pair(_, 0)));
 }
+#endif
 
 class Fixture : public ::testing::Test {
   using Alloc = std::allocator<std::string>;

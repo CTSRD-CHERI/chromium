@@ -40,7 +40,11 @@ namespace cord_internal {
 // kMaxFlatSize is bounded by the size resulting in a computed tag no greater
 // than MAX_FLAT_TAG. MAX_FLAT_TAG provides for additional 'high' tag values.
 static constexpr size_t kFlatOverhead = offsetof(CordRep, storage);
+#if defined(__CHERI_PURE_CAPABILITY__)
+static constexpr size_t kMinFlatSize = 56;
+#else
 static constexpr size_t kMinFlatSize = 32;
+#endif
 static constexpr size_t kMaxFlatSize = 4096;
 static constexpr size_t kMaxFlatLength = kMaxFlatSize - kFlatOverhead;
 static constexpr size_t kMinFlatLength = kMinFlatSize - kFlatOverhead;
@@ -49,7 +53,11 @@ static constexpr size_t kMaxLargeFlatLength = kMaxLargeFlatSize - kFlatOverhead;
 
 // kTagBase should make the Size <--> Tag computation resilient
 // against changes to the value of FLAT when we add a new tag..
+#if defined(__CHERI_PURE_CAPABILITY__)
+static constexpr uint8_t kTagBase = FLAT - 7;
+#else
 static constexpr uint8_t kTagBase = FLAT - 4;
+#endif
 
 // Converts the provided rounded size to the corresponding tag
 constexpr uint8_t AllocatedSizeToTagUnchecked(size_t size) {

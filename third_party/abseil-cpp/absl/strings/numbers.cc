@@ -400,6 +400,29 @@ char* absl_nonnull numbers_internal::FastIntToBuffer(
   return buffer;
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+// XXX.GJ: Encode the address as a 64-bit integer value.
+char* absl_nonnull numbers_internal::FastIntToBuffer(
+    uintptr_t i, char* absl_nonnull buffer) {
+  uint64_t i64 = static_cast<uint64_t>(__builtin_cheri_address_get(i));
+  buffer = EncodeFullU64(i64, buffer);
+  *buffer = '\0';
+  return buffer;
+}
+
+char* absl_nonnull numbers_internal::FastIntToBuffer(
+    intptr_t i, char* absl_nonnull buffer) {
+  uint64_t u64 = static_cast<uint64_t>(__builtin_cheri_address_get(i));
+  if (i < 0) {
+    *buffer++ = '-';
+    u64 = -u64;
+  }
+  buffer = EncodeFullU64(u64, buffer);
+  *buffer = '\0';
+  return buffer;
+}
+#endif
+
 // Given a 128-bit number expressed as a pair of uint64_t, high half first,
 // return that number multiplied by the given 32-bit value.  If the result is
 // too large to fit in a 128-bit number, divide it by 2 until it fits.

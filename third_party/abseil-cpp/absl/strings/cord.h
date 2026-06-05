@@ -904,7 +904,14 @@ class Cord {
   class InlineRep {
    public:
     static constexpr unsigned char kMaxInline = cord_internal::kMaxInline;
+#if defined(__CHERI_PURE_CAPABILITY__)
+    static constexpr unsigned char kInlineDataSiz =
+        sizeof(cord_internal::InlineData);
+    static_assert(kInlineDataSiz >= sizeof(absl::cord_internal::CordRep*), "");
+#else
+    static constexpr unsigned char kInlineDataSiz = kMaxInline;
     static_assert(kMaxInline >= sizeof(absl::cord_internal::CordRep*), "");
+#endif
 
     constexpr InlineRep() : data_() {}
     explicit InlineRep(InlineData::DefaultInitType init) : data_(init) {}

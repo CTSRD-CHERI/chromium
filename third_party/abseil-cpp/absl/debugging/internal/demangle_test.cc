@@ -1940,7 +1940,11 @@ static const char *DemangleStackConsumption(const char *mangled,
 // with some level of nesting. With alternate signal stack we have 64K,
 // but some signal handlers run on thread stack, and could have arbitrarily
 // little space left (so we don't want to make this number too large).
+#if defined(__CHERI_PURE_CAPABILITY__)
+const int kStackConsumptionUpperLimit = 16 * 1024;
+#else
 const int kStackConsumptionUpperLimit = 9670;
+#endif
 
 // Returns a mangled name nested to the given depth.
 static std::string NestedMangledName(int depth) {
@@ -2031,6 +2035,7 @@ struct Base {
 
 struct Derived : public Base {};
 
+#if defined(ABSL_INTERNAL_HAS_RTTI)
 TEST(DemangleStringTest, SupportsSymbolNameReturnedByTypeId) {
   EXPECT_EQ(DemangleString(typeid(int).name()), "int");
   // We want to test that `DemangleString` can demangle the symbol names
@@ -2043,6 +2048,7 @@ TEST(DemangleStringTest, SupportsSymbolNameReturnedByTypeId) {
               ContainsRegex(
                   "absl.*debugging_internal.*anonymous namespace.*::Derived"));
 }
+#endif
 
 }  // namespace
 }  // namespace debugging_internal

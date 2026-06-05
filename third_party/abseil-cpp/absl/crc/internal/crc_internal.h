@@ -158,7 +158,7 @@ T RotateRight(T in, int width, int r) {
 template <int alignment>
 const uint8_t* RoundUp(const uint8_t* p) {
   static_assert((alignment & (alignment - 1)) == 0, "alignment is not 2^n");
-  constexpr uintptr_t mask = alignment - 1;
+  constexpr size_t mask = alignment - 1;
   const uintptr_t as_uintptr = reinterpret_cast<uintptr_t>(p);
   return reinterpret_cast<const uint8_t*>((as_uintptr + mask) & ~mask);
 }

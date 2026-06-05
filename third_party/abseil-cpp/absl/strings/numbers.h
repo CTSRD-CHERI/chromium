@@ -175,8 +175,13 @@ bool safe_strtou128_base(absl::string_view text,
                          absl::uint128* absl_nonnull value, int base);
 
 inline constexpr int kFastToBuffer128Size = 41;
+#if defined(__CHERI_PURE_CAPABILITY__)
+// This should be at least 2 pointers + 2 bytes
+inline constexpr int kFastToBufferSize = 64;
+#else
 inline constexpr int kFastToBufferSize = 32;
-inline constexpr int kSixDigitsToBufferSize = 16;
+#endif
+static const int kSixDigitsToBufferSize = 16;
 
 // Helper function for fast formatting of floating-point values.
 // The result is the same as printf's "%g", a.k.a. "%.6g"; that is, six
@@ -203,6 +208,12 @@ char* absl_nonnull FastIntToBuffer(int128 i, char* absl_nonnull buffer)
     ABSL_INTERNAL_NEED_MIN_SIZE(buffer, kFastToBuffer128Size);
 char* absl_nonnull FastIntToBuffer(uint128 i, char* absl_nonnull buffer)
     ABSL_INTERNAL_NEED_MIN_SIZE(buffer, kFastToBuffer128Size);
+#if defined(__CHERI_PURE_CAPABILITY__)
+char* absl_nonnull FastIntToBuffer(intptr_t i, char* absl_nonnull buffer)
+    ABSL_INTERNAL_NEED_MIN_SIZE(buffer, kFastToBuffer128Size);
+char* absl_nonnull FastIntToBuffer(uintptr_t i, char* absl_nonnull buffer)
+    ABSL_INTERNAL_NEED_MIN_SIZE(buffer, kFastToBuffer128Size);
+#endif
 
 // For enums and integer types that are up to 128 bits and are not an exact
 // match for the types above, use templates to call the appropriate one of the
@@ -239,11 +250,18 @@ char* absl_nonnull FastIntToBuffer(int_type i,
 // Implementation of SimpleAtoi, generalized to support arbitrary base (used
 // with base different from 10 elsewhere in Abseil implementation).
 template <typename int_type>
-[[nodiscard]] bool safe_strtoi_base(absl::string_view s,
-                                    int_type* absl_nonnull out, int base) {
+ABSL_MUST_USE_RESULT bool safe_strtoi_base(absl::string_view s, int_type* out,
+                                           int base) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static_assert(sizeof(*out) == 1 || sizeof(*out) == 2 || sizeof(*out) == 4 ||
+                    sizeof(*out) == 8 || std::is_same<int_type, intptr_t>::value ||
+                    std::is_same<int_type, uintptr_t>::value,
+                "SimpleAtoi works only with 8, 16, 32, or 64-bit integers.");
+#else
   static_assert(sizeof(*out) == 1 || sizeof(*out) == 2 || sizeof(*out) == 4 ||
                     sizeof(*out) == 8,
                 "SimpleAtoi works only with 8, 16, 32, or 64-bit integers.");
+#endif
   static_assert(!std::is_floating_point<int_type>::value,
                 "Use SimpleAtof or SimpleAtod instead.");
   bool parsed;

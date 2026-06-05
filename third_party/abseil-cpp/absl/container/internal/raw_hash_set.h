@@ -1675,8 +1675,13 @@ constexpr size_t OptimalMemcpySizeForSooSlotTransfer(
   if (max_soo_slot_size <= 24) {
     return max_soo_slot_size;
   }
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static_assert(MaxSooSlotSize() <= 32, "unexpectedly large SOO slot size");
+  return 32;
+#else
   static_assert(MaxSooSlotSize() <= 24, "unexpectedly large SOO slot size");
   return 24;
+#endif
 }
 
 // Resizes SOO table to the NextCapacity(SooCapacity()) and prepares insert for
@@ -3738,9 +3743,15 @@ extern template size_t GrowSooTableToNextCapacityAndPrepareInsert<8, true>(
     CommonFields&, const PolicyFunctions&, absl::FunctionRef<size_t(size_t)>,
     bool);
 #if UINTPTR_MAX == UINT64_MAX
+#if defined(__CHERI_PURE_CAPABILITY__)
+extern template size_t GrowSooTableToNextCapacityAndPrepareInsert<32, true>(
+    CommonFields&, const PolicyFunctions&, absl::FunctionRef<size_t(size_t)>,
+    bool);
+#else
 extern template size_t GrowSooTableToNextCapacityAndPrepareInsert<16, true>(
     CommonFields&, const PolicyFunctions&, absl::FunctionRef<size_t(size_t)>,
     bool);
+#endif
 #endif
 
 extern template void* AllocateBackingArray<

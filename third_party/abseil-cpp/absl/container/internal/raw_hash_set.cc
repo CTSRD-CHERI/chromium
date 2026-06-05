@@ -1208,13 +1208,27 @@ class ProbedItemEncoder {
 
  private:
   static ProbedItem* AlignToNextItem(void* ptr) {
+#if __has_builtin(__builtin_align_up)
+    return reinterpret_cast<ProbedItem*>(
+        __builtin_align_up(ptr, alignof(ProbedItem)));
+#else
     return reinterpret_cast<ProbedItem*>(AlignUpTo(
         reinterpret_cast<uintptr_t>(ptr), alignof(ProbedItem)));
+#endif
   }
 
   ProbedItem* OverflowBufferStart() const {
     // We reuse GrowthInfo memory as well.
+#if defined(__CHERI_PURE_CAPABILITY__)
+    // XXX.GJ: Can this be performed without rederiving the capability?
+    auto control = control_;
+    AlignToNextItem(control - ControlOffset(/*has_infoz=*/false));
+    return reinterpret_cast<ProbedItem*>(
+        __builtin_cheri_address_set(control_,
+        __builtin_cheri_address_get(control)));
+#else
     return AlignToNextItem(control_ - ControlOffset(/*has_infoz=*/false));
+#endif
   }
 
   // Encodes item when previously allocated buffer is full.
@@ -2074,7 +2088,16 @@ template size_t GrowSooTableToNextCapacityAndPrepareInsert<
     OptimalMemcpySizeForSooSlotTransfer(16), true>(
     CommonFields&, const PolicyFunctions&, absl::FunctionRef<size_t(size_t)>,
     bool);
+#if defined(__CHERI_PURE_CAPABILITY__)
+static_assert(VerifyOptimalMemcpySizeForSooSlotTransferRange(17, 32));
+template size_t GrowSooTableToNextCapacityAndPrepareInsert<
+    OptimalMemcpySizeForSooSlotTransfer(32), true>(
+    CommonFields&, const PolicyFunctions&, absl::FunctionRef<size_t(size_t)>,
+    bool);
+static_assert(MaxSooSlotSize() == 32);
+#else
 static_assert(MaxSooSlotSize() == 16);
+#endif
 #endif
 
 template void* AllocateBackingArray<BackingArrayAlignment(alignof(size_t)),
