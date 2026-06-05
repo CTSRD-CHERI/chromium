@@ -11,7 +11,7 @@ import subprocess
 import tempfile
 from datetime import datetime
 
-ABSL_URI = 'https://github.com/abseil/abseil-cpp.git'
+ABSL_URI = 'https://github.com/CTSRD-CHERI/abseil-cpp.git'
 
 def _PullAbseil(abseil_dir, revision):
   logging.info('Updating abseil...')
