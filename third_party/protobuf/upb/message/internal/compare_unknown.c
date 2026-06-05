@@ -248,7 +248,7 @@ static upb_UnknownFields* upb_UnknownFields_Build(upb_UnknownField_Context* ctx,
       .sorted = true,
       .last_tag = 0,
   };
-  uintptr_t iter = kUpb_Message_UnknownBegin;
+  size_t iter = kUpb_Message_UnknownBegin;
   upb_StringView view;
   while (upb_Message_NextUnknown(msg, &view, &iter)) {
     upb_EpsCopyInputStream_Init(&ctx->stream, &view.data, view.size, true);

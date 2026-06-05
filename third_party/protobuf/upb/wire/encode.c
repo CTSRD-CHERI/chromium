@@ -778,7 +778,7 @@ static char* encode_message(char* ptr, upb_encstate* e, const upb_Message* msg,
 
   if ((e->options & kUpb_EncodeOption_SkipUnknown) == 0) {
     size_t unknown_size = 0;
-    uintptr_t iter = kUpb_Message_UnknownBegin;
+    size_t iter = kUpb_Message_UnknownBegin;
     upb_StringView unknown;
     // Need to write in reverse order, but iteration is in-order; scan to
     // reserve capacity up front, then write in-order
