@@ -292,7 +292,7 @@ assert(is_bot ||
 #
 # Since this is referenced both when passing the file and when deciding which
 # warnings to enable, store it in a separate variable here.
-use_clang_warning_suppression_file = !is_bsd &&
+use_clang_warning_suppression_file = !is_bsd && !is_cheri &&
     is_clang && clang_warning_suppression_file != ""
 
 # default_include_dirs ---------------------------------------------------------
@@ -713,7 +713,7 @@ config("compiler") {
 
     # TODO(crbug.com/40283598): This causes binary size growth and potentially
     # other problems.
-    if (default_toolchain != "//build/toolchain/cros:target") {
+    if (default_toolchain != "//build/toolchain/cros:target" && !is_cheri) {
       cflags += [
         "-mllvm",
         "-split-threshold-for-reg-with-hint=0",
@@ -738,7 +738,7 @@ config("compiler") {
     # TODO(crbug.com/376278218): This causes segfault on Linux ARM builds.
     # It also causes segfault on Linux s390x:
     # https://github.com/llvm/llvm-project/issues/149511
-    if (is_linux && use_lld && current_cpu != "arm" && current_cpu != "s390x") {
+    if (is_linux && use_lld && current_cpu != "arm" && current_cpu != "s390x" &&!is_cheri) {
       cflags += [ "-Wa,--crel,--allow-experimental-crel" ]
     }
   }
@@ -1860,7 +1860,7 @@ config("clang_warning_suppression") {
 #
 # See also: https://crbug.com/40891132#comment10
 config("sanitize_c_array_bounds") {
-  if (!is_ubsan && is_clang && !(is_asan && target_cpu == "x86")) {
+  if (!is_ubsan && is_clang && !(is_asan && target_cpu == "x86") &&!is_cheri) {
     cflags = [
       "-fsanitize=array-bounds",
       "-fsanitize-trap=array-bounds",
@@ -1964,7 +1964,7 @@ config("runtime_library") {
   # the C++ symbols. This config ensures the C++ symbols exist and are strong in
   # order to cause that replacement to occur by explicitly linking in clang's
   # compiler-rt library.
-  if (is_clang && !(is_a_target_toolchain && is_cronet_build)) {
+  if (is_clang && !(is_a_target_toolchain && is_cronet_build) && !is_cheri) {
     configs += [ "//build/config/clang:compiler_builtins" ]
   }
 
