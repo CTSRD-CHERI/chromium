@@ -257,6 +257,8 @@ enum FieldType : uint16_t {
                                             std::uintptr_t address);
 [[noreturn]] PROTOBUF_EXPORT void AlignFail(std::integral_constant<size_t, 8>,
                                             std::uintptr_t address);
+[[noreturn]] PROTOBUF_EXPORT void AlignFail(std::integral_constant<size_t, 16>,
+                                            std::uintptr_t address);
 inline void AlignFail(std::integral_constant<size_t, 1>,
                       std::uintptr_t /*address*/) {}
 #endif

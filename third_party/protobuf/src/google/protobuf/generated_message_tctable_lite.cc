@@ -69,6 +69,10 @@ using FieldEntry = TcParseTableBase::FieldEntry;
                             std::uintptr_t address) {
   ABSL_LOG(FATAL) << "Unaligned (8) access at " << address;
 }
+[[noreturn]] void AlignFail(std::integral_constant<size_t, 16>,
+                            std::uintptr_t address) {
+  ABSL_LOG(FATAL) << "Unaligned (16) access at " << address;
+}
 #endif
 
 const char* TcParser::GenericFallbackLite(PROTOBUF_TC_PARAM_DECL) {
