@@ -112,7 +112,11 @@ struct HeapRep {
   // Align to 8 as sanitizers are picky on the alignment of containers to start
   // at 8 byte offsets even when compiling for 32 bit platforms.
   union {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    alignas(max_align_t) Arena* arena;
+#else
     alignas(8) Arena* arena;
+#endif
     // We pad the header to be at least `sizeof(Element)` so that we have
     // power-of-two sized allocations, which enables Arena optimizations.
     char padding[kMinSize];
