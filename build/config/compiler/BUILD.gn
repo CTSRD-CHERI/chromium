@@ -2180,26 +2180,40 @@ config("default_warnings") {
   }
 
   if (is_clang) {
-    cflags += [
-      "-Wloop-analysis",
+    if (is_cheri && target_cpu == "arm64") {
+      cflags += [
+        "-Wloop-analysis",
 
-      # TODO(thakis): This used to be implied by -Wno-unused-function,
-      # which we no longer use. Check if it makes sense to remove
-      # this as well. http://crbug.com/316352
-      "-Wno-unneeded-internal-declaration",
+        # TODO(thakis): This used to be implied by -Wno-unused-function,
+        # which we no longer use. Check if it makes sense to remove
+        # this as well. http://crbug.com/316352
+        "-Wno-unneeded-internal-declaration",
 
-      # TODO(crbug.com/330524456): -Wcast-function-type is under -Wextra now.
-      "-Wno-cast-function-type",
+        # TODO(crbug.com/330524456): -Wcast-function-type is under -Wextra now.
+        "-Wno-cast-function-type",
+      ]
+    } else {
+      cflags += [
+        "-Wloop-analysis",
 
-      # TODO(crbug.com/40284799): Fix and re-enable.
-      "-Wno-thread-safety-reference-return",
+        # TODO(thakis): This used to be implied by -Wno-unused-function,
+        # which we no longer use. Check if it makes sense to remove
+        # this as well. http://crbug.com/316352
+        "-Wno-unneeded-internal-declaration",
 
-      # TODO(crbug.com/376641662): Fix and re-enable.
-      "-Wno-nontrivial-memcall",
+        # TODO(crbug.com/330524456): -Wcast-function-type is under -Wextra now.
+        "-Wno-cast-function-type",
 
-      # TODO(crbug.com/432275627): Fix and re-enable.
-      "-Wno-uninitialized-const-pointer",
-    ]
+        # TODO(crbug.com/40284799): Fix and re-enable.
+        "-Wno-thread-safety-reference-return",
+
+        # TODO(crbug.com/376641662): Fix and re-enable.
+        "-Wno-nontrivial-memcall",
+
+        # TODO(crbug.com/432275627): Fix and re-enable.
+        "-Wno-uninitialized-const-pointer",
+      ]
+    }
 
     cflags_cc += [
       # TODO(crbug.com/328490295): Fix and re-enable for C flags.
