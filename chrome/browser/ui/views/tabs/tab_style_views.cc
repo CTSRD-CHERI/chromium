@@ -557,7 +557,7 @@ float TabStyleViewsImpl::GetCurrentActiveOpacity() const {
   if (!IsHoverAnimationActive()) {
     return base_opacity;
   }
-  return std::lerp(base_opacity, GetHoverOpacity(), GetHoverAnimationValue());
+  return std::lerp(base_opacity, GetHoverOpacity(), static_cast<float>(GetHoverAnimationValue()));
 }
 
 bool TabStyleViewsImpl::IsApparentlyActive() const {

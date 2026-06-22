@@ -1037,7 +1037,7 @@ source_set("test_support") {
   sources = []
   deps = []
 
-  if (is_linux || is_chromeos) {
+  if (!is_bsd && (is_linux || is_chromeos)) {
     sources += [
       "buffer_handle_test_util.cc",
       "buffer_handle_test_util.h",

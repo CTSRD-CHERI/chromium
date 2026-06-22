@@ -60,7 +60,7 @@ net::ProxyChain ProxyOverrideRuleProxyFromString(std::string_view raw_value) {
 
 bool ProxyOverrideRulesAllowed(const PrefService* pref_service) {
   CHECK(pref_service);
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_BSD)
   if (pref_service->GetInteger(prefs::kProxyOverrideRulesScope) ==
           policy::POLICY_SCOPE_USER &&
       !pref_service->GetBoolean(prefs::kProxyOverrideRulesAffiliation)) {

@@ -35,7 +35,7 @@ static constexpr base::TimeDelta kShowNudgeDelay = base::Milliseconds(1000);
 static constexpr int kDropTargetHideForOSWidth =
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     32;
-#elif BUILDFLAG(IS_LINUX)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
     50;
 #else
     0;
