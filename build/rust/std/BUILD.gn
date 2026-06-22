@@ -141,12 +141,12 @@ if (toolchain_has_rust) {
     # rolling the Rust toolchain?
     if (is_android) {
       libs = [ "dl" ]
-    } else if (target_os == "freebsd") {
+    } else if (current_os == "freebsd") {
       libs = [
         "execinfo",
         "pthread",
       ]
-    } else if (target_os == "netbsd") {
+    } else if (current_os == "netbsd") {
       libs = [
         "rt",
         "pthread",
