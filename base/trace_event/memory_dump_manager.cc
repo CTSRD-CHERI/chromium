@@ -84,7 +84,7 @@ const char* const MemoryDumpManager::kSystemAllocatorPoolName =
 #if defined(MALLOC_MEMORY_TRACING_SUPPORTED)
     MallocDumpProvider::kAllocatedObjects;
 #else
-    nullptr;
+    "";
 #endif
 
 // static
