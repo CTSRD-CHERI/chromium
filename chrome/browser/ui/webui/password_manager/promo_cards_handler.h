@@ -52,7 +52,7 @@ class PromoCardsHandler : public content::WebUIMessageHandler {
 
   PasswordPromoCardBase* GetPromoToShowAndUpdatePref();
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
   void OnEncryptorReceived(base::Value callback_id,
                            os_crypt_async::Encryptor encryptor);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -60,7 +60,7 @@ class PromoCardsHandler : public content::WebUIMessageHandler {
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
   std::vector<std::unique_ptr<PasswordPromoCardBase>> promo_cards_;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
   // This points into `promo_cards_`, so should be ordered after it.
   raw_ptr<RelaunchChromePromo> relaunch_chrome_promo_ = nullptr;
 

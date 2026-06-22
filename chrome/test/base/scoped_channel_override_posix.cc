@@ -22,7 +22,7 @@ version_info::Channel GetBaseChannel(ScopedChannelOverride::Channel channel) {
       return version_info::Channel::BETA;
     case ScopedChannelOverride::Channel::kDev:
       return version_info::Channel::DEV;
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
     case ScopedChannelOverride::Channel::kCanary:
       return version_info::Channel::CANARY;
 #endif  // BUILDFLAG(IS_LINUX)

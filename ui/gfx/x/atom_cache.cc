@@ -157,6 +157,7 @@ constexpr auto kAtomsToCache = std::to_array<const char* const>({
     "application/octet-stream",
     "application/vnd.chromium.test",
     "chromium/filename",
+    "chromium/from-privileged",
     "chromium/x-bookmark-entries",
     "chromium/x-browser-actions",
     "chromium/x-file-system-files",

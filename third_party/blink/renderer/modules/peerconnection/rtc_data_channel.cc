@@ -531,6 +531,7 @@ void RTCDataChannel::send(Blob* data, ExceptionState& exception_state) {
   pending_messages_.push_back(message);
 }
 
+#undef close
 void RTCDataChannel::close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ == webrtc::DataChannelInterface::kClosing ||
