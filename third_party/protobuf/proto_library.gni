@@ -260,11 +260,12 @@ _protoc_gen_ts_runtime_deps = [
 
 # When use_remoteexec=true, node actions may run on remote
 # Linux worker. So it should include linux node binary in inputs.
-if (is_openbsd) {
+if (is_openbsd && host_os == "openbsd") {
   _protoc_gen_ts_runtime_deps +=
       [ "//third_party/node/openbsd/node-openbsd/bin/node" ]
 }
-if (is_freebsd) {
+if (is_freebsd && host_os == "freebsd") {
+  assert(current_os == "freebsd")
   _protoc_gen_ts_runtime_deps +=
       [ "//third_party/node/freebsd/node-freebsd/bin/node" ]
 }
