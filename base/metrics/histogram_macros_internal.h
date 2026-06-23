@@ -33,7 +33,12 @@ struct EnumSizeTraits {
     if constexpr (requires { Enum::kMaxValue; }) {
       // Since the UMA histogram macros expect a value one larger than the max
       // defined enumerator value, add one.
-      return static_cast<uintmax_t>(std::to_underlying(Enum::kMaxValue) + 1);
+#if __cpp_lib_to_underlying
+      return static_cast<uintmax_t>(
+          static_cast<std::to_underlying_t<Enum>>(Enum::kMaxValue) + 1);
+#else
+      return static_cast<uintmax_t>(std::underlying_type_t<Enum>(Enum::kMaxValue) + 1);
+#endif
     } else {
       static_assert(
           sizeof(Enum) == 0,
