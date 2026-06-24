@@ -67,7 +67,12 @@ LogSeverity GetDumpSeverity() {
 
 LogSeverity GetNotFatalUntilSeverity(base::NotFatalUntil fatal_milestone) {
   if (fatal_milestone != base::NotFatalUntil::NoSpecifiedMilestoneInternal &&
+#if __cpp_lib_to_underlying
       std::to_underlying(fatal_milestone) <= BASE_CHECK_VERSION_INTERNAL) {
+#else
+      static_cast<std::underlying_type_t<base::NotFatalUntil>>(fatal_milestone) <=
+          BASE_CHECK_VERSION_INTERNAL) {
+#endif
     return LOGGING_FATAL;
   }
   return GetDumpSeverity();
