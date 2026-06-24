@@ -466,11 +466,11 @@ config("compiler") {
       } else if (is_chromeos) {
         cflags += [ "-fstack-protector-strong" ]
       } else if (is_posix || is_fuchsia) {
-        if (current_os != "aix") {
+        if (is_cheri) {
+          cflags += [ "-fno-stack-protector" ]
+        } else if (current_os != "aix") {
           # Not available on aix.
           cflags += [ "-fstack-protector" ]
-        } else if (is_cheri) {
-          cflags += [ "-fno-stack-protector" ]
         }
       }
     }
