@@ -432,6 +432,27 @@ def SetupMacCrossCompileToolchain(target_arch):
 
     return new_args
 
+def SetupFreebsdCrossCompileToolchain(target_arch, sysroot, clang_base):
+    new_args = [
+        '--enable-cross-compile',
+        '--extra-cflags=--target=aarch64c-unknown-freebsd',
+        '--extra-ldflags=--target=aarch64c-unknown-freebsd',
+        '--target-os=freebsd',
+    ]
+
+    if sysroot:
+        new_args += [
+            '--sysroot=' + sysroot,
+        ]
+
+    if clang_base:
+        new_args += [
+            '--cc=' + os.path.join(clang_base, 'bin/clang'),
+            '--cxx=' + os.path.join(clang_base, 'bin/clang++'),
+            '--ld=' + os.path.join(clang_base, 'bin/clang'),
+        ]
+
+    return new_args
 
 def BuildFFmpeg(target_os, target_arch, host_os, host_arch, parallel_jobs,
                 config_only, config, configure_flags, options):
@@ -531,7 +552,7 @@ def BuildFFmpeg(target_os, target_arch, host_os, host_arch, parallel_jobs,
 
     if target_os in (host_os, host_os + '-noasm', 'android', 'win',
                      'mac') and not config_only:
-        PrintAndCheckCall(['make', '-j%d' % parallel_jobs], cwd=config_dir)
+        PrintAndCheckCall(['gmake', '-j%d' % parallel_jobs], cwd=config_dir)
     elif config_only:
         print('Skipping build step as requested.')
     else:
@@ -587,6 +608,20 @@ def main(argv):
         '--fast',
         action='store_true',
         help='Skip building (successfully) if the success token file exists')
+    parser.add_option(
+        '--purecap',
+        action='store_true',
+        help='Built for purecap CheriABI')
+    parser.add_option(
+        '--clang_base',
+        action='store',
+        dest='clang_base',
+        help='clang_base for cross-compiling')
+    parser.add_option(
+        '--sysroot',
+        action='store',
+        dest='sysroot',
+        help='sysroot for cross-compiling')
     options, args = parser.parse_args(argv)
 
     if len(args) < 1:
@@ -818,7 +853,7 @@ def ConfigureAndBuild(target_arch, target_os, host_os, host_arch,
                         '--extra-cflags=-mfpu=vfpv3-d16',
                     ])
         elif target_arch == 'arm64':
-            if target_os != 'android':
+            if target_os != 'android' and target_os != 'freebsd':
                 if host_arch != 'arm64':
                     configure_flags['Common'].extend([
                         '--enable-cross-compile',
@@ -833,11 +868,22 @@ def ConfigureAndBuild(target_arch, target_os, host_os, host_arch,
                     '--disable-dotprod',
                     '--disable-i8mm',
                 ])
-            configure_flags['Common'].extend([
-                '--arch=aarch64',
-                '--enable-armv8',
-                '--extra-cflags=-march=armv8-a',
-            ])
+
+            if options.purecap:
+                configure_flags['Common'].extend([
+                    '--arch=aarch64',
+                    '--enable-armv8',
+                    '--extra-cflags=-mabi=purecap -march=morello -Xclang -morello-vararg=new -Xclang -morello-bounded-memargs -cheri-codeptr-relocs',
+                    '--extra-ldflags=-mabi=purecap -cheri-codeptr-relocs',
+                    '--disable-asm',
+                    '--disable-inline-asm',
+                ])
+            else:
+                configure_flags['Common'].extend([
+                    '--arch=aarch64',
+                    '--enable-armv8',
+                    '--extra-cflags=-march=armv8-a',
+                ])
         elif target_arch == 'mipsel':
             # These flags taken from android chrome build with target_cpu='mipsel'
             configure_flags['Common'].extend([
@@ -922,7 +968,7 @@ def ConfigureAndBuild(target_arch, target_os, host_os, host_arch,
             '--disable-inline-asm',
         ])
 
-    if 'win' not in target_os and 'android' not in target_os:
+    if 'win' not in target_os and 'android' not in target_os and 'freebsd' not in target_os:
         configure_flags['Common'].extend([
             '--enable-pic',
             '--cc=clang',
@@ -936,6 +982,26 @@ def ConfigureAndBuild(target_arch, target_os, host_os, host_arch,
         # This does not work for ia32 and is always used on mac.
         if target_arch != 'ia32' and target_os != 'mac':
             configure_flags['Common'].append('--extra-ldflags=-fuse-ld=lld')
+
+    if target_os == 'freebsd':
+        if host_os != 'mac' and host_os != 'linux':
+            print('Script should be run on a Mac or Linux host.\n',
+                  file=sys.stderr)
+            return 1
+
+        configure_flags['Common'].extend([
+            '--enable-pic',
+        ])
+
+        if host_os != 'freebsd':
+            configure_flags['Common'].extend(
+                SetupFreebsdCrossCompileToolchain(target_arch, options.sysroot, options.clang_base))
+        else:
+            configure_flags['Common'].extend([
+                '--cc=clang',
+                '--cxx=clang++',
+                '--ld=clang',
+            ])
 
     # Should be run on Mac, unless we're cross-compiling on Linux.
     if target_os == 'mac':
