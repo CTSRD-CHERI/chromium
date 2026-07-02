@@ -1158,6 +1158,12 @@ config("compiler") {
     "-Zexternal-clangrt",
   ]
 
+  if (is_cheri) {
+    assert(is_clang)
+    assert(target_cpu == "arm64")
+    rustflags -= [ "-Zexternal-clangrt" ]
+  }
+
   if (!is_win || force_rustc_color_output) {
     # Colorize error output. The analogous flag is passed for clang. This must
     # be platform-gated since rustc will unconditionally output ANSI escape
