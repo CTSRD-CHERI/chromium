@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/android/config.gni")
 import("//build/config/arm.gni")
+import("//build/config/cheri.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/libaom/libaom_srcs.gni")
@@ -349,9 +350,13 @@ static_library("libaom") {
     deps += [
       ":libaom_intrinsics_arm_crc32",
       ":libaom_intrinsics_neon_dotprod",
-      ":libaom_intrinsics_neon_i8mm",
     ]
-    if (!is_win) {
+    if (!is_cheri) {
+      deps += [
+        ":libaom_intrinsics_neon_i8mm",
+      ]
+    }
+    if (!is_win && !is_cheri) {
       deps += [
         ":libaom_intrinsics_sve",
         ":libaom_intrinsics_sve2",
