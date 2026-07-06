@@ -1813,7 +1813,7 @@ PA_ALWAYS_INLINE void PartitionRoot::RawFree(internal::SlotStart slot_start,
   //
   // Do not move the store above inside the locked section.
 #if !(PA_CONFIG(IS_NONCLANG_MSVC))
-  __asm__ __volatile__("" : : "r"(slot_start) : "memory");
+  __asm__ __volatile__("" : : "r"(ptr) : "memory");
 #endif
   // This is done for memory usage (by improving the compression ratio of heap
   // pages), not for security, so we care more about being affordable than
