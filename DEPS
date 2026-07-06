@@ -296,7 +296,7 @@ vars = {
 
   'android_git': 'https://android.googlesource.com',
   'aomedia_git': 'https://aomedia.googlesource.com',
-  'boringssl_git': 'https://boringssl.googlesource.com',
+  'boringssl_git': 'https://github.com/CTSRD-CHERI',
   'chrome_git': 'https://chrome-internal.googlesource.com',
   'chromium_git': 'https://chromium.googlesource.com',
   'chromium_cheri_git': 'https://github.com/CTSRD-CHERI',
@@ -334,7 +334,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
-  'boringssl_revision': 'c88440cb71fa8bd7d758f6bd4fe14541acc81bdd',
+  'boringssl_revision': '404ff9702befdffedcc2738c5491d50b2378ca88',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Fuchsia sdk
   # and whatever else without interference from each other.
