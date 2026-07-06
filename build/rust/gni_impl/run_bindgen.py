@@ -39,7 +39,7 @@ def PrependVersionLine(filepath):
 def main():
   parser = argparse.ArgumentParser("run_bindgen.py")
   parser.add_argument("--bindgen-exe", help="Path to bindgen", required=True),
-  parser.add_argument("--rustfmt-exe", help="Path to rustfmt", required=True),
+  parser.add_argument("--rustfmt-exe", help="Path to rustfmt")
   parser.add_argument("--header",
                       help="C header file to generate bindings for",
                       required=True)
@@ -123,11 +123,12 @@ def main():
     try:
       subprocess.check_call([args.bindgen_exe, *genargs], env=env)
 
-      fmtargs = [
-          args.output,
-          "--config=normalize_doc_attributes=true",
-      ]
-      subprocess.check_call([args.rustfmt_exe, *fmtargs])
+      if args.rustfmt_exe:
+        fmtargs = [
+            args.output,
+            "--config=normalize_doc_attributes=true",
+        ]
+        subprocess.check_call([args.rustfmt_exe, *fmtargs])
 
       PrependVersionLine(args.output)
     except:

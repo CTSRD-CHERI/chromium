@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/cheri.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/rust.gni")
 import("//build/config/sysroot.gni")
@@ -14,6 +15,8 @@ if (is_win) {
 _bindgen_path = "${rust_bindgen_root}/bin/bindgen"
 if (host_os == "win") {
   _bindgen_path = "${_bindgen_path}.exe"
+} else if (target_cpu == "arm64" && is_cheri) {
+  _bindgen_path = "${rust_bindgen_root}"
 }
 
 _rustfmt_path = "${rust_bindgen_root}/bin/rustfmt"
@@ -30,6 +33,9 @@ _libclang_path = rust_bindgen_root
 if (!use_chromium_rust_toolchain &&
     (host_cpu == "ppc64" || host_cpu == "s390x")) {
   _libclang_path = rust_sysroot_absolute + "/lib64"
+} else if (!use_chromium_rust_toolchain &&
+    (target_cpu == "arm64" && is_cheri)) {
+  _libclang_path = clang_base_path + "/lib"
 } else if (host_os == "win") {
   _libclang_path += "/bin"
 } else {
@@ -171,6 +177,16 @@ template("rust_bindgen_generator") {
       "--libclang-path",
       rebase_path(_libclang_path, root_build_dir),
     ]
+
+    if(target_cpu == "arm64" && is_cheri) {
+      inputs -= [
+        _rustfmt_path,
+      ]
+      args -= [
+        "--rustfmt-exe",
+        rebase_path(_rustfmt_path, root_build_dir),
+      ]
+    }
 
     if (_wrap_static_fns) {
       if (_cpp) {
