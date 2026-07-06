@@ -322,7 +322,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': '2d051d9cef02bca69a97749a995b138e3dec0e1f',
+  'angle_revision': '85dc591be4e02fb1fc091d3280b7a203c854c75e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -1876,7 +1876,7 @@ deps = {
   },
 
   'src/third_party/angle':
-    Var('chromium_git') + '/angle/angle.git' + '@' +  Var('angle_revision'),
+    Var('chromium_cheri_git') + '/angle.git' + '@' +  Var('angle_revision'),
 
   'src/third_party/anonymous_tokens/src':
     Var('chromium_git') + '/external/github.com/google/anonymous-tokens.git' + '@' + 'fdff40da0398d2c229308aed169345f6ff1a150f',
