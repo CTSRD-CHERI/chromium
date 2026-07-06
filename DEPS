@@ -300,7 +300,7 @@ vars = {
   'chrome_git': 'https://chrome-internal.googlesource.com',
   'chromium_git': 'https://chromium.googlesource.com',
   'chromium_cheri_git': 'https://github.com/CTSRD-CHERI',
-  'dawn_git': 'https://dawn.googlesource.com',
+  'dawn_git': 'https://github.com/CTSRD-CHERI',
   'pdfium_git': 'https://pdfium.googlesource.com',
   'quiche_git': 'https://quiche.googlesource.com',
   'skia_cheri_git': 'https://github.com/CTSRD-CHERI',
@@ -426,7 +426,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '3df397b5b33f950da92787d9a6ac655e0601bca2',
+  'dawn_revision': 'a42e94b9f7b5273000e3046afeb5fcc3153b4f6b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
