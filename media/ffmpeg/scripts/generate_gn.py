@@ -83,7 +83,7 @@ SUPPORT_MATRIX = {
     Attr.ARCHITECTURE:
     set(['ia32', 'x64', 'arm', 'arm64', 'arm-neon', 'riscv64']),
     Attr.TARGET: set(['Chromium', 'Chrome']),
-    Attr.PLATFORM: set(['android', 'linux', 'win', 'mac'])
+    Attr.PLATFORM: set(['android', 'freebsd', 'linux', 'win', 'mac'])
 }
 
 
