@@ -24,8 +24,8 @@ if (!use_system_libwayland) {
       "src/src",
     ]
 
-    if (is_bsd) {
-      include_dirs += [ "/usr/local/include/libepoll-shim" ]
+    if (current_os == "freebsd" || current_os == "openbsd") {
+      include_dirs += [ "$sysroot/usr/local/include/libepoll-shim" ]
       libs = [ "epoll-shim" ]
     }
 
