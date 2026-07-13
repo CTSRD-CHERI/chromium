@@ -86,7 +86,7 @@ def main():
     # TODO(danakj): We need to point bindgen to
     # //third_party/rust-toolchain/bin/rustfmt.
     genargs.append('--no-rustfmt-bindings')
-    genargs += ['--rust-target', 'nightly']
+    genargs += ['--rust-target', '1.72.1']
 
     if args.depfile:
       depfile = stack.enter_context(action_helpers.atomic_output(args.depfile))
