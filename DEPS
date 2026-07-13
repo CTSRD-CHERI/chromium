@@ -2950,7 +2950,7 @@ deps = {
   'src/third_party/vulkan-headers/src': '{chromium_cheri_git}/Vulkan-Headers@445687e29967df360fbeb77859aeed9e7d4ac158',
   'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@255cef037950894f88f6e2b2f83a04c188661a95',
   'src/third_party/vulkan-tools/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Tools@e8a4ce73f3244d814ccc84e723bb0442fab4dcf7',
-  'src/third_party/vulkan-utility-libraries/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Utility-Libraries@b4e9ebbfc779cba85f1efbe2f69fdfc5744ed5e5',
+  'src/third_party/vulkan-utility-libraries/src': '{chromium_cheri_git}/Vulkan-Utility-Libraries@250415e32fa6b3f4f61446e124ababa5d383eb47',
   'src/third_party/vulkan-validation-layers/src': '{chromium_cheri_git}/Vulkan-ValidationLayers@69915053427de929ac1e659a8c834f37dc2181db',
 
   'src/third_party/vulkan_memory_allocator':
