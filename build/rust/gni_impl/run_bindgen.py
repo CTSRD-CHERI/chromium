@@ -79,7 +79,6 @@ def main():
     # Args passed to the actual bindgen cli
     genargs = []
     genargs.append('--no-layout-tests')
-    genargs.append('--rust-edition=2021')
     if args.bindgen_flags is not None:
       for flag in args.bindgen_flags:
         genargs.append("--" + flag)
