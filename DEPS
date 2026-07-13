@@ -2951,7 +2951,7 @@ deps = {
   'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@255cef037950894f88f6e2b2f83a04c188661a95',
   'src/third_party/vulkan-tools/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Tools@e8a4ce73f3244d814ccc84e723bb0442fab4dcf7',
   'src/third_party/vulkan-utility-libraries/src': '{chromium_cheri_git}/Vulkan-Utility-Libraries@250415e32fa6b3f4f61446e124ababa5d383eb47',
-  'src/third_party/vulkan-validation-layers/src': '{chromium_cheri_git}/Vulkan-ValidationLayers@69915053427de929ac1e659a8c834f37dc2181db',
+  'src/third_party/vulkan-validation-layers/src': '{chromium_cheri_git}/Vulkan-ValidationLayers@96096fbb0b4d5f36d3a9aea6c46c0e7eac992038',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + 'cb0597213b0fcb999caa9ed08c2f88dc45eb7d50',
