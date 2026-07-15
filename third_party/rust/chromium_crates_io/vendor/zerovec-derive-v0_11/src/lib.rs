@@ -2,6 +2,8 @@
 // called LICENSE at the top level of the ICU4X source tree
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
+#![feature(lint_reasons)]
+
 //! Proc macros for generating `ULE`, `VarULE` impls and types for the `zerovec` crate
 
 use proc_macro::TokenStream;
