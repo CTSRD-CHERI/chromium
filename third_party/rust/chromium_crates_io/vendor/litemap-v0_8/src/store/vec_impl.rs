@@ -232,6 +232,7 @@ fn partition_dedup_by<K: Eq, V>(v: &mut [(K, V)]) -> (&mut [(K, V)], &mut [(K, V
     let mut read_idx: usize = 1;
     let mut write_idx: usize = 1;
 
+    #[cfg(version("1.80"))]
     while let Some((before_read, [read, ..])) = v.split_at_mut_checked(read_idx) {
         // First, `read_idx >= write_idx` is always true as `read_idx` is always incremented
         // whereas `write_idx` is only incremented when a distinct element is found.
@@ -250,7 +251,36 @@ fn partition_dedup_by<K: Eq, V>(v: &mut [(K, V)]) -> (&mut [(K, V)], &mut [(K, V
         }
         read_idx += 1;
     }
+    #[cfg(not(version("1.80")))]
+    while let Some((before_read, [read, ..])) = split_at_mut_checked(v, read_idx) {
+        // First, `read_idx >= write_idx` is always true as `read_idx` is always incremented
+        // whereas `write_idx` is only incremented when a distinct element is found.
+        // Second, before_read is always at least 1 length due to read_idx being initialized to 1.
+        // Thus it is safe to index before_read with `write_idx - 1`.
+        #[expect(clippy::indexing_slicing)]
+        let prev_write = &mut before_read[write_idx - 1];
+        if read.0 == prev_write.0 {
+            core::mem::swap(read, prev_write);
+        } else {
+            // Equivalent to checking if write_idx == read_idx
+            if let Some(write) = before_read.get_mut(write_idx) {
+                core::mem::swap(read, write);
+            }
+            write_idx += 1;
+        }
+        read_idx += 1;
+    }
     v.split_at_mut(write_idx)
+}
+
+#[cfg(not(version("1.80")))]
+fn split_at_mut_checked<T>(slice: &mut [T], mid: usize) -> Option<(&mut [T], &mut [T])> {
+    if mid <= slice.len() {
+        // Since we verified mid <= len, split_at_mut is guaranteed not to panic
+        Some(slice.split_at_mut(mid))
+    } else {
+        None
+    }
 }
 
 impl<K: Ord, V> StoreFromIterable<K, V> for Vec<(K, V)> {
