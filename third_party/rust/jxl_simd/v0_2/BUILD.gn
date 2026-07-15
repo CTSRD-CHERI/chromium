@@ -6,6 +6,7 @@
 # tools/crates/gnrt.
 # Do not edit!
 
+import("//build/config/cheri.gni")
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -63,6 +64,9 @@ cargo_crate("lib") {
     # and 2) that config doesn't have any non-warnings-related stuff.
     "//build/config/compiler:chromium_code",
   ]
+  if (current_cpu == "arm64" && is_cheri) {
+    _configs_to_remove += [ "//build/config/compiler:disallow_unstable_features" ]
+  }
   _configs_to_add = []
 
   # Changing (if needed) which configs apply to this specific crate (based on
@@ -78,4 +82,8 @@ cargo_crate("lib") {
   executable_configs += _configs_to_add
   proc_macro_configs -= _configs_to_remove
   proc_macro_configs += _configs_to_add
+
+  if (current_cpu == "arm64" && is_cheri) {
+    rustflags = [ "-Zallow-features=slice_as_chunks,target_feature_11" ]
+  }
 }
