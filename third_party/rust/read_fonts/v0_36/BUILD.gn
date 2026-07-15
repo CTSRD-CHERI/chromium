@@ -214,7 +214,7 @@ cargo_crate("lib") {
   # Changing (if needed) which configs apply to this specific crate (based on
   # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
   # `gnrt_config.toml`).
-  _configs_to_remove += []
+  _configs_to_remove += [ "//build/config/compiler:disallow_unstable_features" ]
   _configs_to_add += []
 
   # Applying config changes.
@@ -224,4 +224,6 @@ cargo_crate("lib") {
   executable_configs += _configs_to_add
   proc_macro_configs -= _configs_to_remove
   proc_macro_configs += _configs_to_add
+
+  rustflags = [ "-Zallow-features=int_roundings,return_position_impl_trait_in_trait" ]
 }

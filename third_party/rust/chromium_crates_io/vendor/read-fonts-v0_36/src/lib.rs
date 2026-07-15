@@ -56,6 +56,9 @@
 //! [NameString]: tables::name::NameString
 //! [table-directory]: https://learn.microsoft.com/en-us/typography/opentype/spec/otff#table-directory
 
+#![feature(int_roundings)]
+#![feature(return_position_impl_trait_in_trait)]
+
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 #![forbid(unsafe_code)]
 #![deny(rustdoc::broken_intra_doc_links)]
