@@ -3,7 +3,12 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+#![feature(slice_as_chunks)]
+#![feature(target_feature_11)]
+
 #![allow(clippy::too_many_arguments)]
+
+#![warn(unsafe_op_in_unsafe_fn)]
 
 use std::{
     fmt::Debug,
