@@ -24,6 +24,8 @@
 //!
 //! See the documentation of [`Yoke`] for more details.
 
+#![feature(lint_reasons)]
+
 // https://github.com/unicode-org/icu4x/blob/main/documents/process/boilerplate.md#library-annotations
 #![cfg_attr(not(any(test, doc)), no_std)]
 #![cfg_attr(
