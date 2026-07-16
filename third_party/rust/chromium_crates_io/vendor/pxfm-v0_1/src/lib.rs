@@ -26,6 +26,14 @@
  * // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#![feature(cfg_version)]
+#![feature(const_fn_floating_point_arithmetic)]
+#![cfg_attr(not(version("1.77")), feature(round_ties_even))]
+#![cfg_attr(not(version("1.83")), feature(const_float_bits_conv))]
+#![cfg_attr(not(version("1.83")), feature(const_float_classify))]
+#![cfg_attr(not(version("1.83")), feature(const_mut_refs))]
+
 // #![forbid(unsafe_code)]
 #![deny(unreachable_pub)]
 #![allow(

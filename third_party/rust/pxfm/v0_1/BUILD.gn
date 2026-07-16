@@ -7,6 +7,7 @@
 # Do not edit!
 
 import("//build/rust/cargo_crate.gni")
+import("//build/config/cheri.gni")
 
 cargo_crate("lib") {
   crate_name = "pxfm"
@@ -308,6 +309,12 @@ cargo_crate("lib") {
     # and 2) that config doesn't have any non-warnings-related stuff.
     "//build/config/compiler:chromium_code",
   ]
+  if (rustc_version == "rustc 1.72.1-dev") {
+    # The features and const_float_bits_cov and round_ties_even are unstable in
+    # the Morello Rust compiler (1.72)
+    assert(target_cpu == "arm64" && is_cheri)
+    _configs_to_remove += [ "//build/config/compiler:disallow_unstable_features" ]
+  }
   _configs_to_add = []
 
   # Changing (if needed) which configs apply to this specific crate (based on
@@ -323,4 +330,11 @@ cargo_crate("lib") {
   executable_configs += _configs_to_add
   proc_macro_configs -= _configs_to_remove
   proc_macro_configs += _configs_to_add
+
+  if (rustc_version == "rustc 1.72.1-dev") {
+    assert(target_cpu == "arm64" && is_cheri)
+    rustflags = [ "-Zallow-features=cfg_version,const_float_bits_conv,const_float_classify,const_fn_floating_point_arithmetic,const_mut_refs,round_ties_even" ]
+  } else {
+    rustflags = [ "-Zallow-features=cfg_version" ]
+  }
 }
