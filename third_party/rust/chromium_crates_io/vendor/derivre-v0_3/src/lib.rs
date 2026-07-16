@@ -1,3 +1,7 @@
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.80")), feature(exclusive_range_pattern))]
+#![cfg_attr(not(version("1.81")), feature(int_roundings))]
+
 mod deriv;
 mod hashcons;
 mod nextbyte;
