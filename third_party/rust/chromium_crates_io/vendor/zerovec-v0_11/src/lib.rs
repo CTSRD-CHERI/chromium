@@ -193,6 +193,10 @@
 //! `zeromap` benches are named by convention, e.g. `zeromap/deserialize/small`, `zeromap/lookup/large`. The type
 //! is appended for baseline comparisons, e.g. `zeromap/lookup/small/hashmap`.
 
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.81")), feature(lint_reasons, error_in_core))]
+#![cfg_attr(not(version("1.79")), feature(slice_split_at_unchecked))]
+
 // https://github.com/unicode-org/icu4x/blob/main/documents/process/boilerplate.md#library-annotations
 #![cfg_attr(not(any(test, doc)), no_std)]
 #![cfg_attr(

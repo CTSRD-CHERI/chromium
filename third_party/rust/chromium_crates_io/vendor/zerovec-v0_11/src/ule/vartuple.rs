@@ -108,6 +108,19 @@ where
     A: AsULE + 'static,
     V: VarULE + ?Sized,
 {
+    #[cfg(not(version("1.80")))]
+    fn validate_bytes(bytes: &[u8]) -> Result<(), UleError> {
+        if bytes.len() < size_of::<A::ULE>() {
+            return Err(UleError::length::<Self>(bytes.len()));
+        }
+        let (sized_chunk, variable_chunk) = bytes
+            .split_at(size_of::<A::ULE>());
+        A::ULE::validate_bytes(sized_chunk)?;
+        V::validate_bytes(variable_chunk)?;
+        Ok(())
+    }
+
+    #[cfg(version("1.80"))]
     fn validate_bytes(bytes: &[u8]) -> Result<(), UleError> {
         let (sized_chunk, variable_chunk) = bytes
             .split_at_checked(size_of::<A::ULE>())
