@@ -97,6 +97,9 @@
 //! - Macros [`indexmap!`] and [`indexset!`] are unavailable without `std`. Use
 //!   the macros [`indexmap_with_default!`] and [`indexset_with_default!`] instead.
 
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.81")), feature(error_in_core, lint_reasons))]
+
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
 extern crate alloc;
