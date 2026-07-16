@@ -11,6 +11,11 @@
 //! See the [readme](https://github.com/googlefonts/fontations/blob/main/skrifa/README.md)
 //! for additional details.
 
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.73")), feature(int_roundings))]
+#![cfg_attr(not(version("1.76")), feature(ptr_from_ref))]
+#![cfg_attr(not(version("1.82")), feature(new_uninit))]
+
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 #![forbid(unsafe_code)]
 #![cfg_attr(not(any(test, feature = "std")), no_std)]
