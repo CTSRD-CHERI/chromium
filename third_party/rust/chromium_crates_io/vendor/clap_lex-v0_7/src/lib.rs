@@ -110,6 +110,8 @@
 //! println!("{args:?}");
 //! ```
 
+#![feature(cfg_version)]
+
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![warn(missing_docs)]
 #![warn(clippy::print_stderr)]
