@@ -345,7 +345,14 @@ pub(crate) fn get_parameterized<T: ZeroTrieWithOptions + ?Sized>(
             {
                 let (trie_span, ascii_span);
                 (trie_span, trie) = trie.debug_split_at(x);
-                (ascii_span, ascii) = ascii.split_at_checked(x)?;
+                #[cfg(not(version("1.80")))]
+                {
+                    (ascii_span, ascii) = ascii.maybe_split_at(x)?;
+                }
+                #[cfg(version("1.80"))]
+                {
+                    (ascii_span, ascii) = ascii.split_at_checked(x)?;
+                }
                 if trie_span == ascii_span {
                     // Matched a byte span
                     continue;
