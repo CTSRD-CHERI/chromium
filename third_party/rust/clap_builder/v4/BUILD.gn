@@ -6,6 +6,7 @@
 # tools/crates/gnrt.
 # Do not edit!
 
+import("//build/config/cheri.gni")
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -115,6 +116,11 @@ cargo_crate("lib") {
     # and 2) that config doesn't have any non-warnings-related stuff.
     "//build/config/compiler:chromium_code",
   ]
+  if (rustc_version == "rustc 1.72.1-dev") {
+    # The features error_in_core and lint_reasons are unstable in the Morello
+    # Rust compiler (1.72)
+    _configs_to_remove += [ "//build/config/compiler:disallow_unstable_features" ]
+  }
   _configs_to_add = []
 
   # Changing (if needed) which configs apply to this specific crate (based on
@@ -130,4 +136,10 @@ cargo_crate("lib") {
   executable_configs += _configs_to_add
   proc_macro_configs -= _configs_to_remove
   proc_macro_configs += _configs_to_add
+
+  if (rustc_version == "rustc 1.72.1-dev") {
+    rustflags = [ "-Zallow-features=cfg_version,saturating_int_impl" ]
+  } else {
+    rustflags = [ "-Zallow-features=cfg_version" ]
+  }
 }
