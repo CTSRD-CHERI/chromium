@@ -536,8 +536,39 @@ impl Matrix3f {
         v: [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]],
     };
 
+    #[cfg(version("1.85"))]
     #[inline]
     pub const fn test_equality(&self, other: Matrix3f) -> bool {
+        const TOLERANCE: f32 = 0.001f32;
+        let diff_r_x = (self.v[0][0] - other.v[0][0]).abs();
+        let diff_r_y = (self.v[0][1] - other.v[0][1]).abs();
+        let diff_r_z = (self.v[0][2] - other.v[0][2]).abs();
+
+        if diff_r_x > TOLERANCE || diff_r_y > TOLERANCE || diff_r_z > TOLERANCE {
+            return false;
+        }
+
+        let diff_g_x = (self.v[1][0] - other.v[1][0]).abs();
+        let diff_g_y = (self.v[1][1] - other.v[1][1]).abs();
+        let diff_g_z = (self.v[1][2] - other.v[1][2]).abs();
+
+        if diff_g_x > TOLERANCE || diff_g_y > TOLERANCE || diff_g_z > TOLERANCE {
+            return false;
+        }
+
+        let diff_b_x = (self.v[2][0] - other.v[2][0]).abs();
+        let diff_b_y = (self.v[2][1] - other.v[2][1]).abs();
+        let diff_b_z = (self.v[2][2] - other.v[2][2]).abs();
+
+        if diff_b_x > TOLERANCE || diff_b_y > TOLERANCE || diff_b_z > TOLERANCE {
+            return false;
+        }
+
+        true
+    }
+    #[cfg(not(version("1.85")))]
+    #[inline]
+    pub fn test_equality(&self, other: Matrix3f) -> bool {
         const TOLERANCE: f32 = 0.001f32;
         let diff_r_x = (self.v[0][0] - other.v[0][0]).abs();
         let diff_r_y = (self.v[0][1] - other.v[0][1]).abs();
@@ -779,8 +810,39 @@ impl Matrix3d {
         v: [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]],
     };
 
+    #[cfg(version("1.85"))]
     #[inline]
     pub const fn test_equality(&self, other: Matrix3d) -> bool {
+        const TOLERANCE: f64 = 0.001f64;
+        let diff_r_x = (self.v[0][0] - other.v[0][0]).abs();
+        let diff_r_y = (self.v[0][1] - other.v[0][1]).abs();
+        let diff_r_z = (self.v[0][2] - other.v[0][2]).abs();
+
+        if diff_r_x > TOLERANCE || diff_r_y > TOLERANCE || diff_r_z > TOLERANCE {
+            return false;
+        }
+
+        let diff_g_x = (self.v[1][0] - other.v[1][0]).abs();
+        let diff_g_y = (self.v[1][1] - other.v[1][1]).abs();
+        let diff_g_z = (self.v[1][2] - other.v[1][2]).abs();
+
+        if diff_g_x > TOLERANCE || diff_g_y > TOLERANCE || diff_g_z > TOLERANCE {
+            return false;
+        }
+
+        let diff_b_x = (self.v[2][0] - other.v[2][0]).abs();
+        let diff_b_y = (self.v[2][1] - other.v[2][1]).abs();
+        let diff_b_z = (self.v[2][2] - other.v[2][2]).abs();
+
+        if diff_b_x > TOLERANCE || diff_b_y > TOLERANCE || diff_b_z > TOLERANCE {
+            return false;
+        }
+
+        true
+    }
+    #[cfg(not(version("1.85")))]
+    #[inline]
+    pub fn test_equality(&self, other: Matrix3d) -> bool {
         const TOLERANCE: f64 = 0.001f64;
         let diff_r_x = (self.v[0][0] - other.v[0][0]).abs();
         let diff_r_y = (self.v[0][1] - other.v[0][1]).abs();

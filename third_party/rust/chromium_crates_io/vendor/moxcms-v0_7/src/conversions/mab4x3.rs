@@ -225,7 +225,7 @@ pub(crate) fn prepare_mab_4x3(
                 })
                 .collect();
 
-            let [curve0, curve1, curve2, curve3] =
+            let [curve0, curve1, curve2, curve3]: [Box<[f32; 65536]>; 4] =
                 curves?.try_into().map_err(|_| CmsError::InvalidTrcCurve)?;
             let l = ACurves4x3 {
                 curve0,
@@ -260,7 +260,7 @@ pub(crate) fn prepare_mab_4x3(
                 })
                 .collect();
 
-            let [curve0, curve1, curve2] =
+            let [curve0, curve1, curve2]: [Box<[f32; 65536]>; 3] =
                 curves?.try_into().map_err(|_| CmsError::InvalidTrcCurve)?;
 
             let matrix = mab.matrix.to_f32();
@@ -290,7 +290,7 @@ pub(crate) fn prepare_mab_4x3(
                 })
                 .collect();
 
-            let [curve0, curve1, curve2] =
+            let [curve0, curve1, curve2]: [Box<[f32; 65536]>; 3] =
                 curves?.try_into().map_err(|_| CmsError::InvalidTrcCurve)?;
             let b_curves = BCurves3::<DEPTH> {
                 curve0,

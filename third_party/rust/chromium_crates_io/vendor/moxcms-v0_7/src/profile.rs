@@ -585,25 +585,25 @@ impl From<RenderingIntent> for u32 {
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct ProfileHeader {
-    pub size: u32,                         // Size of the profile (computed)
-    pub cmm_type: u32,                     // Preferred CMM type (ignored)
-    pub version: ProfileVersion,           // Version (4.3 or 4.4 if CICP is included)
-    pub profile_class: ProfileClass,       // Display device profile
-    pub data_color_space: DataColorSpace,  // RGB input color space
-    pub pcs: DataColorSpace,               // Profile connection space
-    pub creation_date_time: ColorDateTime, // Date and time
-    pub signature: ProfileSignature,       // Profile signature
-    pub platform: u32,                     // Platform target (ignored)
-    pub flags: u32,                        // Flags (not embedded, can be used independently)
-    pub device_manufacturer: u32,          // Device manufacturer (ignored)
-    pub device_model: u32,                 // Device model (ignored)
-    pub device_attributes: [u8; 8],        // Device attributes (ignored)
-    pub rendering_intent: RenderingIntent, // Relative colorimetric rendering intent
-    pub illuminant: Xyz,                   // D50 standard illuminant X
-    pub creator: u32,                      // Profile creator (ignored)
-    pub profile_id: [u8; 16],              // Profile id checksum (ignored)
-    pub reserved: [u8; 28],                // Reserved (ignored)
-    pub tag_count: u32,                    // Technically not part of header, but required
+    pub(crate) size: u32,                         // Size of the profile (computed)
+    pub(crate) cmm_type: u32,                     // Preferred CMM type (ignored)
+    pub(crate) version: ProfileVersion,           // Version (4.3 or 4.4 if CICP is included)
+    pub(crate) profile_class: ProfileClass,       // Display device profile
+    pub(crate) data_color_space: DataColorSpace,  // RGB input color space
+    pub(crate) pcs: DataColorSpace,               // Profile connection space
+    pub(crate) creation_date_time: ColorDateTime, // Date and time
+    pub(crate) signature: ProfileSignature,       // Profile signature
+    pub(crate) platform: u32,                     // Platform target (ignored)
+    pub(crate) flags: u32,                        // Flags (not embedded, can be used independently)
+    pub(crate) device_manufacturer: u32,          // Device manufacturer (ignored)
+    pub(crate) device_model: u32,                 // Device model (ignored)
+    pub(crate) device_attributes: [u8; 8],        // Device attributes (ignored)
+    pub(crate) rendering_intent: RenderingIntent, // Relative colorimetric rendering intent
+    pub(crate) illuminant: Xyz,                   // D50 standard illuminant X
+    pub(crate) creator: u32,                      // Profile creator (ignored)
+    pub(crate) profile_id: [u8; 16],              // Profile id checksum (ignored)
+    pub(crate) reserved: [u8; 28],                // Reserved (ignored)
+    pub(crate) tag_count: u32,                    // Technically not part of header, but required
 }
 
 impl ProfileHeader {
@@ -634,11 +634,11 @@ impl ProfileHeader {
 
     /// Creates profile from the buffer
     pub(crate) fn new_from_slice(slice: &[u8]) -> Result<Self, CmsError> {
-        if slice.len() < size_of::<ProfileHeader>() {
+        if slice.len() < std::mem::size_of::<ProfileHeader>() {
             return Err(CmsError::InvalidProfile);
         }
         let mut cursor = std::io::Cursor::new(slice);
-        let mut buffer = [0u8; size_of::<ProfileHeader>()];
+        let mut buffer = [0u8; std::mem::size_of::<ProfileHeader>()];
         cursor
             .read_exact(&mut buffer)
             .map_err(|_| CmsError::InvalidProfile)?;
@@ -939,11 +939,11 @@ impl ColorProfile {
         }
         let tags_end = tags_count
             .safe_mul(TAG_SIZE)?
-            .safe_add(size_of::<ProfileHeader>())?;
+            .safe_add(std::mem::size_of::<ProfileHeader>())?;
         if slice.len() < tags_end {
             return Err(CmsError::InvalidProfile);
         }
-        let tags_slice = &slice[size_of::<ProfileHeader>()..tags_end];
+        let tags_slice = &slice[std::mem::size_of::<ProfileHeader>()..tags_end];
         let mut profile = ColorProfile {
             rendering_intent: header.rendering_intent,
             pcs: header.pcs,

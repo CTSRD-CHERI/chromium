@@ -517,7 +517,7 @@ fn write_lut(into: &mut Vec<u8>, lut: &LutWarehouse, is_a_to_b: bool) -> Result<
 
 impl ProfileHeader {
     fn encode(&self) -> Vec<u8> {
-        let mut encoder: Vec<u8> = Vec::with_capacity(size_of::<ProfileHeader>());
+        let mut encoder: Vec<u8> = Vec::with_capacity(std::mem::size_of::<ProfileHeader>());
         write_u32_be(&mut encoder, self.size); // Size
         write_u32_be(&mut encoder, 0); // CMM Type
         write_u32_be(&mut encoder, self.version.into()); // Version Number Type
@@ -642,7 +642,7 @@ impl ColorProfile {
         let mut entries = Vec::new();
         let tags_count = self.writable_tags_count();
         let mut tags = Vec::with_capacity(TAG_SIZE * tags_count);
-        let mut base_offset = size_of::<ProfileHeader>() + TAG_SIZE * tags_count;
+        let mut base_offset = std::mem::size_of::<ProfileHeader>() + TAG_SIZE * tags_count;
         if self.red_colorant != Xyzd::default() {
             write_tag_entry(&mut tags, Tag::RedXyz, base_offset, 20);
             write_xyz_tag_value(&mut entries, self.red_colorant);
@@ -856,7 +856,7 @@ impl ColorProfile {
         tags.extend(entries);
 
         let profile_header = ProfileHeader {
-            size: size_of::<ProfileHeader>() as u32 + tags.len() as u32,
+            size: std::mem::size_of::<ProfileHeader>() as u32 + tags.len() as u32,
             pcs: self.pcs,
             profile_class: self.profile_class,
             rendering_intent: self.rendering_intent,

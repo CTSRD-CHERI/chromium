@@ -354,7 +354,7 @@ pub(crate) fn prepare_mab_3x3(
                 })
                 .collect();
 
-            let [curve0, curve1, curve2] =
+            let [curve0, curve1, curve2]: [Box<[f32; 65536]>; 3] =
                 curves?.try_into().map_err(|_| CmsError::InvalidTrcCurve)?;
             let l = ACurves3 {
                 curve0,
@@ -385,7 +385,7 @@ pub(crate) fn prepare_mab_3x3(
                 })
                 .collect();
 
-            let [curve0, curve1, curve2] =
+            let [curve0, curve1, curve2]: [Box<[f32; 65536]>; 3] =
                 curves?.try_into().map_err(|_| CmsError::InvalidTrcCurve)?;
             let matrix = mab.matrix.to_f32();
             let bias: Vector3f = mab.bias.cast();
@@ -417,7 +417,7 @@ pub(crate) fn prepare_mab_3x3(
                 })
                 .collect();
 
-            let [curve0, curve1, curve2] =
+            let [curve0, curve1, curve2]: [Box<[f32; 65536]>; 3] =
                 curves?.try_into().map_err(|_| CmsError::InvalidTrcCurve)?;
 
             let b_curves = BCurves3::<DEPTH> {
@@ -459,7 +459,7 @@ pub(crate) fn prepare_mba_3x3(
                 })
                 .collect();
 
-            let [curve0, curve1, curve2] =
+            let [curve0, curve1, curve2]: [Box<[f32; 65536]>; 3] =
                 curves?.try_into().map_err(|_| CmsError::InvalidTrcCurve)?;
             let b_curves = BCurves3::<DEPTH> {
                 curve0,
@@ -487,7 +487,7 @@ pub(crate) fn prepare_mba_3x3(
                 })
                 .collect();
 
-            let [curve0, curve1, curve2] =
+            let [curve0, curve1, curve2]: [Box<[f32; 65536]>; 3] =
                 curves?.try_into().map_err(|_| CmsError::InvalidTrcCurve)?;
 
             let matrix = mab.matrix.to_f32();
@@ -539,7 +539,7 @@ pub(crate) fn prepare_mba_3x3(
                 })
                 .collect();
 
-            let [curve0, curve1, curve2] =
+            let [curve0, curve1, curve2]: [Box<[f32; 65536]>; 3] =
                 curves?.try_into().map_err(|_| CmsError::InvalidTrcCurve)?;
             let l = ACurves3Inverse {
                 curve0,

@@ -26,6 +26,11 @@
  * // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.73")), feature(int_roundings))]
+#![cfg_attr(not(version("1.82")), feature(const_fn_floating_point_arithmetic))]
+#![cfg_attr(not(version("1.82")), feature(const_mut_refs))]
+
 #![allow(clippy::manual_clamp, clippy::excessive_precision)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![deny(unreachable_pub)]
@@ -86,9 +91,14 @@ pub use chad::{
 pub use chromaticity::Chromaticity;
 pub use cicp::{CicpColorPrimaries, ColorPrimaries, MatrixCoefficients, TransferCharacteristics};
 pub use dat::ColorDateTime;
+#[cfg(version("1.85"))]
 pub use defaults::{
     HLG_LUT_TABLE, PQ_LUT_TABLE, WHITE_POINT_D50, WHITE_POINT_D60, WHITE_POINT_D65,
     WHITE_POINT_DCI_P3,
+};
+#[cfg(not(version("1.85")))]
+pub use defaults::{
+    WHITE_POINT_D50, WHITE_POINT_D60, WHITE_POINT_D65, WHITE_POINT_DCI_P3,
 };
 pub use dt_ucs::{DtUchHcb, DtUchHsb, DtUchJch};
 pub use err::{CmsError, MalformedSize};

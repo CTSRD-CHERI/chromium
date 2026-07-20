@@ -45,9 +45,9 @@ pub(crate) struct Trilinear<const GRID_SIZE: usize> {}
 
 #[derive(Debug, Copy, Clone, Default)]
 pub(crate) struct BarycentricWeight<V> {
-    pub x: i32,
-    pub x_n: i32,
-    pub w: V,
+    pub(crate) x: i32,
+    pub(crate) x_n: i32,
+    pub(crate) w: V,
 }
 
 impl BarycentricWeight<f32> {

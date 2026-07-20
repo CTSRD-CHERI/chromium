@@ -84,6 +84,7 @@ pub const WHITE_POINT_DCI_P3: XyY = white_point_from_temperature(6300);
 
 // https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.2100-2-201807-I!!PDF-F.pdf
 // Perceptual Quantization / SMPTE standard ST.2084
+#[cfg(version("1.85"))]
 #[inline]
 const fn pq_curve(x: f64) -> f64 {
     const M1: f64 = 2610.0 / 16384.0;
@@ -105,7 +106,30 @@ const fn pq_curve(x: f64) -> f64 {
 
     copysignk(res, sign)
 }
+#[cfg(not(version("1.85")))]
+#[inline]
+fn pq_curve(x: f64) -> f64 {
+    const M1: f64 = 2610.0 / 16384.0;
+    const M2: f64 = (2523.0 / 4096.0) * 128.0;
+    const C1: f64 = 3424.0 / 4096.0;
+    const C2: f64 = (2413.0 / 4096.0) * 32.0;
+    const C3: f64 = (2392.0 / 4096.0) * 32.0;
 
+    if x == 0.0 {
+        return 0.0;
+    }
+    let sign = x;
+    let x = x.abs();
+
+    let xpo = pow(x, 1.0 / M2);
+    let num = (xpo - C1).max(0.0);
+    let den = C2 - C3 * xpo;
+    let res = pow(num / den, 1.0 / M1);
+
+    copysignk(res, sign)
+}
+
+#[cfg(version("1.85"))]
 pub(crate) const fn build_trc_table_pq() -> [u16; 4096] {
     let mut table = [0u16; 4096];
 
@@ -127,8 +151,53 @@ pub(crate) const fn build_trc_table_pq() -> [u16; 4096] {
     }
     table
 }
+#[cfg(not(version("1.85")))]
+pub(crate) fn build_trc_table_pq() -> [u16; 4096] {
+    let mut table = [0u16; 4096];
 
+    const NUM_ENTRIES: usize = 4096;
+    let mut i = 0usize;
+    while i < NUM_ENTRIES {
+        let x: f64 = i as f64 / (NUM_ENTRIES - 1) as f64;
+        let y: f64 = pq_curve(x);
+        let mut output: f64;
+        output = y * 65535.0 + 0.5;
+        if output > 65535.0 {
+            output = 65535.0
+        }
+        if output < 0.0 {
+            output = 0.0
+        }
+        table[i] = floor(output) as u16;
+        i += 1;
+    }
+    table
+}
+
+#[cfg(version("1.85"))]
 pub(crate) const fn build_trc_table_hlg() -> [u16; 4096] {
+    let mut table = [0u16; 4096];
+
+    const NUM_ENTRIES: usize = 4096;
+    let mut i = 0usize;
+    while i < NUM_ENTRIES {
+        let x: f64 = i as f64 / (NUM_ENTRIES - 1) as f64;
+        let y: f64 = hlg_curve(x);
+        let mut output: f64;
+        output = y * 65535.0 + 0.5;
+        if output > 65535.0 {
+            output = 65535.0
+        }
+        if output < 0.0 {
+            output = 0.0
+        }
+        table[i] = floor(output) as u16;
+        i += 1;
+    }
+    table
+}
+#[cfg(not(version("1.85")))]
+pub(crate) fn build_trc_table_hlg() -> [u16; 4096] {
     let mut table = [0u16; 4096];
 
     const NUM_ENTRIES: usize = 4096;
@@ -152,7 +221,31 @@ pub(crate) const fn build_trc_table_hlg() -> [u16; 4096] {
 
 // https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.2100-2-201807-I!!PDF-F.pdf
 // Hybrid Log-Gamma
+#[cfg(version("1.85"))]
 const fn hlg_curve(x: f64) -> f64 {
+    const BETA: f64 = 0.04;
+    const RA: f64 = 5.591816309728916; // 1.0 / A where A = 0.17883277
+    const B: f64 = 0.28466892; // 1.0 - 4.0 * A
+    const C: f64 = 0.5599107295; // 0,5 –aln(4a)
+
+    let e = (x * (1.0 - BETA) + BETA).max(0.0);
+
+    if e == 0.0 {
+        return 0.0;
+    }
+
+    let sign = e.abs();
+
+    let res = if e <= 0.5 {
+        e * e / 3.0
+    } else {
+        (exp((e - C) * RA) + B) / 12.0
+    };
+
+    copysignk(res, sign)
+}
+#[cfg(not(version("1.85")))]
+fn hlg_curve(x: f64) -> f64 {
     const BETA: f64 = 0.04;
     const RA: f64 = 5.591816309728916; // 1.0 / A where A = 0.17883277
     const B: f64 = 0.28466892; // 1.0 - 4.0 * A
@@ -176,8 +269,10 @@ const fn hlg_curve(x: f64) -> f64 {
 }
 
 /// Perceptual Quantizer Lookup table
+#[cfg(version("1.85"))]
 pub const PQ_LUT_TABLE: [u16; 4096] = build_trc_table_pq();
 /// Hybrid Log Gamma Lookup table
+#[cfg(version("1.85"))]
 pub const HLG_LUT_TABLE: [u16; 4096] = build_trc_table_hlg();
 
 impl ColorProfile {
@@ -314,7 +409,10 @@ impl ColorProfile {
         let mut profile = ColorProfile::basic_rgb_profile();
         profile.update_colorants(ColorProfile::DISPLAY_P3_COLORANTS);
 
+        #[cfg(version("1.85"))]
         let curve = ToneReprCurve::Lut(PQ_LUT_TABLE.to_vec());
+        #[cfg(not(version("1.85")))]
+        let curve = ToneReprCurve::Lut(build_trc_table_pq().to_vec());
 
         profile.red_trc = Some(curve.clone());
         profile.blue_trc = Some(curve.clone());
@@ -419,7 +517,10 @@ impl ColorProfile {
         let mut profile = ColorProfile::basic_rgb_profile();
         profile.update_colorants(ColorProfile::BT2020_COLORANTS);
 
+        #[cfg(version("1.85"))]
         let curve = ToneReprCurve::Lut(PQ_LUT_TABLE.to_vec());
+        #[cfg(not(version("1.85")))]
+        let curve = ToneReprCurve::Lut(build_trc_table_pq().to_vec());
 
         profile.red_trc = Some(curve.clone());
         profile.blue_trc = Some(curve.clone());
@@ -449,7 +550,10 @@ impl ColorProfile {
         let mut profile = ColorProfile::basic_rgb_profile();
         profile.update_colorants(ColorProfile::BT2020_COLORANTS);
 
+        #[cfg(version("1.85"))]
         let curve = ToneReprCurve::Lut(HLG_LUT_TABLE.to_vec());
+        #[cfg(not(version("1.85")))]
+        let curve = ToneReprCurve::Lut(build_trc_table_hlg().to_vec());
 
         profile.red_trc = Some(curve.clone());
         profile.blue_trc = Some(curve.clone());

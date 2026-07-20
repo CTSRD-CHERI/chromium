@@ -753,7 +753,7 @@ impl ColorProfile {
             if entry_count > options.max_allowed_trc_size {
                 return Err(CmsError::CurveLutIsTooLarge);
             }
-            let curve_end = entry_count.safe_mul(size_of::<u16>())?.safe_add(12)?;
+            let curve_end = entry_count.safe_mul(std::mem::size_of::<u16>())?.safe_add(12)?;
             if tag.len() < curve_end {
                 return Err(CmsError::MalformedTrcCurve(
                     "Curve end ends to early".to_string(),
@@ -777,12 +777,12 @@ impl ColorProfile {
 
             const COUNT_TO_LENGTH: [usize; 5] = [1, 3, 4, 5, 7]; //PARAMETRIC_CURVE_TYPE
 
-            if tag.len() < 12 + COUNT_TO_LENGTH[entry_count] * size_of::<u32>() {
+            if tag.len() < 12 + COUNT_TO_LENGTH[entry_count] * std::mem::size_of::<u32>() {
                 return Err(CmsError::MalformedTrcCurve(
                     "Parametric curve has unknown entries count exhaust data too early".to_string(),
                 ));
             }
-            let curve_sliced = &tag[12..12 + COUNT_TO_LENGTH[entry_count] * size_of::<u32>()];
+            let curve_sliced = &tag[12..12 + COUNT_TO_LENGTH[entry_count] * std::mem::size_of::<u32>()];
             let mut params = try_vec![0f32; COUNT_TO_LENGTH[entry_count]];
             for (value, param_value) in curve_sliced.chunks_exact(4).zip(params.iter_mut()) {
                 let parametric_value = i32::from_be_bytes([value[0], value[1], value[2], value[3]]);
@@ -829,11 +829,11 @@ impl ColorProfile {
         if c_type != TagTypeDefinition::S15Fixed16Array {
             return Err(CmsError::InvalidProfile);
         }
-        if slice.len() < 9 * size_of::<u32>() + 8 {
+        if slice.len() < 9 * std::mem::size_of::<u32>() + 8 {
             return Err(CmsError::InvalidProfile);
         }
         let tag = &slice[entry + 8..last_tag_offset];
-        if tag.len() != size_of::<Matrix3f>() {
+        if tag.len() != std::mem::size_of::<Matrix3f>() {
             return Err(CmsError::InvalidProfile);
         }
         let matrix = read_matrix_3d(tag)?;

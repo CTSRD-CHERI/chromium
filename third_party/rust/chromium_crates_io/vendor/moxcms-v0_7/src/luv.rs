@@ -260,8 +260,17 @@ impl LCh {
 }
 
 impl Luv {
+    #[cfg(version("1.85"))]
     #[inline]
     pub const fn taxicab_distance(&self, other: Self) -> f32 {
+        let dl = self.l - other.l;
+        let du = self.u - other.u;
+        let dv = self.v - other.v;
+        dl.abs() + du.abs() + dv.abs()
+    }
+    #[cfg(not(version("1.85")))]
+    #[inline]
+    pub fn taxicab_distance(&self, other: Self) -> f32 {
         let dl = self.l - other.l;
         let du = self.u - other.u;
         let dv = self.v - other.v;
@@ -270,8 +279,17 @@ impl Luv {
 }
 
 impl LCh {
+    #[cfg(version("1.85"))]
     #[inline]
     pub const fn taxicab_distance(&self, other: Self) -> f32 {
+        let dl = self.l - other.l;
+        let dc = self.c - other.c;
+        let dh = self.h - other.h;
+        dl.abs() + dc.abs() + dh.abs()
+    }
+    #[cfg(not(version("1.85")))]
+    #[inline]
+    pub fn taxicab_distance(&self, other: Self) -> f32 {
         let dl = self.l - other.l;
         let dc = self.c - other.c;
         let dh = self.h - other.h;
