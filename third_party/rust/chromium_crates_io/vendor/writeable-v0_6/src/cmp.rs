@@ -18,10 +18,22 @@ impl fmt::Write for WriteComparator<'_> {
         if self.result != Ordering::Equal {
             return Ok(());
         }
+        #[cfg(version("1.80"))]
         let (this, remainder) = self
             .code_units
             .split_at_checked(other.len())
             .unwrap_or((self.code_units, &[]));
+        #[cfg(not(version("1.80")))]
+        let (this, remainder): (&[u8], &[u8]) = {
+            if self.code_units.len() > other.len() {
+                debug_assert!(false, "index expected to be in range");
+                (self.code_units, &[])
+            } else {
+                // Note: We're trusting the compiler to inline this and remove the assertion
+                // hiding on the top of slice::split_at: `assert(mid <= self.len())`
+                self.code_units.split_at(other.len())
+            }
+        };
         self.code_units = remainder;
         self.result = this.cmp(other.as_bytes());
         Ok(())
