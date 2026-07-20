@@ -31,9 +31,24 @@ pub(crate) trait ReadExt {
 }
 
 impl<R: io::Read> ReadExt for R {
+    #[cfg(version("1.78"))]
     fn read_exact_vec(&mut self, vec: &mut Vec<u8>, len: usize) -> io::Result<()> {
         let initial_len = vec.len();
         vec.try_reserve(len)?;
+        match self.take(len as u64).read_to_end(vec) {
+            Ok(read) if read == len => Ok(()),
+            fail => {
+                vec.truncate(initial_len);
+                Err(fail.err().unwrap_or(io::ErrorKind::UnexpectedEof.into()))
+            }
+        }
+    }
+    #[cfg(not(version("1.78")))]
+    fn read_exact_vec(&mut self, vec: &mut Vec<u8>, len: usize) -> io::Result<()> {
+        let initial_len = vec.len();
+        vec.try_reserve(len).map_err(|e| {
+            io::Error::new(io::ErrorKind::OutOfMemory, e)
+        })?;
         match self.take(len as u64).read_to_end(vec) {
             Ok(read) if read == len => Ok(()),
             fail => {
