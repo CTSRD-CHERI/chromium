@@ -468,7 +468,25 @@ fn pow_rational128(x: f64, y: f64, s: f64) -> f64 {
 
 /// Pow for given value for const context.
 /// This is simplified version just to make a good approximation on const context.
+#[cfg(version("1.85"))]
 pub const fn pow(d: f64, n: f64) -> f64 {
+    let value = d.abs();
+
+    let r = n * log(value);
+    let c = exp(r);
+    if n == 0. {
+        return 1.;
+    }
+    if d < 0.0 {
+        let y = n as i32;
+        if y % 2 == 0 { c } else { -c }
+    } else {
+        c
+    }
+}
+
+#[cfg(not(version("1.85")))]
+pub fn pow(d: f64, n: f64) -> f64 {
     let value = d.abs();
 
     let r = n * log(value);

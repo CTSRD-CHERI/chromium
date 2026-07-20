@@ -39,7 +39,22 @@ use crate::rounding::CpuRound;
 
 /// Power function for given value for const context.
 /// This is simplified version just to make a good approximation on const context.
+#[cfg(version("1.85"))]
 pub const fn powf(d: f32, n: f32) -> f32 {
+    let value = d.abs();
+    let c = expf(n * logf(value));
+    if n == 1. {
+        return d;
+    }
+    if d < 0.0 {
+        let y = n as i32;
+        if y % 2 == 0 { c } else { -c }
+    } else {
+        c
+    }
+}
+#[cfg(not(version("1.85")))]
+pub fn powf(d: f32, n: f32) -> f32 {
     let value = d.abs();
     let c = expf(n * logf(value));
     if n == 1. {

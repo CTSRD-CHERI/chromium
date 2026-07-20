@@ -81,7 +81,44 @@ for z in y1_zeros:
 print("];")
 ```
 **/
+#[cfg(version("1.83"))]
 pub(crate) static Y1_ZEROS: [(u64, u64); 33] = [
+    (0x0, 0x0), // not really used, just a stab to avoid indices messing
+    (0xbc8bd1e50d219bfd, 0x400193bed4dff243),
+    (0x3c53bac0714e4129, 0x400d76d4affba175),
+    (0x3cbdfe7bac228e8c, 0x4015b7fe4e87b02e),
+    (0x3ca7960b6b1c46ac, 0x401bc41890588553),
+    (0x3cb479cc068d9046, 0x40213127ae6169b4),
+    (0x3cc8f4ba5d68e440, 0x40243f2ee51e8c7e),
+    (0x3c80fc786ce06080, 0x40277f9138d43206),
+    (0xbcaf6ef7a3571593, 0x402a924ee4a3e52c),
+    (0xbcc5e091a50f8e05, 0x402dcb7d88de848b),
+    (0x3cc07320221cd5e5, 0x403070a7a43daae6),
+    (0xbcda1ee4c5487ede, 0x40320b1c695f1e3b),
+    (0xbcd2903124fef7e3, 0x4033971a15717510),
+    (0x3cd391b14410528f, 0x40353025492188cd),
+    (0xbcc15ec09721b746, 0x4036bcefd7de87a3),
+    (0x3cb52f75f025b205, 0x403854fa303820ca),
+    (0x3cb6f57f7696f493, 0x4039e262715f12a9),
+    (0xbcbcf130fbea3b24, 0x403b79acee8cfb7d),
+    (0xbc912142b10a5c65, 0x403d079247e8f51b),
+    (0xbc9e7a77047d6166, 0x403e9e480605283c),
+    (0x3cb1452eb07cd937, 0x40401649819af8fa),
+    (0xbce96beabef7ecf4, 0x4040e16907f8fb56),
+    (0x3cec6086fb5dd335, 0x4041a8b8a142d536),
+    (0x3cd2481e87adfe57, 0x404273a7b35a7aff),
+    (0x3cd7df5b6f701c7a, 0x40433b1ac0375e31),
+    (0x3cda8ffacaac8461, 0x404405e18393afb5),
+    (0xbce5b5acaff0a867, 0x4044cd72d2adfb0c),
+    (0x3cbfe463face2c1c, 0x4045981787d668db),
+    (0xbcefcba6ea61df1b, 0x40465fc2f7ca5b81),
+    (0xbce26390f25f01cb, 0x40472a4a85cc317e),
+    (0xbcbba46ca6ef9b6f, 0x4047f20cbfc32967),
+    (0xbcdcc667e557a177, 0x4048bc7b10ed3960),
+    (0x3cea473d4f209faf, 0x4049845158040451),
+];
+#[cfg(not(version("1.83")))]
+pub(crate) const Y1_ZEROS: [(u64, u64); 33] = [
     (0x0, 0x0), // not really used, just a stab to avoid indices messing
     (0xbc8bd1e50d219bfd, 0x400193bed4dff243),
     (0x3c53bac0714e4129, 0x400d76d4affba175),

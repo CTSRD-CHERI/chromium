@@ -30,7 +30,13 @@
 #[inline]
 pub const fn rintf(x: f32) -> f32 {
     /* Use generic implementation.  */
+    #[cfg(version("1.83"))]
     static TWO23: [f32; 2] = [
+        8.3886080000e+06,  /* 0x4b000000 */
+        -8.3886080000e+06, /* 0xcb000000 */
+    ];
+    #[cfg(not(version("1.83")))]
+    const TWO23: [f32; 2] = [
         8.3886080000e+06,  /* 0x4b000000 */
         -8.3886080000e+06, /* 0xcb000000 */
     ];
