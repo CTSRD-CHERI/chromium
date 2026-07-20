@@ -111,6 +111,11 @@
 //! [`ImageDecoderRect`]: trait.ImageDecoderRect.html
 //! [`ImageDecoder`]: trait.ImageDecoder.html
 //! [`ImageEncoder`]: trait.ImageEncoder.html
+
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.73")), feature(int_roundings))]
+#![cfg_attr(not(version("1.81")), feature(lint_reasons))]
+
 #![warn(missing_docs)]
 #![warn(unused_qualifications)]
 #![deny(unreachable_pub)]
