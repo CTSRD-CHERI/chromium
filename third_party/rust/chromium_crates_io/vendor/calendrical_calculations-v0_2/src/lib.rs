@@ -18,6 +18,12 @@
 //!
 //! The primary purpose of this crate is use by ICU4X, however if non-ICU4X users need this we are happy
 //! to add more structure to this crate as needed.
+
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.81")), feature(error_in_core))]
+#![cfg_attr(not(version("1.79")), feature(inline_const))]
+#![cfg_attr(not(version("1.81")), feature(lint_reasons))]
+
 // https://github.com/unicode-org/icu4x/blob/main/documents/process/boilerplate.md#library-annotations
 #![cfg_attr(not(any(test, doc)), no_std)]
 #![cfg_attr(
