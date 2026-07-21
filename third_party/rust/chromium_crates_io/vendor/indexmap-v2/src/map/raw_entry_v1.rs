@@ -20,7 +20,8 @@ use core::mem;
 ///
 /// See the [`raw_entry_v1`][self] module documentation for more information.
 #[expect(private_bounds)]
-pub trait RawEntryApiV1<K, V, S>: Sealed {
+//pub trait RawEntryApiV1<K, V, S>: Sealed {
+pub trait RawEntryApiV1<K, V, S>: private::Sealed {
     /// Creates a raw immutable entry builder for the [`IndexMap`].
     ///
     /// Raw entries provide the lowest level of control for searching and
@@ -633,4 +634,10 @@ impl<K, V, S> Sealed for IndexMap<K, V, S> {}
 fn assert_send_sync() {
     fn assert_send_sync<T: Send + Sync>() {}
     assert_send_sync::<RawEntryMut<'_, i32, i32, ()>>();
+}
+
+mod private {
+    pub trait Sealed {}
+
+    impl<K, V, S> Sealed for super::IndexMap<K, V, S> {}
 }

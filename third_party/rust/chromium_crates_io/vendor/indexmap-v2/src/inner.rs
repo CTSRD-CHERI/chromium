@@ -33,18 +33,39 @@ pub(crate) struct Core<K, V> {
     entries: Entries<K, V>,
 }
 
+#[cfg(not(version("1.82")))]
 #[inline(always)]
-fn get_hash<K, V>(entries: &[Bucket<K, V>]) -> impl Fn(&usize) -> u64 + use<'_, K, V> {
+fn get_hash<K, V>(entries: &[Bucket<K, V>]) -> impl Fn(&usize) -> u64 + '_ {
     move |&i| entries[i].hash.get()
 }
 
+// NOTE: The keyword use cannot be applied t0 liftimes in the Morello Rust compiler (1.72). As this
+// code is not syntactically valid it cannot be placed befind a cfg conditional.
+//#[cfg(version("1.82"))]
+//#[inline(always)]
+//fn get_hash<K, V>(entries: &[Bucket<K, V>]) -> impl Fn(&usize) -> u64 + use<'_, K, V> {
+//    move |&i| entries[i].hash.get()
+//}
+
+#[cfg(not(version("1.82")))]
 #[inline]
 fn equivalent<'a, K, V, Q: ?Sized + Equivalent<K>>(
     key: &'a Q,
     entries: &'a [Bucket<K, V>],
-) -> impl Fn(&usize) -> bool + use<'a, K, V, Q> {
+) -> impl Fn(&usize) -> bool + 'a {
     move |&i| Q::equivalent(key, &entries[i].key)
 }
+
+// NOTE: The keyword use cannot be applied t0 liftimes in the Morello Rust compiler (1.72). As this
+// code is not syntactically valid it cannot be placed befind a cfg conditional.
+//#[cfg(version("1.82"))]
+//#[inline]
+//fn equivalent<'a, K, V, Q: ?Sized + Equivalent<K>>(
+//    key: &'a Q,
+//    entries: &'a [Bucket<K, V>],
+//) -> impl Fn(&usize) -> bool + use<'a, K, V, Q> {
+//    move |&i| Q::equivalent(key, &entries[i].key)
+//}
 
 #[inline]
 fn erase_index(table: &mut Indices, hash: HashValue, index: usize) {
@@ -98,7 +119,7 @@ where
 
 impl<K, V> Core<K, V> {
     /// The maximum capacity before the `entries` allocation would exceed `isize::MAX`.
-    const MAX_ENTRIES_CAPACITY: usize = (isize::MAX as usize) / size_of::<Bucket<K, V>>();
+    const MAX_ENTRIES_CAPACITY: usize = (isize::MAX as usize) / core::mem::size_of::<Bucket<K, V>>();
 
     #[inline]
     pub(crate) const fn new() -> Self {
