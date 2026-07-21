@@ -131,8 +131,14 @@ impl XorShift {
         r.start + (self.next() as usize) % (r.end - r.start)
     }
 
+    #[cfg(version("1.85"))]
     pub fn one_in(&mut self, n: u32) -> bool {
         self.next().is_multiple_of(n)
+    }
+
+    #[cfg(not(version("1.85")))]
+    pub fn one_in(&mut self, n: u32) -> bool {
+        self.next() % n == 0
     }
 
     pub fn next_alt(&mut self) -> u32 {
