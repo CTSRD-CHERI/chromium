@@ -604,12 +604,26 @@ impl TokTrie {
             }
             Err(_) => {
                 let mut res = vec![];
+                #[cfg(version("1.85"))]
                 for chunk in bytes.utf8_chunks() {
                     if !chunk.valid().is_empty() {
                         res.extend(str_tokenize(chunk.valid()));
                     }
                     if !chunk.invalid().is_empty() {
                         res.extend(self.greedy_tokenize(chunk.invalid()));
+                    }
+                }
+                #[cfg(not(version("1.85")))]
+                while !bytes.is_empty() {
+                    match str::from_utf8(bytes) {
+                        Ok(valid_str) => {
+                            res.extend(str_tokenize(valid_str));
+                        }
+                        Err(error) => {
+                            let valid_len = error.valid_up_to();
+                            let valid_bytes = &bytes[..valid_len];
+                            res.extend(self.greedy_tokenize(valid_bytes));
+                        }
                     }
                 }
                 res

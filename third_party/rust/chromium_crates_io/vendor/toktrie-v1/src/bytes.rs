@@ -13,8 +13,20 @@ pub fn clone_vec_as_bytes<T: NoUninit>(input: &[T]) -> Vec<u8> {
     bytemuck::cast_slice(input).to_vec()
 }
 
+#[cfg(version("1.85"))]
 pub fn vec_from_bytes<T: PodTrait>(bytes: &[u8]) -> Vec<T> {
     if !bytes.len().is_multiple_of(size_of::<T>()) {
+        panic!(
+            "vecT: got {} bytes, needed multiple of {}",
+            bytes.len(),
+            size_of::<T>()
+        );
+    }
+    bytemuck::cast_slice(bytes).to_vec()
+}
+#[cfg(not(version("1.85")))]
+pub fn vec_from_bytes<T: PodTrait>(bytes: &[u8]) -> Vec<T> {
+    if !bytes.len() % size_of::<T>() == 0 {
         panic!(
             "vecT: got {} bytes, needed multiple of {}",
             bytes.len(),
