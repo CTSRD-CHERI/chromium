@@ -1,3 +1,5 @@
+#![feature(cfg_version)]
+
 use serde::{Deserialize, Serialize};
 
 pub mod bytes;
