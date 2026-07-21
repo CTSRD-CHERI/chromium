@@ -19,7 +19,8 @@ use super::{
 ///
 /// This trait is sealed and cannot be implemented for types outside this crate.
 #[expect(private_bounds)]
-pub trait MutableKeys: Sealed {
+//pub trait MutableKeys: Sealed {
+pub trait MutableKeys: private::Sealed {
     type Key;
     type Value;
 
@@ -105,7 +106,8 @@ where
 ///
 /// This trait is sealed and cannot be implemented for types outside this crate.
 #[expect(private_bounds)]
-pub trait MutableEntryKey: Sealed {
+//pub trait MutableEntryKey: Sealed {
+pub trait MutableEntryKey: private::Sealed {
     type Key;
 
     /// Gets a mutable reference to the entry's key, either within the map if occupied,
@@ -156,10 +158,12 @@ impl<K, V> MutableEntryKey for IndexedEntry<'_, K, V> {
     }
 }
 
-trait Sealed {}
+mod private {
+    pub trait Sealed {}
 
-impl<K, V, S> Sealed for IndexMap<K, V, S> {}
-impl<K, V> Sealed for Entry<'_, K, V> {}
-impl<K, V> Sealed for OccupiedEntry<'_, K, V> {}
-impl<K, V> Sealed for VacantEntry<'_, K, V> {}
-impl<K, V> Sealed for IndexedEntry<'_, K, V> {}
+    impl<K, V, S> Sealed for super::IndexMap<K, V, S> {}
+    impl<K, V> Sealed for super::Entry<'_, K, V> {}
+    impl<K, V> Sealed for super::OccupiedEntry<'_, K, V> {}
+    impl<K, V> Sealed for super::VacantEntry<'_, K, V> {}
+    impl<K, V> Sealed for super::IndexedEntry<'_, K, V> {}
+}

@@ -137,6 +137,16 @@ impl<K, V> Slice<K, V> {
     /// For a non-panicking alternative see [`split_at_mut_checked`][Self::split_at_mut_checked].
     #[track_caller]
     pub fn split_at_mut(&mut self, index: usize) -> (&mut Self, &mut Self) {
+        #[cfg(not(version("1.80")))]
+        let (first, second) = {
+            if index > self.len() {
+                debug_assert!(false, "index expected to be in range");
+                self.entries.split_at_mut(self.len())
+            } else {
+                self.entries.split_at_mut(index)
+            }
+        };
+        #[cfg(version("1.80"))]
         let (first, second) = self.entries.split_at_mut(index);
         (Self::from_mut_slice(first), Self::from_mut_slice(second))
     }
@@ -145,6 +155,16 @@ impl<K, V> Slice<K, V> {
     ///
     /// Returns `None` if `index > len`.
     pub fn split_at_checked(&self, index: usize) -> Option<(&Self, &Self)> {
+        #[cfg(not(version("1.80")))]
+        let (first, second) = {
+            if index > self.len() {
+                debug_assert!(false, "index expected to be in range");
+                self.entries.split_at(self.len())
+            } else {
+                self.entries.split_at(index)
+            }
+        };
+        #[cfg(version("1.80"))]
         let (first, second) = self.entries.split_at_checked(index)?;
         Some((Self::from_slice(first), Self::from_slice(second)))
     }
@@ -153,6 +173,16 @@ impl<K, V> Slice<K, V> {
     ///
     /// Returns `None` if `index > len`.
     pub fn split_at_mut_checked(&mut self, index: usize) -> Option<(&mut Self, &mut Self)> {
+        #[cfg(not(version("1.80")))]
+        let (first, second) = {
+            if index > self.len() {
+                debug_assert!(false, "index expected to be in range");
+                self.entries.split_at_mut(self.len())
+            } else {
+                self.entries.split_at_mut(index)
+            }
+        };
+        #[cfg(version("1.80"))]
         let (first, second) = self.entries.split_at_mut_checked(index)?;
         Some((Self::from_mut_slice(first), Self::from_mut_slice(second)))
     }
@@ -276,7 +306,18 @@ impl<K, V> Slice<K, V> {
         self.binary_search_by(|k, v| f(k, v).cmp(b))
     }
 
+    /// Checks if the values of this slice are sorted.
+    #[cfg(not(version("1.82")))]
+    #[inline]
+    pub fn is_sorted(&self) -> bool
+    where
+        K: PartialOrd,
+    {
+        self.is_sorted_by_key(|k, _| k)
+    }
+
     /// Checks if the keys of this slice are sorted.
+    #[cfg(version("1.82"))]
     #[inline]
     pub fn is_sorted(&self) -> bool
     where
@@ -286,6 +327,7 @@ impl<K, V> Slice<K, V> {
     }
 
     /// Checks if this slice is sorted using the given comparator function.
+    #[cfg(version("1.82"))]
     #[inline]
     pub fn is_sorted_by<'a, F>(&'a self, mut cmp: F) -> bool
     where
@@ -296,6 +338,7 @@ impl<K, V> Slice<K, V> {
     }
 
     /// Checks if this slice is sorted using the given sort-key function.
+    #[cfg(version("1.82"))]
     #[inline]
     pub fn is_sorted_by_key<'a, F, T>(&'a self, mut sort_key: F) -> bool
     where
@@ -304,6 +347,47 @@ impl<K, V> Slice<K, V> {
     {
         self.entries
             .is_sorted_by_key(move |a| sort_key(&a.key, &a.value))
+    }
+
+    /// Checks if this slice is sorted using the given comparator function.
+    #[cfg(not(version("1.82")))]
+    #[inline]
+    pub fn is_sorted_by<'a, F>(&'a self, mut cmp: F) -> bool
+    where
+        F: FnMut(&'a K, &'a V, &'a K, &'a V) -> bool,
+    {
+        // TODO(MSRV 1.82): self.entries
+        //     .is_sorted_by(move |a, b| cmp(&a.key, &a.value, &b.key, &b.value))
+        let mut iter = self.entries.iter();
+        match iter.next() {
+            Some(mut prev) => iter.all(move |next| {
+                let sorted = cmp(&prev.key, &prev.value, &next.key, &next.value);
+                prev = next;
+                sorted
+            }),
+            None => true,
+        }
+    }
+
+    /// Checks if this slice is sorted using the given sort-key function.
+    #[cfg(not(version("1.82")))]
+    #[inline]
+    pub fn is_sorted_by_key<'a, F, T>(&'a self, mut sort_key: F) -> bool
+    where
+        F: FnMut(&'a K, &'a V) -> T,
+        T: PartialOrd,
+    {
+        // TODO(MSRV 1.82): self.entries
+        //     .is_sorted_by_key(move |a| sort_key(&a.key, &a.value))
+        let mut iter = self.entries.iter().map(move |a| sort_key(&a.key, &a.value));
+        match iter.next() {
+            Some(mut prev) => iter.all(move |next| {
+                let sorted = prev <= next;
+                prev = next;
+                sorted
+            }),
+            None => true,
+        }
     }
 
     /// Returns the index of the partition point of a sorted map according to the given predicate

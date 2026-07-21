@@ -18,6 +18,9 @@ pub use crate::rayon::set as rayon;
 use crate::TryReserveError;
 
 #[cfg(feature = "std")]
+#[cfg(not(version("1.82")))]
+use std::collections::hash_map::RandomState;
+#[cfg(version("1.82"))]
 use std::hash::RandomState;
 
 use crate::util::try_simplify_range;
