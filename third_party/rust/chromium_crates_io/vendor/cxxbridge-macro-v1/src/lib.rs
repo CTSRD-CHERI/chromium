@@ -1,3 +1,6 @@
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.81")), feature(lint_reasons))]
+
 #![allow(
     clippy::cast_sign_loss,
     clippy::doc_markdown,
