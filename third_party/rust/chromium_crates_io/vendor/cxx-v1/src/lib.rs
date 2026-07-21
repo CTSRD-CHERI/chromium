@@ -362,6 +362,12 @@
 //! <tr><td><sup><i>tbd</i></sup></td><td>std::unordered_map&lt;K, V&gt;</td></tr>
 //! </table>
 
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.76")), feature(ptr_from_ref))]
+#![cfg_attr(not(version("1.81")), feature(error_in_core))]
+#![cfg_attr(not(version("1.81")), feature(lint_reasons))]
+#![cfg_attr(not(version("1.82")), feature(raw_ref_op))]
+
 #![no_std]
 #![doc(html_root_url = "https://docs.rs/cxx/1.0.192")]
 #![cfg_attr(docsrs, feature(doc_cfg))]
