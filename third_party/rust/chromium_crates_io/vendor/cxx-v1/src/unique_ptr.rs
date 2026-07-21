@@ -305,6 +305,7 @@ where
         self.pin_mut().stream_position()
     }
 
+    #[cfg(version("1.80"))]
     #[inline]
     fn seek_relative(&mut self, offset: i64) -> io::Result<()> {
         self.pin_mut().seek_relative(offset)

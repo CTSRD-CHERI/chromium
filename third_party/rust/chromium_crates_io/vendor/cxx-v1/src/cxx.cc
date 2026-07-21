@@ -448,6 +448,23 @@ std::size_t sliceLen(const void *self) noexcept {
   return cxxbridge1$slice$len(self);
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+// Pointer types (*const T, *mut T) are 128 bits wide and represented using
+// CHERI capabilities. usize is a 64 bit wide unsigned integer type. Casting a
+// capability to usize, &data as *const _ as usize, will get the address of the
+// memory being pointed to, and discard any metadata. Casting a usize to a
+// capability, 0xdead_beef as *const T, will produce an invalid capability (the
+// validity tag will be unset, dereferencing will trigger an exception)
+// https://www.cs.kent.ac.uk/people/staff/mjb211/rust/usize-pre-rfc.html
+static_assert(sizeof(std::size_t) == sizeof(ptraddr_t),
+              "unsupported size_t size");
+static_assert(alignof(std::size_t) == alignof(ptraddr_t),
+              "unsupported size_t alignment");
+static_assert(sizeof(rust::isize) == sizeof(ptraddr_t),
+              "unsupported ssize_t size");
+static_assert(alignof(rust::isize) == alignof(ptraddr_t),
+              "unsupported ssize_t alignment");
+#else
 // Rust specifies that usize is ABI compatible with C's uintptr_t.
 // https://rust-lang.github.io/unsafe-code-guidelines/layout/scalars.html#isize-and-usize
 // However there is no direct Rust equivalent for size_t. C does not guarantee
@@ -465,6 +482,7 @@ static_assert(sizeof(rust::isize) == sizeof(std::intptr_t),
               "unsupported ssize_t size");
 static_assert(alignof(rust::isize) == alignof(std::intptr_t),
               "unsupported ssize_t alignment");
+#endif
 
 // The C++ standard does not guarantee a particular size, alignment, or bit
 // pattern for bool. In practice on all platforms supported by Rust, it is
