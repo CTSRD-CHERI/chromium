@@ -101,7 +101,7 @@ cargo_crate("lib") {
   proc_macro_configs += _configs_to_add
 
   if (rustc_version == "rustc 1.72.1-dev") {
-    rustflags = [ "-Zallow-features=cfg_version,error_in_core,lint_reasons" ]
+    rustflags = [ "-Zallow-features=cfg_version,error_in_core,int_roundings,is_sorted,lint_reasons" ]
   } else {
     rustflags = [ "-Zallow-features=cfg_version" ]
   }

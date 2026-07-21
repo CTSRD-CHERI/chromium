@@ -96,6 +96,17 @@ impl<T> Slice<T> {
     ///
     /// Returns `None` if `index > len`.
     pub fn split_at_checked(&self, index: usize) -> Option<(&Self, &Self)> {
+         #[cfg(not(version("1.80")))]
+        let (first, second) = {
+            if index > self.len() {
+                debug_assert!(false, "index expected to be in range");
+                self.entries.split_at(self.len())
+            } else {
+                self.entries.split_at(index)
+            }
+        };
+        #[cfg(version("1.80"))]
+
         let (first, second) = self.entries.split_at_checked(index)?;
         Some((Self::from_slice(first), Self::from_slice(second)))
     }
@@ -170,6 +181,17 @@ impl<T> Slice<T> {
     }
 
     /// Checks if the values of this slice are sorted.
+    #[cfg(not(version("1.82")))]
+    #[inline]
+    pub fn is_sorted(&self) -> bool
+    where
+        T: PartialOrd,
+    {
+        self.is_sorted_by(T::le)
+    }
+
+    /// Checks if the values of this slice are sorted.
+    #[cfg(version("1.82"))]
     #[inline]
     pub fn is_sorted(&self) -> bool
     where
@@ -179,6 +201,26 @@ impl<T> Slice<T> {
     }
 
     /// Checks if this slice is sorted using the given comparator function.
+    #[cfg(not(version("1.82")))]
+    #[inline]
+    pub fn is_sorted_by<'a, F>(&'a self, mut cmp: F) -> bool
+    where
+        F: FnMut(&'a T, &'a T) -> bool,
+    {
+        // TODO(MSRV 1.82): self.entries.is_sorted_by(move |a, b| cmp(&a.key, &b.key))
+        let mut iter = self.entries.iter();
+        match iter.next() {
+            Some(mut prev) => iter.all(move |next| {
+                let sorted = cmp(&prev.key, &next.key);
+                prev = next;
+                sorted
+            }),
+            None => true,
+        }
+    }
+
+    /// Checks if this slice is sorted using the given comparator function.
+    #[cfg(version("1.82"))]
     #[inline]
     pub fn is_sorted_by<'a, F>(&'a self, mut cmp: F) -> bool
     where
