@@ -19,7 +19,13 @@ impl Decimal {
         // reduce to simplest form
         let mut coef = coef;
         let mut exp = exp;
+        #[cfg(version("1.85"))]
         while exp > 0 && coef.is_multiple_of(10) {
+            coef /= 10;
+            exp -= 1;
+        }
+        #[cfg(not(version("1.85")))]
+        while exp > 0 && coef % 10 == 0 {
             coef /= 10;
             exp -= 1;
         }

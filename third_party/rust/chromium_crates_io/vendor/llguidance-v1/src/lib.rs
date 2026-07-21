@@ -1,3 +1,7 @@
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.73")), feature(int_roundings))]
+#![cfg_attr(not(version("1.76")), feature(type_name_of_val))]
+
 #![allow(clippy::comparison_chain)]
 #![allow(clippy::needless_range_loop)]
 
@@ -6,6 +10,7 @@
 /// it is the  most inclusive.
 ///
 /// cbindgen:ignore
+
 pub mod earley;
 
 mod hashcons;
