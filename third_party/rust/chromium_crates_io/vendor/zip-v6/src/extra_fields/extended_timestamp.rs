@@ -2,6 +2,7 @@ use crate::result::invalid;
 use crate::result::{ZipError, ZipResult};
 use crate::unstable::LittleEndianReadExt;
 use std::io::Read;
+use std::mem::size_of;
 
 /// extended timestamp, as described in <https://libzip.org/specifications/extrafld.txt>
 
