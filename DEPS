@@ -434,7 +434,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ink
   # and whatever else without interference from each other.
-  'ink_revision': '9d5367423281a8fcf5bc1c418e20477a992b270a',
+  'ink_revision': '0dd84aaef5819ebfef2b5192eb19b79ad6855d0e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ink_stroke_modeler
   # and whatever else without interference from each other.
@@ -2141,7 +2141,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/harfbuzz/harfbuzz.git' + '@' + Var('harfbuzz_revision'),
 
   'src/third_party/ink/src':
-    Var('chromium_git') + '/external/github.com/google/ink.git' + '@' + Var('ink_revision'),
+    Var('chromium_cheri_git') + '/ink.git' + '@' + Var('ink_revision'),
 
   'src/third_party/ink_stroke_modeler/src':
     Var('chromium_git') + '/external/github.com/google/ink-stroke-modeler.git' + '@' + Var('ink_stroke_modeler_revision'),
