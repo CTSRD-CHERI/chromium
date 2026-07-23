@@ -270,7 +270,11 @@ bool HistogramSamples::Subtract(const HistogramSamples& other) {
 }
 
 bool HistogramSamples::Extract(HistogramSamples& other) {
+#if defined(ARCH_CPU_64_BITS) && defined(__CHERI_PURE_CAPABILITY__)
+  static_assert(sizeof(other.meta_->sum) == sizeof(intptr_t));
+#else
   static_assert(sizeof(other.meta_->sum) == 8);
+#endif
 
 #ifdef ARCH_CPU_64_BITS
   // NoBarrier_AtomicExchange() is only defined for 64-bit types if
