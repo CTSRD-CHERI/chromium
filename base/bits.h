@@ -42,9 +42,13 @@ concept SignedIntegerDeprecatedDoNotUse =
 // Round down |size| to a multiple of alignment, which must be a power of two.
 template <typename T>
   requires UnsignedInteger<T>
-inline constexpr T AlignDown(T size, T alignment) {
+inline constexpr T AlignDown(T size, size_t alignment) {
+#if __has_attribute(__builtin_align_down)
+  return __builtin_align_down(size, alignment);
+#else
   DCHECK(std::has_single_bit(alignment));
   return size & ~(alignment - 1);
+#endif
 }
 
 // Round down |size| to a multiple of alignment, which must be a power of two.
@@ -62,17 +66,25 @@ inline constexpr auto AlignDownDeprecatedDoNotUse(T size, T alignment) {
 // of two. Defined for types where sizeof(T) is one byte.
 template <typename T>
   requires(sizeof(T) == 1)
-inline T* AlignDown(T* ptr, uintptr_t alignment) {
+inline T* AlignDown(T* ptr, size_t alignment) {
+#if __has_attribute(__builtin_align_down)
+  return __builtin_align_down(size, alignment);
+#else
   return reinterpret_cast<T*>(
       AlignDown(reinterpret_cast<uintptr_t>(ptr), alignment));
+#endif
 }
 
 // Round up |size| to a multiple of alignment, which must be a power of two.
 template <typename T>
   requires UnsignedInteger<T>
-inline constexpr T AlignUp(T size, T alignment) {
+inline constexpr T AlignUp(T size, size_t alignment) {
+#if __has_attribute(__builtin_align_up)
+  return __builtin_align_up(size, alignment);
+#else
   DCHECK(std::has_single_bit(alignment));
   return (size + alignment - 1) & ~(alignment - 1);
+#endif
 }
 
 // Round up |size| to a multiple of alignment, which must be a power of two.
@@ -91,9 +103,13 @@ inline constexpr T AlignUpDeprecatedDoNotUse(T size, T alignment) {
 // two. Defined for types where sizeof(T) is one byte.
 template <typename T>
   requires(sizeof(T) == 1)
-inline T* AlignUp(T* ptr, uintptr_t alignment) {
+inline T* AlignUp(T* ptr, size_t alignment) {
+#if __has_attribute(__builtin_align_up)
+  return __builtin_align_up(size, alignment);
+#else
   return reinterpret_cast<T*>(
       AlignUp(reinterpret_cast<uintptr_t>(ptr), alignment));
+#endif
 }
 
 // Returns the integer i such as 2^i <= n < 2^(i+1).
