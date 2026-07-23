@@ -19,7 +19,7 @@ namespace internal {
 
 // Our AtomicWord doubles as a spinlock, where a value of
 // kLazyInstanceStateCreating means the spinlock is being held for creation.
-constexpr uintptr_t kLazyInstanceStateCreating = 1;
+constexpr size_t kLazyInstanceStateCreating = 1;
 
 // Helper for GetOrCreateLazyPointer(). Checks if instance needs to be created.
 // If so returns true otherwise if another thread has beat us, waits for
@@ -66,7 +66,7 @@ Type* GetOrCreateLazyPointer(std::atomic<uintptr_t>& state,
 
   // If any bit in the created mask is true, the instance has already been
   // fully constructed.
-  constexpr uintptr_t kLazyInstanceCreatedMask =
+  constexpr size_t kLazyInstanceCreatedMask =
       ~internal::kLazyInstanceStateCreating;
 
   // We will hopefully have fast access when the instance is already created.
