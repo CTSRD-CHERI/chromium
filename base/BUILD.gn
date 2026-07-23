@@ -1147,6 +1147,10 @@ component("base") {
       "kvm",
       "epoll-shim",
     ]
+
+    include_dirs = [
+      "${sysroot}/usr/local/include/libepoll-shim"
+    ]
   }
 
   if (is_freebsd) {

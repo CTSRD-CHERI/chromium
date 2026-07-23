@@ -352,6 +352,16 @@ static_library("test_support") {
     ]
   }
 
+  if (is_bsd) {
+     libs = [
+      "epoll-shim",
+    ]
+
+    include_dirs = [
+      "${sysroot}/usr/local/include/libepoll-shim"
+    ]
+  }
+
   if (use_blink) {
     sources += [
       "launcher/test_launcher.cc",
