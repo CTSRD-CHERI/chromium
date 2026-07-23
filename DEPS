@@ -2119,7 +2119,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/Maratyszcza/FP16.git' + '@' + '3d2de1816307bac63c16a297e8c4dc501b4076df',
 
   'src/third_party/gemmlowp/src':
-    Var('chromium_git') + '/external/github.com/google/gemmlowp.git' + '@' + '16e8662c34917be0065110bfcd9cc27d30f52fdf',
+    Var('chromium_cheri_git') + '/gemmlowp.git' + '@' + '932c67b5e46785227339625d9db812eeffa78f62',
 
   'src/third_party/glib/src': {
       'url': Var('chromium_git') + '/external/gitlab.gnome.org/GNOME/glib.git' + '@' + '354344fe59cc32627c9993b532d633e4ff34920e',
