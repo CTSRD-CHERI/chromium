@@ -302,7 +302,7 @@ vars = {
   'chromium_cheri_git': 'https://github.com/CTSRD-CHERI',
   'dawn_git': 'https://github.com/CTSRD-CHERI',
   'pdfium_git': 'https://pdfium.googlesource.com',
-  'quiche_git': 'https://quiche.googlesource.com',
+  'quiche_git': 'https://github.com/CTSRD-CHERI',
   'skia_cheri_git': 'https://github.com/CTSRD-CHERI',
   'skia_git': 'https://skia.googlesource.com',
   'swiftshader_git': 'https://swiftshader.googlesource.com',
@@ -430,7 +430,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'quiche_revision': '022c607b07590ba1cf36ba3d0b24878ff3c03a77',
+  'quiche_revision': '94f2ead3ef9ef9bd89cda38a495356cf99724266',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ink
   # and whatever else without interference from each other.
