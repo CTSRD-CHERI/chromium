@@ -2846,16 +2846,21 @@ config("cet_shadow_stack") {
 config("purecap") {
   assert(target_cpu == "arm64")
   asmflags = [
-    "-mabi=purecap",
     "-march=morello",
+    "-mabi=purecap",
+    "-cheri-tgot-tls=compat",
     "--target=aarch64c-unknown-freebsd"
   ]
   cflags = [
     "-mabi=purecap",
     "-march=morello",
+    "--start-no-unused-arguments",
     "-Xclang", "-morello-vararg=new",
     "-Xclang", "-morello-bounded-memargs",
+    "-Wl,--local-caprelocs=elf",
     "-cheri-codeptr-relocs",
+    "-cheri-tgot-tls=compat",
+    "--end-no-unused-arguments",
     "--target=aarch64c-unknown-freebsd"
   ]
   ldflags = [
