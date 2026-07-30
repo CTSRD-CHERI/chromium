@@ -247,9 +247,15 @@ struct PersistentHistogramAllocator::PersistentHistogramData {
   // SHA1(Histogram): Increment this if structure changes!
   static constexpr uint32_t kPersistentTypeId = 0xF1645910 + 3;
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static constexpr size_t kExpectedInstanceSize = __builtin_align_up(
+      32 + 2 * HistogramSamples::Metadata::kExpectedInstanceSize + 8,
+      alignof(max_align_t));
+#else
   // Expected size for 32/64-bit check.
   static constexpr size_t kExpectedInstanceSize =
       40 + 2 * HistogramSamples::Metadata::kExpectedInstanceSize;
+#endif
 
   int32_t histogram_type;
   int32_t flags;
