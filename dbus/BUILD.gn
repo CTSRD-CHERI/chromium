@@ -49,6 +49,16 @@ component("dbus") {
 
   public_configs = [ "//build/config/linux/dbus" ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  if (is_bsd) {
+    libs = [
+      "epoll-shim",
+    ]
+
+    include_dirs = [
+      "${sysroot}/usr/local/include/libepoll-shim"
+    ]
+  }
 }
 
 proto_library("test_proto") {
