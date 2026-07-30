@@ -135,6 +135,16 @@ source_set("common") {
     "//components/prefs",
     "//third_party/metrics_proto",
   ]
+
+  if (is_bsd) {
+    libs = [
+      "epoll-shim",
+    ]
+
+    include_dirs = [
+      "${sysroot}/usr/local/include/libepoll-shim"
+    ]
+  }
 }
 
 source_set("structured_metrics_features") {
