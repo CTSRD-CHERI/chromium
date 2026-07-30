@@ -94,14 +94,14 @@ class BASE_EXPORT HistogramSamples {
   // Because of how this is used in persistent memory, it must be a POD object
   // that makes sense when initialized to all zeros.
   struct Metadata {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    // Atomic64 must be convertible to AtomicWord, and is therefore is
+    // sizeof(intptr_t) and aligned to alignof(max_align_t).
+    static constexpr size_t kExpectedInstanceSize = sizeof(intptr_t) + 8 + 4 + 4;
+#else
     // Expected size for 32/64-bit check.
     static constexpr size_t kExpectedInstanceSize = 24;
-
-    // Initialized when the sample-set is first created with a value provided
-    // by the caller. It is generally used to identify the sample-set across
-    // threads and processes, though not necessarily uniquely as it is possible
-    // to have multiple sample-sets representing subsets of the data.
-    uint64_t id;
+#endif
 
     // The sum of all the entries, effectively the sum(sample * count) for
     // all samples. Despite being atomic, no guarantees are made on the
@@ -115,6 +115,12 @@ class BASE_EXPORT HistogramSamples {
     // and don't worry about "shearing".
     int64_t sum;
 #endif
+
+    // Initialized when the sample-set is first created with a value provided
+    // by the caller. It is generally used to identify the sample-set across
+    // threads and processes, though not necessarily uniquely as it is possible
+    // to have multiple sample-sets representing subsets of the data.
+    uint64_t id;
 
     // A "redundant" count helps identify memory corruption. It redundantly
     // stores the total number of samples accumulated in the histogram. We
