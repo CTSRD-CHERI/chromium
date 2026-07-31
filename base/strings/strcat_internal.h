@@ -12,6 +12,14 @@
 
 namespace base::internal {
 
+#if !__cpp_lib_resize_and_overwrite
+// Default to regular `std::basic_string::resize()`.
+template <typename CharT>
+void Resize(std::basic_string<CharT>& str, size_t total_size) {
+  str.resize(total_size);
+}
+#endif
+
 // Trims the first `n` elements of `span`.
 template <typename T>
 void RemovePrefix(base::span<T>& span, size_t n) {
@@ -34,6 +42,7 @@ void StrAppendT(std::basic_string<CharT>& dest, span<const StringT> strings) {
     total_size += str.size();
   }
 
+#if __cpp_lib_resize_and_overwrite
   dest.resize_and_overwrite(total_size, [&](CharT* p, size_t n) {
     // SAFETY: `std::basic_string::resize_and_overwrite` guarantees that the
     // range `[p, p + n]` is valid.
@@ -51,6 +60,14 @@ void StrAppendT(std::basic_string<CharT>& dest, span<const StringT> strings) {
     }
     return n;
   });
+#else
+  Resize(dest, total_size);
+  CharT* dest_char = &dest[initial_size];
+  for (const StringT& str : strings) {
+    std::char_traits<CharT>::copy(dest_char, str.data(), str.size());
+    UNSAFE_TODO(dest_char += str.size());
+  }
+#endif
 }
 
 template <typename StringT>
