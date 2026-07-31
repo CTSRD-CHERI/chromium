@@ -107,7 +107,12 @@ bool ScopedMmap::ResetAddrLen(void* addr, size_t len) {
   } else {
     DCHECK_NE(len, 0u);
     DCHECK_EQ(new_addr % base::GetPageSize(), 0u);
+#if defined(__CHERI_PURE_CAPABILITY__)
+    DCHECK((base::CheckedNumeric<ptraddr_t>(
+        __builtin_cheri_address_get(new_addr)) + (new_len_round - 1))
+#else   // !__CHERI_PURE_CAPABILITY__
     DCHECK((base::CheckedNumeric<uintptr_t>(new_addr) + (new_len_round - 1))
+#endif  // !__CHERI_PURE_CAPABILITY__
                .IsValid());
   }
 
