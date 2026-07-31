@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <unistd.h>
 
+#include <cstring>
 #include <string_view>
 #include <unordered_map>
 
@@ -199,7 +200,7 @@ std::optional<SmapsRollup> ParseSmapsRollup(const std::string& buffer) {
       // sscanf writes a nul-byte at the end of the result, so |strlen| is safe
       // here. |resize| does not count the length of the nul-byte, and we want
       // to trim off the trailing colon at the end, so we use |strlen - 1| here.
-      key.resize(strlen(key.c_str()) - 1);
+      key.resize(std::strlen(key.c_str()) - 1);
       tmp[key] = KiBU(val);
     }
   }
