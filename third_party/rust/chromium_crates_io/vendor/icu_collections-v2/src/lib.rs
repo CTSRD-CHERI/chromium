@@ -20,6 +20,12 @@
 //! It is an implementation of the existing [ICU4C UCharsTrie](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/classicu_1_1UCharsTrie.html)
 //! / [ICU4J CharsTrie](https://unicode-org.github.io/icu-docs/apidoc/released/icu4j/com/ibm/icu/util/CharsTrie.html) API.
 
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.79")), feature(inline_const))]
+#![cfg_attr(not(version("1.81")), feature(error_in_core))]
+#![cfg_attr(not(version("1.81")), feature(lint_reasons))]
+
+
 // https://github.com/unicode-org/icu4x/blob/main/documents/process/boilerplate.md#library-annotations
 #![cfg_attr(not(any(test, doc)), no_std)]
 #![cfg_attr(
