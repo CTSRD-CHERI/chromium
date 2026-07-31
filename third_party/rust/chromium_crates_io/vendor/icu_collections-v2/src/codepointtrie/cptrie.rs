@@ -1427,12 +1427,115 @@ impl<T: TrieValue> Iterator for CodePointMapRangeIterator<'_, T> {
 /// # Safety Usable Invariant
 ///
 /// All implementations of `TypedCodePointTrie` are reviewable in this module.
+#[cfg(version("1.82"))]
 trait Seal {}
+#[cfg(not(version("1.82")))]
+mod private {
+    pub trait Seal {}
+}
 
 /// Trait for writing trait bounds for monomorphizing over either
 /// `FastCodePointTrie` or `SmallCodePointTrie`.
+#[cfg(version("1.82"))]
 #[allow(private_bounds)] // Permit sealing
 pub trait TypedCodePointTrie<'trie, T: TrieValue>: Seal {
+    /// The `TrieType` associated with this `TypedCodePointTrie`
+    ///
+    /// # Safety Usable Invariant
+    ///
+    /// This constant matches `self.as_untyped_ref().header.trie_type`.
+    const TRIE_TYPE: TrieType;
+
+    /// Lookup trie value as `u32` by Unicode Scalar Value without branching on trie type.
+    #[inline(always)]
+    fn get32_u32(&self, code_point: u32) -> u32 {
+        self.get32(code_point).to_u32()
+    }
+
+    /// Lookup trie value by Basic Multilingual Plane Code Point without branching on trie type.
+    #[inline(always)]
+    fn get16(&self, bmp: u16) -> T {
+        // LLVM's optimizations have been observed not to be 100%
+        // reliable around collapsing away unnecessary parts of
+        // `get32`, so not just calling `get32` here.
+        let code_point = u32::from(bmp);
+        if let Some(v) = self.get32_by_fast_index(code_point) {
+            v
+        } else {
+            self.as_untyped_ref().get32_by_small_index_cold(code_point)
+        }
+    }
+
+    /// Lookup trie value by non-Basic Multilingual Plane Scalar Value without branching on trie type.
+    #[inline(always)]
+    fn get32_supplementary(&self, supplementary: u32) -> T {
+        self.as_untyped_ref().get32_supplementary(supplementary)
+    }
+
+    /// Lookup trie value by Unicode Scalar Value without branching on trie type.
+    #[inline(always)]
+    fn get(&self, c: char) -> T {
+        // LLVM's optimizations have been observed not to be 100%
+        // reliable around collapsing away unnecessary parts of
+        // `get32`, so not just calling `get32` here.
+        let code_point = u32::from(c);
+        if let Some(v) = self.get32_by_fast_index(code_point) {
+            v
+        } else {
+            self.as_untyped_ref().get32_by_small_index_cold(code_point)
+        }
+    }
+
+    /// Lookup trie value by Unicode Code Point without branching on trie type.
+    #[inline(always)]
+    fn get32(&self, code_point: u32) -> T {
+        if let Some(v) = self.get32_by_fast_index(code_point) {
+            v
+        } else if code_point <= CODE_POINT_MAX {
+            self.as_untyped_ref().get32_by_small_index_cold(code_point)
+        } else {
+            self.as_untyped_ref().error_value
+        }
+    }
+
+    /// Returns the value that is associated with `code_point` in this [`CodePointTrie`]
+    /// if `code_point` uses fast-path lookup or `None` if `code_point`
+    /// should use small-path lookup or is above the supported range.
+    #[inline(always)] // "always" to make the `Option` collapse away
+    fn get32_by_fast_index(&self, code_point: u32) -> Option<T> {
+        debug_assert_eq!(Self::TRIE_TYPE, self.as_untyped_ref().header.trie_type);
+        let fast_max = match Self::TRIE_TYPE {
+            TrieType::Fast => FAST_TYPE_FAST_INDEXING_MAX,
+            TrieType::Small => SMALL_TYPE_FAST_INDEXING_MAX,
+        };
+        if code_point <= fast_max {
+            // SAFETY: We just checked the invariant of
+            // `get32_assuming_fast_index`,
+            // which is
+            // "If `self.header.trie_type == TrieType::Small`, `code_point` must be at most
+            // `SMALL_TYPE_FAST_INDEXING_MAX`. If `self.header.trie_type ==
+            // TrieType::Fast`, `code_point` must be at most `FAST_TYPE_FAST_INDEXING_MAX`."
+            // ... assuming that `Self::TRIE_TYPE` always matches
+            // `self.as_untyped_ref().header.trie_type`, i.e. we're relying on
+            // `CodePointTrie::to_typed` and `CodePointTrie::as_typed_ref` being correct
+            // and the exclusive ways of obtaining `Self`.
+            Some(unsafe { self.as_untyped_ref().get32_assuming_fast_index(code_point) })
+        } else {
+            // The caller needs to call `get32_by_small_index` or determine
+            // that the argument is above the permitted range.
+            None
+        }
+    }
+
+    /// Returns a reference to the wrapped `CodePointTrie`.
+    fn as_untyped_ref(&self) -> &CodePointTrie<'trie, T>;
+
+    /// Extracts the wrapped `CodePointTrie`.
+    fn to_untyped(self) -> CodePointTrie<'trie, T>;
+}
+#[cfg(not(version("1.82")))]
+#[allow(private_bounds)] // Permit sealing
+pub trait TypedCodePointTrie<'trie, T: TrieValue>: private::Seal {
     /// The `TrieType` associated with this `TypedCodePointTrie`
     ///
     /// # Safety Usable Invariant
@@ -1572,7 +1675,10 @@ impl<'trie, T: TrieValue> TypedCodePointTrie<'trie, T> for FastCodePointTrie<'tr
     }
 }
 
+#[cfg(version("1.82"))]
 impl<'trie, T: TrieValue> Seal for FastCodePointTrie<'trie, T> {}
+#[cfg(not(version("1.82")))]
+impl<'trie, T: TrieValue> private::Seal for FastCodePointTrie<'trie, T> {}
 
 impl<'trie, T: TrieValue> TryFrom<&'trie CodePointTrie<'trie, T>>
     for &'trie FastCodePointTrie<'trie, T>
@@ -1626,7 +1732,10 @@ impl<'trie, T: TrieValue> TypedCodePointTrie<'trie, T> for SmallCodePointTrie<'t
     }
 }
 
+#[cfg(version("1.82"))]
 impl<'trie, T: TrieValue> Seal for SmallCodePointTrie<'trie, T> {}
+#[cfg(not(version("1.82")))]
+impl<'trie, T: TrieValue> private::Seal for SmallCodePointTrie<'trie, T> {}
 
 impl<'trie, T: TrieValue> TryFrom<&'trie CodePointTrie<'trie, T>>
     for &'trie SmallCodePointTrie<'trie, T>
