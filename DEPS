@@ -301,7 +301,7 @@ vars = {
   'chromium_git': 'https://chromium.googlesource.com',
   'chromium_cheri_git': 'https://github.com/CTSRD-CHERI',
   'dawn_git': 'https://github.com/CTSRD-CHERI',
-  'pdfium_git': 'https://pdfium.googlesource.com',
+  'pdfium_git': 'https://github.com/CTSRD-CHERI',
   'quiche_git': 'https://github.com/CTSRD-CHERI',
   'skia_cheri_git': 'https://github.com/CTSRD-CHERI',
   'skia_git': 'https://skia.googlesource.com',
@@ -330,7 +330,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
-  'pdfium_revision': '004b47619573a582c076679764e07725ace3e497',
+  'pdfium_revision': '93c05775484494b9bddf901b24a79d3d142e0e2d',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
