@@ -39,7 +39,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PoolOffsetLookup {
  public:
   // Under default-constructed values all lookup will hit DCHECK.
   PoolOffsetLookup()
-      : base_address_(0), base_mask_(static_cast<uintptr_t>(-1)) {}
+      : base_address_(0), base_mask_(static_cast<size_t>(-1)) {}
 
   PA_ALWAYS_INLINE uintptr_t GetOffset(uintptr_t address) const {
     PA_DCHECK(Includes(address));
@@ -73,7 +73,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PoolOffsetLookup {
       : base_address_(base_address), base_mask_(base_mask) {}
 
   uintptr_t base_address_;
-  uintptr_t base_mask_;
+  size_t base_mask_;
 
   friend class PartitionAddressSpace;
 };
@@ -242,12 +242,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // Returns false for nullptr.
   PA_ALWAYS_INLINE static bool IsInCorePools(uintptr_t address) {
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-    const uintptr_t core_pools_base_mask = setup_.glued_pools_base_mask_;
+    const size_t core_pools_base_mask = setup_.glued_pools_base_mask_;
 #else
     // The BRP pool is placed at the end of the regular pool, effectively
     // forming one virtual pool of a twice bigger size. Adjust the mask
     // appropriately.
-    constexpr uintptr_t core_pools_base_mask = kCorePoolBaseMask << 1;
+    constexpr size_t core_pools_base_mask = kCorePoolBaseMask << 1;
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
     bool ret =
         (address & core_pools_base_mask) == setup_.regular_pool_base_address_;
@@ -462,8 +462,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
         kUninitializedPoolBaseAddress;
 #endif
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-    uintptr_t core_pool_base_mask_ = 0;
-    uintptr_t glued_pools_base_mask_ = 0;
+    size_t core_pool_base_mask_ = 0;
+    size_t glued_pools_base_mask_ = 0;
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
     size_t configurable_pool_base_mask_ = 0;
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
