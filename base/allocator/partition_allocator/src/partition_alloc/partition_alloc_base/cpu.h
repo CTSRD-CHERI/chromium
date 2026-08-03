@@ -59,7 +59,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) CPU final {
   bool is_running_in_vm() const { return is_running_in_vm_; }
 
   // Armv8.5-A extensions for control flow and memory safety.
-#if PA_BUILDFLAG(PA_ARCH_CPU_ARM_FAMILY)
+#if PA_BUILDFLAG(PA_ARCH_CPU_ARM_FAMILY) && !PA_BUILDFLAG(IS_CHERI)
   bool has_mte() const { return has_mte_; }
   bool has_bti() const { return has_bti_; }
 #else
