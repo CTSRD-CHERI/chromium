@@ -457,7 +457,7 @@ ReservedStateBitmapSize() {
   return 0ull;
 }
 
-PA_ALWAYS_INLINE uintptr_t SuperPagePayloadStartOffset() {
+PA_ALWAYS_INLINE size_t SuperPagePayloadStartOffset() {
   return PartitionPageSize();
 }
 
