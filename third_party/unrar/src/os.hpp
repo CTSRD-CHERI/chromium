@@ -173,7 +173,9 @@
 #include <arm_neon.h>
 #ifndef _APPLE
 #include <sys/auxv.h>
+#ifndef __FreeBSD__
 #include <asm/hwcap.h>
+#endif
 #endif
 #ifdef __ARM_FEATURE_CRYPTO
 #define USE_NEON_AES
