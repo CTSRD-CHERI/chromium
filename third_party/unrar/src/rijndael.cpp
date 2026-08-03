@@ -126,6 +126,10 @@ void Rijndael::Init(bool Encrypt,const byte *key,uint keyLen,const byte * initVe
     // because "hw.optional.arm.FEAT_AES" was missing in OS X 11, but AES
     // still was supported by Neon.
     AES_Neon=RetCode!=0 || Value!=0;
+  #elif defined(__FreeBSD__)
+    uint64_t hwcap = 0;
+    elf_aux_info(AT_HWCAP, &hwcap, sizeof(hwcap));
+    AES_Neon=(hwcap & HWCAP_AES)!=0;
   #else
     AES_Neon=(getauxval(AT_HWCAP) & HWCAP_AES)!=0;
   #endif

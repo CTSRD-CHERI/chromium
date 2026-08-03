@@ -49,6 +49,10 @@ void InitCRC32(uint *CRCTab)
     size_t Size=sizeof(Value);
     int RetCode=sysctlbyname("hw.optional.armv8_crc32",&Value,&Size,NULL,0);
     CRC_Neon=RetCode==0 && Value!=0;
+  #elif defined(__FreeBSD__)
+    uint64_t hwcap = 0;
+    elf_aux_info(AT_HWCAP, &hwcap, sizeof(hwcap));
+    CRC_Neon=(hwcap & HWCAP_CRC32)!=0;
   #else
     CRC_Neon=(getauxval(AT_HWCAP) & HWCAP_CRC32)!=0;
   #endif
