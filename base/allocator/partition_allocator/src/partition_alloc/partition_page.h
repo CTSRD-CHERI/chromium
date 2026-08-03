@@ -552,8 +552,14 @@ SlotSpanMetadata::ToSlotSpanStart(const SlotSpanMetadata* slot_span,
                                   [[maybe_unused]] std::ptrdiff_t offset) {
   uintptr_t slot_span_addr = reinterpret_cast<uintptr_t>(slot_span);
 #if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+#if defined(__CHERI_PURE_CAPABILITY__)
+  size_t partition_page_index =
+      (__builtin_cheri_address_get(slot_span_addr) & SystemPageOffsetMask())
+      >> kPageMetadataShift;
+#else   // !__CHERI_PURE_CAPABILITY__
   uintptr_t partition_page_index =
       (slot_span_addr & SystemPageOffsetMask()) >> kPageMetadataShift;
+#endif  // !__CHERI_PURE_CAPABILITY__
   uintptr_t super_page_base =
       PartitionMetadataPageToSuperPage(slot_span_addr, offset) &
       kSuperPageBaseMask;
@@ -564,7 +570,12 @@ SlotSpanMetadata::ToSlotSpanStart(const SlotSpanMetadata* slot_span,
   return SlotSpanStart(super_page_base +
                        (partition_page_index << PartitionPageShift()));
 #else
+#if defined(__CHERI_PURE_CAPABILITY__)
+  size_t super_page_offset =
+      (__builtin_cheri_address_get(slot_span_addr) & kSuperPageOffsetMask);
+#else   // !__CHERI_PURE_CAPABILITY__
   uintptr_t super_page_offset = (slot_span_addr & kSuperPageOffsetMask);
+#endif  // !__CHERI_PURE_CAPABILITY__
 
   // A valid |page| must be past the first guard System page and within
   // the following metadata region.
