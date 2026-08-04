@@ -73,7 +73,7 @@ impl std::fmt::Write for Pin<&mut ffi::LogMessageRustWrapper> {
 #[cxx::bridge(namespace = "logging::internal")]
 mod ffi {
     extern "Rust" {
-        type RustFmtArguments<'a>;
+        type RustFmtArguments;
 
         fn format(&self, wrapper: Pin<&mut LogMessageRustWrapper>);
 
