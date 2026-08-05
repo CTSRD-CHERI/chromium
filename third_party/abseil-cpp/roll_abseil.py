@@ -22,6 +22,7 @@ def _PullAbseil(abseil_dir, revision):
 
 def _SyncChromium(chromium_dir):
   logging.info('Updating chromium...')
+  subprocess.check_call(['git', 'checkout', '145.0.7632.159-cheriabi'], cwd=chromium_dir)
   subprocess.check_call(['git', 'pull', '--rebase'], cwd=chromium_dir)
   subprocess.check_call(['gclient', 'sync'], cwd=chromium_dir)
 
