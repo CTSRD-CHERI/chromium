@@ -23,7 +23,7 @@
 // so the name is correctly mangled as rustc expects.
 //
 // TODO(https://crbug.com/410596442): Stop using internal features here.
-#![allow(internal_features)]
+#![cfg_attr(internal_features, allow(internal_features))]
 #![feature(rustc_attrs)]
 
 /// Module that provides `#[global_allocator]` / `GlobalAlloc` interface for
@@ -107,12 +107,6 @@ mod both_allocators {
     fn __rust_alloc_error_handler_should_panic() -> u8 {
         0
     }
-
-    // TODO(crbug.com/440481922): Remove this after rolling past https://github.com/rust-lang/rust/pull/143387
-    #[rustc_std_internal_symbol]
-    #[allow(non_upper_case_globals)]
-    #[linkage = "weak"]
-    static __rust_alloc_error_handler_should_panic: u8 = 0;
 
     // Mangle the symbol name as rustc expects.
     #[rustc_std_internal_symbol]
