@@ -122,6 +122,16 @@ impl SubdivisionId {
             })
             .ok_or(ParseError::InvalidExtension)?;
         let region_len = if is_alpha { 2 } else { 3 };
+        #[cfg(not(version("1.80")))]
+        let (region_code_units, suffix_code_units) = {
+            if region_len > code_units.len() {
+                debug_assert!(false, "index expected to be in range");
+                Err(ParseError::InvalidExtension)
+            } else {
+                Ok(code_units.split_at(region_len))
+            }
+        };
+        #[cfg(version("1.80"))]
         let (region_code_units, suffix_code_units) = code_units
             .split_at_checked(region_len)
             .ok_or(ParseError::InvalidExtension)?;
