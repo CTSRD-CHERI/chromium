@@ -62,8 +62,8 @@ gcc_toolchain("morello-buildroot") {
   ld = cxx
 
   if (sysroot != "") {
-    extra_cflags = "-isystem ${sysroot}/usr/local/include"
-    extra_cxxflags = "-isystem ${sysroot}/usr/local/include"
+    extra_cflags = "-isystem ${sysroot}/usr/local/include --target=aarch64c-unknown-freebsd"
+    extra_cxxflags = "-isystem ${sysroot}/usr/local/include --target=aarch64c-unknown-freebsd"
     extra_ldflags = "-L${sysroot}/usr/local/lib"
   } else {
     extra_cflags = "-isystem /usr/local/include"
