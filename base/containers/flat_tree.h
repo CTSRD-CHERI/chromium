@@ -313,7 +313,14 @@ class flat_tree {
   iterator erase(const_iterator first, const_iterator last);
   template <typename K = Key>
     requires(!std::convertible_to<K, const_iterator>)
-  size_type erase(const KeyT<K>& key);
+  size_type erase(const KeyT<K>& key) {
+    auto eq_range = equal_range(key);
+    auto res =
+        static_cast<size_type>(std::distance(eq_range.first, eq_range.second));
+    erase(eq_range.first, eq_range.second);
+    return res;
+  }
+
 
   // --------------------------------------------------------------------------
   // Comparators.
@@ -879,21 +886,6 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::erase(
     const_iterator first,
     const_iterator last) -> iterator {
   return body_.erase(first, last);
-}
-
-template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
-template <typename K>
-  requires(!std::convertible_to<
-           K,
-           typename flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::
-               const_iterator>)
-auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::erase(
-    const KeyT<K>& val) -> size_type {
-  auto eq_range = equal_range(val);
-  auto res =
-      static_cast<size_type>(std::distance(eq_range.first, eq_range.second));
-  erase(eq_range.first, eq_range.second);
-  return res;
 }
 
 // ----------------------------------------------------------------------------

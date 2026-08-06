@@ -253,11 +253,20 @@ class flat_map : public ::base::internal::
 
   template <class K = Key, class... Args>
     requires(!std::convertible_to<K, const_iterator>)
-  std::pair<iterator, bool> try_emplace(const KeyT<K>& key, Args&&... args);
+  std::pair<iterator, bool> try_emplace(const KeyT<K>& key, Args&&... args) {
+    return tree::emplace_key_args(
+        key, std::piecewise_construct, std::forward_as_tuple(key),
+        std::forward_as_tuple(std::forward<Args>(args)...));
+  }
+
   template <class K = Key, class... Args>
     requires(std::same_as<K, std::remove_cvref_t<K>> &&
              !std::convertible_to<K, const_iterator>)
-  std::pair<iterator, bool> try_emplace(KeyT<K>&& key, Args&&... args);
+  std::pair<iterator, bool> try_emplace(KeyT<K>&& key, Args&&... args) {
+    return tree::emplace_key_args(
+        key, std::piecewise_construct, std::forward_as_tuple(std::move(key)),
+        std::forward_as_tuple(std::forward<Args>(args)...));
+  }
 
   template <class K = Key, class... Args>
   iterator try_emplace(const_iterator hint, const KeyT<K>& key, Args&&... args);
@@ -377,6 +386,7 @@ auto flat_map<Key, Mapped, Compare, Container>::insert_or_assign(
   return result.first;
 }
 
+#if 0
 template <class Key, class Mapped, class Compare, class Container>
 template <class K, class... Args>
   requires(!std::convertible_to<
@@ -404,6 +414,7 @@ auto flat_map<Key, Mapped, Compare, Container>::try_emplace(KeyT<K>&& key,
       key, std::piecewise_construct, std::forward_as_tuple(std::move(key)),
       std::forward_as_tuple(std::forward<Args>(args)...));
 }
+#endif
 
 template <class Key, class Mapped, class Compare, class Container>
 template <class K, class... Args>
