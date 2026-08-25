@@ -74,9 +74,15 @@ static uintptr_t StripPointerAuthenticationBits(uintptr_t ptr) {
   // more generic xpaci which has a new encoding). The downside is that ptr has
   // to be moved to x30 to use this instruction. TODO(ritownsend@google.com):
   // replace with an intrinsic once that is available.
+#if defined(__CHERI_PURE_CAPABILITY__)
+  register uintptr_t c30 __asm("c30") = ptr;
+  asm("xpaclri" : "+r"(c30));
+  return c30;
+#else
   register uintptr_t x30 __asm("x30") = ptr;
   asm("xpaclri" : "+r"(x30));
   return x30;
+#endif
 #else
   // No-op on other platforms.
   return ptr;
