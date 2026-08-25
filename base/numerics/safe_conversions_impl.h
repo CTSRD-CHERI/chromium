@@ -216,6 +216,14 @@ struct NarrowingRange {
     }
   }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+  template <typename T>
+    requires(std::same_as<ptraddr_t, T> && std::same_as<uintptr_t, Dst>)
+  static constexpr T Adjust(T value) {
+     return value;
+  }
+#endif  // !__CHERI_PURE_CAPABILITY__
+
   static constexpr Dst max() { return Adjust(Bounds<Dst>::max()); }
   static constexpr Dst lowest() { return Adjust(Bounds<Dst>::lowest()); }
 };
