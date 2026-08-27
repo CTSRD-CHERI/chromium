@@ -450,9 +450,13 @@ bool HasTrivialSwap(const FieldDescriptor* field, const Options& options,
     case FieldDescriptor::CPPTYPE_BOOL:
       return true;
     case FieldDescriptor::CPPTYPE_MESSAGE:
+#if PROTOBUF_MESSAGE_HAS_TRIVIAL_SWAP
       // Non-repeated, non-lazy message fields are simply raw pointers, so we
       // can swap them with memcpy.
       return !IsLazy(field, options, scc_analyzer);
+#else
+      return false;
+#endif
     default:
       return false;
   }

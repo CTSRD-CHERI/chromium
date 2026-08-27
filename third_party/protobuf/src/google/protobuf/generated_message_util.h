@@ -384,15 +384,15 @@ inline void AddToRepeatedPtrField(InternalVisibility visibility,
   dest.InternalAddWithArena(visibility, arena, std::move(value));
 }
 
-constexpr std::optional<uintptr_t> EncodePlacementArenaOffsets(
+constexpr std::optional<size_t> EncodePlacementArenaOffsets(
     std::initializer_list<size_t> offsets) {
-  uintptr_t arena_bits = 0;
+  size_t arena_bits = 0;
   for (size_t offset : offsets) {
     offset /= sizeof(Arena*);
     if (offset >= sizeof(arena_bits) * 8) {
       return std::nullopt;
     }
-    arena_bits |= uintptr_t{1} << offset;
+    arena_bits |= size_t{1} << offset;
   }
   return arena_bits;
 }
