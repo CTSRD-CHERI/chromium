@@ -27,7 +27,6 @@
 #else
 #define UPB_ARENA_BASE_SIZE_HACK 10
 #endif
-#endif
 
 #define UPB_ARENA_SIZE_HACK \
   (UPB_ARENA_BASE_SIZE_HACK + (UPB_XSAN_STRUCT_SIZE * 2))

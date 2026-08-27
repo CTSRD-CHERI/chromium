@@ -100,11 +100,11 @@ class MessageCreator {
   };
 
   constexpr MessageCreator()
-      : allocation_size_(), tag_(), alignment_(), arena_bits_(uintptr_t{}) {}
+      : allocation_size_(), tag_(), alignment_(), arena_bits_(size_t{}) {}
 
   static constexpr MessageCreator ZeroInit(uint32_t allocation_size,
                                            uint8_t alignment,
-                                           uintptr_t arena_bits = 0) {
+                                           size_t arena_bits = 0) {
     MessageCreator out;
     out.allocation_size_ = allocation_size;
     out.tag_ = kZeroInit;
@@ -114,7 +114,7 @@ class MessageCreator {
   }
   static constexpr MessageCreator CopyInit(uint32_t allocation_size,
                                            uint8_t alignment,
-                                           uintptr_t arena_bits = 0) {
+                                           size_t arena_bits = 0) {
     MessageCreator out;
     out.allocation_size_ = allocation_size;
     out.tag_ = kMemcpy;
@@ -145,7 +145,7 @@ class MessageCreator {
 
   uint8_t alignment() const { return alignment_; }
 
-  uintptr_t arena_bits() const {
+  size_t arena_bits() const {
     ABSL_DCHECK_NE(+tag(), +kFunc);
     return arena_bits_;
   }
@@ -156,7 +156,7 @@ class MessageCreator {
   uint8_t alignment_;
   union {
     Func func_;
-    uintptr_t arena_bits_;
+    size_t arena_bits_;
   };
 };
 
@@ -1407,7 +1407,7 @@ PROTOBUF_ALWAYS_INLINE MessageLite* MessageCreator::PlacementNew(
   }
 
   if (internal::PerformDebugChecks() || arena != nullptr) {
-    if (uintptr_t offsets = arena_bits()) {
+    if (size_t offsets = arena_bits()) {
       do {
         const size_t offset = absl::countr_zero(offsets) * sizeof(Arena*);
         ABSL_DCHECK_LE(offset + sizeof(Arena*), size);
