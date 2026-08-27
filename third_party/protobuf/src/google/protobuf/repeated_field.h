@@ -135,12 +135,20 @@ enum { kSooCapacityBytes = 2 * sizeof(int) };
 // SOO size. NOTE: we also tried using all kSooPtrMask bits to encode SOO size
 // and use all ones as a sentinel value for non-SOO mode, but that was slower in
 // benchmarks/loadtests.
+#if defined(__CHERI_PURE_CAPABILITY__)
+enum { kSooPtrAlignment = alignof(max_align_t) };
+#else
 enum { kSooPtrAlignment = 8 };
+#endif
 // The mask for the size bits in SOO mode, and also a sentinel value indicating
 // that the field is not in SOO mode.
 enum { kSooPtrMask = ~(kSooPtrAlignment - 1) };
 // This bit is 0 when in SOO mode and 1 when in non-SOO mode.
+#if defined(__CHERI_PURE_CAPABILITY__)
+enum { kNotSooBit = kSooPtrAlignment >> 2 };
+#else
 enum { kNotSooBit = kSooPtrAlignment >> 1 };
+#endif
 // These bits are used to encode the size when in SOO mode (sizes are 0-3).
 enum { kSooSizeMask = kNotSooBit - 1 };
 
@@ -1103,9 +1111,13 @@ inline void RepeatedField<Element>::InternalSwap(
   UnpoisonBuffer();
   other->UnpoisonBuffer();
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+  std::swap(this->soo_rep_.long_rep, other->soo_rep_.long_rep);
+#else
   internal::memswap<sizeof(internal::SooRep)>(
       reinterpret_cast<char*>(&this->soo_rep_),
       reinterpret_cast<char*>(&other->soo_rep_));
+#endif
 
   AnnotateSize(Capacity(), size());
   other->AnnotateSize(other->Capacity(), other->size());

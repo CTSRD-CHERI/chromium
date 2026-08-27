@@ -115,9 +115,8 @@ void RealDebugCounter::Register(absl::string_view name) {
   }
 }
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
-    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 GlobalEmptyString
-        fixed_address_empty_string{};
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 GlobalEmptyString
+    fixed_address_empty_string{};
 
 }  // namespace internal
 }  // namespace protobuf
