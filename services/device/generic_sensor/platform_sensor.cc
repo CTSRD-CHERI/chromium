@@ -8,6 +8,9 @@
 #include <list>
 #include <utility>
 
+#if !__cpp_lib_atomic_ref
+#include "base/atomic_ref.h"
+#endif
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -184,7 +187,11 @@ void PlatformSensor::ResetSharedBuffer() {
 void PlatformSensor::WriteToSharedBuffer(const SensorReading& reading) {
   CHECK(is_active_);
   reading_buffer_->seqlock.value().WriteBegin();
+#if __cpp_lib_atomic_ref
   std::atomic_ref(reading_buffer_->reading)
+#else
+  base::atomic_ref(reading_buffer_->reading)
+#endif
       .store(reading, std::memory_order_relaxed);
   reading_buffer_->seqlock.value().WriteEnd();
 }

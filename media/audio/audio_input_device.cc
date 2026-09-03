@@ -11,6 +11,9 @@
 
 #include "audio_device_stats_reporter.h"
 #include "base/atomicops.h"
+#if !__cpp_lib_atomic_ref
+#include "base/atomic_ref.h"
+#endif
 #include "base/containers/span_reader.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
@@ -505,7 +508,11 @@ void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
     // callback_capture_->Capture() doesn't get moved to after has_unread_data
     // has been changed, which would risk that the other side overwrites the
     // memory while being used in Capture().
+#if __cpp_lib_atomic_ref
     std::atomic_ref<uint32_t> has_unread_data(buffer->params.has_unread_data);
+#else
+    base::atomic_ref<uint32_t> has_unread_data(buffer->params.has_unread_data);
+#endif
     has_unread_data.store(0, std::memory_order_release);
   }
 
