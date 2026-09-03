@@ -7,6 +7,9 @@
 #include <atomic>
 #include <utility>
 
+#if !__cpp_lib_atomic_ref
+#include "base/atomic_ref.h"
+#endif
 #include "base/memory/ptr_util.h"
 #include "device/base/synchronization/shared_memory_seqlock_buffer.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
@@ -61,7 +64,11 @@ bool SensorReadingSharedBufferReader::GetReading(
     version = buffer->seqlock.value().ReadBegin();
     // TODO(https://github.com/llvm/llvm-project/issues/118378): Remove
     // const_cast.
+#if __cpp_lib_atomic_ref
     *result = std::atomic_ref(const_cast<SensorReading&>(buffer->reading))
+#else
+    *result = base::atomic_ref(const_cast<SensorReading&>(buffer->reading))
+#endif
                   .load(std::memory_order_relaxed);
   } while (buffer->seqlock.value().ReadRetry(version) &&
            ++retries < kMaxReadAttemptsCount);

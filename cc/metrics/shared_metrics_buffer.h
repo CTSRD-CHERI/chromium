@@ -7,6 +7,9 @@
 
 #include <atomic>
 
+#if !__cpp_lib_atomic_ref
+#include "base/atomic_ref.h"
+#endif
 #include "device/base/synchronization/one_writer_seqlock.h"
 
 namespace cc {
@@ -35,7 +38,11 @@ struct SharedMetricsBuffer {
       // TODO(https://github.com/llvm/llvm-project/issues/118378): Remove
       // const_cast.
       out =
+#if __cpp_lib_atomic_ref
           std::atomic_ref(const_cast<T&>(data)).load(std::memory_order_relaxed);
+#else
+          base::atomic_ref(const_cast<T&>(data)).load(std::memory_order_relaxed);
+#endif
     } while (seq_lock.ReadRetry(version) && ++retries < kMaxRetries);
 
     // Consider the number of retries less than kMaxRetries as success.
@@ -44,7 +51,11 @@ struct SharedMetricsBuffer {
 
   void Write(const T& in) {
     seq_lock.WriteBegin();
+#if __cpp_lib_atomic_ref
     std::atomic_ref(data).store(in, std::memory_order_relaxed);
+#else
+    base::atomic_ref(data).store(in, std::memory_order_relaxed);
+#endif
     seq_lock.WriteEnd();
   }
 };
