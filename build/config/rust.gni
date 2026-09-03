@@ -346,6 +346,9 @@ if (is_linux || is_chromeos) {
 
 if (is_bsd) {
   rust_abi_target = string_replace(rust_abi_target, "linux-gnu", current_os)
+  if (is_cheri) {
+     rust_abi_target = "${rust_abi_target}-purecap"
+  }
 }
 
 if (toolchain_has_rust && !is_bsd) {
