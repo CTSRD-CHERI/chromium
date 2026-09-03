@@ -52,6 +52,10 @@ if (toolchain_has_rust) {
         defines = [ "CXX_RS_EXPORT=" ]
       }
 
+      if (is_cheri) {
+        defines += [ "RUST_CXX_NO_EXCEPTIONS" ]
+      }
+
       deps = [
         # Depending on the C++ bindings side of cxx then requires also depending
         # on the Rust bindings, since one calls the other. And the Rust bindings
