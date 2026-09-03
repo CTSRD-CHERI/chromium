@@ -18,7 +18,7 @@
 //!
 //! <br>
 //!
-//! *Compiler support: requires rustc 1.82+ and c++11 or newer*<br>
+//! *Compiler support: requires rustc 1.73+ and c++11 or newer*<br>
 //! *[Release notes](https://github.com/dtolnay/cxx/releases)*
 //!
 //! <br>
@@ -254,6 +254,7 @@
 //!         .std("c++11")
 //!         .compile("cxxbridge-demo");
 //!
+//!     println!("cargo:rerun-if-changed=src/main.rs");
 //!     println!("cargo:rerun-if-changed=src/demo.cc");
 //!     println!("cargo:rerun-if-changed=include/demo.h");
 //! }
@@ -362,14 +363,8 @@
 //! <tr><td><sup><i>tbd</i></sup></td><td>std::unordered_map&lt;K, V&gt;</td></tr>
 //! </table>
 
-#![feature(cfg_version)]
-#![cfg_attr(not(version("1.76")), feature(ptr_from_ref))]
-#![cfg_attr(not(version("1.81")), feature(error_in_core))]
-#![cfg_attr(not(version("1.81")), feature(lint_reasons))]
-#![cfg_attr(not(version("1.82")), feature(raw_ref_op))]
-
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/cxx/1.0.192")]
+#![doc(html_root_url = "https://docs.rs/cxx/1.0.131")]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![deny(
     improper_ctypes,
@@ -382,23 +377,36 @@
     clippy::std_instead_of_alloc,
     clippy::std_instead_of_core
 )]
-#![expect(non_camel_case_types)]
+#![allow(non_camel_case_types)]
 #![allow(
     clippy::cast_possible_truncation,
+    clippy::cognitive_complexity,
+    clippy::declare_interior_mutable_const,
     clippy::doc_markdown,
-    clippy::elidable_lifetime_names,
+    clippy::duplicated_attributes, // clippy bug: https://github.com/rust-lang/rust-clippy/issues/12537
+    clippy::empty_enum,
+    clippy::extra_unused_type_parameters,
+    clippy::inherent_to_string,
     clippy::items_after_statements,
+    clippy::large_enum_variant,
     clippy::len_without_is_empty,
     clippy::missing_errors_doc,
     clippy::missing_safety_doc,
+    clippy::module_inception,
+    clippy::module_name_repetitions,
     clippy::must_use_candidate,
     clippy::needless_doctest_main,
     clippy::needless_lifetimes,
-    clippy::needless_pass_by_value,
     clippy::new_without_default,
-    clippy::uninlined_format_args
+    clippy::or_fun_call,
+    clippy::ptr_arg,
+    clippy::ptr_as_ptr,
+    clippy::ptr_cast_constness,
+    clippy::toplevel_ref_arg,
+    clippy::transmute_undefined_repr, // clippy bug: https://github.com/rust-lang/rust-clippy/issues/8417
+    clippy::uninlined_format_args,
+    clippy::useless_let_if_seq,
 )]
-#![allow(unknown_lints, mismatched_lifetime_syntaxes)]
 
 #[cfg(built_with_cargo)]
 extern crate link_cplusplus;
@@ -495,6 +503,7 @@ pub type Vector<T> = CxxVector<T>;
 // Not public API.
 #[doc(hidden)]
 pub mod private {
+    pub use crate::cxx_vector::VectorElement;
     pub use crate::extern_type::{verify_extern_kind, verify_extern_type};
     pub use crate::function::FatFunction;
     pub use crate::hash::hash;
@@ -505,13 +514,15 @@ pub mod private {
     pub use crate::rust_str::RustStr;
     #[cfg(feature = "alloc")]
     pub use crate::rust_string::RustString;
-    pub use crate::rust_type::{
-        require_box, require_unpin, require_vec, with, ImplBox, ImplVec, RustType, Without,
-    };
+    pub use crate::rust_type::{ImplBox, ImplVec, RustType};
     #[cfg(feature = "alloc")]
     pub use crate::rust_vec::RustVec;
+    pub use crate::shared_ptr::SharedPtrTarget;
     pub use crate::string::StackString;
+    pub use crate::unique_ptr::UniquePtrTarget;
     pub use crate::unwind::prevent_unwind;
+    pub use crate::weak_ptr::WeakPtrTarget;
+    pub use core::{concat, module_path};
     pub use cxxbridge_macro::type_id;
 }
 
@@ -536,4 +547,4 @@ chars! {
 }
 
 #[repr(transparent)]
-struct void(core::ffi::c_void);
+struct void(#[allow(dead_code)] core::ffi::c_void);

@@ -22,24 +22,16 @@ const opengraph = `\
 <meta name="twitter:card" content="summary" />\
 <meta name="twitter:title" content="CXX — safe interop between Rust and C++" />`;
 
-const themejs = `\
-var theme;
-try { theme = localStorage.getItem('mdbook-theme'); } catch(e) {}
-if (theme === null || theme === undefined) { theme = default_theme; }
-const html = document.documentElement;
-html.classList.remove('light')
-html.classList.add(theme);
-html.classList.add("js");`;
-
-const themejsReplacement = `\
-const html = document.documentElement;
+const htmljs = `\
+var html = document.querySelector('html');
+html.classList.remove('no-js');
 html.classList.add('js');`;
 
 const dirs = ['build'];
 while (dirs.length) {
   const dir = dirs.pop();
   fs.readdirSync(dir).forEach((entry) => {
-    const path = dir + '/' + entry;
+    path = dir + '/' + entry;
     const stat = fs.statSync(path);
     if (stat.isDirectory()) {
       dirs.push(path);
@@ -51,12 +43,10 @@ while (dirs.length) {
     }
 
     const index = fs.readFileSync(path, 'utf8');
-    const $ = cheerio.load(index, {
-      decodeEntities: false,
-      xml: { xmlMode: false },
-    });
+    const $ = cheerio.load(index, { decodeEntities: false });
 
     $('head').append(opengraph);
+    $('script:nth-of-type(3)').text(htmljs);
     $('nav#sidebar ol.chapter').append(githublink);
     $('head link[href="tomorrow-night.css"]').attr('disabled', true);
     $('head link[href="ayu-highlight.css"]').attr('disabled', true);
@@ -68,14 +58,15 @@ while (dirs.length) {
         return;
       }
       const lang = langClass.replace('language-', '');
-      const originalLines = node.html().split('\n');
-      const boring = originalLines.map((line) =>
-        line.includes('<span class="boring">'),
+      const lines = node.html().split('\n');
+      const boring = lines.map((line) =>
+        line.includes('<span class="boring">')
       );
-      const ellipsis = originalLines.map((line) => line.includes('// ...'));
+      const ellipsis = lines.map((line) => line.includes('// ...'));
       const target = entities.decode(node.text());
-      const highlightedLines = hljs.highlight(lang, target).value.split('\n');
-      const result = highlightedLines
+      const highlighted = hljs.highlight(lang, target).value;
+      const result = highlighted
+        .split('\n')
         .map(function (line, i) {
           if (boring[i]) {
             line = '<span class="boring">' + line;
@@ -84,9 +75,6 @@ while (dirs.length) {
           }
           if (i > 0 && (boring[i - 1] || ellipsis[i - 1])) {
             line = '</span>' + line;
-          }
-          if (i + 1 === highlightedLines.length && (boring[i] || ellipsis[i])) {
-            line = line + '</span>';
           }
           return line;
         })
@@ -102,23 +90,6 @@ while (dirs.length) {
       $(this).addClass('hljs');
     });
 
-    var foundScript = false;
-    $('body script').each(function () {
-      const node = $(this);
-      if (node.text().replace(/\s/g, '') === themejs.replace(/\s/g, '')) {
-        node.text(themejsReplacement);
-        foundScript = true;
-      }
-    });
-    const pathsWithoutScript = [
-      'build/toc.html',
-      'build/build/index.html',
-      'build/binding/index.html',
-    ];
-    if (!foundScript && !pathsWithoutScript.includes(path)) {
-      throw new Error(`theme script not found in ${path}`);
-    }
-
     const out = $.html();
     fs.writeFileSync(path, out);
   });
@@ -130,8 +101,5 @@ fs.copyFileSync('build/highlight.css', 'build/ayu-highlight.css');
 var bookjs = fs.readFileSync('build/book.js', 'utf8');
 bookjs = bookjs
   .replace('set_theme(theme, false);', '')
-  .replace(
-    'document.querySelectorAll("code.hljs")',
-    'document.querySelectorAll("code.hidelines")',
-  );
+  .replace('document.querySelectorAll("code.hljs")', 'document.querySelectorAll("code.hidelines")');
 fs.writeFileSync('build/book.js', bookjs);

@@ -1,45 +1,47 @@
-#![feature(cfg_version)]
-#![cfg_attr(not(version("1.81")), feature(lint_reasons))]
-
 #![allow(
     clippy::cast_sign_loss,
+    clippy::default_trait_access,
+    clippy::derive_partial_eq_without_eq,
     clippy::doc_markdown,
-    clippy::elidable_lifetime_names,
     clippy::enum_glob_use,
-    clippy::expl_impl_clone_on_copy, // https://github.com/rust-lang/rust-clippy/issues/15842
+    clippy::if_same_then_else,
     clippy::inherent_to_string,
+    clippy::into_iter_without_iter,
     clippy::items_after_statements,
+    clippy::large_enum_variant,
     clippy::match_bool,
-    clippy::match_like_matches_macro,
     clippy::match_same_arms,
+    clippy::module_name_repetitions,
     clippy::needless_lifetimes,
     clippy::needless_pass_by_value,
+    clippy::new_without_default,
     clippy::nonminimal_bool,
-    clippy::precedence,
+    clippy::or_fun_call,
     clippy::redundant_else,
     clippy::ref_option,
+    clippy::shadow_unrelated,
     clippy::similar_names,
+    clippy::single_match,
     clippy::single_match_else,
     clippy::struct_field_names,
     clippy::too_many_arguments,
     clippy::too_many_lines,
     clippy::toplevel_ref_arg,
     clippy::uninlined_format_args,
-    clippy::wrong_self_convention
+    clippy::useless_let_if_seq
 )]
-#![cfg_attr(test, allow(dead_code, unfulfilled_lint_expectations))]
-#![allow(unknown_lints, mismatched_lifetime_syntaxes)]
 
-mod attrs;
-mod cfg;
 mod derive;
 mod expand;
 mod generics;
 mod syntax;
-#[cfg(test)]
-mod tests;
 mod tokens;
 mod type_id;
+
+#[cfg(feature = "experimental-enum-variants-from-header")]
+mod clang;
+#[cfg(feature = "experimental-enum-variants-from-header")]
+mod load;
 
 use crate::syntax::file::Module;
 use crate::syntax::namespace::Namespace;

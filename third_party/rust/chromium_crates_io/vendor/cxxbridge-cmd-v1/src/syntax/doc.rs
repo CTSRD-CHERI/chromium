@@ -19,12 +19,12 @@ impl Doc {
         self.fragments.push(lit);
     }
 
-    #[cfg_attr(proc_macro, expect(dead_code))]
+    #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
     pub(crate) fn is_empty(&self) -> bool {
         self.fragments.is_empty()
     }
 
-    #[cfg_attr(proc_macro, expect(dead_code))]
+    #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
     pub(crate) fn to_string(&self) -> String {
         let mut doc = String::new();
         for lit in &self.fragments {
