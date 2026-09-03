@@ -1,9 +1,8 @@
 use crate::syntax::atom::Atom::{self, *};
-use crate::syntax::message::Message;
 use crate::syntax::report::Errors;
 use crate::syntax::visit::{self, Visit};
 use crate::syntax::{
-    error, ident, trivial, Api, Array, Enum, ExternFn, ExternType, FnKind, Impl, Lang, Lifetimes,
+    error, ident, trivial, Api, Array, Enum, ExternFn, ExternType, Impl, Lang, Lifetimes,
     NamedType, Ptr, Receiver, Ref, Signature, SliceRef, Struct, Trait, Ty1, Type, TypeAlias, Types,
 };
 use proc_macro2::{Delimiter, Group, Ident, TokenStream};
@@ -20,14 +19,14 @@ pub(crate) struct Check<'a> {
 
 pub(crate) enum Generator {
     // cxx-build crate, cxxbridge cli, cxx-gen.
-    #[cfg_attr(proc_macro, expect(dead_code))]
+    #[allow(dead_code)]
     Build,
     // cxxbridge-macro. This is relevant in that the macro output is going to
     // get fed straight to rustc, so for errors that rustc already contains
     // logic to catch (probably with a better diagnostic than what the proc
     // macro API is able to produce), we avoid duplicating them in our own
     // diagnostics.
-    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    #[allow(dead_code)]
     Macro,
 }
 
@@ -133,10 +132,6 @@ fn check_type_rust_vec(cx: &mut Check, ty: &Ty1) {
             }
         }
         Type::Str(_) => return,
-        Type::RustBox(ty1) => {
-            check_type_box(cx, ty1);
-            return;
-        }
         _ => {}
     }
 
@@ -233,13 +228,7 @@ fn check_type_cxx_vector(cx: &mut Check, ptr: &Ty1) {
 fn check_type_ref(cx: &mut Check, ty: &Ref) {
     if ty.mutable && !ty.pinned {
         if let Some(requires_pin) = match &ty.inner {
-            Type::Ident(ident)
-                if ident.rust == CxxString
-                    || (cx.types.cxx.contains(&ident.rust)
-                        && !cx.types.structs.contains_key(&ident.rust)
-                        && !cx.types.enums.contains_key(&ident.rust)
-                        && !cx.types.aliases.contains_key(&ident.rust)) =>
-            {
+            Type::Ident(ident) if ident.rust == CxxString || is_opaque_cxx(cx, &ident.rust) => {
                 Some(ident.rust.to_string())
             }
             Type::CxxVector(_) => Some("CxxVector<...>".to_owned()),
@@ -281,7 +270,7 @@ fn check_type_ptr(cx: &mut Check, ty: &Ptr) {
 }
 
 fn check_type_slice_ref(cx: &mut Check, ty: &SliceRef) {
-    let supported = !is_unsized(cx.types, &ty.inner)
+    let supported = !is_unsized(cx, &ty.inner)
         || match &ty.inner {
             Type::Ident(ident) => {
                 cx.types.rust.contains(&ident.rust) || cx.types.aliases.contains_key(&ident.rust)
@@ -293,10 +282,7 @@ fn check_type_slice_ref(cx: &mut Check, ty: &SliceRef) {
         let mutable = if ty.mutable { "mut " } else { "" };
         let mut msg = format!("unsupported &{}[T] element type", mutable);
         if let Type::Ident(ident) = &ty.inner {
-            if cx.types.cxx.contains(&ident.rust)
-                && !cx.types.structs.contains_key(&ident.rust)
-                && !cx.types.enums.contains_key(&ident.rust)
-            {
+            if is_opaque_cxx(cx, &ident.rust) {
                 msg += ": opaque C++ type is not supported yet";
             }
         }
@@ -305,7 +291,7 @@ fn check_type_slice_ref(cx: &mut Check, ty: &SliceRef) {
 }
 
 fn check_type_array(cx: &mut Check, ty: &Array) {
-    let supported = !is_unsized(cx.types, &ty.inner);
+    let supported = !is_unsized(cx, &ty.inner);
 
     if !supported {
         cx.error(ty, "unsupported array element type");
@@ -347,29 +333,9 @@ fn check_api_struct(cx: &mut Check, strct: &Struct) {
     }
 
     for derive in &strct.derives {
-        match derive.what {
-            Trait::Clone
-            | Trait::Copy
-            | Trait::Debug
-            | Trait::Default
-            | Trait::Eq
-            | Trait::Hash
-            | Trait::Ord
-            | Trait::PartialEq
-            | Trait::PartialOrd
-            | Trait::Serialize
-            | Trait::Deserialize => {}
-            Trait::BitAnd | Trait::BitOr | Trait::BitXor => {
-                let msg = format!(
-                    "derive({}) is currently only supported on enums, not structs",
-                    derive,
-                );
-                cx.error(derive, msg);
-            }
-            Trait::ExternType => {
-                let msg = format!("derive({}) on shared struct is not supported", derive);
-                cx.error(derive, msg);
-            }
+        if derive.what == Trait::ExternType {
+            let msg = format!("derive({}) on shared struct is not supported", derive);
+            cx.error(derive, msg);
         }
     }
 
@@ -379,8 +345,8 @@ fn check_api_struct(cx: &mut Check, strct: &Struct) {
                 field,
                 "function pointers in a struct field are not implemented yet",
             );
-        } else if is_unsized(cx.types, &field.ty) {
-            let desc = describe(cx.types, &field.ty);
+        } else if is_unsized(cx, &field.ty) {
+            let desc = describe(cx, &field.ty);
             let msg = format!("using {} by value is not supported", desc);
             cx.error(field, msg);
         }
@@ -391,7 +357,7 @@ fn check_api_enum(cx: &mut Check, enm: &Enum) {
     check_reserved_name(cx, &enm.name.rust);
     check_lifetimes(cx, &enm.generics);
 
-    if enm.variants.is_empty() && !enm.explicit_repr {
+    if enm.variants.is_empty() && !enm.explicit_repr && !enm.variants_from_header {
         let span = span_for_enum_error(enm);
         cx.error(
             span,
@@ -400,35 +366,9 @@ fn check_api_enum(cx: &mut Check, enm: &Enum) {
     }
 
     for derive in &enm.derives {
-        match derive.what {
-            Trait::BitAnd
-            | Trait::BitOr
-            | Trait::BitXor
-            | Trait::Clone
-            | Trait::Copy
-            | Trait::Debug
-            | Trait::Eq
-            | Trait::Hash
-            | Trait::Ord
-            | Trait::PartialEq
-            | Trait::PartialOrd
-            | Trait::Serialize
-            | Trait::Deserialize => {}
-            Trait::Default => {
-                let default_variants = enm.variants.iter().filter(|v| v.default).count();
-                if default_variants != 1 {
-                    let mut msg = Message::new();
-                    write!(msg, "derive(Default) on enum requires exactly one variant to be marked with #[default]");
-                    if default_variants > 0 {
-                        write!(msg, " (found {})", default_variants);
-                    }
-                    cx.error(derive, msg);
-                }
-            }
-            Trait::ExternType => {
-                let msg = "derive(ExternType) on shared enum is not supported";
-                cx.error(derive, msg);
-            }
+        if derive.what == Trait::Default || derive.what == Trait::ExternType {
+            let msg = format!("derive({}) on shared enum is not supported", derive);
+            cx.error(derive, msg);
         }
     }
 }
@@ -443,7 +383,7 @@ fn check_api_type(cx: &mut Check, ety: &ExternType) {
         }
         let lang = match ety.lang {
             Lang::Rust => "Rust",
-            Lang::Cxx | Lang::CxxUnwind => "C++",
+            Lang::Cxx => "C++",
         };
         let msg = format!(
             "derive({}) on opaque {} type is not supported yet",
@@ -469,7 +409,7 @@ fn check_api_type(cx: &mut Check, ety: &ExternType) {
 
 fn check_api_fn(cx: &mut Check, efn: &ExternFn) {
     match efn.lang {
-        Lang::Cxx | Lang::CxxUnwind => {
+        Lang::Cxx => {
             if !efn.generics.params.is_empty() && !efn.trusted {
                 let ref span = span_for_generics_error(efn);
                 cx.error(span, "extern C++ function with lifetimes must be declared in `unsafe extern \"C++\"` block");
@@ -487,61 +427,40 @@ fn check_api_fn(cx: &mut Check, efn: &ExternFn) {
         }
     }
 
-    check_generics(cx, &efn.generics);
+    check_generics(cx, &efn.sig.generics);
 
-    match &efn.kind {
-        FnKind::Method(receiver) => {
-            let ref span = span_for_receiver_error(receiver);
+    if let Some(receiver) = &efn.receiver {
+        let ref span = span_for_receiver_error(receiver);
 
-            if receiver.ty.rust == "Self" {
-                let mutability = match receiver.mutable {
-                    true => "mut ",
-                    false => "",
-                };
-                let msg = format!(
-                    "unnamed receiver type is only allowed if the surrounding extern block contains exactly one extern type; use `self: &{mutability}TheType`",
-                    mutability = mutability,
-                );
-                cx.error(span, msg);
-            } else if cx.types.enums.contains_key(&receiver.ty.rust) {
-                cx.error(
-                    span,
-                    "unsupported receiver type; C++ does not allow member functions on enums",
-                );
-            } else if !cx.types.structs.contains_key(&receiver.ty.rust)
-                && !cx.types.cxx.contains(&receiver.ty.rust)
-                && !cx.types.rust.contains(&receiver.ty.rust)
-            {
-                cx.error(span, "unrecognized receiver type");
-            } else if receiver.mutable
-                && !receiver.pinned
-                && cx.types.cxx.contains(&receiver.ty.rust)
-                && !cx.types.structs.contains_key(&receiver.ty.rust)
-                && !cx.types.aliases.contains_key(&receiver.ty.rust)
-            {
-                cx.error(
-                    span,
-                    format!(
-                        "mutable reference to opaque C++ type requires a pin -- use `self: Pin<&mut {}>`",
-                        receiver.ty.rust,
-                    ),
-                );
-            }
+        if receiver.ty.rust == "Self" {
+            let mutability = match receiver.mutable {
+                true => "mut ",
+                false => "",
+            };
+            let msg = format!(
+                "unnamed receiver type is only allowed if the surrounding extern block contains exactly one extern type; use `self: &{mutability}TheType`",
+                mutability = mutability,
+            );
+            cx.error(span, msg);
+        } else if cx.types.enums.contains_key(&receiver.ty.rust) {
+            cx.error(
+                span,
+                "unsupported receiver type; C++ does not allow member functions on enums",
+            );
+        } else if !cx.types.structs.contains_key(&receiver.ty.rust)
+            && !cx.types.cxx.contains(&receiver.ty.rust)
+            && !cx.types.rust.contains(&receiver.ty.rust)
+        {
+            cx.error(span, "unrecognized receiver type");
+        } else if receiver.mutable && !receiver.pinned && is_opaque_cxx(cx, &receiver.ty.rust) {
+            cx.error(
+                span,
+                format!(
+                    "mutable reference to opaque C++ type requires a pin -- use `self: Pin<&mut {}>`",
+                    receiver.ty.rust,
+                ),
+            );
         }
-        FnKind::Assoc(self_type) => {
-            if cx.types.enums.contains_key(self_type) {
-                cx.error(
-                    self_type,
-                    "unsupported self type; C++ does not allow member functions on enums",
-                );
-            } else if !cx.types.structs.contains_key(self_type)
-                && !cx.types.cxx.contains(self_type)
-                && !cx.types.rust.contains(self_type)
-            {
-                cx.error(self_type, "unrecognized self type");
-            }
-        }
-        FnKind::Free => {}
     }
 
     for arg in &efn.args {
@@ -553,14 +472,14 @@ fn check_api_fn(cx: &mut Check, efn: &ExternFn) {
                 );
             }
         } else if let Type::Ptr(_) = arg.ty {
-            if efn.unsafety.is_none() {
+            if efn.sig.unsafety.is_none() {
                 cx.error(
                     arg,
                     "pointer argument requires that the function be marked unsafe",
                 );
             }
-        } else if is_unsized(cx.types, &arg.ty) {
-            let desc = describe(cx.types, &arg.ty);
+        } else if is_unsized(cx, &arg.ty) {
+            let desc = describe(cx, &arg.ty);
             let msg = format!("passing {} by value is not supported", desc);
             cx.error(arg, msg);
         }
@@ -569,8 +488,8 @@ fn check_api_fn(cx: &mut Check, efn: &ExternFn) {
     if let Some(ty) = &efn.ret {
         if let Type::Fn(_) = ty {
             cx.error(ty, "returning a function pointer is not implemented yet");
-        } else if is_unsized(cx.types, ty) {
-            let desc = describe(cx.types, ty);
+        } else if is_unsized(cx, ty) {
+            let desc = describe(cx, ty);
             let msg = format!("returning {} by value is not supported", desc);
             cx.error(ty, msg);
         }
@@ -609,19 +528,19 @@ fn check_api_impl(cx: &mut Check, imp: &Impl) {
         | Type::WeakPtr(ty)
         | Type::CxxVector(ty) => {
             if let Type::Ident(inner) = &ty.inner {
-                // Reject `impl Vec<u8>` and other built-in impls.
-                if Atom::from(&inner.rust).is_some() {
-                    cx.error(imp, "unsupported Self type of explicit impl");
+                if Atom::from(&inner.rust).is_none() {
+                    return;
                 }
             }
         }
-        // Reject `impl fn() -> &S {}`, `impl [S]`, etc.
-        _ => cx.error(imp, "unsupported Self type of explicit impl"),
+        _ => {}
     }
+
+    cx.error(imp, "unsupported Self type of explicit impl");
 }
 
 fn check_mut_return_restriction(cx: &mut Check, efn: &ExternFn) {
-    if efn.unsafety.is_some() {
+    if efn.sig.unsafety.is_some() {
         // Unrestricted as long as the function is made unsafe-to-call.
         return;
     }
@@ -632,7 +551,7 @@ fn check_mut_return_restriction(cx: &mut Check, efn: &ExternFn) {
         _ => return,
     }
 
-    if let Some(receiver) = efn.receiver() {
+    if let Some(receiver) = &efn.receiver {
         if receiver.mutable {
             return;
         }
@@ -721,19 +640,13 @@ fn check_generics(cx: &mut Check, generics: &Generics) {
     }
 }
 
-fn is_unsized(types: &Types, ty: &Type) -> bool {
+fn is_unsized(cx: &mut Check, ty: &Type) -> bool {
     match ty {
         Type::Ident(ident) => {
             let ident = &ident.rust;
-            ident == CxxString
-                || (types.cxx.contains(ident)
-                    && !types.structs.contains_key(ident)
-                    && !types.enums.contains_key(ident)
-                    && !(types.aliases.contains_key(ident)
-                        && types.required_trivial.contains_key(ident)))
-                || types.rust.contains(ident)
+            ident == CxxString || is_opaque_cxx(cx, ident) || cx.types.rust.contains(ident)
         }
-        Type::Array(array) => is_unsized(types, &array.inner),
+        Type::Array(array) => is_unsized(cx, &array.inner),
         Type::CxxVector(_) | Type::Fn(_) | Type::Void(_) => true,
         Type::RustBox(_)
         | Type::RustVec(_)
@@ -745,6 +658,13 @@ fn is_unsized(types: &Types, ty: &Type) -> bool {
         | Type::Str(_)
         | Type::SliceRef(_) => false,
     }
+}
+
+fn is_opaque_cxx(cx: &mut Check, ty: &Ident) -> bool {
+    cx.types.cxx.contains(ty)
+        && !cx.types.structs.contains_key(ty)
+        && !cx.types.enums.contains_key(ty)
+        && !(cx.types.aliases.contains_key(ty) && cx.types.required_trivial.contains_key(ty))
 }
 
 fn span_for_struct_error(strct: &Struct) -> TokenStream {
@@ -781,18 +701,18 @@ fn span_for_generics_error(efn: &ExternFn) -> TokenStream {
     quote!(#unsafety #fn_token #generics)
 }
 
-fn describe(types: &Types, ty: &Type) -> String {
+fn describe(cx: &mut Check, ty: &Type) -> String {
     match ty {
         Type::Ident(ident) => {
-            if types.structs.contains_key(&ident.rust) {
+            if cx.types.structs.contains_key(&ident.rust) {
                 "struct".to_owned()
-            } else if types.enums.contains_key(&ident.rust) {
+            } else if cx.types.enums.contains_key(&ident.rust) {
                 "enum".to_owned()
-            } else if types.aliases.contains_key(&ident.rust) {
+            } else if cx.types.aliases.contains_key(&ident.rust) {
                 "C++ type".to_owned()
-            } else if types.cxx.contains(&ident.rust) {
+            } else if cx.types.cxx.contains(&ident.rust) {
                 "opaque C++ type".to_owned()
-            } else if types.rust.contains(&ident.rust) {
+            } else if cx.types.rust.contains(&ident.rust) {
                 "opaque Rust type".to_owned()
             } else if Atom::from(&ident.rust) == Some(CxxString) {
                 "C++ string".to_owned()

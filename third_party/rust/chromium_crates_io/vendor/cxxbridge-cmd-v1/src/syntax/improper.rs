@@ -1,7 +1,6 @@
 use self::ImproperCtype::*;
 use crate::syntax::atom::Atom::{self, *};
-use crate::syntax::query::TypeQuery;
-use crate::syntax::Types;
+use crate::syntax::{Type, Types};
 use proc_macro2::Ident;
 
 pub(crate) enum ImproperCtype<'a> {
@@ -11,12 +10,9 @@ pub(crate) enum ImproperCtype<'a> {
 
 impl<'a> Types<'a> {
     // yes, no, maybe
-    pub(crate) fn determine_improper_ctype(
-        &self,
-        ty: impl Into<TypeQuery<'a>>,
-    ) -> ImproperCtype<'a> {
-        match ty.into() {
-            TypeQuery::Ident(ident) => {
+    pub(crate) fn determine_improper_ctype(&self, ty: &Type) -> ImproperCtype<'a> {
+        match ty {
+            Type::Ident(ident) => {
                 let ident = &ident.rust;
                 if let Some(atom) = Atom::from(ident) {
                     Definite(atom == RustString)
@@ -26,19 +22,18 @@ impl<'a> Types<'a> {
                     Definite(self.rust.contains(ident) || self.aliases.contains_key(ident))
                 }
             }
-            TypeQuery::RustBox
-            | TypeQuery::RustVec
-            | TypeQuery::Str
-            | TypeQuery::Fn
-            | TypeQuery::Void
-            | TypeQuery::SliceRef => Definite(true),
-            TypeQuery::UniquePtr
-            | TypeQuery::SharedPtr
-            | TypeQuery::WeakPtr
-            | TypeQuery::CxxVector => Definite(false),
-            TypeQuery::Ref(ty) => self.determine_improper_ctype(&ty.inner),
-            TypeQuery::Ptr(ty) => self.determine_improper_ctype(&ty.inner),
-            TypeQuery::Array(ty) => self.determine_improper_ctype(&ty.inner),
+            Type::RustBox(_)
+            | Type::RustVec(_)
+            | Type::Str(_)
+            | Type::Fn(_)
+            | Type::Void(_)
+            | Type::SliceRef(_) => Definite(true),
+            Type::UniquePtr(_) | Type::SharedPtr(_) | Type::WeakPtr(_) | Type::CxxVector(_) => {
+                Definite(false)
+            }
+            Type::Ref(ty) => self.determine_improper_ctype(&ty.inner),
+            Type::Ptr(ty) => self.determine_improper_ctype(&ty.inner),
+            Type::Array(ty) => self.determine_improper_ctype(&ty.inner),
         }
     }
 }

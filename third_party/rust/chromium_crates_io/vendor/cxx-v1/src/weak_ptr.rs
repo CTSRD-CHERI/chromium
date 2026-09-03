@@ -4,7 +4,6 @@ use core::ffi::c_void;
 use core::fmt::{self, Debug};
 use core::marker::PhantomData;
 use core::mem::MaybeUninit;
-use core::ptr;
 
 /// Binding to C++ `std::weak_ptr<T>`.
 ///
@@ -45,7 +44,7 @@ where
     where
         T: SharedPtrTarget,
     {
-        let this = ptr::from_ref::<Self>(self).cast::<c_void>();
+        let this = self as *const Self as *const c_void;
         let mut shared_ptr = MaybeUninit::<SharedPtr<T>>::uninit();
         let new = shared_ptr.as_mut_ptr().cast();
         unsafe {
@@ -65,7 +64,7 @@ where
     fn clone(&self) -> Self {
         let mut weak_ptr = MaybeUninit::<WeakPtr<T>>::uninit();
         let new = weak_ptr.as_mut_ptr().cast();
-        let this = ptr::from_ref::<Self>(self).cast::<c_void>();
+        let this = self as *const Self as *mut c_void;
         unsafe {
             T::__clone(this, new);
             weak_ptr.assume_init()
@@ -78,7 +77,7 @@ where
     T: WeakPtrTarget,
 {
     fn drop(&mut self) {
-        let this = ptr::from_mut::<Self>(self).cast::<c_void>();
+        let this = self as *mut Self as *mut c_void;
         unsafe { T::__drop(this) }
     }
 }

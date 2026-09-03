@@ -5,7 +5,7 @@ pub(crate) mod attrs;
 pub(crate) mod cfg;
 pub(crate) mod check;
 pub(crate) mod derive;
-pub(crate) mod discriminant;
+mod discriminant;
 mod doc;
 pub(crate) mod error;
 pub(crate) mod file;
@@ -15,25 +15,19 @@ mod improper;
 pub(crate) mod instantiate;
 pub(crate) mod mangle;
 pub(crate) mod map;
-pub(crate) mod message;
 mod names;
 pub(crate) mod namespace;
 mod parse;
 mod pod;
-pub(crate) mod primitive;
 pub(crate) mod qualified;
-pub(crate) mod query;
 pub(crate) mod report;
-pub(crate) mod repr;
 pub(crate) mod resolve;
 pub(crate) mod set;
-mod signature;
 pub(crate) mod symbol;
 mod tokens;
 mod toposort;
 pub(crate) mod trivial;
 pub(crate) mod types;
-pub(crate) mod unpin;
 mod visit;
 
 use self::attrs::OtherAttrs;
@@ -44,7 +38,7 @@ use self::symbol::Symbol;
 use proc_macro2::{Ident, Span};
 use syn::punctuated::Punctuated;
 use syn::token::{Brace, Bracket, Paren};
-use syn::{Expr, Generics, Lifetime, LitInt, Token, Type as RustType};
+use syn::{Attribute, Expr, Generics, Lifetime, LitInt, Token, Type as RustType};
 
 pub(crate) use self::atom::Atom;
 pub(crate) use self::derive::{Derive, Trait};
@@ -55,7 +49,7 @@ pub(crate) use self::parse::parse_items;
 pub(crate) use self::types::Types;
 
 pub(crate) enum Api {
-    #[cfg_attr(proc_macro, expect(dead_code))]
+    #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
     Include(Include),
     Struct(Struct),
     Enum(Enum),
@@ -71,9 +65,9 @@ pub(crate) struct Include {
     pub cfg: CfgExpr,
     pub path: String,
     pub kind: IncludeKind,
-    #[cfg_attr(proc_macro, expect(dead_code))]
+    #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
     pub begin_span: Span,
-    #[cfg_attr(proc_macro, expect(dead_code))]
+    #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
     pub end_span: Span,
 }
 
@@ -87,32 +81,34 @@ pub enum IncludeKind {
 }
 
 pub(crate) struct ExternType {
-    #[cfg_attr(proc_macro, expect(dead_code))]
+    #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
     pub cfg: CfgExpr,
     pub lang: Lang,
     pub doc: Doc,
     pub derives: Vec<Derive>,
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub attrs: OtherAttrs,
-    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub visibility: Token![pub],
     pub type_token: Token![type],
     pub name: Pair,
     pub generics: Lifetimes,
-    #[expect(dead_code)]
+    #[allow(dead_code)]
     pub colon_token: Option<Token![:]>,
     pub bounds: Vec<Derive>,
-    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub semi_token: Token![;],
     pub trusted: bool,
 }
 
 pub(crate) struct Struct {
+    #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
     pub cfg: CfgExpr,
     pub doc: Doc,
     pub derives: Vec<Derive>,
-    pub align: Option<LitInt>,
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub attrs: OtherAttrs,
-    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub visibility: Token![pub],
     pub struct_token: Token![struct],
     pub name: Pair,
@@ -122,33 +118,45 @@ pub(crate) struct Struct {
 }
 
 pub(crate) struct Enum {
+    #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
     pub cfg: CfgExpr,
     pub doc: Doc,
     pub derives: Vec<Derive>,
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub attrs: OtherAttrs,
-    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub visibility: Token![pub],
     pub enum_token: Token![enum],
     pub name: Pair,
     pub generics: Lifetimes,
     pub brace_token: Brace,
     pub variants: Vec<Variant>,
+    pub variants_from_header: bool,
+    #[allow(dead_code)]
+    pub variants_from_header_attr: Option<Attribute>,
     pub repr: EnumRepr,
     pub explicit_repr: bool,
 }
 
-pub(crate) struct EnumRepr {
-    pub atom: Atom,
-    pub repr_type: Type,
+pub(crate) enum EnumRepr {
+    Native {
+        atom: Atom,
+        repr_type: Type,
+    },
+    #[cfg(feature = "experimental-enum-variants-from-header")]
+    Foreign {
+        rust_type: syn::Path,
+    },
 }
 
 pub(crate) struct ExternFn {
+    #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
     pub cfg: CfgExpr,
     pub lang: Lang,
     pub doc: Doc,
-    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub attrs: OtherAttrs,
-    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub visibility: Token![pub],
     pub name: Pair,
     pub sig: Signature,
@@ -157,34 +165,36 @@ pub(crate) struct ExternFn {
 }
 
 pub(crate) struct TypeAlias {
-    #[cfg_attr(proc_macro, expect(dead_code))]
+    #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
     pub cfg: CfgExpr,
-    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub doc: Doc,
     pub derives: Vec<Derive>,
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub attrs: OtherAttrs,
-    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub visibility: Token![pub],
     pub type_token: Token![type],
     pub name: Pair,
     pub generics: Lifetimes,
-    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub eq_token: Token![=],
-    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub ty: RustType,
-    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub semi_token: Token![;],
 }
 
 pub(crate) struct Impl {
+    #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
     pub cfg: CfgExpr,
-    #[expect(dead_code)]
-    pub attrs: OtherAttrs,
     pub impl_token: Token![impl],
     pub impl_generics: Lifetimes,
-    #[expect(dead_code)]
+    #[allow(dead_code)]
     pub negative: bool,
     pub ty: Type,
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
+    pub ty_generics: Lifetimes,
     pub brace_token: Brace,
     pub negative_token: Option<Token![!]>,
 }
@@ -201,7 +211,7 @@ pub(crate) struct Signature {
     pub unsafety: Option<Token![unsafe]>,
     pub fn_token: Token![fn],
     pub generics: Generics,
-    pub kind: FnKind,
+    pub receiver: Option<Receiver>,
     pub args: Punctuated<Var, Token![,]>,
     pub ret: Option<Type>,
     pub throws: bool,
@@ -209,25 +219,16 @@ pub(crate) struct Signature {
     pub throws_tokens: Option<(kw::Result, Token![<], Token![>])>,
 }
 
-#[derive(PartialEq, Hash)]
-pub(crate) enum FnKind {
-    /// Rust method or C++ non-static member function.
-    Method(Receiver),
-    /// Rust associated function or C++ static member function.
-    Assoc(Ident),
-    /// Non-member function.
-    Free,
-}
-
 pub(crate) struct Var {
+    #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
     pub cfg: CfgExpr,
     pub doc: Doc,
-    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub attrs: OtherAttrs,
-    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub visibility: Token![pub],
     pub name: Pair,
-    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub colon_token: Token![:],
     pub ty: Type,
 }
@@ -239,24 +240,23 @@ pub(crate) struct Receiver {
     pub mutable: bool,
     pub var: Token![self],
     pub ty: NamedType,
-    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub colon_token: Token![:],
     pub shorthand: bool,
-    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub pin_tokens: Option<(kw::Pin, Token![<], Token![>])>,
     pub mutability: Option<Token![mut]>,
 }
 
 pub(crate) struct Variant {
-    #[cfg_attr(proc_macro, expect(dead_code))]
+    #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
     pub cfg: CfgExpr,
     pub doc: Doc,
-    pub default: bool,
-    #[cfg_attr(not(proc_macro), expect(dead_code))]
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub attrs: OtherAttrs,
     pub name: Pair,
     pub discriminant: Discriminant,
-    #[expect(dead_code)]
+    #[allow(dead_code)]
     pub expr: Option<Expr>,
 }
 
@@ -322,7 +322,6 @@ pub(crate) struct Array {
 #[derive(Copy, Clone, PartialEq)]
 pub(crate) enum Lang {
     Cxx,
-    CxxUnwind,
     Rust,
 }
 
