@@ -31,13 +31,10 @@ pub(crate) struct Includes<'a> {
     pub functional: bool,
     pub initializer_list: bool,
     pub iterator: bool,
-    pub limits: bool,
     pub memory: bool,
     pub new: bool,
-    pub ranges: bool,
     pub stdexcept: bool,
     pub string: bool,
-    pub string_view: bool,
     pub type_traits: bool,
     pub utility: bool,
     pub vector: bool,
@@ -95,13 +92,10 @@ pub(super) fn write(out: &mut OutFile) {
         functional,
         initializer_list,
         iterator,
-        limits,
         memory,
         new,
-        ranges,
         stdexcept,
         string,
-        string_view,
         type_traits,
         utility,
         vector,
@@ -140,9 +134,6 @@ pub(super) fn write(out: &mut OutFile) {
     if iterator && !cxx_header {
         writeln!(out, "#include <iterator>");
     }
-    if limits {
-        writeln!(out, "#include <limits>");
-    }
     if memory {
         writeln!(out, "#include <memory>");
     }
@@ -179,16 +170,6 @@ pub(super) fn write(out: &mut OutFile) {
         writeln!(out, "#include <sys/types.h>");
     }
     if (basetsd || sys_types) && !cxx_header {
-        writeln!(out, "#endif");
-    }
-    if string_view && !cxx_header {
-        writeln!(out, "#if __cplusplus >= 201703L");
-        writeln!(out, "#include <string_view>");
-        writeln!(out, "#endif");
-    }
-    if ranges && !cxx_header {
-        writeln!(out, "#if __cplusplus >= 202002L");
-        writeln!(out, "#include <ranges>");
         writeln!(out, "#endif");
     }
 }

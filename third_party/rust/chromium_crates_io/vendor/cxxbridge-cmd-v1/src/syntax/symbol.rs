@@ -5,8 +5,7 @@ use quote::ToTokens;
 use std::fmt::{self, Display, Write};
 
 // A mangled symbol consisting of segments separated by '$'.
-// Example: cxxbridge1$string$new
-#[derive(Eq, Hash, PartialEq)]
+// For example: cxxbridge1$string$new
 pub(crate) struct Symbol(String);
 
 impl Display for Symbol {
@@ -38,11 +37,6 @@ impl Symbol {
         }
         assert!(!symbol.0.is_empty());
         symbol
-    }
-
-    #[cfg_attr(proc_macro, expect(dead_code))]
-    pub(crate) fn contains(&self, ch: char) -> bool {
-        self.0.contains(ch)
     }
 }
 

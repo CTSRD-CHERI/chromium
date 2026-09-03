@@ -134,7 +134,7 @@ mod tests {
             lang: Lang::Rust,
             doc: Doc::new(),
             derives: Vec::new(),
-            attrs: OtherAttrs::new(),
+            attrs: OtherAttrs::none(),
             visibility: Token![pub](Span::call_site()),
             type_token: Token![type](Span::call_site()),
             name: Pair {

@@ -22,7 +22,6 @@ rust_library(
     deps = [
         ":impl",
         "//:cxx",
-        "//third-party:serde",
     ],
 )
 

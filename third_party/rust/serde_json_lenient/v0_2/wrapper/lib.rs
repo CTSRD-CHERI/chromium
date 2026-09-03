@@ -16,30 +16,6 @@ const UTF8_BOM: [u8; 3] = [0xef, 0xbb, 0xbf];
 /// C++ bindings
 #[cxx::bridge(namespace=serde_json_lenient)]
 mod ffi {
-    // From the `wrapper_functions` target.
-    unsafe extern "C++" {
-        include!("third_party/rust/serde_json_lenient/v0_2/wrapper/functions.h");
-
-        type Dict;
-        type List;
-
-        fn list_append_none(ctx: Pin<&mut List>);
-        fn list_append_bool(ctx: Pin<&mut List>, val: bool);
-        fn list_append_i32(ctx: Pin<&mut List>, val: i32);
-        fn list_append_f64(ctx: Pin<&mut List>, val: f64);
-        fn list_append_str(ctx: Pin<&mut List>, val: &str);
-        fn list_append_list(ctx: Pin<&mut List>) -> Pin<&mut List>;
-        fn list_append_dict(ctx: Pin<&mut List>) -> Pin<&mut Dict>;
-
-        fn dict_set_none(ctx: Pin<&mut Dict>, key: &str);
-        fn dict_set_bool(ctx: Pin<&mut Dict>, key: &str, val: bool);
-        fn dict_set_i32(ctx: Pin<&mut Dict>, key: &str, val: i32);
-        fn dict_set_f64(ctx: Pin<&mut Dict>, key: &str, val: f64);
-        fn dict_set_str(ctx: Pin<&mut Dict>, key: &str, val: &str);
-        fn dict_set_list<'a>(ctx: Pin<&'a mut Dict>, key: &str) -> Pin<&'a mut List>;
-        fn dict_set_dict<'a>(ctx: Pin<&'a mut Dict>, key: &str) -> Pin<&'a mut Dict>;
-    }
-
     extern "Rust" {
         fn decode_json(
             json: &[u8],
@@ -80,6 +56,32 @@ mod ffi {
         /// objects. JSON beyond the specified depth will be ignored.
         max_depth: usize,
     }
+
+    // From the `wrapper_functions` target.
+    unsafe extern "C++" {
+        include!("third_party/rust/serde_json_lenient/v0_2/wrapper/functions.h");
+
+        type Dict;
+        type List;
+
+        fn list_append_none(ctx: Pin<&mut List>);
+        fn list_append_bool(ctx: Pin<&mut List>, val: bool);
+        fn list_append_i32(ctx: Pin<&mut List>, val: i32);
+        fn list_append_f64(ctx: Pin<&mut List>, val: f64);
+        fn list_append_str(ctx: Pin<&mut List>, val: &str);
+        fn list_append_list(ctx: Pin<&mut List>) -> Pin<&mut List>;
+        fn list_append_dict(ctx: Pin<&mut List>) -> Pin<&mut Dict>;
+
+        fn dict_set_none(ctx: Pin<&mut Dict>, key: &str);
+        fn dict_set_bool(ctx: Pin<&mut Dict>, key: &str, val: bool);
+        fn dict_set_i32(ctx: Pin<&mut Dict>, key: &str, val: i32);
+        fn dict_set_f64(ctx: Pin<&mut Dict>, key: &str, val: f64);
+        fn dict_set_str(ctx: Pin<&mut Dict>, key: &str, val: &str);
+        fn dict_set_list<'a>(ctx: Pin<&'a mut Dict>, key: &str) -> Pin<&'a mut List>;
+        fn dict_set_dict<'a>(ctx: Pin<&'a mut Dict>, key: &str) -> Pin<&'a mut Dict>;
+    }
+
+
 }
 
 pub type DecodeError = ffi::DecodeError;
