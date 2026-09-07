@@ -6,6 +6,7 @@
 # tools/crates/gnrt.
 # Do not edit!
 
+import("//build/config/cheri.gni")
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -69,7 +70,7 @@ cargo_crate("lib") {
   # Changing (if needed) which configs apply to this specific crate (based on
   # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
   # `gnrt_config.toml`).
-  _configs_to_remove += []
+  _configs_to_remove += [ "//build/config/compiler:disallow_unstable_features" ]
   _configs_to_add += []
 
   # Applying config changes.
@@ -79,4 +80,11 @@ cargo_crate("lib") {
   executable_configs += _configs_to_add
   proc_macro_configs -= _configs_to_remove
   proc_macro_configs += _configs_to_add
+
+  if (rustc_version == "rustc 1.72.1-dev") {
+    assert(target_cpu == "arm64" && is_cheri)
+    rustflags = [ "-Zallow-features=cfg_version,error_in_core,lint_reasons" ]
+  } else {
+    rustflags = [ "-Zallow-features=cfg_version" ]
+  }
 }
