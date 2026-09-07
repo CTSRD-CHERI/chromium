@@ -387,6 +387,9 @@
         missing_debug_implementations,
     )
 )]
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.81")), feature(error_in_core))]
+#![cfg_attr(not(version("1.81")), feature(lint_reasons))]
 
 pub(crate) mod core;
 mod error;
