@@ -53,7 +53,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PoolOffsetLookup {
     return address & (kPtrTagMask | ~base_mask_);
   }
 
-  PA_ALWAYS_INLINE void* GetPointer(uintptr_t tagged_offset) const {
+  PA_ALWAYS_INLINE void* GetPointer(size_t tagged_offset) const {
     PA_DCHECK(IsValidTaggedOffset(tagged_offset));
     return reinterpret_cast<void*>(base_address_ | tagged_offset);
   }
