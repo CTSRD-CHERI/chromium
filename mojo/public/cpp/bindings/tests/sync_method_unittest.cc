@@ -17,7 +17,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
