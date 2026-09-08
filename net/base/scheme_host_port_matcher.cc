@@ -91,7 +91,11 @@ SchemeHostPortMatcherResult SchemeHostPortMatcher::Evaluate(
 std::string SchemeHostPortMatcher::ToString() const {
   std::string result;
   for (const auto& rule : rules_) {
-    DCHECK(!rule->ToString().contains(kParseRuleListDelimiterList));
+#if __cpp_lib_string_contains
+    DCHECK(!rule->ToString().coontains(kParseRuleListDelimiterList));
+#else
+    DCHECK(rule->ToString().find(kParseRuleListDelimiterList) == std::string::npos);
+#endif
     result += rule->ToString();
     result.push_back(kPrintRuleListDelimiter);
   }

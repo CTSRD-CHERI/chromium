@@ -89,7 +89,11 @@ std::string SanitizeEmail(std::string_view email_address) {
   std::string sanitized(email_address);
 
   // Apply a default domain if necessary.
+#if __cpp_lib_string_contains
   if (!sanitized.contains('@')) {
+#else
+  if (!sanitized.find('@') != std::string::npos) {
+#endif
     sanitized += '@';
     sanitized += kGmailDomain;
   }

@@ -49,13 +49,25 @@ const char kDeviceRegistrationError[] = "PHONE_REGISTRATION_ERROR";
 
 // Gets correct status from the error message.
 UnregistrationRequest::Status GetStatusFromError(const std::string& error) {
+#if __cpp_lib_string_contains
   if (error.contains(kInvalidParameters)) {
+#else
+  if (error.find(kInvalidParameters) != std::string::npos) {
+#endif
     return UnregistrationRequest::INVALID_PARAMETERS;
   }
+#if __cpp_lib_string_contains
   if (error.contains(kInternalServerError)) {
+#else
+  if (error.find(kInternalServerError) != std::string::npos) {
+#endif
     return UnregistrationRequest::INTERNAL_SERVER_ERROR;
   }
+#if __cpp_lib_string_contains
   if (error.contains(kDeviceRegistrationError)) {
+#else
+  if (error.find(kDeviceRegistrationError) != std::string::npos) {
+#endif
     return UnregistrationRequest::DEVICE_REGISTRATION_ERROR;
   }
   // Should not be reached, unless the server adds new error types.

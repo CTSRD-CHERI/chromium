@@ -52,7 +52,11 @@ void InstanceIDDeleteTokenRequestHandler::BuildRequestBody(std::string* body) {
 UnregistrationRequest::Status
 InstanceIDDeleteTokenRequestHandler::ParseResponse(
     const std::string& response) {
+#if __cpp_lib_string_contains
   if (!response.contains(kTokenPrefix)) {
+#else
+  if (!response.find(kTokenPrefix) != std::string::npos) {
+#endif
     return UnregistrationRequest::RESPONSE_PARSING_FAILED;
   }
 

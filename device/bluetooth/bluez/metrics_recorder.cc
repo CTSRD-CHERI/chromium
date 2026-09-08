@@ -53,59 +53,115 @@ const char kBlueZUnknown[] = "br-connection-unknown";
 
 std::optional<ConnectToServiceInsecurelyResult> ExtractResultFromErrorString(
     const std::string& error_string) {
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZInvalidArgumentsError)) {
+#else
+  if (error_string.find(kBlueZInvalidArgumentsError) != std::string::npos) {
+#endif
     return ConnectToServiceInsecurelyResult::kInvalidArgumentsError;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZInProgressError)) {
+#else
+  if (error_string.find(kBlueZInProgressError) != std::string::npos) {
+#endif
     return ConnectToServiceInsecurelyResult::kInProgressError;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZAlreadyExistsError)) {
+#else
+  if (error_string.find(kBlueZAlreadyExistsError) != std::string::npos) {
+#endif
     return ConnectToServiceInsecurelyResult::kAlreadyExistsError;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZNotSupportedError)) {
+#else
+  if (error_string.find(kBlueZNotSupportedError) != std::string::npos) {
+#endif
     return ConnectToServiceInsecurelyResult::kNotSupportedError;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZNotConnectedError)) {
+#else
+  if (error_string.find(kBlueZNotConnectedError) != std::string::npos) {
+#endif
     return ConnectToServiceInsecurelyResult::kNotConnectedError;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZAlreadyConnectedError)) {
+#else
+  if (error_string.find(kBlueZAlreadyConnectedError) != std::string::npos) {
+#endif
     return ConnectToServiceInsecurelyResult::kAlreadyConnectedError;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZNotAvailableError)) {
+#else
+  if (error_string.find(kBlueZNotAvailableError) != std::string::npos) {
+#endif
     return ConnectToServiceInsecurelyResult::kNotAvailableError;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZDoesNotExistError)) {
+#else
+  if (error_string.find(kBlueZDoesNotExistError) != std::string::npos) {
+#endif
     return ConnectToServiceInsecurelyResult::kDoesNotExistError;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZNotAuthorizedError)) {
+#else
+  if (error_string.find(kBlueZNotAuthorizedError) != std::string::npos) {
+#endif
     return ConnectToServiceInsecurelyResult::kNotAuthorizedError;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZNotPermittedError)) {
+#else
+  if (error_string.find(kBlueZNotPermittedError) != std::string::npos) {
+#endif
     return ConnectToServiceInsecurelyResult::kNotPermittedError;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZNoSuchAdapterError)) {
+#else
+  if (error_string.find(kBlueZNoSuchAdapterError) != std::string::npos) {
+#endif
     return ConnectToServiceInsecurelyResult::kNoSuchAdapterError;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZAgentNotAvailableError)) {
+#else
+  if (error_string.find(kBlueZAgentNotAvailableError) != std::string::npos) {
+#endif
     return ConnectToServiceInsecurelyResult::kAgentNotAvailableError;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZNotReadyError)) {
+#else
+  if (error_string.find(kBlueZNotReadyError) != std::string::npos) {
+#endif
     return ConnectToServiceInsecurelyResult::kNotReadyError;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZFailedError)) {
+#else
+  if (error_string.find(kBlueZFailedError) != std::string::npos) {
+#endif
     return ConnectToServiceInsecurelyResult::kFailedError;
   }
 
@@ -114,79 +170,155 @@ std::optional<ConnectToServiceInsecurelyResult> ExtractResultFromErrorString(
 
 ConnectToServiceFailureReason ExtractFailureReasonFromErrorString(
     const std::string& error_string) {
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZConnectionAlreadyConnected)) {
+#else
+  if (error_string.find(kBlueZConnectionAlreadyConnected) != std::string::npos) {
+#endif
     return ConnectToServiceFailureReason::kReasonConnectionAlreadyConnected;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZPageTimeout)) {
+#else
+  if (error_string.find(kBlueZPageTimeout) != std::string::npos) {
+#endif
     return ConnectToServiceFailureReason::kReasonPageTimeout;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZProfileUnavailable)) {
+#else
+  if (error_string.find(kBlueZProfileUnavailable) != std::string::npos) {
+#endif
     return ConnectToServiceFailureReason::kReasonProfileUnavailable;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZSdpSearch)) {
+#else
+  if (error_string.find(kBlueZSdpSearch) != std::string::npos) {
+#endif
     return ConnectToServiceFailureReason::kReasonSdpSearch;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZCreateSocket)) {
+#else
+  if (error_string.find(kBlueZCreateSocket) != std::string::npos) {
+#endif
     return ConnectToServiceFailureReason::kReasonCreateSocket;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZInvalidArgument)) {
+#else
+  if (error_string.find(kBlueZInvalidArgument) != std::string::npos) {
+#endif
     return ConnectToServiceFailureReason::kReasonInvalidArgument;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZAdapterNotPowered)) {
+#else
+  if (error_string.find(kBlueZAdapterNotPowered) != std::string::npos) {
+#endif
     return ConnectToServiceFailureReason::kReasonAdapterNotPowered;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZNotSupported)) {
+#else
+  if (error_string.find(kBlueZNotSupported) != std::string::npos) {
+#endif
     return ConnectToServiceFailureReason::kReasonNotSupported;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZBadSocket)) {
+#else
+  if (error_string.find(kBlueZBadSocket) != std::string::npos) {
+#endif
     return ConnectToServiceFailureReason::kReasonBadSocket;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZMemoryAllocation)) {
+#else
+  if (error_string.find(kBlueZMemoryAllocation) != std::string::npos) {
+#endif
     return ConnectToServiceFailureReason::kReasonMemoryAllocation;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZBusy)) {
+#else
+  if (error_string.find(kBlueZBusy) != std::string::npos) {
+#endif
     return ConnectToServiceFailureReason::kReasonBusy;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZConcurrentConnectionLimit)) {
+#else
+  if (error_string.find(kBlueZConcurrentConnectionLimit) != std::string::npos) {
+#endif
     return ConnectToServiceFailureReason::kReasonConcurrentConnectionLimit;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZTimeout)) {
+#else
+  if (error_string.find(kBlueZTimeout) != std::string::npos) {
+#endif
     return ConnectToServiceFailureReason::kReasonTimeout;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZRefused)) {
+#else
+  if (error_string.find(kBlueZRefused) != std::string::npos) {
+#endif
     return ConnectToServiceFailureReason::kReasonRefused;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZAbortedByRemote)) {
+#else
+  if (error_string.find(kBlueZAbortedByRemote) != std::string::npos) {
+#endif
     return ConnectToServiceFailureReason::kReasonAbortedByRemote;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZAbortedByLocal)) {
+#else
+  if (error_string.find(kBlueZAbortedByLocal) != std::string::npos) {
+#endif
     return ConnectToServiceFailureReason::kReasonAbortedByLocal;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZLmpProtocolError)) {
+#else
+  if (error_string.find(kBlueZLmpProtocolError) != std::string::npos) {
+#endif
     return ConnectToServiceFailureReason::kReasonLmpProtocolError;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZCanceled)) {
+#else
+  if (error_string.find(kBlueZCanceled) != std::string::npos) {
+#endif
     return ConnectToServiceFailureReason::kReasonCanceled;
   }
 
+#if __cpp_lib_string_contains
   if (error_string.contains(kBlueZUnknown)) {
+#else
+  if (error_string.find(kBlueZUnknown) != std::string::npos) {
+#endif
     return ConnectToServiceFailureReason::kReasonUnknown;
   }
 

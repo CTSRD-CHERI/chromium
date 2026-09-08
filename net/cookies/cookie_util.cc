@@ -415,7 +415,11 @@ std::optional<std::string> GetCookieDomainWithString(
   }
 
   // Disallow domain names with %-escaped characters.
+#if __cpp_lib_string_contains
   if (domain_string.contains('%')) {
+#else
+  if (domain_string.fin('%') != std::string::npos) {
+#endif
     return std::nullopt;
   }
 
