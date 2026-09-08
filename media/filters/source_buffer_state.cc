@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/to_underlying.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_track.h"
@@ -717,7 +718,7 @@ bool SourceBufferState::OnNewConfigs(std::unique_ptr<MediaTracks> tracks) {
                                            media_log_);
     } else {
       MEDIA_LOG(ERROR, media_log_) << "Error: unsupported media track type "
-                                   << std::to_underlying(track->type());
+                                   << base::to_underlying(track->type());
       return false;
     }
   }

@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
+#include "base/to_underlying.h"
 
 namespace media::cast {
 namespace {
@@ -163,7 +164,7 @@ void ParseSegmentHeader(VpxBitReader* bit_reader) {
   const VpxBitReader::BitResult update_mb_segmentation_data =
       bit_reader->DecodeBit();
   DVLOG(2) << "update_mb_segmentation_data:"
-           << std::to_underlying(update_mb_segmentation_data);
+           << base::to_underlying(update_mb_segmentation_data);
   if (update_mb_segmentation_map == VpxBitReader::BitResult::kError ||
       update_mb_segmentation_data == VpxBitReader::BitResult::kError) {
     return;

@@ -14,6 +14,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/thread_annotations.h"
+#include "base/to_underlying.h"
 #include "build/build_config.h"
 
 namespace logging {
@@ -67,12 +68,7 @@ LogSeverity GetDumpSeverity() {
 
 LogSeverity GetNotFatalUntilSeverity(base::NotFatalUntil fatal_milestone) {
   if (fatal_milestone != base::NotFatalUntil::NoSpecifiedMilestoneInternal &&
-#if __cpp_lib_to_underlying
-      std::to_underlying(fatal_milestone) <= BASE_CHECK_VERSION_INTERNAL) {
-#else
-      static_cast<std::underlying_type_t<base::NotFatalUntil>>(fatal_milestone) <=
-          BASE_CHECK_VERSION_INTERNAL) {
-#endif
+      base::to_underlying(fatal_milestone) <= BASE_CHECK_VERSION_INTERNAL) {
     return LOGGING_FATAL;
   }
   return GetDumpSeverity();
@@ -117,7 +113,7 @@ void MaybeSetFatalMilestoneCrashKey(base::NotFatalUntil fatal_milestone) {
   }
   base::debug::SetCrashKeyString(
       GetFatalMilestoneCrashKey(),
-      base::NumberToString(std::to_underlying(fatal_milestone)));
+      base::NumberToString(base::to_underlying(fatal_milestone)));
 }
 
 void DumpWithoutCrashing(base::debug::CrashKeyString* message_key,

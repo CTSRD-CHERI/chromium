@@ -10,6 +10,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
+#include "base/to_underlying.h"
 #include "components/cbor/constants.h"
 #include "components/cbor/values.h"
 
@@ -93,10 +94,10 @@ std::optional<CBORHeader> InputReader::ReadCBORHeader() {
   switch (type) {
     case CBORType::kSimpleValue: {
       using SimpleValue = cbor::Value::SimpleValue;
-      if (additional_info == std::to_underlying(SimpleValue::TRUE_VALUE)) {
+      if (additional_info == base::to_underlying(SimpleValue::TRUE_VALUE)) {
         return {{true}};
       } else if (additional_info ==
-                 std::to_underlying(SimpleValue::FALSE_VALUE)) {
+                 base::to_underlying(SimpleValue::FALSE_VALUE)) {
         return {{false}};
       } else {
         return std::nullopt;
@@ -149,7 +150,7 @@ InputReader::ReadTypeAndArgument() {
   uint8_t type_byte = (*first_byte & cbor::constants::kMajorTypeMask) >>
                       cbor::constants::kMajorTypeBitShift;
   if (!base::Contains(kAcceptedCBORTypes, type_byte,
-                      &std::to_underlying<CBORType>)) {
+                      &base::to_underlying<CBORType>)) {
     return std::nullopt;
   }
 
