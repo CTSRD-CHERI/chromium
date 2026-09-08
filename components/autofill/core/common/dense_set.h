@@ -19,6 +19,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/to_underlying.h"
 
 namespace autofill {
 
@@ -276,7 +277,7 @@ struct EnumDenseSetTraits {
     return static_cast<T>(x);
   }
   static constexpr UnderlyingType to_underlying(T x) {
-    return std::to_underlying(x);
+    return base::to_underlying(x);
   }
   static constexpr bool is_valid(T x) { return true; }
 

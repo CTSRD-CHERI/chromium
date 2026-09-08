@@ -11,6 +11,8 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/to_underlying.h"
+
 namespace updater {
 
 // Provides a way to safely convert numeric types to enumerated values. To use
@@ -46,8 +48,8 @@ struct EnumTraits {};
 template <typename T>
   requires(std::is_enum_v<T>)
 constexpr std::optional<T> CheckedCastToEnum(std::underlying_type_t<T> v) {
-  return (std::to_underlying(EnumTraits<T>::first_elem) <= v &&
-          v <= std::to_underlying(EnumTraits<T>::last_elem))
+  return (base::to_underlying(EnumTraits<T>::first_elem) <= v &&
+          v <= base::to_underlying(EnumTraits<T>::last_elem))
              ? std::make_optional(static_cast<T>(v))
              : std::nullopt;
 }
