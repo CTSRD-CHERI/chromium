@@ -134,7 +134,11 @@ bool IsValidInstallerAttributePart(const std::string& part,
   return part.size() >= min_length && part.size() <= max_length &&
          std::ranges::all_of(part, [&special_chars](char ch) {
            return base::IsAsciiAlpha(ch) || base::IsAsciiDigit(ch) ||
+#if __cpp_lib_string_contains
                   special_chars.contains(ch);
+#else
+                  special_chars.find(ch) != std::string::npos;
+#endif
          });
 }
 

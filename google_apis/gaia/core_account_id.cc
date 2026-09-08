@@ -19,7 +19,11 @@ namespace {
 // Returns whether the string looks like an email (the test is
 // crude an only checks whether it includes an '@').
 bool IsEmailString(const std::string& string) {
+#if __cpp_lib_string_contains
   return string.contains('@');
+#else
+  return string.find('@') != std::string::npos;
+#endif
 }
 }  // anonymous namespace
 

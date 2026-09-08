@@ -511,7 +511,11 @@ bool GLHelper::CopyTextureToImpl::IsBGRAReadbackSupported() {
     if (auto* extensions = gl_->GetString(GL_EXTENSIONS)) {
       const std::string extensions_string =
           " " + std::string(reinterpret_cast<const char*>(extensions)) + " ";
+#if __cpp_lib_string_contains
       if (extensions_string.contains(" GL_EXT_read_format_bgra ")) {
+#else
+      if (extensions_string.find(" GL_EXT_read_format_bgra ") != std::string::npos) {
+#endif
         bgra_support_ = BGRA_SUPPORTED;
       }
     }
@@ -560,7 +564,11 @@ GLint GLHelper::MaxDrawBuffers() {
     if (extensions) {
       const std::string extensions_string =
           " " + std::string(reinterpret_cast<const char*>(extensions)) + " ";
+#if __cpp_lib_string_contains
       if (extensions_string.contains(" GL_EXT_draw_buffers ")) {
+#else
+      if (extensions_string.find(" GL_EXT_draw_buffers ") != std::string::npos) {
+#endif
         gl_->GetIntegerv(GL_MAX_DRAW_BUFFERS_EXT, &max_draw_buffers_);
         DCHECK_GE(max_draw_buffers_, 0);
       }

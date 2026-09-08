@@ -20,7 +20,11 @@ static const base::NoDestructor<std::vector<std::string>> kInvalidCharacters{
 
 void CheckForInvalidCharacters(const std::string& str) {
   for (const auto& invalid : *kInvalidCharacters) {
+#if __cpp_lib_string_contains
     CHECK(!str.contains(invalid))
+#else
+    CHECK(str.find(invalid) == std::string::npos)
+#endif
         << "Given invalid character for perf names '" << invalid << "'";
   }
 }
