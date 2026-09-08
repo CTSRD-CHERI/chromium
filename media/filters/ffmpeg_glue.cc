@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/to_underlying.h"
 #include "media/base/container_names.h"
 #include "media/base/media_switches.h"
 #include "media/base/supported_types.h"
@@ -75,10 +76,10 @@ static int64_t AVIOSeekOperation(void* opaque, int64_t offset, int whence) {
 static void LogContainer(bool is_local_file,
                          container_names::MediaContainerName container) {
   base::UmaHistogramSparse("Media.DetectedContainer",
-                           std::to_underlying(container));
+                           base::to_underlying(container));
   if (is_local_file) {
     base::UmaHistogramSparse("Media.DetectedContainer.Local",
-                             std::to_underlying(container));
+                             base::to_underlying(container));
   }
 }
 

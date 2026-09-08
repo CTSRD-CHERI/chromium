@@ -9,13 +9,14 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/to_underlying.h"
 
 namespace ui {
 
 bool PageTransitionCoreTypeIs(PageTransition lhs,
                               PageTransition rhs) {
   // Expect the rhs to have no qualifiers.
-  DCHECK(IsValidPageTransitionType(std::to_underlying(rhs)));
+  DCHECK(IsValidPageTransitionType(base::to_underlying(rhs)));
   const auto rhs_core = PageTransitionStripQualifier(rhs);
   DCHECK(PageTransitionTypeIncludingQualifiersIs(rhs, rhs_core));
   return PageTransitionTypeIncludingQualifiersIs(
@@ -24,7 +25,7 @@ bool PageTransitionCoreTypeIs(PageTransition lhs,
 
 bool PageTransitionTypeIncludingQualifiersIs(PageTransition lhs,
                                              PageTransition rhs) {
-  return std::to_underlying(lhs) == std::to_underlying(rhs);
+  return base::to_underlying(lhs) == base::to_underlying(rhs);
 }
 
 PageTransition PageTransitionStripQualifier(PageTransition type) {

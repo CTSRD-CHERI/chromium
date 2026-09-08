@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/memory/ref_counted.h"
+#include "base/to_underlying.h"
 #include "gpu/command_buffer/client/interface_base.h"
 #include "gpu/command_buffer/common/webgpu_cmd_enums.h"
 #include "gpu/command_buffer/common/webgpu_cmd_ids.h"
@@ -166,7 +167,7 @@ class WebGPUInterface : public InterfaceBase {
       const blink::WebGPUExecutionContextToken& token) {
     uint64_t high = token.value().GetHighForSerialization();
     uint64_t low = token.value().GetLowForSerialization();
-    SetWebGPUExecutionContextToken(std::to_underlying(token.variant_index()),
+    SetWebGPUExecutionContextToken(base::to_underlying(token.variant_index()),
                                    high >> 32, high & 0xFFFFFFFF, low >> 32,
                                    low & 0xFFFFFFFF);
   }

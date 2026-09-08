@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
+#include "base/to_underlying.h"
 
 namespace ui {
 
@@ -67,7 +68,7 @@ GestureEventDetails::GestureEventDetails(ui::EventType type,
 
     default:
       NOTREACHED() << "Invalid event type for constructor: "
-                   << std::to_underlying(type);
+                   << base::to_underlying(type);
   }
 }
 
@@ -95,8 +96,8 @@ GestureEventDetails::GestureEventDetails(ui::EventType type,
     case ui::EventType::kGestureSwipe:
     case ui::EventType::kGesturePinchUpdate:
       DCHECK_EQ(type, other.type()) << " - Invalid gesture conversion from "
-                                    << std::to_underlying(other.type())
-                                    << " to " << std::to_underlying(type);
+                                    << base::to_underlying(other.type())
+                                    << " to " << base::to_underlying(type);
       break;
     default:
       break;

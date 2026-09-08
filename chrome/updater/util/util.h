@@ -17,6 +17,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
+#include "base/to_underlying.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/registration_data.h"
@@ -59,7 +60,7 @@ template <std::unsigned_integral T>
 template <typename T>
   requires(std::is_enum_v<T>)
 inline std::ostream& operator<<(std::ostream& os, const T& e) {
-  return os << std::to_underlying(e);
+  return os << base::to_underlying(e);
 }
 
 // Returns the versioned install directory under which the program stores its
