@@ -28,6 +28,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
+#include "base/to_underlying.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/updater/certificate_tag.h"
@@ -231,7 +232,7 @@ ErrorCode ParseBrowserType(std::string_view value, TagArgs& args) {
   }
 
   args.browser_type =
-      browser_type < std::to_underlying(TagArgs::BrowserType::kMax)
+      browser_type < base::to_underlying(TagArgs::BrowserType::kMax)
           ? TagArgs::BrowserType(browser_type)
           : TagArgs::BrowserType::kUnknown;
 

@@ -9,6 +9,7 @@
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
+#include "base/to_underlying.h"
 #include "components/prefs/pref_notifier.h"
 #include "components/prefs/pref_service.h"
 
@@ -45,11 +46,11 @@ base::Value* ScopedUserPrefUpdateBase::GetValueOfType(base::Value::Type type) {
     const PrefService::Preference* pref = service_->FindPreference(path_);
     SCOPED_CRASH_KEY_NUMBER(
         "ScopedUserPrefUpdate", "PrevServiceStatus",
-        std::to_underlying(service_->GetInitializationStatus()));
+        base::to_underlying(service_->GetInitializationStatus()));
     SCOPED_CRASH_KEY_STRING32("ScopedUserPrefUpdate", "FindPreference",
                               pref ? "Yes" : "No");
     SCOPED_CRASH_KEY_NUMBER("ScopedUserPrefUpdate", "Type",
-                            pref ? std::to_underlying(pref->GetType()) : -1);
+                            pref ? base::to_underlying(pref->GetType()) : -1);
     base::debug::DumpWithoutCrashing();
   }
   return value_;

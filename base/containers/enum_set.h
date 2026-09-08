@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/to_underlying.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -62,7 +63,7 @@ class EnumSet {
   static const E kMinValue = MinEnumValue;
   static const E kMaxValue = MaxEnumValue;
   static const size_t kValueCount =
-      std::to_underlying(kMaxValue) - std::to_underlying(kMinValue) + 1;
+      base::to_underlying(kMaxValue) - base::to_underlying(kMinValue) + 1;
 
   static_assert(kMinValue <= kMaxValue,
                 "min value must be no greater than max value");
@@ -227,37 +228,75 @@ class EnumSet {
 
   // Returns an EnumSet constructed from |bitmask|.
   static constexpr EnumSet FromEnumBitmask(const uint64_t bitmask) {
+#if __cpp_lib_to_underlying
     static_assert(std::to_underlying(kMaxValue) < 64,
+#else
+    static_assert(static_cast<std::underlying_type_t<E>>(kMaxValue) < 64,
+#endif
                   "The highest enum value must be < 64 for FromEnumBitmask ");
+#if __cpp_lib_to_underlying
     static_assert(std::to_underlying(kMinValue) >= 0,
+#else
+    static_assert(static_cast<std::underlying_type_t<E>>(kMinValue) >= 0,
+#endif
                   "The lowest enum value must be >= 0 for FromEnumBitmask ");
+#if __cpp_lib_to_underlying
     return EnumSet(EnumBitSet(bitmask >> std::to_underlying(kMinValue)));
+#else
+    return EnumSet(EnumBitSet(bitmask >> static_cast<std::underlying_type_t<E>>(kMinValue)));
+#endif
   }
   // Returns a bitmask for the EnumSet.
   uint64_t ToEnumBitmask() const {
+#if __cpp_lib_to_underlying
     static_assert(std::to_underlying(kMaxValue) < 64,
+#else
+    static_assert(static_cast<std::underlying_type_t<E>>(kMaxValue) < 64,
+#endif
                   "The highest enum value must be < 64 for ToEnumBitmask ");
+#if __cpp_lib_to_underlying
     static_assert(std::to_underlying(kMinValue) >= 0,
+#else
+    static_assert(static_cast<std::underlying_type_t<E>>(kMinValue) >= 0,
+#endif
                   "The lowest enum value must be >= 0 for FromEnumBitmask ");
+#if __cpp_lib_to_underlying
     return enums_.to_ullong() << std::to_underlying(kMinValue);
+#else
+    return enums_.to_ullong() << static_cast<std::underlying_type_t<E>>(kMinValue);
+#endif
   }
 
   // Returns a uint64_t bit mask representing the values within the range
   // [64*n, 64*n + 63] of the EnumSet.
   std::optional<uint64_t> GetNth64bitWordBitmask(size_t n) const {
     // If the EnumSet contains less than n 64-bit masks, return std::nullopt.
+#if __cpp_lib_to_underlying
     if (std::to_underlying(kMaxValue) / 64 < n) {
+#else
+    if (static_cast<std::underlying_type_t<E>>(kMaxValue) / 64 < n) {
+#endif
       return std::nullopt;
     }
 
     std::bitset<kValueCount> mask = ~uint64_t{0};
     std::bitset<kValueCount> bits = enums_;
+#if __cpp_lib_to_underlying
     if (std::to_underlying(kMinValue) < n * 64) {
       bits >>= n * 64 - std::to_underlying(kMinValue);
+#else
+    if (static_cast<std::underlying_type_t<E>>(kMinValue) < n * 64) {
+      bits >>= n * 64 - static_cast<std::underlying_type_t<E>>(kMinValue);
+#endif
     }
     uint64_t result = (bits & mask).to_ullong();
+#if __cpp_lib_to_underlying
     if (std::to_underlying(kMinValue) > n * 64) {
       result <<= std::to_underlying(kMinValue) - n * 64;
+#else
+    if (static_cast<std::underlying_type_t<E>>(kMinValue) > n * 64) {
+      result <<= static_cast<std::underlying_type_t<E>>(kMinValue) - n * 64;
+#endif
     }
     return result;
   }
@@ -390,13 +429,23 @@ class EnumSet {
   // Converts a value to/from an index into |enums_|.
   static constexpr size_t ToIndex(E value) {
     CHECK(InRange(value));
+#if __cpp_lib_to_underlying
     return static_cast<size_t>(std::to_underlying(value)) -
            static_cast<size_t>(std::to_underlying(MinEnumValue));
+#else
+    return static_cast<size_t>(
+           static_cast<std::underlying_type_t<E>>(value) -
+           static_cast<std::underlying_type_t<E>>(MinEnumValue));
+#endif
   }
 
   static E FromIndex(size_t i) {
     DCHECK_LT(i, kValueCount);
+#if __cpp_lib_to_underlying
     return static_cast<E>(std::to_underlying(MinEnumValue) + i);
+#else
+    return static_cast<E>(std::underlying_type_t<E>(MinEnumValue) + i);
+#endif
   }
 
   EnumBitSet enums_;
