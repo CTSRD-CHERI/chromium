@@ -793,7 +793,11 @@ std::string GetCpuBitness() {
   }
   return std::string();
 #elif BUILDFLAG(IS_POSIX)
+#if __cpp_lib_string_contains
   return BuildCpuInfo().contains("64") ? "64" : "32";
+#else
+  return BuildCpuInfo().find("64") != std::string::npos ? "64" : "32";
+#endif
 #else
 #error Unsupported platform
 #endif

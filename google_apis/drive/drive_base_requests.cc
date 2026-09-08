@@ -128,7 +128,11 @@ void GenerateMultipartBody(MultipartType multipart_type,
       boundary = net::GenerateMimeMultipartBoundary();
       bool conflict_with_content = false;
       for (const auto& part : parts) {
+#if __cpp_lib_string_contains
         if (part.data.contains(boundary)) {
+#else
+        if (part.data.find(boundary) != std::string::npos) {
+#endif
           conflict_with_content = true;
           break;
         }

@@ -1527,7 +1527,11 @@ bool TestLauncher::IsOnlyExactPositiveFilterFromFile(
     return false;
   }
   for (const auto& filter : positive_test_filter_) {
+#if __cpp_lib_string_contains
     if (filter.contains('*')) {
+#else
+    if (filter.find('*') != std::string::npos) {
+#endif
       LOG(ERROR) << "Found wildcard positive filters in the filter file.";
       return false;
     }

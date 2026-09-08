@@ -57,34 +57,74 @@ const char kFisAuthError[] = "FIS_AUTH_ERROR";
 
 // Gets correct status from the error message.
 RegistrationRequest::Status GetStatusFromError(const std::string& error) {
+#if __cpp_lib_string_contains
   if (error.contains(kDeviceRegistrationError)) {
+#else
+  if (error.find(kDeviceRegistrationError) != std::string::npos) {
+#endif
     return RegistrationRequest::DEVICE_REGISTRATION_ERROR;
   }
+#if __cpp_lib_string_contains
   if (error.contains(kAuthenticationFailed)) {
+#else
+  if (error.find(kAuthenticationFailed) != std::string::npos) {
+#endif
     return RegistrationRequest::AUTHENTICATION_FAILED;
   }
+#if __cpp_lib_string_contains
   if (error.contains(kInvalidSender)) {
+#else
+  if (error.find(kInvalidSender) != std::string::npos) {
+#endif
     return RegistrationRequest::INVALID_SENDER;
   }
+#if __cpp_lib_string_contains
   if (error.contains(kInvalidParameters)) {
+#else
+  if (error.find(kInvalidParameters) != std::string::npos) {
+#endif
     return RegistrationRequest::INVALID_PARAMETERS;
   }
+#if __cpp_lib_string_contains
   if (error.contains(kInternalServerError)) {
+#else
+  if (error.find(kInternalServerError) != std::string::npos) {
+#endif
     return RegistrationRequest::INTERNAL_SERVER_ERROR;
   }
+#if __cpp_lib_string_contains
   if (error.contains(kQuotaExceeded)) {
+#else
+  if (error.find(kQuotaExceeded) != std::string::npos) {
+#endif
     return RegistrationRequest::QUOTA_EXCEEDED;
   }
+#if __cpp_lib_string_contains
   if (error.contains(kTooManyRegistrations)) {
+#else
+  if (error.find(kTooManyRegistrations) != std::string::npos) {
+#endif
     return RegistrationRequest::TOO_MANY_REGISTRATIONS;
   }
+#if __cpp_lib_string_contains
   if (error.contains(kTooManySubscribers)) {
+#else
+  if (error.find(kTooManySubscribers) != std::string::npos) {
+#endif
     return RegistrationRequest::TOO_MANY_SUBSCRIBERS;
   }
+#if __cpp_lib_string_contains
   if (error.contains(kInvalidTargetVersion)) {
+#else
+  if (error.find(kInvalidTargetVersion) != std::string::npos) {
+#endif
     return RegistrationRequest::INVALID_TARGET_VERSION;
   }
+#if __cpp_lib_string_contains
   if (error.contains(kFisAuthError)) {
+#else
+  if (error.find(kFisAuthError) != std::string::npos) {
+#endif
     return RegistrationRequest::FIS_AUTH_ERROR;
   }
   // Should not be reached, unless the server adds new error types.
