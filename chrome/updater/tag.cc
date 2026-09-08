@@ -628,7 +628,11 @@ ErrorCode ParseAppInstallerDataArgs(std::string_view app_installer_data_args,
 
 // Checks that |args| does not contain |kDisallowedCharInTag|.
 bool IsValidArgs(std::string_view args) {
+#if __cpp_lib_string_contains
   return !args.contains(kDisallowedCharInTag);
+#else
+  return args.find(kDisallowedCharInTag) == std::string_view::npos;
+#endif
 }
 
 // Returns a `uint16_t` value as big-endian bytes.

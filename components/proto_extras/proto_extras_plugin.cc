@@ -404,12 +404,28 @@ class ProtoExtrasGenerator : public google::protobuf::compiler::CodeGenerator {
 
     ProtoExtrasGeneratorOptions generator_options{
         .generate_to_value_serialization =
+#if __cpp_lib_string_contains
             command_line_options.contains("generate_to_value_serialization"),
+#else
+            command_line_options.find("generate_to_value_serialization") != std::string::npos,
+#endif
         .generate_stream_operator =
+#if __cpp_lib_string_contains
             command_line_options.contains("generate_stream_operator"),
+#else
+            command_line_options.find("generate_stream_operator") != std::string::npos,
+#endif
+#if __cpp_lib_string_contains
         .generate_equality = command_line_options.contains("generate_equality"),
+#else
+        .generate_equality = command_line_options.find("generate_equality") != std::string::npos,
+#endif
         .protobuf_full_support =
+#if __cpp_lib_string_contains
             command_line_options.contains("protobuf_full_support"),
+#else
+            command_line_options.find("protobuf_full_support") != std::string::npos,
+#endif
     };
     // The current design of this library assumes that only one of the
     // serialization options is enabled.

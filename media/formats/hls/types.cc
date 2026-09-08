@@ -113,7 +113,11 @@ DecimalResolution::Parse(ResolvedSourceString str) {
 
 namespace {
 bool IsOneOf(char c, std::string_view set) {
+#if __cpp_lib_string_contains
   return set.contains(c);
+#else
+  return set.find(c) != std::string::npos;
+#endif
 }
 
 // Returns the substring matching a valid AttributeName, advancing `source_str`

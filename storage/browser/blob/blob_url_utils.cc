@@ -8,7 +8,11 @@
 namespace storage::BlobUrlUtils {
 
 bool UrlHasFragment(const GURL& url) {
+#if __cpp_lib_string_contains
   return url.spec().contains('#');
+#else
+  return url.spec().find('#') != std::string::npos;
+#endif
 }
 
 GURL ClearUrlFragment(const GURL& url) {

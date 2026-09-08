@@ -1886,6 +1886,16 @@ component("net") {
       "//sql",
     ]
   }
+
+  if (is_bsd) {
+    libs = [
+      "epoll-shim",
+    ]
+
+    include_dirs = [
+      "${sysroot}/usr/local/include/libepoll-shim"
+    ]
+  }
 }
 
 # net_export.h has its own build target so that code (eg
