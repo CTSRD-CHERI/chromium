@@ -53,7 +53,7 @@ using PropertyKey = const void*;
 // use MakeUniquePropertyKey() rather than using &bounds_ + 0, &bounds_ + 1,
 // and so on. This avoids unsafe buffer use warnings.
 static inline PropertyKey MakeUniquePropertyKey(PropertyKey base,
-                                                uintptr_t offset) {
+                                                size_t offset) {
   return reinterpret_cast<PropertyKey>(reinterpret_cast<uintptr_t>(base) +
                                        offset);
 }
