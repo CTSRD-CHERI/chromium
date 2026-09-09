@@ -12,7 +12,7 @@ use core::ptr;
 // ABI compatible with C++ rust::Vec<T> (not necessarily alloc::vec::Vec<T>).
 #[repr(C)]
 pub struct RustVec<T> {
-    repr: [MaybeUninit<usize>; mem::size_of::<Vec<c_void>>() / mem::size_of::<usize>()],
+    repr: [MaybeUninit<* const u8>; mem::size_of::<Vec<c_void>>() / mem::size_of::<* const u8>()],
     marker: PhantomData<Vec<T>>,
 }
 

@@ -7,7 +7,7 @@ use core::str;
 // ABI compatible with C++ rust::Str (not necessarily &str).
 #[repr(C)]
 pub struct RustStr {
-    repr: [MaybeUninit<usize>; mem::size_of::<NonNull<str>>() / mem::size_of::<usize>()],
+    repr: [MaybeUninit<* const u8>; mem::size_of::<NonNull<str>>() / mem::size_of::<* const u8>()],
 }
 
 impl RustStr {
