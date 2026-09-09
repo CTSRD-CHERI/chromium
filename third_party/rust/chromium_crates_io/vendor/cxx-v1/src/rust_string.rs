@@ -8,7 +8,7 @@ use core::ptr;
 // ABI compatible with C++ rust::String (not necessarily alloc::string::String).
 #[repr(C)]
 pub struct RustString {
-    repr: [MaybeUninit<usize>; mem::size_of::<String>() / mem::size_of::<usize>()],
+    repr: [MaybeUninit<* const u8>; mem::size_of::<String>() / mem::size_of::<* const u8>()],
 }
 
 impl RustString {
@@ -43,6 +43,6 @@ impl Drop for RustString {
     }
 }
 
-const_assert_eq!(mem::size_of::<[usize; 3]>(), mem::size_of::<RustString>());
+const_assert_eq!(mem::size_of::<[usize; 6]>(), mem::size_of::<RustString>());
 const_assert_eq!(mem::size_of::<String>(), mem::size_of::<RustString>());
 const_assert_eq!(mem::align_of::<String>(), mem::align_of::<RustString>());
