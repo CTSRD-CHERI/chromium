@@ -7,7 +7,7 @@ use core::slice;
 // ABI compatible with C++ rust::Slice<T> (not necessarily &[T]).
 #[repr(C)]
 pub struct RustSlice {
-    repr: [MaybeUninit<usize>; mem::size_of::<NonNull<[()]>>() / mem::size_of::<usize>()],
+    repr: [MaybeUninit<* const u8>; mem::size_of::<NonNull<[()]>>() / mem::size_of::<* const u8>()],
 }
 
 impl RustSlice {
