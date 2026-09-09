@@ -398,6 +398,23 @@ std::size_t sliceLen(const void *self) noexcept {
 // same here and these assertions are just here to explicitly document that.
 // *Note that no assumption is made about C++ name mangling of signatures
 // containing these types, not here nor anywhere in CXX.*
+#if defined(__CHERI_PURE_CAPABILITY__)
+// Pointer types (*const T, *mut T) are 128 bits wide and represented using
+// CHERI capabilities. usize is a 64 bit wide unsigned integer type. Casting a
+// capability to usize, &data as *const _ as usize, will get the address of the
+// memory being pointed to, and discard any metadata. Casting a usize to a
+// capability, 0xdead_beef as *const T, will produce an invalid capability (the
+// validity tag will be unset, dereferencing will trigger an exception)
+// https://www.cs.kent.ac.uk/people/staff/mjb211/rust/usize-pre-rfc.html
+static_assert(sizeof(std::size_t) == sizeof(ptraddr_t),
+              "unsupported size_t size");
+static_assert(alignof(std::size_t) == alignof(ptraddr_t),
+              "unsupported size_t alignment");
+static_assert(sizeof(rust::isize) == sizeof(ptraddr_t),
+              "unsupported ssize_t size");
+static_assert(alignof(rust::isize) == alignof(ptraddr_t),
+              "unsupported ssize_t alignment");
+#else
 static_assert(sizeof(std::size_t) == sizeof(std::uintptr_t),
               "unsupported size_t size");
 static_assert(alignof(std::size_t) == alignof(std::uintptr_t),
@@ -406,6 +423,7 @@ static_assert(sizeof(rust::isize) == sizeof(std::intptr_t),
               "unsupported ssize_t size");
 static_assert(alignof(rust::isize) == alignof(std::intptr_t),
               "unsupported ssize_t alignment");
+#endif
 
 static_assert(std::is_trivially_copy_constructible<Str>::value,
               "trivial Str(const Str &)");
