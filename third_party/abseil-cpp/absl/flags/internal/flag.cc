@@ -194,7 +194,7 @@ void MaskedPointer::Set(FlagOpFn op, const void* src, bool is_candidate) {
 void MaskedPointer::MarkAsRead() { ApplyMask(kHasBeenRead); }
 
 void MaskedPointer::ApplyMask(mask_t mask) {
-  ptr_ = reinterpret_cast<ptr_t>(reinterpret_cast<mask_t>(ptr_) | mask);
+  ptr_ = reinterpret_cast<ptr_t>(reinterpret_cast<uintptr_t>(ptr_) | mask);
 }
 bool MaskedPointer::CheckMask(mask_t mask) const {
   return (reinterpret_cast<mask_t>(ptr_) & mask) != 0;
