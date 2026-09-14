@@ -3,9 +3,9 @@ use std::io::{self, Write};
 
 use crate::error::{
     EncodingError, ImageError, ImageFormatHint, ImageResult, ParameterError, ParameterErrorKind,
-    UnsupportedError, UnsupportedErrorKind,
 };
-use crate::{DynamicImage, ExtendedColorType, ImageEncoder, ImageFormat};
+use crate::image::ImageEncoder;
+use crate::{ExtendedColorType, ImageFormat};
 
 const BITMAPFILEHEADER_SIZE: u32 = 14;
 const BITMAPINFOHEADER_SIZE: u32 = 40;
@@ -50,21 +50,19 @@ impl<'a, W: Write + 'a> BmpEncoder<'a, W> {
         image: &[u8],
         width: u32,
         height: u32,
-        color_type: ExtendedColorType,
+        c: ExtendedColorType,
         palette: Option<&[[u8; 3]]>,
     ) -> ImageResult<()> {
-        if palette.is_some()
-            && color_type != ExtendedColorType::L8
-            && color_type != ExtendedColorType::La8
-        {
-            return Err(ImageError::Parameter(ParameterError::from_kind(
-                ParameterErrorKind::Generic(
-                    "Palette given which must only be used with L8 or La8 color types".to_string(),
+        if palette.is_some() && c != ExtendedColorType::L8 && c != ExtendedColorType::La8 {
+            return Err(ImageError::IoError(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                format!(
+                    "Unsupported color type {c:?} when using a non-empty palette. Supported types: Gray(8), GrayA(8)."
                 ),
             )));
         }
 
-        let expected_buffer_len = color_type.buffer_size(width, height);
+        let expected_buffer_len = c.buffer_size(width, height);
         assert_eq!(
             expected_buffer_len,
             image.len() as u64,
@@ -75,32 +73,18 @@ impl<'a, W: Write + 'a> BmpEncoder<'a, W> {
         let bmp_header_size = BITMAPFILEHEADER_SIZE;
 
         let (dib_header_size, written_pixel_size, palette_color_count) =
-            written_pixel_info(color_type, palette)?;
-
-        let (padded_row, image_size) = width
-            .checked_mul(written_pixel_size)
-            // each row must be padded to a multiple of 4 bytes
-            .and_then(|v| v.checked_next_multiple_of(4))
-            .and_then(|v| {
-                let image_bytes = v.checked_mul(height)?;
-                Some((v, image_bytes))
-            })
+            get_pixel_info(c, palette)?;
+        let row_pad_size = (4 - (width * written_pixel_size) % 4) % 4; // each row must be padded to a multiple of 4 bytes
+        let image_size = width
+            .checked_mul(height)
+            .and_then(|v| v.checked_mul(written_pixel_size))
+            .and_then(|v| v.checked_add(height * row_pad_size))
             .ok_or_else(|| {
                 ImageError::Parameter(ParameterError::from_kind(
                     ParameterErrorKind::DimensionMismatch,
                 ))
             })?;
-
-        let row_padding = padded_row - width * written_pixel_size;
-
-        // all palette colors are BGRA
-        let palette_size = palette_color_count.checked_mul(4).ok_or_else(|| {
-            ImageError::Encoding(EncodingError::new(
-                ImageFormatHint::Exact(ImageFormat::Bmp),
-                "calculated palette size larger than 2^32",
-            ))
-        })?;
-
+        let palette_size = palette_color_count * 4; // all palette colors are BGRA
         let file_size = bmp_header_size
             .checked_add(dib_header_size)
             .and_then(|v| v.checked_add(palette_size))
@@ -112,23 +96,14 @@ impl<'a, W: Write + 'a> BmpEncoder<'a, W> {
                 ))
             })?;
 
-        let image_data_offset = bmp_header_size
-            .checked_add(dib_header_size)
-            .and_then(|v| v.checked_add(palette_size))
-            .ok_or_else(|| {
-                ImageError::Encoding(EncodingError::new(
-                    ImageFormatHint::Exact(ImageFormat::Bmp),
-                    "calculated BMP size larger than 2^32",
-                ))
-            })?;
-
         // write BMP header
         self.writer.write_u8(b'B')?;
         self.writer.write_u8(b'M')?;
         self.writer.write_u32::<LittleEndian>(file_size)?; // file size
         self.writer.write_u16::<LittleEndian>(0)?; // reserved 1
         self.writer.write_u16::<LittleEndian>(0)?; // reserved 2
-        self.writer.write_u32::<LittleEndian>(image_data_offset)?; // image data offset
+        self.writer
+            .write_u32::<LittleEndian>(bmp_header_size + dib_header_size + palette_size)?; // image data offset
 
         // write DIB header
         self.writer.write_u32::<LittleEndian>(dib_header_size)?;
@@ -163,22 +138,20 @@ impl<'a, W: Write + 'a> BmpEncoder<'a, W> {
         }
 
         // write image data
-        match color_type {
-            ExtendedColorType::Rgb8 => self.encode_rgb(image, width, height, row_padding, 3)?,
-            ExtendedColorType::Rgba8 => self.encode_rgba(image, width, height, row_padding, 4)?,
+        match c {
+            ExtendedColorType::Rgb8 => self.encode_rgb(image, width, height, row_pad_size, 3)?,
+            ExtendedColorType::Rgba8 => self.encode_rgba(image, width, height, row_pad_size, 4)?,
             ExtendedColorType::L8 => {
-                self.encode_gray(image, width, height, row_padding, 1, palette)?;
+                self.encode_gray(image, width, height, row_pad_size, 1, palette)?;
             }
             ExtendedColorType::La8 => {
-                self.encode_gray(image, width, height, row_padding, 2, palette)?;
+                self.encode_gray(image, width, height, row_pad_size, 2, palette)?;
             }
             _ => {
-                return Err(ImageError::Unsupported(
-                    UnsupportedError::from_format_and_kind(
-                        ImageFormat::Bmp.into(),
-                        UnsupportedErrorKind::Color(color_type),
-                    ),
-                ));
+                return Err(ImageError::IoError(io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    &get_unsupported_error_message(c)[..],
+                )))
             }
         }
 
@@ -190,7 +163,7 @@ impl<'a, W: Write + 'a> BmpEncoder<'a, W> {
         image: &[u8],
         width: u32,
         height: u32,
-        row_padding: u32,
+        row_pad_size: u32,
         bytes_per_pixel: u32,
     ) -> io::Result<()> {
         let width = width as usize;
@@ -207,7 +180,7 @@ impl<'a, W: Write + 'a> BmpEncoder<'a, W> {
                 // written as BGR
                 self.writer.write_all(&[b, g, r])?;
             }
-            self.write_row_pad(row_padding)?;
+            self.write_row_pad(row_pad_size)?;
         }
 
         Ok(())
@@ -218,7 +191,7 @@ impl<'a, W: Write + 'a> BmpEncoder<'a, W> {
         image: &[u8],
         width: u32,
         height: u32,
-        row_padding: u32,
+        row_pad_size: u32,
         bytes_per_pixel: u32,
     ) -> io::Result<()> {
         let width = width as usize;
@@ -236,7 +209,7 @@ impl<'a, W: Write + 'a> BmpEncoder<'a, W> {
                 // written as BGRA
                 self.writer.write_all(&[b, g, r, a])?;
             }
-            self.write_row_pad(row_padding)?;
+            self.write_row_pad(row_pad_size)?;
         }
 
         Ok(())
@@ -247,7 +220,7 @@ impl<'a, W: Write + 'a> BmpEncoder<'a, W> {
         image: &[u8],
         width: u32,
         height: u32,
-        row_padding: u32,
+        row_pad_size: u32,
         bytes_per_pixel: u32,
         palette: Option<&[[u8; 3]]>,
     ) -> io::Result<()> {
@@ -284,7 +257,7 @@ impl<'a, W: Write + 'a> BmpEncoder<'a, W> {
                 }
             }
 
-            self.write_row_pad(row_padding)?;
+            self.write_row_pad(row_pad_size)?;
         }
 
         Ok(())
@@ -310,52 +283,39 @@ impl<W: Write> ImageEncoder for BmpEncoder<'_, W> {
     ) -> ImageResult<()> {
         self.encode(buf, width, height, color_type)
     }
+}
 
-    fn make_compatible_img(
-        &self,
-        _: crate::io::encoder::MethodSealedToImage,
-        img: &DynamicImage,
-    ) -> Option<DynamicImage> {
-        crate::io::encoder::dynimage_conversion_8bit(img)
-    }
+fn get_unsupported_error_message(c: ExtendedColorType) -> String {
+    format!("Unsupported color type {c:?}.  Supported types: RGB(8), RGBA(8), Gray(8), GrayA(8).")
 }
 
 /// Returns a tuple representing: (dib header size, written pixel size, palette color count).
-fn written_pixel_info(
+fn get_pixel_info(
     c: ExtendedColorType,
     palette: Option<&[[u8; 3]]>,
-) -> Result<(u32, u32, u32), ImageError> {
-    let (header, color_bytes, palette_count) = match c {
-        ExtendedColorType::Rgb8 => (BITMAPINFOHEADER_SIZE, 3, Some(0)),
-        ExtendedColorType::Rgba8 => (BITMAPV4HEADER_SIZE, 4, Some(0)),
+) -> io::Result<(u32, u32, u32)> {
+    let sizes = match c {
+        ExtendedColorType::Rgb8 => (BITMAPINFOHEADER_SIZE, 3, 0),
+        ExtendedColorType::Rgba8 => (BITMAPV4HEADER_SIZE, 4, 0),
         ExtendedColorType::L8 => (
             BITMAPINFOHEADER_SIZE,
             1,
-            u32::try_from(palette.map(|p| p.len()).unwrap_or(256)).ok(),
+            palette.map(|p| p.len()).unwrap_or(256) as u32,
         ),
         ExtendedColorType::La8 => (
             BITMAPINFOHEADER_SIZE,
             1,
-            u32::try_from(palette.map(|p| p.len()).unwrap_or(256)).ok(),
+            palette.map(|p| p.len()).unwrap_or(256) as u32,
         ),
         _ => {
-            return Err(ImageError::Unsupported(
-                UnsupportedError::from_format_and_kind(
-                    ImageFormat::Bmp.into(),
-                    UnsupportedErrorKind::Color(c),
-                ),
-            ));
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                &get_unsupported_error_message(c)[..],
+            ))
         }
     };
 
-    let palette_count = palette_count.ok_or_else(|| {
-        ImageError::Encoding(EncodingError::new(
-            ImageFormatHint::Exact(ImageFormat::Bmp),
-            "calculated palette size larger than 2^32",
-        ))
-    })?;
-
-    Ok((header, color_bytes, palette_count))
+    Ok(sizes)
 }
 
 #[cfg(test)]
@@ -363,8 +323,8 @@ mod tests {
     use super::super::BmpDecoder;
     use super::BmpEncoder;
 
+    use crate::image::ImageDecoder;
     use crate::ExtendedColorType;
-    use crate::ImageDecoder as _;
     use std::io::Cursor;
 
     fn round_trip_image(image: &[u8], width: u32, height: u32, c: ExtendedColorType) -> Vec<u8> {
@@ -448,14 +408,5 @@ mod tests {
         assert_eq!(2, decoded[6]);
         assert_eq!(2, decoded[7]);
         assert_eq!(2, decoded[8]);
-    }
-
-    #[test]
-    fn regression_issue_2604() {
-        let mut image = vec![];
-        let mut encoder = BmpEncoder::new(&mut image);
-        encoder
-            .encode(&[], 1 << 31, 0, ExtendedColorType::Rgb8)
-            .unwrap_err();
     }
 }

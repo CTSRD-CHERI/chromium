@@ -6,7 +6,7 @@ use std::mem::size_of;
 
 #[derive(Debug, Copy, Clone)]
 /// Representation of inversion matrix
-pub(crate) struct CbCrInverseTransform<T> {
+struct CbCrInverseTransform<T> {
     y_coef: T,
     cr_coef: T,
     cb_coef: T,
@@ -39,7 +39,7 @@ struct ErrorSize {
 }
 
 #[derive(Copy, Clone, Debug)]
-pub(crate) enum PlaneDefinition {
+enum PlaneDefinition {
     Y,
     U,
     V,
@@ -83,7 +83,7 @@ impl Display for YuvConversionError {
 impl std::error::Error for YuvConversionError {}
 
 #[inline]
-pub(crate) fn check_yuv_plane_preconditions<V>(
+fn check_yuv_plane_preconditions<V>(
     plane: &[V],
     plane_definition: PlaneDefinition,
     stride: usize,
@@ -105,7 +105,7 @@ pub(crate) fn check_yuv_plane_preconditions<V>(
 }
 
 #[inline]
-pub(crate) fn check_rgb_preconditions<V>(
+fn check_rgb_preconditions<V>(
     rgb_data: &[V],
     stride: usize,
     height: usize,
@@ -162,16 +162,16 @@ pub(crate) enum YuvIntensityRange {
 }
 
 #[derive(Debug, Copy, Clone, PartialOrd, PartialEq)]
-pub(crate) struct YuvChromaRange {
-    pub(crate) bias_y: u32,
-    pub(crate) bias_uv: u32,
-    pub(crate) range_y: u32,
-    pub(crate) range_uv: u32,
-    pub(crate) range: YuvIntensityRange,
+struct YuvChromaRange {
+    bias_y: u32,
+    bias_uv: u32,
+    range_y: u32,
+    range_uv: u32,
+    range: YuvIntensityRange,
 }
 
 impl YuvIntensityRange {
-    pub(crate) const fn get_yuv_range(self, depth: u32) -> YuvChromaRange {
+    const fn get_yuv_range(self, depth: u32) -> YuvChromaRange {
         match self {
             YuvIntensityRange::Tv => YuvChromaRange {
                 bias_y: 16 << (depth - 8),
@@ -191,7 +191,7 @@ impl YuvIntensityRange {
     }
 }
 
-#[derive(Debug, Copy, Clone, PartialOrd, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, PartialOrd, PartialEq)]
 /// Declares standard prebuilt YUV conversion matrices,
 /// check [ITU-R](https://www.itu.int/rec/T-REC-H.273/en) information for more info
 pub(crate) enum YuvStandardMatrix {
@@ -200,6 +200,7 @@ pub(crate) enum YuvStandardMatrix {
     Bt2020,
     Smpte240,
     Bt470_6,
+    Identity,
 }
 
 #[derive(Debug, Copy, Clone, PartialOrd, PartialEq)]
@@ -231,6 +232,7 @@ impl YuvStandardMatrix {
                 kr: 0.2220f32,
                 kb: 0.0713f32,
             },
+            YuvStandardMatrix::Identity => unreachable!(),
         }
     }
 }
@@ -248,7 +250,7 @@ pub(crate) struct YuvPlanarImage<'a, T> {
 
 #[inline(always)]
 /// Saturating rounding shift right against bit depth
-pub(crate) fn qrshr<const PRECISION: i32, const BIT_DEPTH: usize>(val: i32) -> i32 {
+fn qrshr<const PRECISION: i32, const BIT_DEPTH: usize>(val: i32) -> i32 {
     let rounding: i32 = 1 << (PRECISION - 1);
     let max_value: i32 = (1 << BIT_DEPTH) - 1;
     ((val + rounding) >> PRECISION).clamp(0, max_value)
@@ -274,6 +276,8 @@ pub(crate) fn yuv400_to_rgba8(
 
 /// Converts Yuv 400 planar format 10 bit to Rgba 10 bit
 ///
+/// Stride here is not supported as it can be in passed from FFI.
+///
 /// # Arguments
 ///
 /// * `image`: see [YuvGrayImage]
@@ -292,6 +296,8 @@ pub(crate) fn yuv400_to_rgba10(
 
 /// Converts Yuv 400 planar format 12 bit to Rgba 12 bit
 ///
+/// Stride here is not supported as it can be in passed from FFI.
+///
 /// # Arguments
 ///
 /// * `image`: see [YuvGrayImage]
@@ -309,6 +315,8 @@ pub(crate) fn yuv400_to_rgba12(
 }
 
 /// Converts Yuv 400 planar format to Rgba
+///
+/// Stride here is not supported as it can be in passed from FFI.
 ///
 /// # Arguments
 ///
@@ -346,6 +354,11 @@ where
             size_of::<V>() == 1
         },
         "Unsupported bit depth and data type combination"
+    );
+    assert_ne!(
+        matrix,
+        YuvStandardMatrix::Identity,
+        "Identity matrix cannot be used on 4:0:0"
     );
 
     let y_plane = image.y_plane;
@@ -436,17 +449,12 @@ pub(crate) fn yuv420_to_rgba8(
     range: YuvIntensityRange,
     matrix: YuvStandardMatrix,
 ) -> Result<(), ImageError> {
-    const P: i32 = 13;
-    yuv420_to_rgbx_invoker::<u8, HalvedRowHandler<u8>, P, 4, 8>(
-        image,
-        rgb,
-        range,
-        matrix,
-        process_halved_chroma_row_cbcr::<u8, P, 4, 8>,
-    )
+    yuv420_to_rgbx::<u8, 4, 8>(image, rgb, range, matrix)
 }
 
 /// Converts YUV420 10 bit-depth to Rgba 10 bit-depth
+///
+/// Stride here is not supported as it can be in passed from FFI.
 ///
 /// # Arguments
 ///
@@ -461,20 +469,12 @@ pub(crate) fn yuv420_to_rgba10(
     range: YuvIntensityRange,
     matrix: YuvStandardMatrix,
 ) -> Result<(), ImageError> {
-    const P: i32 = 13;
-    yuv420_to_rgbx_invoker::<u16, HalvedRowHandler<u16>, P, 4, 10>(
-        image,
-        rgb,
-        range,
-        matrix,
-        process_halved_chroma_row_cbcr::<u16, P, 4, 10>,
-    )
+    yuv420_to_rgbx::<u16, 4, 10>(image, rgb, range, matrix)
 }
 
-pub(crate) type HalvedRowHandler<V> =
-    fn(YuvPlanarImage<V>, &mut [V], &CbCrInverseTransform<i32>, &YuvChromaRange);
-
 /// Converts YUV420 12 bit-depth to Rgba 12 bit-depth
+///
+/// Stride here is not supported as it can be in passed from FFI.
 ///
 /// # Arguments
 ///
@@ -489,58 +489,11 @@ pub(crate) fn yuv420_to_rgba12(
     range: YuvIntensityRange,
     matrix: YuvStandardMatrix,
 ) -> Result<(), ImageError> {
-    const P: i32 = 13;
-    yuv420_to_rgbx_invoker::<u16, HalvedRowHandler<u16>, P, 4, 12>(
-        image,
-        rgb,
-        range,
-        matrix,
-        process_halved_chroma_row_cbcr::<u16, P, 4, 12>,
-    )
-}
-
-/// Computes YCbCr inverse
-/// # Arguments
-/// - `dst` - dest buffer
-/// - `y_value` - Y value with subtracted bias
-/// - `cb` - Cb value with subtracted bias
-/// - `cr` - Cr value with subtracted bias
-#[inline(always)]
-fn ycbcr_execute<
-    V: Copy + AsPrimitive<i32> + 'static + Sized,
-    const PRECISION: i32,
-    const CHANNELS: usize,
-    const BIT_DEPTH: usize,
->(
-    dst: &mut [V; CHANNELS],
-    y_value: i32,
-    cb: i32,
-    cr: i32,
-    t: &CbCrInverseTransform<i32>,
-) where
-    i32: AsPrimitive<V>,
-{
-    let y_scaled = y_value * t.y_coef;
-    let r = qrshr::<PRECISION, BIT_DEPTH>(y_scaled + t.cr_coef * cr);
-    let b = qrshr::<PRECISION, BIT_DEPTH>(y_scaled + t.cb_coef * cb);
-    let g = qrshr::<PRECISION, BIT_DEPTH>(y_scaled - t.g_coeff_1 * cr - t.g_coeff_2 * cb);
-
-    if CHANNELS == 4 {
-        dst[0] = r.as_();
-        dst[1] = g.as_();
-        dst[2] = b.as_();
-        dst[3] = ((1i32 << BIT_DEPTH) - 1).as_();
-    } else if CHANNELS == 3 {
-        dst[0] = r.as_();
-        dst[1] = g.as_();
-        dst[2] = b.as_();
-    } else {
-        unreachable!();
-    }
+    yuv420_to_rgbx::<u16, 4, 12>(image, rgb, range, matrix)
 }
 
 #[inline]
-fn process_halved_chroma_row_cbcr<
+fn process_halved_chroma_row<
     V: Copy + AsPrimitive<i32> + 'static + Sized,
     const PRECISION: i32,
     const CHANNELS: usize,
@@ -553,6 +506,14 @@ fn process_halved_chroma_row_cbcr<
 ) where
     i32: AsPrimitive<V>,
 {
+    let cr_coef = transform.cr_coef;
+    let cb_coef = transform.cb_coef;
+    let y_coef = transform.y_coef;
+    let g_coef_1 = transform.g_coeff_1;
+    let g_coef_2 = transform.g_coeff_2;
+
+    let max_value = (1 << BIT_DEPTH) - 1;
+
     // If the stride is larger than the plane size,
     // it might contain junk data beyond the actual valid region.
     // To avoid processing artifacts when working with odd-sized images,
@@ -560,7 +521,7 @@ fn process_halved_chroma_row_cbcr<
     // preventing accidental use of invalid values from the trailing region.
 
     let y_plane = &image.y_plane[0..image.width];
-    let chroma_size = image.width.div_ceil(2);
+    let chroma_size = (image.width + 1) / 2;
     let u_plane = &image.u_plane[0..chroma_size];
     let v_plane = &image.v_plane[0..chroma_size];
     let rgba = &mut rgba[0..image.width * CHANNELS];
@@ -570,31 +531,45 @@ fn process_halved_chroma_row_cbcr<
     let y_iter = y_plane.chunks_exact(2);
     let rgb_chunks = rgba.chunks_exact_mut(CHANNELS * 2);
     for (((y_src, &u_src), &v_src), rgb_dst) in y_iter.zip(u_plane).zip(v_plane).zip(rgb_chunks) {
-        let y_value0: i32 = y_src[0].as_() - bias_y;
+        let y_value: i32 = (y_src[0].as_() - bias_y) * y_coef;
         let cb_value: i32 = u_src.as_() - bias_uv;
         let cr_value: i32 = v_src.as_() - bias_uv;
 
-        let dst0 = &mut rgb_dst[..CHANNELS];
+        let r = qrshr::<PRECISION, BIT_DEPTH>(y_value + cr_coef * cr_value);
+        let b = qrshr::<PRECISION, BIT_DEPTH>(y_value + cb_coef * cb_value);
+        let g = qrshr::<PRECISION, BIT_DEPTH>(y_value - g_coef_1 * cr_value - g_coef_2 * cb_value);
 
-        ycbcr_execute::<V, PRECISION, CHANNELS, BIT_DEPTH>(
-            dst0.try_into().unwrap(),
-            y_value0,
-            cb_value,
-            cr_value,
-            transform,
-        );
+        if CHANNELS == 4 {
+            rgb_dst[0] = r.as_();
+            rgb_dst[1] = g.as_();
+            rgb_dst[2] = b.as_();
+            rgb_dst[3] = max_value.as_();
+        } else if CHANNELS == 3 {
+            rgb_dst[0] = r.as_();
+            rgb_dst[1] = g.as_();
+            rgb_dst[2] = b.as_();
+        } else {
+            unreachable!();
+        }
 
-        let y_value1 = y_src[1].as_() - bias_y;
+        let y_value = (y_src[1].as_() - bias_y) * y_coef;
 
-        let dst1 = &mut rgb_dst[CHANNELS..2 * CHANNELS];
+        let r = qrshr::<PRECISION, BIT_DEPTH>(y_value + cr_coef * cr_value);
+        let b = qrshr::<PRECISION, BIT_DEPTH>(y_value + cb_coef * cb_value);
+        let g = qrshr::<PRECISION, BIT_DEPTH>(y_value - g_coef_1 * cr_value - g_coef_2 * cb_value);
 
-        ycbcr_execute::<V, PRECISION, CHANNELS, BIT_DEPTH>(
-            dst1.try_into().unwrap(),
-            y_value1,
-            cb_value,
-            cr_value,
-            transform,
-        );
+        if CHANNELS == 4 {
+            rgb_dst[4] = r.as_();
+            rgb_dst[5] = g.as_();
+            rgb_dst[6] = b.as_();
+            rgb_dst[7] = max_value.as_();
+        } else if CHANNELS == 3 {
+            rgb_dst[3] = r.as_();
+            rgb_dst[4] = g.as_();
+            rgb_dst[5] = b.as_();
+        } else {
+            unreachable!();
+        }
     }
 
     // Process remainder if width is odd.
@@ -610,22 +585,34 @@ fn process_halved_chroma_row_cbcr<
         for (((y_src, u_src), v_src), rgb_dst) in
             y_left.iter().zip(u_iter).zip(v_iter).zip(rgb_chunks)
         {
-            let y_value = y_src.as_() - bias_y;
+            let y_value = (y_src.as_() - bias_y) * y_coef;
             let cb_value = u_src.as_() - bias_uv;
             let cr_value = v_src.as_() - bias_uv;
 
-            ycbcr_execute::<V, PRECISION, CHANNELS, BIT_DEPTH>(
-                rgb_dst.try_into().unwrap(),
-                y_value,
-                cb_value,
-                cr_value,
-                transform,
-            );
+            let r = qrshr::<PRECISION, BIT_DEPTH>(y_value + cr_coef * cr_value);
+            let b = qrshr::<PRECISION, BIT_DEPTH>(y_value + cb_coef * cb_value);
+            let g =
+                qrshr::<PRECISION, BIT_DEPTH>(y_value - g_coef_1 * cr_value - g_coef_2 * cb_value);
+
+            if CHANNELS == 4 {
+                rgb_dst[0] = r.as_();
+                rgb_dst[1] = g.as_();
+                rgb_dst[2] = b.as_();
+                rgb_dst[3] = max_value.as_();
+            } else if CHANNELS == 3 {
+                rgb_dst[0] = r.as_();
+                rgb_dst[1] = g.as_();
+                rgb_dst[2] = b.as_();
+            } else {
+                unreachable!();
+            }
         }
     }
 }
 
 /// Converts YUV420 to Rgba
+///
+/// Stride here is not supported as it can be in passed from FFI.
 ///
 /// # Arguments
 ///
@@ -634,10 +621,9 @@ fn process_halved_chroma_row_cbcr<
 /// * `range`: see [YuvIntensityRange]
 /// * `matrix`: see [YuvStandardMatrix]
 ///
-pub(crate) fn yuv420_to_rgbx_invoker<
+#[inline]
+fn yuv420_to_rgbx<
     V: Copy + AsPrimitive<i32> + 'static + Sized,
-    W: Fn(YuvPlanarImage<V>, &mut [V], &CbCrInverseTransform<i32>, &YuvChromaRange),
-    const PRECISION: i32,
     const CHANNELS: usize,
     const BIT_DEPTH: usize,
 >(
@@ -645,7 +631,6 @@ pub(crate) fn yuv420_to_rgbx_invoker<
     rgb: &mut [V],
     range: YuvIntensityRange,
     matrix: YuvStandardMatrix,
-    worker: W,
 ) -> Result<(), ImageError>
 where
     i32: AsPrimitive<V>,
@@ -666,19 +651,26 @@ where
         },
         "Unsupported bit depth and data type combination"
     );
+    assert_ne!(
+        matrix,
+        YuvStandardMatrix::Identity,
+        "Identity matrix cannot be used on 4:2:0"
+    );
     let y_plane = image.y_plane;
     let u_plane = image.u_plane;
     let v_plane = image.v_plane;
     let y_stride = image.y_stride;
     let u_stride = image.u_stride;
     let v_stride = image.v_stride;
-    let chroma_height = image.height.div_ceil(2);
+    let chroma_height = (image.height + 1) / 2;
 
     check_yuv_plane_preconditions(y_plane, PlaneDefinition::Y, y_stride, image.height)?;
     check_yuv_plane_preconditions(u_plane, PlaneDefinition::U, u_stride, chroma_height)?;
     check_yuv_plane_preconditions(v_plane, PlaneDefinition::V, v_stride, chroma_height)?;
 
     check_rgb_preconditions(rgb, image.width * CHANNELS, image.height)?;
+
+    const PRECISION: i32 = 11;
 
     let range = range.get_yuv_range(BIT_DEPTH as u32);
     let kr_kb = matrix.get_kr_kb();
@@ -740,7 +732,12 @@ where
                 width: image.width,
                 height: image.height,
             };
-            worker(image, rgba, &inverse_transform, &range);
+            process_halved_chroma_row::<V, PRECISION, CHANNELS, BIT_DEPTH>(
+                image,
+                rgba,
+                &inverse_transform,
+                &range,
+            );
         }
     }
 
@@ -765,7 +762,12 @@ where
             width: image.width,
             height: image.height,
         };
-        worker(image, rgba, &inverse_transform, &range);
+        process_halved_chroma_row::<V, PRECISION, CHANNELS, BIT_DEPTH>(
+            image,
+            rgba,
+            &inverse_transform,
+            &range,
+        );
     }
 
     Ok(())
@@ -786,17 +788,12 @@ pub(crate) fn yuv422_to_rgba8(
     range: YuvIntensityRange,
     matrix: YuvStandardMatrix,
 ) -> Result<(), ImageError> {
-    const P: i32 = 13;
-    yuv422_to_rgbx_invoker::<u8, HalvedRowHandler<u8>, P, 4, 8>(
-        image,
-        rgb,
-        range,
-        matrix,
-        process_halved_chroma_row_cbcr::<u8, P, 4, 8>,
-    )
+    yuv422_to_rgbx_impl::<u8, 4, 8>(image, rgb, range, matrix)
 }
 
 /// Converts Yuv 422 10-bit planar format to Rgba 10-bit
+///
+/// Stride here is not supported as it can be in passed from FFI.
 ///
 /// # Arguments
 ///
@@ -811,17 +808,12 @@ pub(crate) fn yuv422_to_rgba10(
     range: YuvIntensityRange,
     matrix: YuvStandardMatrix,
 ) -> Result<(), ImageError> {
-    const P: i32 = 13;
-    yuv422_to_rgbx_invoker::<u16, HalvedRowHandler<u16>, P, 4, 10>(
-        image,
-        rgb,
-        range,
-        matrix,
-        process_halved_chroma_row_cbcr::<u16, P, 4, 10>,
-    )
+    yuv422_to_rgbx_impl::<u16, 4, 10>(image, rgb, range, matrix)
 }
 
 /// Converts Yuv 422 12-bit planar format to Rgba 12-bit
+///
+/// Stride here is not supported as it can be in passed from FFI.
 ///
 /// # Arguments
 ///
@@ -836,17 +828,12 @@ pub(crate) fn yuv422_to_rgba12(
     range: YuvIntensityRange,
     matrix: YuvStandardMatrix,
 ) -> Result<(), ImageError> {
-    const P: i32 = 13;
-    yuv422_to_rgbx_invoker::<u16, HalvedRowHandler<u16>, P, 4, 12>(
-        image,
-        rgb,
-        range,
-        matrix,
-        process_halved_chroma_row_cbcr::<u16, P, 4, 12>,
-    )
+    yuv422_to_rgbx_impl::<u16, 4, 12>(image, rgb, range, matrix)
 }
 
 /// Converts Yuv 422 planar format to Rgba
+///
+/// Stride here is not supports u16 as it can be in passed from FFI.
 ///
 /// # Arguments
 ///
@@ -855,10 +842,8 @@ pub(crate) fn yuv422_to_rgba12(
 /// * `range`: see [YuvIntensityRange]
 /// * `matrix`: see [YuvStandardMatrix]
 ///
-pub(crate) fn yuv422_to_rgbx_invoker<
+fn yuv422_to_rgbx_impl<
     V: Copy + AsPrimitive<i32> + 'static + Sized,
-    W: Fn(YuvPlanarImage<V>, &mut [V], &CbCrInverseTransform<i32>, &YuvChromaRange),
-    const PRECISION: i32,
     const CHANNELS: usize,
     const BIT_DEPTH: usize,
 >(
@@ -866,7 +851,6 @@ pub(crate) fn yuv422_to_rgbx_invoker<
     rgb: &mut [V],
     range: YuvIntensityRange,
     matrix: YuvStandardMatrix,
-    worker: W,
 ) -> Result<(), ImageError>
 where
     i32: AsPrimitive<V>,
@@ -879,7 +863,6 @@ where
         (8..=16).contains(&BIT_DEPTH),
         "Invalid bit depth is provided"
     );
-    assert!(PRECISION < 16);
     assert!(
         if BIT_DEPTH > 8 {
             size_of::<V>() == 2
@@ -887,6 +870,11 @@ where
             size_of::<V>() == 1
         },
         "Unsupported bit depth and data type combination"
+    );
+    assert_ne!(
+        matrix,
+        YuvStandardMatrix::Identity,
+        "Identity matrix cannot be used on 4:2:2"
     );
     let y_plane = image.y_plane;
     let u_plane = image.u_plane;
@@ -904,6 +892,7 @@ where
 
     let range = range.get_yuv_range(BIT_DEPTH as u32);
     let kr_kb = matrix.get_kr_kb();
+    const PRECISION: i32 = 11;
 
     let inverse_transform = get_inverse_transform(
         (1 << BIT_DEPTH) - 1,
@@ -958,7 +947,12 @@ where
             width: image.width,
             height: image.height,
         };
-        worker(image, rgba, &inverse_transform, &range);
+        process_halved_chroma_row::<V, PRECISION, CHANNELS, BIT_DEPTH>(
+            image,
+            rgba,
+            &inverse_transform,
+            &range,
+        );
     }
 
     Ok(())
@@ -979,10 +973,16 @@ pub(crate) fn yuv444_to_rgba8(
     range: YuvIntensityRange,
     matrix: YuvStandardMatrix,
 ) -> Result<(), ImageError> {
-    yuv444_to_rgbx_impl::<u8, 4, 8>(image, rgba, range, matrix)
+    if matrix == YuvStandardMatrix::Identity {
+        gbr_to_rgba8(image, rgba, range)
+    } else {
+        yuv444_to_rgbx_impl::<u8, 4, 8>(image, rgba, range, matrix)
+    }
 }
 
 /// Converts Yuv 444 planar format 10 bit-depth to Rgba 10 bit
+///
+/// Stride here is not supports u16 as it can be in passed from FFI.
 ///
 /// # Arguments
 ///
@@ -997,10 +997,16 @@ pub(super) fn yuv444_to_rgba10(
     range: YuvIntensityRange,
     matrix: YuvStandardMatrix,
 ) -> Result<(), ImageError> {
-    yuv444_to_rgbx_impl::<u16, 4, 10>(image, rgba, range, matrix)
+    if matrix == YuvStandardMatrix::Identity {
+        gbr_to_rgba10(image, rgba, range)
+    } else {
+        yuv444_to_rgbx_impl::<u16, 4, 10>(image, rgba, range, matrix)
+    }
 }
 
 /// Converts Yuv 444 planar format 12 bit-depth to Rgba 12 bit
+///
+/// Stride here is not supports u16 as it can be in passed from FFI.
 ///
 /// # Arguments
 ///
@@ -1015,10 +1021,16 @@ pub(super) fn yuv444_to_rgba12(
     range: YuvIntensityRange,
     matrix: YuvStandardMatrix,
 ) -> Result<(), ImageError> {
-    yuv444_to_rgbx_impl::<u16, 4, 12>(image, rgba, range, matrix)
+    if matrix == YuvStandardMatrix::Identity {
+        gbr_to_rgba12(image, rgba, range)
+    } else {
+        yuv444_to_rgbx_impl::<u16, 4, 12>(image, rgba, range, matrix)
+    }
 }
 
 /// Converts Yuv 444 planar format to Rgba
+///
+/// Stride here is not supports u16 as it can be in passed from FFI.
 ///
 /// # Arguments
 ///
@@ -1075,7 +1087,7 @@ where
 
     let range = range.get_yuv_range(BIT_DEPTH as u32);
     let kr_kb = matrix.get_kr_kb();
-    const PRECISION: i32 = 13;
+    const PRECISION: i32 = 11;
 
     let inverse_transform = get_inverse_transform(
         (1 << BIT_DEPTH) - 1,
@@ -1085,9 +1097,16 @@ where
         kr_kb.kb,
         PRECISION as u32,
     );
+    let cr_coef = inverse_transform.cr_coef;
+    let cb_coef = inverse_transform.cb_coef;
+    let y_coef = inverse_transform.y_coef;
+    let g_coef_1 = inverse_transform.g_coeff_1;
+    let g_coef_2 = inverse_transform.g_coeff_2;
 
     let bias_y = range.bias_y as i32;
     let bias_uv = range.bias_uv as i32;
+
+    let max_value = (1 << BIT_DEPTH) - 1;
 
     let rgb_stride = width * CHANNELS;
 
@@ -1102,17 +1121,27 @@ where
 
         for (((y_src, u_src), v_src), rgb_dst) in y_src.iter().zip(u_src).zip(v_src).zip(rgb_chunks)
         {
-            let y_value = y_src.as_() - bias_y;
+            let y_value = (y_src.as_() - bias_y) * y_coef;
             let cb_value = u_src.as_() - bias_uv;
             let cr_value = v_src.as_() - bias_uv;
 
-            ycbcr_execute::<V, PRECISION, CHANNELS, BIT_DEPTH>(
-                rgb_dst.try_into().unwrap(),
-                y_value,
-                cb_value,
-                cr_value,
-                &inverse_transform,
-            );
+            let r = qrshr::<PRECISION, BIT_DEPTH>(y_value + cr_coef * cr_value);
+            let b = qrshr::<PRECISION, BIT_DEPTH>(y_value + cb_coef * cb_value);
+            let g =
+                qrshr::<PRECISION, BIT_DEPTH>(y_value - g_coef_1 * cr_value - g_coef_2 * cb_value);
+
+            if CHANNELS == 4 {
+                rgb_dst[0] = r.as_();
+                rgb_dst[1] = g.as_();
+                rgb_dst[2] = b.as_();
+                rgb_dst[3] = max_value.as_();
+            } else if CHANNELS == 3 {
+                rgb_dst[0] = r.as_();
+                rgb_dst[1] = g.as_();
+                rgb_dst[2] = b.as_();
+            } else {
+                unreachable!();
+            }
         }
     }
 
@@ -1127,7 +1156,7 @@ where
 /// * `rgb`: RGB image layout
 /// * `range`: see [YuvIntensityRange]
 ///
-pub(crate) fn gbr_to_rgba8(
+fn gbr_to_rgba8(
     image: YuvPlanarImage<u8>,
     rgb: &mut [u8],
     range: YuvIntensityRange,
@@ -1137,6 +1166,7 @@ pub(crate) fn gbr_to_rgba8(
 
 /// Converts Gbr 10 bit planar format to Rgba 10 bit-depth
 ///
+/// Stride here is not supported as it can be in passed from FFI.
 ///
 /// # Arguments
 ///
@@ -1144,7 +1174,7 @@ pub(crate) fn gbr_to_rgba8(
 /// * `rgba`: RGBx image layout
 /// * `range`: see [YuvIntensityRange]
 ///
-pub(crate) fn gbr_to_rgba10(
+fn gbr_to_rgba10(
     image: YuvPlanarImage<u16>,
     rgba: &mut [u16],
     range: YuvIntensityRange,
@@ -1154,13 +1184,15 @@ pub(crate) fn gbr_to_rgba10(
 
 /// Converts Gbr 12 bit planar format to Rgba 12 bit-depth
 ///
+/// Stride here is not supported as it can be in passed from FFI.
+///
 /// # Arguments
 ///
 /// * `image`: see [YuvPlanarImage]
 /// * `rgba`: RGBx image layout
 /// * `range`: see [YuvIntensityRange]
 ///
-pub(crate) fn gbr_to_rgba12(
+fn gbr_to_rgba12(
     image: YuvPlanarImage<u16>,
     rgba: &mut [u16],
     range: YuvIntensityRange,
@@ -1169,6 +1201,8 @@ pub(crate) fn gbr_to_rgba12(
 }
 
 /// Converts Gbr planar format to Rgba
+///
+/// Stride here is not supported as it can be in passed from FFI.
 ///
 /// # Arguments
 ///

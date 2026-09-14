@@ -22,7 +22,7 @@
 //!     - (chroma) subsampling not supported yet by the exr library
 use exr::prelude::*;
 
-use crate::error::{DecodingError, ImageFormatHint, UnsupportedError, UnsupportedErrorKind};
+use crate::error::{DecodingError, EncodingError, ImageFormatHint};
 use crate::{
     ColorType, ExtendedColorType, ImageDecoder, ImageEncoder, ImageError, ImageFormat, ImageResult,
 };
@@ -272,12 +272,10 @@ fn write_buffer(
 
         // TODO other color types and channel types
         unsupported_color_type => {
-            return Err(ImageError::Unsupported(
-                UnsupportedError::from_format_and_kind(
-                    ImageFormat::OpenExr.into(),
-                    UnsupportedErrorKind::Color(unsupported_color_type),
-                ),
-            ))
+            return Err(ImageError::Encoding(EncodingError::new(
+                ImageFormatHint::Exact(ImageFormat::OpenExr),
+                format!("writing color type {unsupported_color_type:?} not yet supported"),
+            )))
         }
     }
 
@@ -340,9 +338,8 @@ mod test {
     use std::io::{BufReader, Cursor};
     use std::path::{Path, PathBuf};
 
+    use crate::buffer_::{Rgb32FImage, Rgba32FImage};
     use crate::error::{LimitError, LimitErrorKind};
-    use crate::images::buffer::{Rgb32FImage, Rgba32FImage};
-    use crate::io::free_functions::decoder_to_vec;
     use crate::{DynamicImage, ImageBuffer, Rgb, Rgba};
 
     const BASE_PATH: &[&str] = &[".", "tests", "images", "exr"];
@@ -387,7 +384,7 @@ mod test {
     fn read_as_rgb_image(read: impl BufRead + Seek) -> ImageResult<Rgb32FImage> {
         let decoder = OpenExrDecoder::with_alpha_preference(read, Some(false))?;
         let (width, height) = decoder.dimensions();
-        let buffer: Vec<f32> = decoder_to_vec(decoder)?;
+        let buffer: Vec<f32> = crate::image::decoder_to_vec(decoder)?;
 
         ImageBuffer::from_raw(width, height, buffer)
             // this should be the only reason for the "from raw" call to fail,
@@ -401,7 +398,7 @@ mod test {
     fn read_as_rgba_image(read: impl BufRead + Seek) -> ImageResult<Rgba32FImage> {
         let decoder = OpenExrDecoder::with_alpha_preference(read, Some(true))?;
         let (width, height) = decoder.dimensions();
-        let buffer: Vec<f32> = decoder_to_vec(decoder)?;
+        let buffer: Vec<f32> = crate::image::decoder_to_vec(decoder)?;
 
         ImageBuffer::from_raw(width, height, buffer)
             // this should be the only reason for the "from raw" call to fail,
@@ -422,9 +419,10 @@ mod test {
             use crate::codecs::hdr::HdrDecoder;
 
             let folder = BASE_PATH.iter().collect::<PathBuf>();
-            let reference_path = folder.join("overexposed gradient.hdr");
-            let exr_path =
-                folder.join("overexposed gradient - data window equals display window.exr");
+            let reference_path = folder.clone().join("overexposed gradient.hdr");
+            let exr_path = folder
+                .clone()
+                .join("overexposed gradient - data window equals display window.exr");
 
             let hdr_decoder =
                 HdrDecoder::new(BufReader::new(File::open(reference_path).unwrap())).unwrap();
@@ -442,7 +440,9 @@ mod test {
                     // the RGBE u8x4 pixel quantization of the hdr image format
                     assert!(
                         (expected - found).abs() < 0.1,
-                        "expected {expected}, found {found}"
+                        "expected {}, found {}",
+                        expected,
+                        found
                     );
                 }
             }
@@ -514,8 +514,10 @@ mod test {
         // auto-cropped image will be reproduced to the original.
 
         let exr_path = BASE_PATH.iter().collect::<PathBuf>();
-        let original = exr_path.join("cropping - uncropped original.exr");
-        let cropped = exr_path.join("cropping - data window differs display window.exr");
+        let original = exr_path.clone().join("cropping - uncropped original.exr");
+        let cropped = exr_path
+            .clone()
+            .join("cropping - data window differs display window.exr");
 
         // smoke-check that the exr files are actually not the same
         {

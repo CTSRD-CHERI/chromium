@@ -1,6 +1,6 @@
 //! Decoding and encoding of QOI images
 
-use crate::error::{DecodingError, EncodingError, UnsupportedError, UnsupportedErrorKind};
+use crate::error::{DecodingError, EncodingError};
 use crate::{
     ColorType, ExtendedColorType, ImageDecoder, ImageEncoder, ImageError, ImageFormat, ImageResult,
 };
@@ -77,12 +77,10 @@ impl<W: Write> ImageEncoder for QoiEncoder<W> {
             color_type,
             ExtendedColorType::Rgba8 | ExtendedColorType::Rgb8
         ) {
-            return Err(ImageError::Unsupported(
-                UnsupportedError::from_format_and_kind(
-                    ImageFormat::Qoi.into(),
-                    UnsupportedErrorKind::Color(color_type),
-                ),
-            ));
+            return Err(ImageError::Encoding(EncodingError::new(
+                ImageFormat::Qoi.into(),
+                format!("unsupported color type {color_type:?}. Supported are Rgba8 and Rgb8."),
+            )));
         }
 
         let expected_buffer_len = color_type.buffer_size(width, height);

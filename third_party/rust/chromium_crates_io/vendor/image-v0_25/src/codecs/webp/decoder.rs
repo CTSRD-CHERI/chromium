@@ -2,11 +2,9 @@ use std::io::{BufRead, Read, Seek};
 
 use crate::buffer::ConvertBuffer;
 use crate::error::{DecodingError, ImageError, ImageResult};
+use crate::image::{ImageDecoder, ImageFormat};
 use crate::metadata::Orientation;
-use crate::{
-    AnimationDecoder, ColorType, Delay, Frame, Frames, ImageDecoder, ImageFormat, RgbImage, Rgba,
-    RgbaImage,
-};
+use crate::{AnimationDecoder, ColorType, Delay, Frame, Frames, RgbImage, Rgba, RgbaImage};
 
 /// WebP Image format decoder.
 ///
@@ -82,12 +80,6 @@ impl<R: BufRead + Seek> ImageDecoder for WebPDecoder<R> {
         );
 
         Ok(exif)
-    }
-
-    fn xmp_metadata(&mut self) -> ImageResult<Option<Vec<u8>>> {
-        self.inner
-            .xmp_metadata()
-            .map_err(ImageError::from_webp_decode)
     }
 
     fn orientation(&mut self) -> ImageResult<Orientation> {

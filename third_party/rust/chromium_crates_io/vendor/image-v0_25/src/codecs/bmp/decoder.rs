@@ -1,8 +1,7 @@
-use crate::utils::vec_try_with_capacity;
 use std::cmp::{self, Ordering};
 use std::io::{self, BufRead, Seek, SeekFrom};
 use std::iter::{repeat, Rev};
-use std::slice::ChunksExactMut;
+use std::slice::ChunksMut;
 use std::{error, fmt};
 
 use byteorder_lite::{LittleEndian, ReadBytesExt};
@@ -11,9 +10,8 @@ use crate::color::ColorType;
 use crate::error::{
     DecodingError, ImageError, ImageResult, UnsupportedError, UnsupportedErrorKind,
 };
-use crate::io::free_functions::load_rect;
-use crate::io::ReadExt;
-use crate::{ImageDecoder, ImageDecoderRect, ImageFormat};
+use crate::image::{self, ImageDecoder, ImageFormat};
+use crate::ImageDecoderRect;
 
 const BITMAPCOREHEADER_SIZE: u32 = 12;
 const BITMAPINFOHEADER_SIZE: u32 = 40;
@@ -96,8 +94,8 @@ enum FormatFullBytes {
 }
 
 enum Chunker<'a> {
-    FromTop(ChunksExactMut<'a, u8>),
-    FromBottom(Rev<ChunksExactMut<'a, u8>>),
+    FromTop(ChunksMut<'a, u8>),
+    FromBottom(Rev<ChunksMut<'a, u8>>),
 }
 
 pub(crate) struct RowIterator<'a> {
@@ -295,7 +293,7 @@ where
 }
 
 fn set_8bit_pixel_run<'a, T: Iterator<Item = &'a u8>>(
-    pixel_iter: &mut ChunksExactMut<u8>,
+    pixel_iter: &mut ChunksMut<u8>,
     palette: &[[u8; 3]],
     indices: T,
     n_pixels: usize,
@@ -314,7 +312,7 @@ fn set_8bit_pixel_run<'a, T: Iterator<Item = &'a u8>>(
 }
 
 fn set_4bit_pixel_run<'a, T: Iterator<Item = &'a u8>>(
-    pixel_iter: &mut ChunksExactMut<u8>,
+    pixel_iter: &mut ChunksMut<u8>,
     palette: &[[u8; 3]],
     indices: T,
     mut n_pixels: usize,
@@ -344,7 +342,7 @@ fn set_4bit_pixel_run<'a, T: Iterator<Item = &'a u8>>(
 
 #[rustfmt::skip]
 fn set_2bit_pixel_run<'a, T: Iterator<Item = &'a u8>>(
-    pixel_iter: &mut ChunksExactMut<u8>,
+    pixel_iter: &mut ChunksMut<u8>,
     palette: &[[u8; 3]],
     indices: T,
     mut n_pixels: usize,
@@ -375,7 +373,7 @@ fn set_2bit_pixel_run<'a, T: Iterator<Item = &'a u8>>(
 }
 
 fn set_1bit_pixel_run<'a, T: Iterator<Item = &'a u8>>(
-    pixel_iter: &mut ChunksExactMut<u8>,
+    pixel_iter: &mut ChunksMut<u8>,
     palette: &[[u8; 3]],
     indices: T,
 ) {
@@ -819,36 +817,19 @@ impl<R: BufRead + Seek> BmpDecoder<R> {
                 | BMPHeaderType::V5 => {
                     self.read_bitmap_info_header()?;
                 }
-            }
-
-            let mut bitmask_bytes_offset = 0;
-            if self.image_type == ImageType::Bitfields16
-                || self.image_type == ImageType::Bitfields32
-            {
-                self.read_bitmasks()?;
-
-                // Per https://learn.microsoft.com/en-us/windows/win32/gdi/bitmap-header-types, bitmaps
-                // using the `BITMAPINFOHEADER`, `BITMAPV4HEADER`, or `BITMAPV5HEADER` structures with
-                // an image type of `BI_BITFIELD` contain RGB bitfield masks immediately after the header.
-                //
-                // `read_bitmasks` correctly reads these from earlier in the header itself but we must
-                // ensure the reader starts on the image data itself, not these extra mask bytes.
-                if matches!(
-                    self.bmp_header_type,
-                    BMPHeaderType::Info | BMPHeaderType::V4 | BMPHeaderType::V5
-                ) {
-                    // This is `size_of::<u32>() * 3` (a red, green, and blue mask), but with less noise.
-                    bitmask_bytes_offset = 12;
-                }
             };
 
-            self.reader
-                .seek(SeekFrom::Start(bmp_header_end + bitmask_bytes_offset))?;
+            match self.image_type {
+                ImageType::Bitfields16 | ImageType::Bitfields32 => self.read_bitmasks()?,
+                _ => {}
+            };
+
+            self.reader.seek(SeekFrom::Start(bmp_header_end))?;
 
             match self.image_type {
                 ImageType::Palette | ImageType::RLE4 | ImageType::RLE8 => self.read_palette()?,
                 _ => {}
-            }
+            };
 
             if self.no_file_header {
                 // Use the offset of the end of metadata instead of reading a BMP file header.
@@ -904,7 +885,7 @@ impl<R: BufRead + Seek> BmpDecoder<R> {
         let max_length = MAX_PALETTE_SIZE * bytes_per_color;
 
         let length = palette_size * bytes_per_color;
-        let mut buf = vec_try_with_capacity(max_length)?;
+        let mut buf = Vec::with_capacity(max_length);
 
         // Resize and read the palette entries to the buffer.
         // We limit the buffer to at most 256 colours to avoid any oom issues as
@@ -956,11 +937,11 @@ impl<R: BufRead + Seek> BmpDecoder<R> {
         let stride = self.width as usize * self.num_channels();
         if self.top_down {
             RowIterator {
-                chunks: Chunker::FromTop(pixel_data.chunks_exact_mut(stride)),
+                chunks: Chunker::FromTop(pixel_data.chunks_mut(stride)),
             }
         } else {
             RowIterator {
-                chunks: Chunker::FromBottom(pixel_data.chunks_exact_mut(stride).rev()),
+                chunks: Chunker::FromBottom(pixel_data.chunks_mut(stride).rev()),
             }
         }
     }
@@ -992,7 +973,7 @@ impl<R: BufRead + Seek> BmpDecoder<R> {
                 if skip_palette {
                     row.clone_from_slice(&indices[0..width]);
                 } else {
-                    let mut pixel_iter = row.chunks_exact_mut(num_channels);
+                    let mut pixel_iter = row.chunks_mut(num_channels);
                     match bit_count {
                         1 => {
                             set_1bit_pixel_run(&mut pixel_iter, palette, indices.iter());
@@ -1007,7 +988,7 @@ impl<R: BufRead + Seek> BmpDecoder<R> {
                             set_8bit_pixel_run(&mut pixel_iter, palette, indices.iter(), width);
                         }
                         _ => panic!(),
-                    }
+                    };
                 }
                 Ok(())
             },
@@ -1164,7 +1145,7 @@ impl<R: BufRead + Seek> BmpDecoder<R> {
         let mut row_iter = self.rows(buf);
 
         while let Some(row) = row_iter.next() {
-            let mut pixel_iter = row.chunks_exact_mut(num_channels);
+            let mut pixel_iter = row.chunks_mut(num_channels);
 
             let mut x = 0;
             loop {
@@ -1185,11 +1166,11 @@ impl<R: BufRead + Seek> BmpDecoder<R> {
                                 _ => {
                                     let mut length = op as usize;
                                     if self.image_type == ImageType::RLE4 {
-                                        length = length.div_ceil(2);
+                                        length = (length + 1) / 2;
                                     }
                                     length += length & 1;
-                                    let mut buffer = Vec::new();
-                                    self.reader.read_exact_vec(&mut buffer, length)?;
+                                    let mut buffer = vec![0; length];
+                                    self.reader.read_exact(&mut buffer)?;
                                     RLEInsn::Absolute(op, buffer)
                                 }
                             }
@@ -1232,7 +1213,7 @@ impl<R: BufRead + Seek> BmpDecoder<R> {
                             pixel_iter = row_iter
                                 .next()
                                 .ok_or(DecoderError::CorruptRleData)?
-                                .chunks_exact_mut(num_channels);
+                                .chunks_mut(num_channels);
 
                             // Zero out the pixels up to the current point in the row.
                             for _ in 0..x {
@@ -1279,20 +1260,19 @@ impl<R: BufRead + Seek> BmpDecoder<R> {
                         x += length as usize;
                     }
                     RLEInsn::PixelRun(n_pixels, palette_index) => {
+                        // A pixel run isn't allowed to span rows, but we
+                        // simply continue on to the next row if we run
+                        // out of pixels to set.
                         match image_type {
                             ImageType::RLE8 => {
-                                // A pixel run isn't allowed to span rows.
-                                // imagemagick produces invalid images where n_pixels exceeds row length,
-                                // so we clamp n_pixels to the row length to display them properly:
-                                // https://github.com/image-rs/image/issues/2321
-                                //
-                                // This is like set_8bit_pixel_run() but doesn't fail when `n_pixels` is too large
-                                let repeat_pixel: [u8; 3] = p[palette_index as usize];
-                                (&mut pixel_iter).take(n_pixels as usize).for_each(|p| {
-                                    p[2] = repeat_pixel[2];
-                                    p[1] = repeat_pixel[1];
-                                    p[0] = repeat_pixel[0];
-                                });
+                                if !set_8bit_pixel_run(
+                                    &mut pixel_iter,
+                                    p,
+                                    repeat(&palette_index),
+                                    n_pixels as usize,
+                                ) {
+                                    return Err(DecoderError::CorruptRleData.into());
+                                }
                             }
                             ImageType::RLE4 => {
                                 if !set_4bit_pixel_run(
@@ -1380,7 +1360,7 @@ impl<R: BufRead + Seek> ImageDecoderRect for BmpDecoder<R> {
         row_pitch: usize,
     ) -> ImageResult<()> {
         let start = self.reader.stream_position()?;
-        load_rect(
+        image::load_rect(
             x,
             y,
             width,

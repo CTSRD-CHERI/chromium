@@ -1,6 +1,5 @@
 //!  Utilities
 
-use std::collections::TryReserveError;
 use std::iter::repeat;
 
 #[inline(always)]
@@ -91,13 +90,6 @@ where
     } else {
         a
     }
-}
-
-#[inline]
-pub(crate) fn vec_try_with_capacity<T>(capacity: usize) -> Result<Vec<T>, TryReserveError> {
-    let mut vec = Vec::new();
-    vec.try_reserve_exact(capacity)?;
-    Ok(vec)
 }
 
 #[cfg(test)]

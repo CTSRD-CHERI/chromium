@@ -1,14 +1,13 @@
 use std::io::{BufRead, Seek};
 use std::marker::PhantomData;
 
-use zune_core::bytestream::ZCursor;
-
 use crate::color::ColorType;
 use crate::error::{
     DecodingError, ImageError, ImageResult, LimitError, UnsupportedError, UnsupportedErrorKind,
 };
+use crate::image::{ImageDecoder, ImageFormat};
 use crate::metadata::Orientation;
-use crate::{ImageDecoder, ImageFormat, Limits};
+use crate::Limits;
 
 type ZuneColorSpace = zune_core::colorspace::ColorSpace;
 
@@ -35,8 +34,7 @@ impl<R: BufRead + Seek> JpegDecoder<R> {
             .set_strict_mode(false)
             .set_max_width(usize::MAX)
             .set_max_height(usize::MAX);
-        let mut decoder =
-            zune_jpeg::JpegDecoder::new_with_options(ZCursor::new(input.as_slice()), options);
+        let mut decoder = zune_jpeg::JpegDecoder::new_with_options(input.as_slice(), options);
         decoder.decode_headers().map_err(ImageError::from_jpeg)?;
         // now that we've decoded the headers we can `.unwrap()`
         // all these functions that only fail if called before decoding the headers
@@ -44,22 +42,7 @@ impl<R: BufRead + Seek> JpegDecoder<R> {
         // JPEG can only express dimensions up to 65535x65535, so this conversion cannot fail
         let width: u16 = width.try_into().unwrap();
         let height: u16 = height.try_into().unwrap();
-        let orig_color_space = decoder.input_colorspace().expect("headers were decoded");
-
-        // Now configure the decoder color output.
-        decoder.set_options({
-            let requested_color = match orig_color_space {
-                ZuneColorSpace::RGB
-                | ZuneColorSpace::RGBA
-                | ZuneColorSpace::Luma
-                | ZuneColorSpace::LumaA => orig_color_space,
-                // Late failure
-                _ => ZuneColorSpace::RGB,
-            };
-
-            decoder.options().jpeg_set_out_colorspace(requested_color)
-        });
-
+        let orig_color_space = decoder.get_output_colorspace().unwrap();
         // Limits are disabled by default in the constructor for all decoders
         let limits = Limits::no_limits();
         Ok(JpegDecoder {
@@ -88,8 +71,7 @@ impl<R: BufRead + Seek> ImageDecoder for JpegDecoder<R> {
             .set_strict_mode(false)
             .set_max_width(usize::MAX)
             .set_max_height(usize::MAX);
-        let mut decoder =
-            zune_jpeg::JpegDecoder::new_with_options(ZCursor::new(&self.input), options);
+        let mut decoder = zune_jpeg::JpegDecoder::new_with_options(&self.input, options);
         decoder.decode_headers().map_err(ImageError::from_jpeg)?;
         Ok(decoder.icc_profile())
     }
@@ -99,8 +81,7 @@ impl<R: BufRead + Seek> ImageDecoder for JpegDecoder<R> {
             .set_strict_mode(false)
             .set_max_width(usize::MAX)
             .set_max_height(usize::MAX);
-        let mut decoder =
-            zune_jpeg::JpegDecoder::new_with_options(ZCursor::new(&self.input), options);
+        let mut decoder = zune_jpeg::JpegDecoder::new_with_options(&self.input, options);
         decoder.decode_headers().map_err(ImageError::from_jpeg)?;
         let exif = decoder.exif().cloned();
 
@@ -111,30 +92,6 @@ impl<R: BufRead + Seek> ImageDecoder for JpegDecoder<R> {
         );
 
         Ok(exif)
-    }
-
-    fn xmp_metadata(&mut self) -> ImageResult<Option<Vec<u8>>> {
-        let options = zune_core::options::DecoderOptions::default()
-            .set_strict_mode(false)
-            .set_max_width(usize::MAX)
-            .set_max_height(usize::MAX);
-        let mut decoder =
-            zune_jpeg::JpegDecoder::new_with_options(ZCursor::new(&self.input), options);
-        decoder.decode_headers().map_err(ImageError::from_jpeg)?;
-
-        Ok(decoder.xmp().cloned())
-    }
-
-    fn iptc_metadata(&mut self) -> ImageResult<Option<Vec<u8>>> {
-        let options = zune_core::options::DecoderOptions::default()
-            .set_strict_mode(false)
-            .set_max_width(usize::MAX)
-            .set_max_height(usize::MAX);
-        let mut decoder =
-            zune_jpeg::JpegDecoder::new_with_options(ZCursor::new(&self.input), options);
-        decoder.decode_headers().map_err(ImageError::from_jpeg)?;
-
-        Ok(decoder.iptc().cloned())
     }
 
     fn orientation(&mut self) -> ImageResult<Orientation> {
@@ -208,7 +165,7 @@ fn new_zune_decoder(
     input: &[u8],
     orig_color_space: ZuneColorSpace,
     limits: Limits,
-) -> zune_jpeg::JpegDecoder<ZCursor<&[u8]>> {
+) -> zune_jpeg::JpegDecoder<&[u8]> {
     let target_color_space = to_supported_color_space(orig_color_space);
     let mut options = zune_core::options::DecoderOptions::default()
         .jpeg_set_out_colorspace(target_color_space)
@@ -221,7 +178,7 @@ fn new_zune_decoder(
         Some(max_height) => max_height as usize, // u32 to usize never truncates
         None => usize::MAX,
     });
-    zune_jpeg::JpegDecoder::new_with_options(ZCursor::new(input), options)
+    zune_jpeg::JpegDecoder::new_with_options(input, options)
 }
 
 impl ImageError {
