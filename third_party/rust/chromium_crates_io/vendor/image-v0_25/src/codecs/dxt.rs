@@ -11,8 +11,7 @@ use std::io::{self, Read};
 
 use crate::color::ColorType;
 use crate::error::{ImageError, ImageResult, ParameterError, ParameterErrorKind};
-use crate::io::ReadExt;
-use crate::ImageDecoder;
+use crate::image::ImageDecoder;
 
 /// What version of DXT compression are we using?
 /// Note that DXT2 and DXT4 are left away as they're
@@ -112,10 +111,9 @@ impl<R: Read> DxtDecoder<R> {
             )
         );
 
-        let len = self.variant.encoded_bytes_per_block() * self.width_blocks as usize;
-        let mut src = Vec::new();
-        self.inner.read_exact_vec(&mut src, len)?;
-
+        let mut src =
+            vec![0u8; self.variant.encoded_bytes_per_block() * self.width_blocks as usize];
+        self.inner.read_exact(&mut src)?;
         match self.variant {
             DxtVariant::DXT1 => decode_dxt1_row(&src, buf),
             DxtVariant::DXT3 => decode_dxt3_row(&src, buf),
@@ -196,7 +194,6 @@ fn alpha_table_dxt5(alpha0: u8, alpha1: u8) -> [u8; 8] {
 
 /// decodes an 8-byte dxt color block into the RGB channels of a 16xRGB or 16xRGBA block.
 /// source should have a length of 8, dest a length of 48 (RGB) or 64 (RGBA)
-#[allow(clippy::needless_range_loop)] // False positive, the 0..3 loop is not an enumerate
 fn decode_dxt_colors(source: &[u8], dest: &mut [u8], is_dxt1: bool) {
     // sanity checks, also enable the compiler to elide all following bound checks
     assert!(source.len() == 8 && (dest.len() == 48 || dest.len() == 64));
@@ -227,7 +224,7 @@ fn decode_dxt_colors(source: &[u8], dest: &mut [u8], is_dxt1: bool) {
     } else {
         // linearly interpolate one other entry, keep the other at 0
         for i in 0..3 {
-            colors[2][i] = (u16::from(colors[0][i]) + u16::from(colors[1][i])).div_ceil(2) as u8;
+            colors[2][i] = ((u16::from(colors[0][i]) + u16::from(colors[1][i]) + 1) / 2) as u8;
         }
     }
 

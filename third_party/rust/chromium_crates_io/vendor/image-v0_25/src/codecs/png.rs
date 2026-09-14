@@ -6,27 +6,24 @@
 //! * <http://www.w3.org/TR/PNG/> - The PNG Specification
 
 use std::borrow::Cow;
+use std::fmt;
 use std::io::{BufRead, Seek, Write};
 
-use png::{BlendOp, DeflateCompression, DisposeOp};
+use png::{BlendOp, DisposeOp};
 
 use crate::animation::{Delay, Frame, Frames, Ratio};
 use crate::color::{Blend, ColorType, ExtendedColorType};
 use crate::error::{
-    DecodingError, ImageError, ImageResult, LimitError, LimitErrorKind, ParameterError,
-    ParameterErrorKind, UnsupportedError, UnsupportedErrorKind,
+    DecodingError, EncodingError, ImageError, ImageResult, LimitError, LimitErrorKind,
+    ParameterError, ParameterErrorKind, UnsupportedError, UnsupportedErrorKind,
 };
-use crate::utils::vec_try_with_capacity;
-use crate::{
-    AnimationDecoder, DynamicImage, GenericImage, GenericImageView, ImageBuffer, ImageDecoder,
-    ImageEncoder, ImageFormat, Limits, Luma, LumaA, Rgb, Rgba, RgbaImage,
-};
+use crate::image::{AnimationDecoder, ImageDecoder, ImageEncoder, ImageFormat};
+use crate::{DynamicImage, GenericImage, ImageBuffer, Luma, LumaA, Rgb, Rgba, RgbaImage};
+use crate::{GenericImageView, Limits};
 
 // http://www.w3.org/TR/PNG-Structure.html
 // The first eight bytes of a PNG file always contain the following (decimal) values:
 pub(crate) const PNG_SIGNATURE: [u8; 8] = [137, 80, 78, 71, 13, 10, 26, 10];
-const XMP_KEY: &str = "XML:com.adobe.xmp";
-const IPTC_KEYS: &[&str] = &["Raw profile type iptc", "Raw profile type 8bim"];
 
 /// PNG decoder
 pub struct PngDecoder<R: BufRead + Seek> {
@@ -47,7 +44,7 @@ impl<R: BufRead + Seek> PngDecoder<R> {
 
         let max_bytes = usize::try_from(limits.max_alloc.unwrap_or(u64::MAX)).unwrap_or(usize::MAX);
         let mut decoder = png::Decoder::new_with_limits(r, png::Limits { bytes: max_bytes });
-        decoder.set_ignore_text_chunk(false);
+        decoder.set_ignore_text_chunk(true);
 
         let info = decoder.read_header_info().map_err(ImageError::from_png)?;
         limits.check_dimensions(info.width, info.height)?;
@@ -180,62 +177,6 @@ impl<R: BufRead + Seek> ImageDecoder for PngDecoder<R> {
         Ok(self.reader.info().icc_profile.as_ref().map(|x| x.to_vec()))
     }
 
-    fn exif_metadata(&mut self) -> ImageResult<Option<Vec<u8>>> {
-        Ok(self
-            .reader
-            .info()
-            .exif_metadata
-            .as_ref()
-            .map(|x| x.to_vec()))
-    }
-
-    fn xmp_metadata(&mut self) -> ImageResult<Option<Vec<u8>>> {
-        if let Some(mut itx_chunk) = self
-            .reader
-            .info()
-            .utf8_text
-            .iter()
-            .find(|chunk| chunk.keyword.contains(XMP_KEY))
-            .cloned()
-        {
-            itx_chunk.decompress_text().map_err(ImageError::from_png)?;
-            return itx_chunk
-                .get_text()
-                .map(|text| Some(text.as_bytes().to_vec()))
-                .map_err(ImageError::from_png);
-        }
-        Ok(None)
-    }
-
-    fn iptc_metadata(&mut self) -> ImageResult<Option<Vec<u8>>> {
-        if let Some(mut text_chunk) = self
-            .reader
-            .info()
-            .compressed_latin1_text
-            .iter()
-            .find(|chunk| IPTC_KEYS.iter().any(|key| chunk.keyword.contains(key)))
-            .cloned()
-        {
-            text_chunk.decompress_text().map_err(ImageError::from_png)?;
-            return text_chunk
-                .get_text()
-                .map(|text| Some(text.as_bytes().to_vec()))
-                .map_err(ImageError::from_png);
-        }
-
-        if let Some(text_chunk) = self
-            .reader
-            .info()
-            .uncompressed_latin1_text
-            .iter()
-            .find(|chunk| IPTC_KEYS.iter().any(|key| chunk.keyword.contains(key)))
-            .cloned()
-        {
-            return Ok(Some(text_chunk.text.into_bytes()));
-        }
-        Ok(None)
-    }
-
     fn read_image(mut self, buf: &mut [u8]) -> ImageResult<()> {
         use byteorder_lite::{BigEndian, ByteOrder, NativeEndian};
 
@@ -355,13 +296,8 @@ impl<R: BufRead + Seek> ApngDecoder<R> {
         if self.has_thumbnail {
             // Clone the limits so that our one-off allocation that's destroyed after this scope doesn't persist
             let mut limits = self.inner.limits.clone();
-
-            let buffer_size = self.inner.reader.output_buffer_size().ok_or_else(|| {
-                ImageError::Limits(LimitError::from_kind(LimitErrorKind::InsufficientMemory))
-            })?;
-
-            limits.reserve_usize(buffer_size)?;
-            let mut buffer = vec![0; buffer_size];
+            limits.reserve_usize(self.inner.reader.output_buffer_size())?;
+            let mut buffer = vec![0; self.inner.reader.output_buffer_size()];
             // TODO: add `png::Reader::change_limits()` and call it here
             // to also constrain the internal buffer allocations in the PNG crate
             self.inner
@@ -418,10 +354,7 @@ impl<R: BufRead + Seek> ApngDecoder<R> {
         let mut limits = self.inner.limits.clone();
 
         // Read next frame data.
-        let raw_frame_size = self.inner.reader.output_buffer_size().ok_or_else(|| {
-            ImageError::Limits(LimitError::from_kind(LimitErrorKind::InsufficientMemory))
-        })?;
-
+        let raw_frame_size = self.inner.reader.output_buffer_size();
         limits.reserve_usize(raw_frame_size)?;
         let mut buffer = vec![0; raw_frame_size];
         // TODO: add `png::Reader::change_limits()` and call it here
@@ -450,7 +383,7 @@ impl<R: BufRead + Seek> ApngDecoder<R> {
                 blend = fc.blend_op;
                 self.dispose = fc.dispose_op;
             }
-        }
+        };
 
         self.dispose_region = Some((px, py, width, height));
 
@@ -550,10 +483,9 @@ pub struct PngEncoder<W: Write> {
     compression: CompressionType,
     filter: FilterType,
     icc_profile: Vec<u8>,
-    exif_metadata: Vec<u8>,
 }
 
-/// DEFLATE compression level of a PNG encoder. The default setting is `Fast`.
+/// Compression level of a PNG encoder. The default setting is `Fast`.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[non_exhaustive]
 #[derive(Default)]
@@ -565,10 +497,6 @@ pub enum CompressionType {
     Fast,
     /// High compression level
     Best,
-    /// No compression whatsoever
-    Uncompressed,
-    /// Detailed compression level between 1 and 9
-    Level(u8),
 }
 
 /// Filter algorithms used to process image data to improve compression.
@@ -595,6 +523,12 @@ pub enum FilterType {
     Adaptive,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[non_exhaustive]
+enum BadPngRepresentation {
+    ColorType(ExtendedColorType),
+}
+
 impl<W: Write> PngEncoder<W> {
     /// Create a new encoder that writes its output to ```w```
     pub fn new(w: W) -> PngEncoder<W> {
@@ -603,7 +537,6 @@ impl<W: Write> PngEncoder<W> {
             compression: CompressionType::default(),
             filter: FilterType::default(),
             icc_profile: Vec::new(),
-            exif_metadata: Vec::new(),
         }
     }
 
@@ -629,7 +562,6 @@ impl<W: Write> PngEncoder<W> {
             compression,
             filter,
             icc_profile: Vec::new(),
-            exif_metadata: Vec::new(),
         }
     }
 
@@ -658,39 +590,27 @@ impl<W: Write> PngEncoder<W> {
                 ))
             }
         };
-
         let comp = match self.compression {
-            CompressionType::Default => png::Compression::Balanced,
-            CompressionType::Best => png::Compression::High,
-            CompressionType::Fast => png::Compression::Fast,
-            CompressionType::Uncompressed => png::Compression::NoCompression,
-            CompressionType::Level(0) => png::Compression::NoCompression,
-            CompressionType::Level(_) => png::Compression::Fast, // whatever, will be overridden
+            CompressionType::Default => png::Compression::Default,
+            CompressionType::Best => png::Compression::Best,
+            _ => png::Compression::Fast,
         };
-
-        let advanced_comp = match self.compression {
-            // Do not set level 0 as a Zlib level to avoid Zlib backend variance.
-            // For example, in miniz_oxide level 0 is very slow.
-            CompressionType::Level(n @ 1..) => Some(DeflateCompression::Level(n)),
-            _ => None,
-        };
-
-        let filter = match self.filter {
-            FilterType::NoFilter => png::Filter::NoFilter,
-            FilterType::Sub => png::Filter::Sub,
-            FilterType::Up => png::Filter::Up,
-            FilterType::Avg => png::Filter::Avg,
-            FilterType::Paeth => png::Filter::Paeth,
-            FilterType::Adaptive => png::Filter::Adaptive,
+        let (filter, adaptive_filter) = match self.filter {
+            FilterType::NoFilter => (
+                png::FilterType::NoFilter,
+                png::AdaptiveFilterType::NonAdaptive,
+            ),
+            FilterType::Sub => (png::FilterType::Sub, png::AdaptiveFilterType::NonAdaptive),
+            FilterType::Up => (png::FilterType::Up, png::AdaptiveFilterType::NonAdaptive),
+            FilterType::Avg => (png::FilterType::Avg, png::AdaptiveFilterType::NonAdaptive),
+            FilterType::Paeth => (png::FilterType::Paeth, png::AdaptiveFilterType::NonAdaptive),
+            FilterType::Adaptive => (png::FilterType::Sub, png::AdaptiveFilterType::Adaptive),
         };
 
         let mut info = png::Info::with_size(width, height);
 
         if !self.icc_profile.is_empty() {
             info.icc_profile = Some(Cow::Borrowed(&self.icc_profile));
-        }
-        if !self.exif_metadata.is_empty() {
-            info.exif_metadata = Some(Cow::Borrowed(&self.exif_metadata));
         }
 
         let mut encoder =
@@ -699,10 +619,8 @@ impl<W: Write> PngEncoder<W> {
         encoder.set_color(ct);
         encoder.set_depth(bits);
         encoder.set_compression(comp);
-        if let Some(compression) = advanced_comp {
-            encoder.set_deflate_compression(compression);
-        }
         encoder.set_filter(filter);
+        encoder.set_adaptive_filter(adaptive_filter);
         let mut writer = encoder
             .write_header()
             .map_err(|e| ImageError::IoError(e.into()))?;
@@ -726,6 +644,7 @@ impl<W: Write> ImageEncoder for PngEncoder<W> {
         height: u32,
         color_type: ExtendedColorType,
     ) -> ImageResult<()> {
+        use byteorder_lite::{BigEndian, ByteOrder, NativeEndian};
         use ExtendedColorType::*;
 
         let expected_buffer_len = color_type.buffer_size(width, height);
@@ -749,32 +668,21 @@ impl<W: Write> ImageEncoder for PngEncoder<W> {
                 // Because the buffer is immutable and the PNG encoder does not
                 // yet take Write/Read traits, create a temporary buffer for
                 // big endian reordering.
-                let mut reordered;
-                let buf = if cfg!(target_endian = "little") {
-                    reordered = vec_try_with_capacity(buf.len())?;
-                    reordered.extend(buf.chunks_exact(2).flat_map(|le| [le[1], le[0]]));
-                    &reordered
-                } else {
-                    buf
-                };
-                self.encode_inner(buf, width, height, color_type)
+                let mut reordered = vec![0; buf.len()];
+                buf.chunks_exact(2)
+                    .zip(reordered.chunks_exact_mut(2))
+                    .for_each(|(b, r)| BigEndian::write_u16(r, NativeEndian::read_u16(b)));
+                self.encode_inner(&reordered, width, height, color_type)
             }
-            _ => Err(ImageError::Unsupported(
-                UnsupportedError::from_format_and_kind(
-                    ImageFormat::Png.into(),
-                    UnsupportedErrorKind::Color(color_type),
-                ),
-            )),
+            _ => Err(ImageError::Encoding(EncodingError::new(
+                ImageFormat::Png.into(),
+                BadPngRepresentation::ColorType(color_type),
+            ))),
         }
     }
 
     fn set_icc_profile(&mut self, icc_profile: Vec<u8>) -> Result<(), UnsupportedError> {
         self.icc_profile = icc_profile;
-        Ok(())
-    }
-
-    fn set_exif_metadata(&mut self, exif: Vec<u8>) -> Result<(), UnsupportedError> {
-        self.exif_metadata = exif;
         Ok(())
     }
 }
@@ -802,10 +710,21 @@ impl ImageError {
     }
 }
 
+impl fmt::Display for BadPngRepresentation {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::ColorType(color_type) => {
+                write!(f, "The color {color_type:?} can not be represented in PNG.")
+            }
+        }
+    }
+}
+
+impl std::error::Error for BadPngRepresentation {}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::io::free_functions::decoder_to_vec;
     use std::io::{BufReader, Cursor, Read};
 
     #[test]
@@ -824,7 +743,7 @@ mod tests {
             "Image MUST have the Rgb8 format"
         ];
 
-        let correct_bytes = decoder_to_vec(dec)
+        let correct_bytes = crate::image::decoder_to_vec(dec)
             .expect("Unable to read file")
             .bytes()
             .map(|x| x.expect("Unable to read byte"))

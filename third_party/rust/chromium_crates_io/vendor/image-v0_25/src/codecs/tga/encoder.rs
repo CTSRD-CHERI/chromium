@@ -1,6 +1,8 @@
 use super::header::Header;
-use crate::{codecs::tga::header::ImageType, error::EncodingError, utils::vec_try_with_capacity};
-use crate::{DynamicImage, ExtendedColorType, ImageEncoder, ImageError, ImageFormat, ImageResult};
+use crate::{
+    codecs::tga::header::ImageType, error::EncodingError, ExtendedColorType, ImageEncoder,
+    ImageError, ImageFormat, ImageResult,
+};
 use std::{error, fmt, io::Write};
 
 /// Errors that can occur during encoding and saving of a TGA image.
@@ -11,9 +13,6 @@ enum EncoderError {
 
     /// Invalid TGA height.
     HeightInvalid(u32),
-
-    /// Empty
-    Empty(u32, u32),
 }
 
 impl fmt::Display for EncoderError {
@@ -21,7 +20,6 @@ impl fmt::Display for EncoderError {
         match self {
             EncoderError::WidthInvalid(s) => f.write_fmt(format_args!("Invalid TGA width: {s}")),
             EncoderError::HeightInvalid(s) => f.write_fmt(format_args!("Invalid TGA height: {s}")),
-            EncoderError::Empty(w, h) => f.write_fmt(format_args!("Invalid TGA size: {w}x{h}")),
         }
     }
 }
@@ -97,7 +95,7 @@ impl<W: Write> TgaEncoder<W> {
 
         // Buffer to temporarily store pixels
         // so we can choose whether to use RLE or not when we need to
-        let mut buf = vec_try_with_capacity(capacity_in_bytes)?;
+        let mut buf = Vec::with_capacity(capacity_in_bytes);
 
         let mut counter = 0;
         let mut prev_pixel = None;
@@ -177,10 +175,6 @@ impl<W: Write> TgaEncoder<W> {
         );
 
         // Validate dimensions.
-        if width == 0 || height == 0 {
-            return Err(ImageError::from(EncoderError::Empty(width, height)));
-        }
-
         let width = u16::try_from(width)
             .map_err(|_| ImageError::from(EncoderError::WidthInvalid(width)))?;
 
@@ -250,14 +244,6 @@ impl<W: Write> ImageEncoder for TgaEncoder<W> {
     ) -> ImageResult<()> {
         self.encode(buf, width, height, color_type)
     }
-
-    fn make_compatible_img(
-        &self,
-        _: crate::io::encoder::MethodSealedToImage,
-        img: &DynamicImage,
-    ) -> Option<DynamicImage> {
-        crate::io::encoder::dynimage_conversion_8bit(img)
-    }
 }
 
 #[cfg(test)]
@@ -290,7 +276,8 @@ mod tests {
             }
             other => panic!(
                 "Encoding an image that is too wide should return a InvalidWidth \
-                it returned {other:?} instead"
+                it returned {:?} instead",
+                other
             ),
         }
     }
@@ -319,7 +306,8 @@ mod tests {
             }
             other => panic!(
                 "Encoding an image that is too tall should return a InvalidHeight \
-                it returned {other:?} instead"
+                it returned {:?} instead",
+                other
             ),
         }
     }

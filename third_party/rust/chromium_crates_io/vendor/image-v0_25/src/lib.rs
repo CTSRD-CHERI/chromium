@@ -13,7 +13,7 @@
 //!
 //! # High level API
 //!
-//! Load images using [`ImageReader`](crate::ImageReader):
+//! Load images using [`ImageReader`](crate::image_reader::ImageReader):
 //!
 //! ```rust,no_run
 //! use std::io::Cursor;
@@ -117,7 +117,15 @@
 #![deny(deprecated)]
 #![deny(missing_copy_implementations)]
 #![cfg_attr(all(test, feature = "benchmarks"), feature(test))]
-#![cfg_attr(docsrs, feature(doc_cfg))]
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+// We've temporarily disabled PCX support for 0.25.5 release
+// by removing the corresponding feature.
+// We want to ship bug fixes without committing to PCX support.
+//
+// Cargo shows warnings about code depending on a nonexistent feature
+// even to people using the crate as a dependency,
+// so we have to suppress those warnings.
+#![allow(unexpected_cfgs)]
 
 #[cfg(all(test, feature = "benchmarks"))]
 extern crate test;
@@ -132,12 +140,20 @@ pub use crate::color::{Luma, LumaA, Rgb, Rgba};
 
 pub use crate::error::{ImageError, ImageResult};
 
-pub use crate::images::generic_image::{GenericImage, GenericImageView, Pixels};
+pub use crate::image::{
+    AnimationDecoder,
+    GenericImage,
+    GenericImageView,
+    ImageDecoder,
+    ImageDecoderRect,
+    ImageEncoder,
+    ImageFormat,
+    // Iterators
+    Pixels,
+    SubImage,
+};
 
-pub use crate::images::sub_image::SubImage;
-
-pub use crate::images::buffer::{
-    ConvertColorOptions,
+pub use crate::buffer_::{
     GrayAlphaImage,
     GrayImage,
     // Image types
@@ -154,21 +170,14 @@ pub use crate::flat::FlatSamples;
 pub use crate::traits::{EncodableLayout, Pixel, PixelWithColorType, Primitive};
 
 // Opening and loading images
-pub use crate::images::dynimage::{
-    image_dimensions, load_from_memory, load_from_memory_with_format, open,
-    write_buffer_with_format,
+pub use crate::dynimage::{
+    image_dimensions, load_from_memory, load_from_memory_with_format, open, save_buffer,
+    save_buffer_with_format, write_buffer_with_format,
 };
-pub use crate::io::free_functions::{guess_format, load, save_buffer, save_buffer_with_format};
+pub use crate::image_reader::free_functions::{guess_format, load};
+pub use crate::image_reader::{ImageReader, LimitSupport, Limits};
 
-pub use crate::io::{
-    decoder::{AnimationDecoder, ImageDecoder, ImageDecoderRect},
-    encoder::ImageEncoder,
-    format::ImageFormat,
-    image_reader_type::ImageReader,
-    limits::{LimitSupport, Limits},
-};
-
-pub use crate::images::dynimage::DynamicImage;
+pub use crate::dynimage::DynamicImage;
 
 pub use crate::animation::{Delay, Frame, Frames};
 
@@ -178,13 +187,13 @@ pub mod error;
 /// Iterators and other auxiliary structure for the `ImageBuffer` type.
 pub mod buffer {
     // Only those not exported at the top-level
-    pub use crate::images::buffer::{
+    pub use crate::buffer_::{
         ConvertBuffer, EnumeratePixels, EnumeratePixelsMut, EnumerateRows, EnumerateRowsMut,
         Pixels, PixelsMut, Rows, RowsMut,
     };
 
     #[cfg(feature = "rayon")]
-    pub use crate::images::buffer_par::*;
+    pub use crate::buffer_par::*;
 }
 
 // Math utils
@@ -194,29 +203,33 @@ pub mod math;
 pub mod imageops;
 
 // Buffer representations for ffi.
-pub use crate::images::flat;
+pub mod flat;
 
 /// Encoding and decoding for various image file formats.
 ///
 /// # Supported formats
 ///
-/// | Feature | Format   | Notes
-/// | ------- | -------- | -----
-/// | `avif`  | AVIF     | Decoding requires the `avif-native` feature, uses the libdav1d C library.
-/// | `bmp`   | BMP      |
-/// | `dds`   | DDS      | Only decoding is supported.
-/// | `exr`   | OpenEXR  |
-/// | `ff`    | Farbfeld |
-/// | `gif`   | GIF      |
-/// | `hdr`   | HDR      |
-/// | `ico`   | ICO      |
-/// | `jpeg`  | JPEG     |
-/// | `png`   | PNG      |
-/// | `pnm`   | PNM      |
-/// | `qoi`   | QOI      |
-/// | `tga`   | TGA      |
-/// | `tiff`  | TIFF     |
-/// | `webp`  | WebP     | Only lossless encoding is currently supported.
+/// <!--- NOTE: Make sure to keep this table in sync with the README -->
+///
+/// | Format   | Decoding                                  | Encoding                                |
+/// | -------- | ----------------------------------------- | --------------------------------------- |
+/// | AVIF     | Yes \*                                    | Yes (lossy only)                        |
+/// | BMP      | Yes                                       | Yes                                     |
+/// | DDS      | Yes                                       | ---                                     |
+/// | Farbfeld | Yes                                       | Yes                                     |
+/// | GIF      | Yes                                       | Yes                                     |
+/// | HDR      | Yes                                       | Yes                                     |
+/// | ICO      | Yes                                       | Yes                                     |
+/// | JPEG     | Yes                                       | Yes                                     |
+/// | EXR      | Yes                                       | Yes                                     |
+/// | PNG      | Yes                                       | Yes                                     |
+/// | PNM      | Yes                                       | Yes                                     |
+/// | QOI      | Yes                                       | Yes                                     |
+/// | TGA      | Yes                                       | Yes                                     |
+/// | TIFF     | Yes                                       | Yes                                     |
+/// | WebP     | Yes                                       | Yes (lossless only)                     |
+///
+/// - \* Requires the `avif-native` feature, uses the libdav1d C library.
 ///
 /// ## A note on format specific features
 ///
@@ -258,6 +271,8 @@ pub mod codecs {
     pub mod jpeg;
     #[cfg(feature = "exr")]
     pub mod openexr;
+    #[cfg(feature = "pcx")]
+    pub mod pcx;
     #[cfg(feature = "png")]
     pub mod png;
     #[cfg(feature = "pnm")]
@@ -276,14 +291,28 @@ pub mod codecs {
 }
 
 mod animation;
+#[path = "buffer.rs"]
+mod buffer_;
+#[cfg(feature = "rayon")]
+mod buffer_par;
 mod color;
-pub mod hooks;
-mod images;
-/// Deprecated io module the original io module has been renamed to `image_reader`.
-/// This is going to be internal.
-pub mod io;
+mod dynimage;
+mod image;
+mod image_reader;
 pub mod metadata;
 //TODO delete this module after a few releases
+/// deprecated io module the original io module has been renamed to `image_reader`
+pub mod io {
+    #[deprecated(note = "this type has been moved and renamed to image::ImageReader")]
+    /// Deprecated re-export of `ImageReader` as `Reader`
+    pub type Reader<R> = super::ImageReader<R>;
+    #[deprecated(note = "this type has been moved to image::Limits")]
+    /// Deprecated re-export of `Limits`
+    pub type Limits = super::Limits;
+    #[deprecated(note = "this type has been moved to image::LimitSupport")]
+    /// Deprecated re-export of `LimitSupport`
+    pub type LimitSupport = super::LimitSupport;
+}
 mod traits;
 mod utils;
 

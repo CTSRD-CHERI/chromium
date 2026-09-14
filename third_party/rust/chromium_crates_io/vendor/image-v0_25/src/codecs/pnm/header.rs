@@ -32,13 +32,11 @@ pub enum PnmSubtype {
 /// it is possible to recover the header and construct an encoder. Using the encoder on the just
 /// loaded image should result in a byte copy of the original file (for single image pnms without
 /// additional trailing data).
-#[derive(Clone)]
 pub struct PnmHeader {
     pub(crate) decoded: HeaderRecord,
     pub(crate) encoded: Option<Vec<u8>>,
 }
 
-#[derive(Clone)]
 pub(crate) enum HeaderRecord {
     Bitmap(BitmapHeader),
     Graymap(GraymapHeader),
