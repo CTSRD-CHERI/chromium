@@ -5,9 +5,16 @@
 
 #include "base/notimplemented.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/platform_thread_internal_posix.h"
 
 namespace base {
 namespace internal {
+
+const ThreadTypeToNiceValuePairForTest kThreadTypeToNiceValueMapForTest[7] = {
+    {ThreadType::kRealtimeAudio, -10}, {ThreadType::kDisplayCritical, -8},
+    {ThreadType::kDefault, 0},         {ThreadType::kUtility, 2},
+    {ThreadType::kBackground, 10},
+};
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
                               MessagePumpType pump_type_hint,
