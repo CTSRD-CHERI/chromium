@@ -23,7 +23,11 @@ TEST(KDFTest, Pbkdf2HmacSha1KnownAnswers) {
   };
 
   // RFC 6070 test vectors:
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  const auto cases = std::to_array<TestCase>({
+#else
   constexpr auto cases = std::to_array<TestCase>({
+#endif
       {"password", "salt", {1}, 20, "0c60c80f961f0e71f3a9b524af6012062fe037a6"},
       {"password", "salt", {2}, 20, "ea6c014dc72d6f8ccd1ed92ace1d41f0d8de8957"},
   });
@@ -52,7 +56,11 @@ TEST(KDFTest, ScryptKnownAnswers) {
   // RFC 7914 test vectors - note that RFC 7914 does not specify
   // max_memory_bytes so we just pass 0 here and let BoringSSL figure it out for
   // us.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  const auto cases = std::to_array<TestCase>({
+#else
   constexpr auto cases = std::to_array<TestCase>({
+#endif
       {"password",
        "NaCl",
        {.cost = 1024, .block_size = 8, .parallelization = 16},
