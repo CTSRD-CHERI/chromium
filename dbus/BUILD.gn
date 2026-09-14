@@ -118,6 +118,16 @@ test("dbus_unittests") {
   ]
 
   configs += [ "//build/config/linux/dbus" ]
+
+  if (is_bsd) {
+    libs = [
+      "epoll-shim",
+    ]
+
+    include_dirs = [
+      "${sysroot}/usr/local/include/libepoll-shim"
+    ]
+  }
 }
 
 source_set("dbus_test_service") {
