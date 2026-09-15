@@ -205,6 +205,16 @@ source_set("impl_for_embedder") {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }
+
+  if (is_bsd) {
+    libs = [
+      "epoll-shim",
+    ]
+
+    include_dirs = [
+      "${sysroot}/usr/local/include/libepoll-shim"
+    ]
+  }
 }
 
 source_set("driver_for_ipcz_tests") {
