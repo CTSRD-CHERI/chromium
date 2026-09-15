@@ -174,4 +174,14 @@ target(tracing_lib_type, "cpp") {
       deps += [ "//chromeos/dbus/constants" ]
     }
   }  # !is_ios
+
+  if (is_bsd) {
+    libs = [
+      "epoll-shim",
+    ]
+
+    include_dirs = [
+      "${sysroot}/usr/local/include/libepoll-shim"
+    ]
+  }
 }
