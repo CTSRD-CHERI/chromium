@@ -1320,13 +1320,21 @@ TEST(ProcessGTestOutputTest, FoundTestCaseNotEnforced) {
   EXPECT_FALSE(GetAppOutputAndError(command_line, &output));
   // Banner should appear in the output.
   const char kBanner[] = "Found exact positive filter not enforced:";
+#if __cpp_lib_string_contains
   EXPECT_TRUE(output.contains(kBanner));
+#else
+  EXPECT_TRUE(output.find(kBanner) != std::string::npos);
+#endif
   std::vector<std::string> lines = base::SplitString(
       output, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   std::unordered_set<std::string> tests_not_enforced;
   bool banner_has_printed = false;
   for (size_t i = 0; i < lines.size(); i++) {
+#if __cpp_lib_string_contains
     if (lines[i].contains(kBanner)) {
+#else
+    if (lines[i].find(kBanner) != std::string::npos) {
+#endif
       // The following two lines should have the test cases not enforced
       // and the third line for the check failure message.
       EXPECT_LT(i + 3, lines.size());
@@ -1351,8 +1359,14 @@ TEST(ProcessGTestOutputTest, FoundTestCaseNotEnforced) {
 // the test case cannot catch the "Check failed" line.
 #if !defined(OFFICIAL_BUILD) || DCHECK_IS_ON()
       EXPECT_TRUE(
+#if __cpp_lib_string_contains
           lines[i].contains("Check failed: "
                             "!found_exact_positive_filter_not_enforced."));
+#else
+          lines[i].find("Check failed: "
+                        "!found_exact_positive_filter_not_enforced.") !=
+	                std::string::npos);
+#endif
 #endif  // !defined(OFFICIAL_BUILD) || DCHECK_IS_ON()
       break;
     }
