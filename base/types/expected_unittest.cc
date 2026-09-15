@@ -637,12 +637,22 @@ TEST(Expected, ToString) {
   // `expected` should have a custom string representation that prints the
   // contained value/error.
   const std::string value_str = ToString(expected<int, int>(123456));
+#if __cpp_lib_string_contains
   EXPECT_FALSE(value_str.contains("-byte object at "));
   EXPECT_TRUE(value_str.contains("123456"));
+#else
+  EXPECT_TRUE(value_str.find("-byte object at ") == std::string::npos);
+  EXPECT_TRUE(value_str.find("123456") != std::string::npos);
+#endif
   const std::string error_str =
       ToString(expected<int, int>(unexpected(123456)));
+#if __cpp_lib_string_contains
   EXPECT_FALSE(error_str.contains("-byte object at "));
   EXPECT_TRUE(error_str.contains("123456"));
+#else
+  EXPECT_TRUE(error_str.find("-byte object at ") == std::string::npos);
+  EXPECT_TRUE(error_str.find("123456") != std::string::npos);
+#endif
 }
 
 TEST(Expected, ValueOr) {
@@ -1201,11 +1211,20 @@ TEST(ExpectedVoid, ToString) {
   // `expected<void, ...>` should have a custom string representation (that
   // prints the contained error, if applicable).
   const std::string value_str = ToString(expected<void, int>());
+#if __cpp_lib_string_contains
   EXPECT_FALSE(value_str.contains("-byte object at "));
+#else
+  EXPECT_TRUE(value_str.find("-byte object at ") == std::string::npos);
+#endif
   const std::string error_str =
       ToString(expected<void, int>(unexpected(123456)));
+#if __cpp_lib_string_contains
   EXPECT_FALSE(error_str.contains("-byte object at "));
   EXPECT_TRUE(error_str.contains("123456"));
+#else
+  EXPECT_TRUE(error_str.find("-byte object at ") == std::string::npos);
+  EXPECT_TRUE(error_str.find("123456") != std::string::npos);
+#endif
 }
 
 TEST(ExpectedVoid, ErrorOr) {

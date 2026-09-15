@@ -430,7 +430,11 @@ TEST_F(HistogramThreadsafeTest, SnapshotDeltaThreadsafe) {
       // a normal histogram, once as a simulation of a subprocess histogram, and
       // once as a duplicate histogram created from the same allocator.
       size_t expected_logged_samples_count = kNumThreads * kNumEmissions;
+#if __cpp_lib_string_contains
       if (!histogram->histogram_name().contains("LocalHeap")) {
+#else
+      if (histogram->histogram_name().find("LocalHeap") == std::string::npos) {
+#endif
         expected_logged_samples_count *= 3;
       }
       ASSERT_EQ(static_cast<size_t>(logged_samples->TotalCount()),
