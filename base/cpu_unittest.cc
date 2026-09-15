@@ -138,8 +138,13 @@ TEST(CPU, RunExtendedInstructions) {
 // For https://crbug.com/249713
 TEST(CPU, BrandAndVendorContainsNoNUL) {
   base::CPU cpu;
+#if __cpp_lib_string_contains
   EXPECT_FALSE(cpu.cpu_brand().contains('\0'));
   EXPECT_FALSE(cpu.vendor_name().contains('\0'));
+#else
+  EXPECT_TRUE(cpu.cpu_brand().find('\0') == std::string::npos);
+  EXPECT_TRUE(cpu.vendor_name().find('\0') == std::string::npos);
+#endif
 }
 
 #if defined(ARCH_CPU_X86_FAMILY)
