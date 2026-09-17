@@ -12,7 +12,9 @@ namespace base {
 namespace {
 
 static_assert(IntegralConstantLike<std::integral_constant<size_t, 1>>);
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION >= 180000
 static_assert(!IntegralConstantLike<std::integral_constant<float, 1.0f>>);
+#endif
 static_assert(!IntegralConstantLike<std::integral_constant<bool, true>>);
 static_assert(!IntegralConstantLike<int>);
 static_assert(!IntegralConstantLike<void>);
