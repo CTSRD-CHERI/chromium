@@ -55,7 +55,11 @@ TEST(OptionalUtilTest, OptionalToExpected) {
 
   // Const value type. Forces the compiler copy its value argument, to
   // validate that it's copied correctly.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  const std::optional<std::string> kConstOptional = "test";
+#else
   constexpr std::optional<std::string> kConstOptional = "test";
+#endif
   auto exp_with_str_value = OptionalToExpected(kConstOptional, 0);
   EXPECT_EQ(exp_with_str_value, base::ok("test"));
 
@@ -68,7 +72,11 @@ TEST(OptionalUtilTest, OptionalToExpected) {
 
   // Const error type. Forces the compiler copy its error argument, to
   // validate that it's copied correctly.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  const std::string kConstString = "test";
+#else
   constexpr std::string kConstString = "test";
+#endif
   auto exp_with_str_error =
       OptionalToExpected<std::optional<int>>(std::nullopt, kConstString);
   EXPECT_EQ(exp_with_str_error, base::unexpected("test"));
