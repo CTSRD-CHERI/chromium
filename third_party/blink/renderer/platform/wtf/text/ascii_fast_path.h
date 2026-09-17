@@ -42,7 +42,7 @@ namespace blink {
 // Assuming that a pointer is the size of a "machine word", then
 // uintptr_t is an integer type that is also a machine word.
 using MachineWord = uintptr_t;
-const uintptr_t kMachineWordAlignmentMask = sizeof(MachineWord) - 1;
+const size_t kMachineWordAlignmentMask = sizeof(MachineWord) - 1;
 
 inline bool IsAlignedToMachineWord(const void* pointer) {
   return !(reinterpret_cast<uintptr_t>(pointer) & kMachineWordAlignmentMask);
