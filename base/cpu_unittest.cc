@@ -129,7 +129,7 @@ TEST(CPU, RunExtendedInstructions) {
     // https://developer.arm.com/documentation/101028/0012/10--Memory-tagging-intrinsics,
     // this test uses the irg (Insert Random Tag) instruction directly to make
     // sure that it's not optimized out by the compiler.
-    __asm__ __volatile__("irg %0, %1" : "=r"(val) : "r"(ptr));
+    __asm__ __volatile__("irg %x0, %x1" : "=r"(val) : "r"(ptr));
 #endif  // __ARM_FEATURE_MEMORY_TAGGING
   }
 #endif  // ARCH_CPU_ARM64
