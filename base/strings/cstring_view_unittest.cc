@@ -30,7 +30,8 @@ static_assert(std::ranges::contiguous_range<cstring_view>);
 static_assert(std::ranges::borrowed_range<cstring_view>);
 
 // The view is the size of 2 pointers (technically, pointer and address).
-static_assert(sizeof(cstring_view) == sizeof(uintptr_t) + sizeof(size_t));
+static_assert(sizeof(cstring_view) ==
+    __builtin_align_up(sizeof(uintptr_t) + sizeof(size_t), alignof(uintptr_t)));
 
 static_assert(cstring_view::npos == std::string_view::npos);
 static_assert(u16cstring_view::npos == std::u16string_view::npos);
