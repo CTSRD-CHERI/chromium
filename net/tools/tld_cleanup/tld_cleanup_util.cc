@@ -97,7 +97,12 @@ std::tuple<NormalizeResult, std::string, Rule> NormalizeRule(std::string domain,
   }
 
   // Warn about additional '*.' or '!'.
+#if __cpp_lib_string_contains
   if (domain.contains("*.") || domain.contains('!')) {
+#else
+  if (domain.find("*.") != std::string::npos ||
+       domain.find('!') != std::string::npos) {
+#endif
     LOG(WARNING) << "Keeping probably invalid rule: " << domain;
     result = NormalizeResult::kWarning;
   }
