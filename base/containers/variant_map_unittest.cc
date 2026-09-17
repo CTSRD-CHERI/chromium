@@ -18,7 +18,8 @@ constexpr ValueType kTestValue = "TEST";
 constexpr KeyType kTestKey2 = 8;
 constexpr ValueType kTestValue2 = "OTHER";
 static_assert(kTestKey != kTestKey2, "Would not exercise maps correctly");
-static_assert(kTestValue != kTestValue2, "Would not exercise maps correctly");
+static_assert(std::string_view(kTestValue) != std::string_view(kTestValue2),
+              "Would not exercise maps correctly");
 
 constexpr KeyType kUnusedKey = 8;
 
