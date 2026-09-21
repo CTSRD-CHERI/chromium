@@ -16,7 +16,7 @@ namespace partition_alloc::internal {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 void DCheckIsValidShiftFromSlotStart(const SlotSpanMetadata* slot_span,
-                                     uintptr_t shift_from_slot_start) {
+                                     size_t shift_from_slot_start) {
   PartitionRoot* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
   // Use <= to allow an address immediately past the object.
   PA_DCHECK(shift_from_slot_start <= root->GetSlotUsableSize(slot_span));
