@@ -34,10 +34,16 @@ template <typename Range, typename Proj = std::identity>
                std::indirect_result_t<Proj, std::ranges::iterator_t<Range>>>
 Value::List ToValueList(Range&& range, Proj proj = {}) {
   auto container = Value::List::with_capacity(std::ranges::size(range));
+#if defined(__CHERI_PURE_CAPABILITY__)
+  for (auto&& value : range) {
+    container.Append(std::invoke(proj, value));
+  }
+#else
   std::ranges::for_each(
       std::forward<Range>(range),
       [&]<typename T>(T&& value) { container.Append(std::forward<T>(value)); },
       std::move(proj));
+#endif
   return container;
 }
 
