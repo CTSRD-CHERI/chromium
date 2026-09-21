@@ -94,7 +94,11 @@ struct SharedState {
 
   explicit SharedState(AtomicType ivalue) { value.i = ivalue; }
   SharedState(LockState lock_state, Time timestamp) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    int64_t wire_timestamp = TimeToWireFormat<sizeof(size_t)>(timestamp);
+#else
     int64_t wire_timestamp = TimeToWireFormat<sizeof(AtomicType)>(timestamp);
+#endif
     DCHECK_GE(wire_timestamp, 0);
     DCHECK_EQ(lock_state & ~1, 0);
     value.u = (static_cast<UAtomicType>(wire_timestamp) << 1) | lock_state;
@@ -103,7 +107,11 @@ struct SharedState {
   LockState GetLockState() const { return static_cast<LockState>(value.u & 1); }
 
   Time GetTimestamp() const {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    return TimeFromWireFormat<sizeof(size_t)>(value.u >> 1);
+#else
     return TimeFromWireFormat<sizeof(AtomicType)>(value.u >> 1);
+#endif
   }
 
   // Bit 1: Lock state. Bit is set when locked.
