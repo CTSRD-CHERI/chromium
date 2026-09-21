@@ -701,23 +701,93 @@ template <typename Dst, typename Src>
 inline constexpr bool kIsMaxInRangeForNumericType =
     IsGreaterOrEqual<Dst, Src>::Test(std::numeric_limits<Dst>::max(),
                                      std::numeric_limits<Src>::max());
+#if defined(__CHERI_PURE_CAPABILITY__)
+template <typename Src>
+    requires std::integral<Src>
+inline constexpr bool kIsMaxInRangeForNumericType<__intcap, Src> =
+    IsGreaterOrEqual<ptraddr_t, Src>::Test(std::numeric_limits<ptraddr_t>::max(),
+                                     std::numeric_limits<Src>::max());
+
+template <typename Dst>
+    requires std::integral<Dst>
+inline constexpr bool kIsMaxInRangeForNumericType<Dst, __intcap> =
+    IsGreaterOrEqual<Dst, ptraddr_t>::Test(std::numeric_limits<Dst>::max(),
+                                     std::numeric_limits<ptraddr_t>::max());
+
+template <>
+inline constexpr bool kIsMaxInRangeForNumericType<__intcap, __intcap> = true;
+#endif
 
 template <typename Dst, typename Src>
 inline constexpr bool kIsMinInRangeForNumericType =
     IsLessOrEqual<Dst, Src>::Test(std::numeric_limits<Dst>::lowest(),
                                   std::numeric_limits<Src>::lowest());
+#if defined(__CHERI_PURE_CAPABILITY__)
+template <typename Src>
+    requires std::integral<Src>
+inline constexpr bool kIsMinInRangeForNumericType<__intcap, Src> =
+    IsGreaterOrEqual<ptraddr_t, Src>::Test(std::numeric_limits<ptraddr_t>::lowest(),
+                                           std::numeric_limits<Src>::lowest());
+
+template <typename Dst>
+    requires std::integral<Dst>
+inline constexpr bool kIsMinInRangeForNumericType<Dst, __intcap> =
+    IsGreaterOrEqual<Dst, ptraddr_t>::Test(std::numeric_limits<Dst>::lowest(),
+                                           std::numeric_limits<ptraddr_t>::lowest());
+
+template <>
+inline constexpr bool kIsMinInRangeForNumericType<__intcap, __intcap> = true;
+#endif
 
 template <typename Dst, typename Src>
 inline constexpr Dst kCommonMax =
     kIsMaxInRangeForNumericType<Dst, Src>
         ? static_cast<Dst>(std::numeric_limits<Src>::max())
         : std::numeric_limits<Dst>::max();
+#if defined(__CHERI_PURE_CAPABILITY__)
+template <typename Src>
+    requires std::integral<Src>
+inline constexpr __intcap kCommonMax<__intcap, Src> =
+    kIsMinInRangeForNumericType<size_t, Src>
+        ? static_cast<__intcap>(std::numeric_limits<Src>::max())
+        : static_cast<__intcap>(std::numeric_limits<size_t>::max());
+
+template <typename Dst>
+    requires std::integral<Dst>
+inline constexpr Dst kCommonMax<Dst, __intcap> =
+    kIsMinInRangeForNumericType<Dst, size_t>
+        ? static_cast<Dst>(std::numeric_limits<size_t>::max())
+        : std::numeric_limits<Dst>::max();
+
+template <>
+inline constexpr __intcap kCommonMax<__intcap, __intcap> =
+    static_cast<__intcap>(std::numeric_limits<size_t>::max());
+#endif
 
 template <typename Dst, typename Src>
 inline constexpr Dst kCommonMin =
     kIsMinInRangeForNumericType<Dst, Src>
         ? static_cast<Dst>(std::numeric_limits<Src>::lowest())
         : std::numeric_limits<Dst>::lowest();
+#if defined(__CHERI_PURE_CAPABILITY__)
+template <typename Src>
+    requires std::integral<Src>
+inline constexpr __intcap kCommonMin<__intcap, Src> =
+    kIsMinInRangeForNumericType<size_t, Src>
+        ? static_cast<__intcap>(std::numeric_limits<Src>::lowest())
+        : static_cast<__intcap>(std::numeric_limits<size_t>::lowest());
+
+template <typename Dst>
+    requires std::integral<Dst>
+inline constexpr Dst kCommonMin<Dst, __intcap> =
+    kIsMinInRangeForNumericType<Dst, size_t>
+        ? static_cast<Dst>(std::numeric_limits<size_t>::lowest())
+        : std::numeric_limits<Dst>::lowest();
+
+template <>
+inline constexpr __intcap kCommonMin<__intcap, __intcap> =
+    static_cast<__intcap>(std::numeric_limits<size_t>::lowest());
+#endif
 
 // This is a wrapper to generate return the max or min for a supplied type.
 // If the argument is false, the returned value is the maximum. If true the
