@@ -86,16 +86,16 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   struct PoolInfo {
     pool_handle handle;
     uintptr_t base;
-    uintptr_t base_mask;
+    size_t base_mask;
     uintptr_t offset;
   };
 
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-  PA_ALWAYS_INLINE static uintptr_t CorePoolBaseMask() {
+  PA_ALWAYS_INLINE static size_t CorePoolBaseMask() {
     return setup_.core_pool_base_mask_;
   }
 #else
-  PA_ALWAYS_INLINE static constexpr uintptr_t CorePoolBaseMask() {
+  PA_ALWAYS_INLINE static constexpr size_t CorePoolBaseMask() {
     return kCorePoolBaseMask;
   }
 #endif
@@ -107,7 +107,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #endif
     pool_handle pool = kNullPoolHandle;
     uintptr_t base = 0;
-    uintptr_t base_mask = 0;
+    size_t base_mask = 0;
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     if (IsInBRPPool(address)) {
       pool = kBRPPoolHandle;
@@ -430,15 +430,14 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
 #if !PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
   // Masks used to easy determine belonging to a pool.
-  static constexpr uintptr_t kCorePoolOffsetMask =
-      static_cast<uintptr_t>(kCorePoolSize) - 1;
-  static constexpr uintptr_t kCorePoolBaseMask = ~kCorePoolOffsetMask;
+  static constexpr size_t kCorePoolOffsetMask = kCorePoolSize - 1;
+  static constexpr size_t kCorePoolBaseMask = ~kCorePoolOffsetMask;
 #endif  // !PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
-  static constexpr uintptr_t kThreadIsolatedPoolOffsetMask =
-      static_cast<uintptr_t>(kThreadIsolatedPoolSize) - 1;
-  static constexpr uintptr_t kThreadIsolatedPoolBaseMask =
+  static constexpr size_t kThreadIsolatedPoolOffsetMask =
+      kThreadIsolatedPoolSize - 1;
+  static constexpr size_t kThreadIsolatedPoolBaseMask =
       ~kThreadIsolatedPoolOffsetMask;
 #endif
 
