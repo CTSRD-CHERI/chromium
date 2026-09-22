@@ -935,7 +935,11 @@ TEST_F(TileManagerTilePriorityQueueTest, DebugNameAppearsInMemoryDump) {
   host_impl()->resource_pool()->OnMemoryDump(dump_args, &memory_dump);
   bool found_debug_name = false;
   for (const auto& allocator_map_pair : memory_dump.allocator_dumps()) {
+#if __cpp_lib_string_contains
     if (allocator_map_pair.first.contains("debug-name")) {
+#else
+    if (allocator_map_pair.first.find("debug-name") != std::string::npos) {
+#endif
       found_debug_name = true;
       break;
     }
