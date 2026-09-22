@@ -15,6 +15,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/is_intcap.h"
 #include "base/numerics/integral_constant_like.h"
 
 namespace base::numerics_internal {
@@ -218,14 +219,26 @@ struct NarrowingRange {
 
 #if defined(__CHERI_PURE_CAPABILITY__)
   template <typename T>
-    requires(std::same_as<ptraddr_t, T> && std::same_as<uintptr_t, Dst>)
+    requires(std::same_as<ptraddr_t, T> &&
+            (std::same_as<unsigned __intcap, Dst> || std::same_as<__intcap, Dst>))
   static constexpr T Adjust(T value) {
      return value;
   }
 #endif  // !__CHERI_PURE_CAPABILITY__
 
-  static constexpr Dst max() { return Adjust(Bounds<Dst>::max()); }
-  static constexpr Dst lowest() { return Adjust(Bounds<Dst>::lowest()); }
+  static constexpr Dst max() {
+    if constexpr (base::IsIntcap<Dst>) {
+      return static_cast<Dst>(Adjust(Bounds<size_t>::max()));
+    } else {
+      return Adjust(Bounds<Dst>::max());
+    }
+  }
+  static constexpr Dst lowest() {
+    if constexpr (base::IsIntcap<Dst>) {
+      return static_cast<Dst>(Adjust(Bounds<size_t>::lowest()));
+    } else {
+      return Adjust(Bounds<Dst>::lowest()); }
+    }
 };
 
 // The following templates are for ranges that must be verified at runtime. We
