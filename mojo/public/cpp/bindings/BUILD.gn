@@ -281,6 +281,16 @@ component("bindings") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   defines = [ "IS_MOJO_CPP_BINDINGS_IMPL" ]
+
+  if (is_bsd) {
+    libs = [
+      "epoll-shim",
+    ]
+
+    include_dirs = [
+      "${sysroot}/usr/local/include/libepoll-shim"
+    ]
+  }
 }
 
 source_set("struct_traits") {
