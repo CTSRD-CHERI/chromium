@@ -248,7 +248,11 @@ struct TrivialMessage final : public Channel::Message {
   // The choice of 248 as message size is to allow using the fullness of size
   // class in PartitionAlloc (256) minus the space that can be reserved for
   // MiraclePtr (8).
+#if defined(__CHERI_PURE_CAPABILITY__)
+  static constexpr size_t kIntendedMessageSize = 256;
+#else
   static constexpr size_t kIntendedMessageSize = 248;
+#endif
 
   // ExtendPayload is not used with ipcz. NOTREACHED allows not worrying about
   // zero-fill for the hypothetical extended part.
