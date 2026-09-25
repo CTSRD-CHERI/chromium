@@ -3454,3 +3454,12 @@ config("purecap") {
     "--target=aarch64c-unknown-freebsd"
   ]
 }
+
+if (is_bsd) {
+  config("epoll_shim") {
+    libs = [ "epoll-shim" ]
+    include_dirs = [
+      "${sysroot}/usr/local/include/libepoll-shim"
+    ]
+  }
+}
