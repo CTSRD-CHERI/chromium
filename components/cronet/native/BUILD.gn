@@ -69,6 +69,10 @@ source_set("cronet_native_impl") {
     "generated/cronet.idl_impl_interface.cc",
     "generated/cronet.idl_impl_struct.cc",
   ]
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 # Unit tests for Cronet native API. Depends on cronet_native_impl to test
