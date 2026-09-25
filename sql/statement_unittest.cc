@@ -414,9 +414,16 @@ TEST_F(StatementTest, GetSQLStatementExcludesBoundValues) {
 
   // Verify that GetSQLStatement doesn't leak any bound values that may be PII.
   std::string sql_statement = insert.GetSQLStatement();
+#if __cpp_lib_string_contains
   EXPECT_TRUE(sql_statement.contains("INSERT INTO texts(t) VALUES(?)"));
   EXPECT_TRUE(sql_statement.contains("VALUES"));
   EXPECT_FALSE(sql_statement.contains("Doe"));
+#else
+  EXPECT_TRUE(sql_statement.find("INSERT INTO texts(t) VALUES(?)") !=
+      std::string::npos);
+  EXPECT_TRUE(sql_statement.find("VALUES") != std::string::npos);
+  EXPECT_FALSE(sql_statement.find("Doe") != std::string::npos);
+#endif
 
   // Sanity check that the name was actually committed.
   Statement select(db_.GetUniqueStatement("SELECT t FROM texts ORDER BY id"));
