@@ -64,6 +64,10 @@ source_set("cronet_common") {
   ]
 
   public_deps = [ "//components/metrics:library_support" ]
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 source_set("metrics_util") {
@@ -93,6 +97,10 @@ source_set("cronet_common_unittests") {
     "network_tasks_unittest.cc",
     "url_request_context_config_unittest.cc",
   ]
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 # For platforms on which the native Cronet library is used, build the library,
