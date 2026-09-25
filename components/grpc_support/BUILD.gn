@@ -16,6 +16,10 @@ source_set("grpc_support") {
     "//net",
     "//url",
   ]
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 # Depends on ":grpc_support" implementation.
