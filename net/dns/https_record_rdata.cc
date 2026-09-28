@@ -31,7 +31,11 @@ namespace net {
 
 namespace {
 
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const auto kSupportedKeys = base::MakeFixedFlatSet<uint16_t>(
+#else
 constexpr auto kSupportedKeys = base::MakeFixedFlatSet<uint16_t>(
+#endif
     base::sorted_unique,
     {
         dns_protocol::kHttpsServiceParamKeyMandatory,

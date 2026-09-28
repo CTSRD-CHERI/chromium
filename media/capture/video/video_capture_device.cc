@@ -152,7 +152,11 @@ PowerLineFrequency VideoCaptureDevice::GetPowerLineFrequencyForLocation() {
 
   // Sorted out list of countries with 60Hz power line frequency, from
   // http://en.wikipedia.org/wiki/Mains_electricity_by_country
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  const auto kCountriesUsing60Hz = base::MakeFixedFlatSet<std::string_view>(
+#else
   constexpr auto kCountriesUsing60Hz = base::MakeFixedFlatSet<std::string_view>(
+#endif
       {"AI", "AO", "AS", "AW", "AZ", "BM", "BR", "BS", "BZ", "CA", "CO",
        "CR", "CU", "DO", "EC", "FM", "GT", "GU", "GY", "HN", "HT", "JP",
        "KN", "KR", "KY", "MS", "MX", "NI", "PA", "PE", "PF", "PH", "PR",

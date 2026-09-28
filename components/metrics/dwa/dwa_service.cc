@@ -32,7 +32,11 @@ namespace metrics::dwa {
 // RecordCoarseSystemInformation to set geo_designation fields in
 // CoarseSystemInfo. These will need to be manually updated using
 // "IsEuropeanEconomicArea" from go/source/user_preference_country.impl.gcl.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const auto kEuropeanEconomicAreaCountries =
+#else
 constexpr auto kEuropeanEconomicAreaCountries =
+#endif
     base::MakeFixedFlatSet<std::string_view>({
         "at",  // Austria
         "be",  // Belgium
