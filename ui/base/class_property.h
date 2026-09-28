@@ -168,7 +168,11 @@ class COMPONENT_EXPORT(UI_BASE) PropertyHandler {
   // ClassProperty<>.
   struct Value {
     const char* name;
+#if defined(__CHERI_PURE_CAPABILITY__)
+    intptr_t value;
+#else
     int64_t value;
+#endif
     PropertyDeallocator deallocator;
   };
   using PropMap = std::map<const void*, Value>;
@@ -321,11 +325,20 @@ T* PropertyHandler::SetProperty(const ClassProperty<T*>* property,
 #define DEFINE_UI_CLASS_PROPERTY_TYPE(T) \
   DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(, T)
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+#else
+#define DEFINE_UI_CLASS_PROPERTY_KEY_IMPL(TYPE, NAME, DEFAULT, CASCADES)     \
+  static_assert(sizeof(TYPE) <= sizeof(intptr_t), "property type too large"); \
+  const ::ui::ClassProperty<TYPE> NAME##_Value = {DEFAULT, #NAME, CASCADES,  \
+                                                  nullptr};                  \
+  const ::ui::ClassProperty<TYPE>* const NAME = &NAME##_Value;
+#else
 #define DEFINE_UI_CLASS_PROPERTY_KEY_IMPL(TYPE, NAME, DEFAULT, CASCADES)     \
   static_assert(sizeof(TYPE) <= sizeof(int64_t), "property type too large"); \
   const ::ui::ClassProperty<TYPE> NAME##_Value = {DEFAULT, #NAME, CASCADES,  \
                                                   nullptr};                  \
   const ::ui::ClassProperty<TYPE>* const NAME = &NAME##_Value;
+#endif
 
 #define DEFINE_UI_CLASS_PROPERTY_KEY(TYPE, NAME, DEFAULT) \
   DEFINE_UI_CLASS_PROPERTY_KEY_IMPL(TYPE, NAME, DEFAULT, false)
