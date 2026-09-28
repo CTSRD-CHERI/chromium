@@ -421,7 +421,11 @@ TEST_P(MAYBE_InvitationCppTest, MAYBE_ProcessErrors) {
   base::RunLoop error_loop;
   actual_error_callback =
       base::BindLambdaForTesting([&](const std::string& error_message) {
+#if __cpp_lib_string_contains
         EXPECT_TRUE(error_message.contains(kErrorMessage));
+#else
+        EXPECT_TRUE(error_message.find(kErrorMessage) != std::string::npos);
+#endif
         error_loop.Quit();
       });
   EXPECT_EQ(MOJO_RESULT_OK,
