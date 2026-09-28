@@ -35,7 +35,7 @@ typedef struct DiplomatWrite {
     size_t cap;
     bool grow_failed;
     void (*flush)(struct DiplomatWrite*);
-    bool (*grow)(struct DiplomatWrite*, size_t);
+    bool (*grow)(struct DiplomatWrite*, uintptr_t);
 } DiplomatWrite;
 
 bool diplomat_is_str(const char* buf, size_t len);
