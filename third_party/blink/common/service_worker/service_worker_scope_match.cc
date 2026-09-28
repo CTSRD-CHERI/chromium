@@ -16,10 +16,20 @@ bool PathContainsDisallowedCharacter(const GURL& url) {
 
   // We should avoid these escaped characters in the path component because
   // these can be handled differently depending on server implementation.
+#if __cpp_lib_string_contains
   if (path.contains("%2f") || path.contains("%2F")) {
+#else
+  if (path.find("%2f") != std::string::npos ||
+      path.contains("%2F") != std::string::npos) {
+#endif
     return true;
   }
+#if __cpp_lib_string_contains
   if (path.contains("%5c") || path.contains("%5C")) {
+#else
+  if (path.find("%5c") != std::string::npos ||
+      path.find("%5C") != std::string::npos) {
+#endif
     return true;
   }
   return false;
