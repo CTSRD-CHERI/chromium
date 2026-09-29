@@ -733,6 +733,10 @@ component("cpp_base") {
   if (is_win && is_component_build) {
     ldflags = [ "/IGNORE:4217" ]
   }
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 mojom("test_interfaces") {
