@@ -15,6 +15,10 @@ static_library("browser") {
   ]
 
   deps = [ "//components/variations" ]
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 source_set("unit_tests") {
