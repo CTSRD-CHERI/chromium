@@ -116,7 +116,11 @@ class TestValidatorFactory : public CopyOrMoveFileValidatorFactory {
                                   ResultCallback result_callback) override {
       base::File::Error result = write_result_;
       std::string unsafe = dest_platform_path.BaseName().AsUTF8Unsafe();
+#if __cpp_lib_string_contains
       if (unsafe.contains(reject_string_)) {
+#else
+      if (unsafe.find(reject_string_) != std::string::npos) {
+#endif
         result = base::File::FILE_ERROR_SECURITY;
       }
       // Post the result since a real validator must do work asynchronously.
