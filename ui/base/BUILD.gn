@@ -632,6 +632,10 @@ component("base") {
   if (is_android || is_ios) {
     sources -= [ "device_form_factor_desktop.cc" ]
   }
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 if (is_ios) {
