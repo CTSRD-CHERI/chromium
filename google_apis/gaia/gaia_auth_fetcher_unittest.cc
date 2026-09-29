@@ -273,7 +273,11 @@ TEST_F(GaiaAuthFetcherTest, StartAuthCodeForOAuth2TokenExchangeSuccess) {
   EXPECT_EQ(google_apis::GetOmitCredentialsModeForGaiaRequests(),
             received_requests_.at(0).credentials_mode);
   std::string body = GetRequestBodyAsString(&received_requests_.at(0));
+#if __cpp_lib_string_contains
   EXPECT_FALSE(body.contains("device_type=chrome"));
+#else
+  EXPECT_FALSE(body.find("device_type=chrome") == std::string::npos);
+#endif
   EXPECT_TRUE(auth.HasPendingFetch());
 
   auth.TestOnURLLoadCompleteInternal(net::OK, net::HTTP_OK,
@@ -292,8 +296,13 @@ TEST_F(GaiaAuthFetcherTest, StartAuthCodeForOAuth2TokenExchangeDeviceId) {
   EXPECT_EQ(google_apis::GetOmitCredentialsModeForGaiaRequests(),
             received_requests_.at(0).credentials_mode);
   std::string body = GetRequestBodyAsString(&received_requests_.at(0));
+#if __cpp_lib_string_contains
   EXPECT_TRUE(body.contains("device_type=chrome"));
   EXPECT_TRUE(body.contains("device_id=device_ABCDE_1"));
+#else
+  EXPECT_TRUE(body.find("device_type=chrome") != std::string::npos);
+  EXPECT_TRUE(body.find("device_id=device_ABCDE_1") != std::string::npos);
+#endif
 }
 
 TEST_F(GaiaAuthFetcherTest,
@@ -312,7 +321,12 @@ TEST_F(GaiaAuthFetcherTest,
   EXPECT_EQ(google_apis::GetOmitCredentialsModeForGaiaRequests(),
             received_requests_.at(0).credentials_mode);
   std::string body = GetRequestBodyAsString(&received_requests_.at(0));
+#if __cpp_lib_string_contains
   EXPECT_TRUE(body.contains("bound_token_registration_jwt=registration_jwt"));
+#else
+  EXPECT_TRUE(body.find("bound_token_registration_jwt=registration_jwt") !=
+     std::string::npos);
+#endif
   EXPECT_THAT(received_requests_.at(0).headers.GetHeader(kVersionListHeader),
               Optional(std::string("version_list")));
   EXPECT_TRUE(auth.HasPendingFetch());
@@ -338,7 +352,12 @@ TEST_F(
   EXPECT_EQ(google_apis::GetOmitCredentialsModeForGaiaRequests(),
             received_requests_.at(0).credentials_mode);
   std::string body = GetRequestBodyAsString(&received_requests_.at(0));
+#if __cpp_lib_string_contains
   EXPECT_TRUE(body.contains("bound_token_registration_jwt=registration_jwt"));
+#else
+  EXPECT_TRUE(body.find("bound_token_registration_jwt=registration_jwt") !=
+      std::string::npos);
+#endif
   EXPECT_FALSE(received_requests_.at(0).headers.HasHeader(kVersionListHeader));
   EXPECT_TRUE(auth.HasPendingFetch());
 
