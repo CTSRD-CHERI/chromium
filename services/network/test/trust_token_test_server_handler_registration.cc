@@ -107,7 +107,11 @@ void RegisterTrustTokenTestHandlers(net::EmbeddedTestServer* test_server,
         GURL::Replacements replacements;
         std::string host_and_maybe_port =
             request.headers.at(net::HttpRequestHeaders::kHost);
+#if __cpp_lib_string_contains
         if (host_and_maybe_port.contains(':'))
+#else
+        if (host_and_maybe_port.find(':') != std::string::npos)
+#endif
           host_and_maybe_port.resize(host_and_maybe_port.find(':'));
         replacements.SetHostStr(host_and_maybe_port);
         GURL destination_url = request.GetURL().ReplaceComponents(replacements);
