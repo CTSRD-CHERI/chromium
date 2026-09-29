@@ -2126,4 +2126,8 @@ mojom("mojom") {
 
   cpp_typemaps += shared_cpp_typemaps
   blink_cpp_typemaps = shared_cpp_typemaps
+
+  if (is_bsd) {
+    cpp_configs = [ "//build/config/compiler:epoll_shim" ]
+  }
 }
