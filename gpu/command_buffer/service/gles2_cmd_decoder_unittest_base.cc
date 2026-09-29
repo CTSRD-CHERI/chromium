@@ -73,7 +73,11 @@ void NormalizeInitState(gpu::gles2::GLES2DecoderTestBase::InitState* init) {
   };
   bool contains_vao_extension = false;
   for (const char* extension : kVAOExtensions) {
+#if __cpp_lib_string_contains
     if (init->extensions.contains(extension)) {
+#else
+    if (init->extensions.find(extension) != std::string::npos) {
+#endif
       contains_vao_extension = true;
       break;
     }
