@@ -60,6 +60,10 @@ service_executable("connect_test_app") {
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
   ]
+
+  if (is_bsd) {
+    configs = [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 service_executable("connect_test_class_app") {
