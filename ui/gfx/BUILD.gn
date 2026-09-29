@@ -417,6 +417,10 @@ component("gfx") {
   if (use_aura) {
     sources += [ "native_ui_util_aura.cc" ]
   }
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 component("color_space") {

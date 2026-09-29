@@ -29,6 +29,10 @@ source_set("support") {
       "//sandbox/linux:seccomp_bpf",
     ]
   }
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 source_set("switches") {
