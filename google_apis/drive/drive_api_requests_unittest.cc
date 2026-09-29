@@ -279,7 +279,11 @@ class DriveApiRequestsTest : public testing::Test {
   std::unique_ptr<net::test_server::HttpResponse> HandleChildrenDeleteRequest(
       const net::test_server::HttpRequest& request) {
     if (request.method != net::test_server::METHOD_DELETE ||
+#if __cpp_lib_string_contains
         !request.relative_url.contains("/children/")) {
+#else
+        !request.relative_url.find("/children/") == std::string::npos) {
+#endif
       // The request is not the "Children: delete" request. Delegate the
       // processing to the next handler.
       return nullptr;
@@ -317,7 +321,11 @@ class DriveApiRequestsTest : public testing::Test {
   std::unique_ptr<net::test_server::HttpResponse> HandleDeleteRequest(
       const net::test_server::HttpRequest& request) {
     if (request.method != net::test_server::METHOD_DELETE ||
+#if __cpp_lib_string_contains
         !request.relative_url.contains("/files/")) {
+#else
+        !request.relative_url.find("/files/") == std::string::npos) {
+#endif
       // The file is not file deletion request. Delegate the processing to the
       // next handler.
       return nullptr;
