@@ -1661,7 +1661,7 @@ deps = {
   },
 
   'src/media/cdm/api':
-    Var('chromium_git') + '/chromium/cdm.git' + '@' + '9920660ea0162f88c44a648de177e6f8cb976d07',
+    Var('chromium_cheri_git') + '/cdm.git' + '@' + '7ec9923b5029913b77be27721f74077c117516a1',
 
   'src/net/third_party/quiche/src':
     Var('quiche_git') + '/quiche.git' + '@' +  Var('quiche_revision'),
