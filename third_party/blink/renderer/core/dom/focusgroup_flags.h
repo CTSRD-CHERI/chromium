@@ -8,6 +8,7 @@
 #include <iosfwd>
 #include <utility>
 
+#include "base/to_underlying.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -58,14 +59,14 @@ enum FocusgroupFlags : uint8_t {
 
 inline constexpr FocusgroupFlags operator&(FocusgroupFlags a,
                                            FocusgroupFlags b) {
-  return static_cast<FocusgroupFlags>(std::to_underlying(a) &
-                                      std::to_underlying(b));
+  return static_cast<FocusgroupFlags>(base::to_underlying(a) &
+                                      base::to_underlying(b));
 }
 
 inline constexpr FocusgroupFlags operator|(FocusgroupFlags a,
                                            FocusgroupFlags b) {
-  return static_cast<FocusgroupFlags>(std::to_underlying(a) |
-                                      std::to_underlying(b));
+  return static_cast<FocusgroupFlags>(base::to_underlying(a) |
+                                      base::to_underlying(b));
 }
 
 inline FocusgroupFlags& operator|=(FocusgroupFlags& a, FocusgroupFlags b) {
@@ -77,7 +78,7 @@ inline FocusgroupFlags& operator&=(FocusgroupFlags& a, FocusgroupFlags b) {
 }
 
 inline constexpr FocusgroupFlags operator~(FocusgroupFlags flags) {
-  return static_cast<FocusgroupFlags>(~std::to_underlying(flags));
+  return static_cast<FocusgroupFlags>(~base::to_underlying(flags));
 }
 
 struct FocusgroupData {
