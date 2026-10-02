@@ -311,7 +311,11 @@ class CORE_EXPORT CSSParserToken {
 };
 
 // If this assert fails, check the comment above about bitfields.
+#if defined(__CHERI_PURE_CAPABILITY__)
+static_assert(sizeof(CSSParserToken) == 48);
+#else
 static_assert(sizeof(CSSParserToken) == 24);
+#endif
 
 bool NeedsInsertedComment(const CSSParserToken& a, const CSSParserToken& b);
 
