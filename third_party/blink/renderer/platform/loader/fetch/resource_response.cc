@@ -53,7 +53,11 @@ namespace blink {
 
 namespace {
 
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const auto kSupportedContentEncodingValues =
+#else
 constexpr auto kSupportedContentEncodingValues =
+#endif
     base::MakeFixedFlatSet<std::string_view>({
         "br",
         "dcb",

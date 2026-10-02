@@ -347,7 +347,11 @@ bool IsSameOrSimilarLanguages(const std::string& page_language,
 bool IsServerWrongConfigurationLanguage(const std::string& language_code) {
   // Well-known languages which often have wrong server configuration of
   // Content-Language: en.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  const auto kSet = base::MakeFixedFlatSet<std::string_view>(
+#else
   constexpr auto kSet = base::MakeFixedFlatSet<std::string_view>(
+#endif
       {"es", "pt", "ja", "ru", "de", "zh-CN", "zh-TW", "ar", "id", "fr", "it",
        "th"});
 
