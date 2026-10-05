@@ -311,7 +311,11 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   // during style application.)
   static_assert(kPropertyIdBits >= kCSSPropertyIDBitLength);
 };
+#if defined(__CHERI_PURE_CAPABILITY__)
+static_assert(sizeof(CSSProperty) <= 32);
+#else
 static_assert(sizeof(CSSProperty) <= 16);
+#endif
 
 template <>
 struct DowncastTraits<CSSProperty> {
