@@ -30,10 +30,18 @@ TEST_F(V8SharedMemoryDumpProviderTest, DumpStatistics) {
   bool did_dump_read_only_space = false;
   for (const auto& name_dump : allocator_dumps) {
     const std::string& name = name_dump.first;
+#if __cpp_lib_string_contains
     if (name.contains("v8/shared")) {
+#else
+    if (name.find("v8/shared") != std::string::npos) {
+#endif
       did_dump_shared_memory_stats = true;
     }
+#if __cpp_lib_string_contains
     if (name.contains("v8/shared/read_only_space")) {
+#else
+    if (name.find("v8/shared/read_only_space") != std::string::npos) {
+#endif
       did_dump_read_only_space = true;
     }
   }
