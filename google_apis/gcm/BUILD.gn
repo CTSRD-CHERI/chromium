@@ -64,6 +64,10 @@ component("gcm") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
+
   public_deps = [
     ":proto",
     "//google_apis",
@@ -178,5 +182,9 @@ test("gcm_unit_tests") {
   ]
   if (is_android) {
     deps += [ "//net/android:net_java" ]
+  }
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
   }
 }
