@@ -64,13 +64,25 @@ TEST_F(V8MemoryDumpProviderTest, DumpStatistics) {
   bool did_dump_objects_stats = false;
   for (const auto& name_dump : allocator_dumps) {
     const std::string& name = name_dump.first;
+#if __cpp_lib_string_contains
     if (name.contains("v8/main")) {
+#else
+    if (name.find("v8/main") != std::string::npos) {
+#endif
       did_dump_isolate_stats = true;
     }
+#if __cpp_lib_string_contains
     if (name.contains("v8/main/heap")) {
+#else
+    if (name.find("v8/main/heap") != std::string::npos) {
+#endif
       did_dump_space_stats = true;
     }
+#if __cpp_lib_string_contains
     if (name.contains("v8/main/heap_objects")) {
+#else
+    if (name.find("v8/main/heap_objects") != std::string::npos) {
+#endif
       did_dump_objects_stats = true;
     }
   }
@@ -93,7 +105,11 @@ TEST_F(V8MemoryDumpProviderTest, DumpGlobalHandlesSize) {
   bool did_dump_global_handles = false;
   for (const auto& name_dump : allocator_dumps) {
     const std::string& name = name_dump.first;
+#if __cpp_lib_string_contains
     if (name.contains("v8/main/global_handles")) {
+#else
+    if (name.find("v8/main/global_handles") != std::string::npos) {
+#endif
       did_dump_global_handles = true;
     }
   }
@@ -115,10 +131,18 @@ TEST_F(V8MemoryDumpProviderTest, DumpContextStatistics) {
   bool did_dump_native_contexts = false;
   for (const auto& name_dump : allocator_dumps) {
     const std::string& name = name_dump.first;
+#if __cpp_lib_string_contains
     if (name.contains("main/contexts/detached_context")) {
+#else
+    if (name.find("main/contexts/detached_context") != std::string::npos) {
+#endif
       did_dump_detached_contexts = true;
     }
+#if __cpp_lib_string_contains
     if (name.contains("main/contexts/native_context")) {
+#else
+    if (name.find("main/contexts/native_context") != std::string::npos) {
+#endif
       did_dump_native_contexts = true;
     }
   }
@@ -141,10 +165,20 @@ TEST_F(V8MemoryDumpProviderWorkerTest, DumpContextStatistics) {
   bool did_dump_native_contexts = false;
   for (const auto& name_dump : allocator_dumps) {
     const std::string& name = name_dump.first;
+#if __cpp_lib_string_contains
     if (name.contains("workers/contexts/detached_context/isolate_0x")) {
+#else
+    if (name.find("workers/contexts/detached_context/isolate_0x") != 
+        std::string::npos) {
+#endif
       did_dump_detached_contexts = true;
     }
+#if __cpp_lib_string_contains
     if (name.contains("workers/contexts/native_context/isolate_0x")) {
+#else
+    if (name.find("workers/contexts/native_context/isolate_0x") !=
+#endif
+        std::string::npos) {
       did_dump_native_contexts = true;
     }
   }
@@ -176,16 +210,40 @@ TEST_F(V8MemoryDumpProviderTest, DumpCodeStatistics) {
 
   for (const auto& name_dump : allocator_dumps) {
     const std::string& name = name_dump.first;
+#if __cpp_lib_string_contains
     if (name.contains("code_stats")) {
+#else
+    if (name.find("code_stats") != std::string::npos) {
+#endif
       for (const base::trace_event::MemoryAllocatorDump::Entry& entry :
            name_dump.second->entries()) {
+#if __cpp_lib_string_contains
         if (entry.name.contains("bytecode_and_metadata_size")) {
+#else
+        if (entry.name.find("bytecode_and_metadata_size") !=
+            std::string::npos) {
+#endif
           did_dump_bytecode_size = true;
+#if __cpp_lib_string_contains
         } else if (entry.name.contains("code_and_metadata_size")) {
+#else
+        } else if (entry.name.find("code_and_metadata_size") !=
+            std::string::npos) {
+#endif
           did_dump_code_size = true;
+#if __cpp_lib_string_contains
         } else if (entry.name.contains("external_script_source_size")) {
+#else
+        } else if (entry.name.find("external_script_source_size") !=
+            std::string::npos) {
+#endif
           did_dump_external_scripts_size = true;
+#if __cpp_lib_string_contains
         } else if (entry.name.contains("cpu_profiler_metadata_size")) {
+#else
+        } else if (entry.name.find("cpu_profiler_metadata_size") !=
+            std::string::npos) {
+#endif
           did_dump_cpu_profiler_metadata_size = true;
         }
       }
