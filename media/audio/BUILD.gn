@@ -153,6 +153,10 @@ source_set("audio") {
     "//media:subcomponent_config",
   ]
 
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
+
   if (is_apple) {
     sources += [
       "apple/audio_auhal.cc",

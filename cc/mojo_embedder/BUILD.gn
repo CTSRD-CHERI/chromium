@@ -27,4 +27,8 @@ cc_component("mojo_embedder") {
     "//ui/gfx/animation",
     "//ui/gfx/animation/keyframe",
   ]
+
+  if (is_bsd) {
+    configs = [ "//build/config/compiler:epoll_shim" ]
+  }
 }
