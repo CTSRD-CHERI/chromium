@@ -117,6 +117,10 @@ component("gin") {
   }
 
   configs += [ "//v8:external_startup_data" ]
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 executable("gin_shell") {
