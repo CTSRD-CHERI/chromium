@@ -130,6 +130,10 @@ source_set("x11") {
     configs += [ "//build/config/linux/atk" ]
     deps += [ "//ui/events/x" ]
   }
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 source_set("x11_unittests") {
