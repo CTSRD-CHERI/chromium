@@ -15,6 +15,7 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/sys_byteorder.h"
 #include "base/types/optional_util.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/stream_parser_buffer.h"
@@ -365,7 +366,8 @@ bool WebMClusterParser::OnBinary(int id, const uint8_t* data_ptr, int size) {
       return true;
 
     case kWebMIdBlockAdditional: {
-      uint64_t block_add_id = std::byteswap(block_add_id_);
+      uint64_t block_add_id = base::ByteSwap(
+          std::bit_cast<uint64_t>(block_add_id_));
       if (block_additional_data_) {
         // TODO(vigneshv): Technically, more than 1 BlockAdditional is allowed
         // as per matroska spec. But for now we don't have a use case to
