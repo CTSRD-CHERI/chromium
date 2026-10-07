@@ -574,7 +574,7 @@ class MessageWithEnums_Base
 // generate version struct accessors (v0, v1, etc.) which expose all available
 // message parameters. See message_params_declaration_macros.h for their
 // definitions.
-class BasicTestMessage : public BasicTestMessage_Base {
+class IPCZ_ALIGN(max_align_t) BasicTestMessage : public BasicTestMessage_Base {
  public:
   static constexpr uint8_t kId = 0;
   BasicTestMessage();
@@ -592,7 +592,7 @@ class BasicTestMessage : public BasicTestMessage_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class MessageWithDataArray : public MessageWithDataArray_Base {
+class IPCZ_ALIGN(max_align_t) MessageWithDataArray : public MessageWithDataArray_Base {
  public:
   static constexpr uint8_t kId = 1;
   MessageWithDataArray();
@@ -610,7 +610,7 @@ class MessageWithDataArray : public MessageWithDataArray_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class MessageWithDriverObject : public MessageWithDriverObject_Base {
+class IPCZ_ALIGN(max_align_t) MessageWithDriverObject : public MessageWithDriverObject_Base {
  public:
   static constexpr uint8_t kId = 2;
   MessageWithDriverObject();
@@ -628,7 +628,7 @@ class MessageWithDriverObject : public MessageWithDriverObject_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class MessageWithDriverObjectArray : public MessageWithDriverObjectArray_Base {
+class IPCZ_ALIGN(max_align_t) MessageWithDriverObjectArray : public MessageWithDriverObjectArray_Base {
  public:
   static constexpr uint8_t kId = 3;
   MessageWithDriverObjectArray();
@@ -646,7 +646,7 @@ class MessageWithDriverObjectArray : public MessageWithDriverObjectArray_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class MessageWithDriverArrayAndExtraObject : public MessageWithDriverArrayAndExtraObject_Base {
+class IPCZ_ALIGN(max_align_t) MessageWithDriverArrayAndExtraObject : public MessageWithDriverArrayAndExtraObject_Base {
  public:
   static constexpr uint8_t kId = 4;
   MessageWithDriverArrayAndExtraObject();
@@ -664,7 +664,7 @@ class MessageWithDriverArrayAndExtraObject : public MessageWithDriverArrayAndExt
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class MessageWithMultipleVersions : public MessageWithMultipleVersions_Base {
+class IPCZ_ALIGN(max_align_t) MessageWithMultipleVersions : public MessageWithMultipleVersions_Base {
  public:
   static constexpr uint8_t kId = 5;
   MessageWithMultipleVersions();
@@ -694,7 +694,7 @@ class MessageWithMultipleVersions : public MessageWithMultipleVersions_Base {
   const ParamsType::V2* v2() const { return params().v2(); }
 };
 
-class MessageWithEnums : public MessageWithEnums_Base {
+class IPCZ_ALIGN(max_align_t) MessageWithEnums : public MessageWithEnums_Base {
  public:
   static constexpr uint8_t kId = 6;
   MessageWithEnums();

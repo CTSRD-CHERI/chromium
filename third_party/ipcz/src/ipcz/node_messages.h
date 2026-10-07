@@ -2002,7 +2002,7 @@ class AcceptRelayedMessage_Base
 // generate version struct accessors (v0, v1, etc.) which expose all available
 // message parameters. See message_params_declaration_macros.h for their
 // definitions.
-class ConnectFromBrokerToNonBroker : public ConnectFromBrokerToNonBroker_Base {
+class IPCZ_ALIGN(max_align_t) ConnectFromBrokerToNonBroker : public ConnectFromBrokerToNonBroker_Base {
  public:
   static constexpr uint8_t kId = 0;
   ConnectFromBrokerToNonBroker();
@@ -2026,7 +2026,7 @@ class ConnectFromBrokerToNonBroker : public ConnectFromBrokerToNonBroker_Base {
   const ParamsType::V1* v1() const { return params().v1(); }
 };
 
-class ConnectFromNonBrokerToBroker : public ConnectFromNonBrokerToBroker_Base {
+class IPCZ_ALIGN(max_align_t) ConnectFromNonBrokerToBroker : public ConnectFromNonBrokerToBroker_Base {
  public:
   static constexpr uint8_t kId = 1;
   ConnectFromNonBrokerToBroker();
@@ -2050,7 +2050,7 @@ class ConnectFromNonBrokerToBroker : public ConnectFromNonBrokerToBroker_Base {
   const ParamsType::V1* v1() const { return params().v1(); }
 };
 
-class ReferNonBroker : public ReferNonBroker_Base {
+class IPCZ_ALIGN(max_align_t) ReferNonBroker : public ReferNonBroker_Base {
  public:
   static constexpr uint8_t kId = 2;
   ReferNonBroker();
@@ -2068,7 +2068,7 @@ class ReferNonBroker : public ReferNonBroker_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class ConnectToReferredBroker : public ConnectToReferredBroker_Base {
+class IPCZ_ALIGN(max_align_t) ConnectToReferredBroker : public ConnectToReferredBroker_Base {
  public:
   static constexpr uint8_t kId = 3;
   ConnectToReferredBroker();
@@ -2092,7 +2092,7 @@ class ConnectToReferredBroker : public ConnectToReferredBroker_Base {
   const ParamsType::V1* v1() const { return params().v1(); }
 };
 
-class ConnectToReferredNonBroker : public ConnectToReferredNonBroker_Base {
+class IPCZ_ALIGN(max_align_t) ConnectToReferredNonBroker : public ConnectToReferredNonBroker_Base {
  public:
   static constexpr uint8_t kId = 4;
   ConnectToReferredNonBroker();
@@ -2116,7 +2116,7 @@ class ConnectToReferredNonBroker : public ConnectToReferredNonBroker_Base {
   const ParamsType::V1* v1() const { return params().v1(); }
 };
 
-class NonBrokerReferralAccepted : public NonBrokerReferralAccepted_Base {
+class IPCZ_ALIGN(max_align_t) NonBrokerReferralAccepted : public NonBrokerReferralAccepted_Base {
  public:
   static constexpr uint8_t kId = 5;
   NonBrokerReferralAccepted();
@@ -2140,7 +2140,7 @@ class NonBrokerReferralAccepted : public NonBrokerReferralAccepted_Base {
   const ParamsType::V1* v1() const { return params().v1(); }
 };
 
-class NonBrokerReferralRejected : public NonBrokerReferralRejected_Base {
+class IPCZ_ALIGN(max_align_t) NonBrokerReferralRejected : public NonBrokerReferralRejected_Base {
  public:
   static constexpr uint8_t kId = 6;
   NonBrokerReferralRejected();
@@ -2158,7 +2158,7 @@ class NonBrokerReferralRejected : public NonBrokerReferralRejected_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class ConnectFromBrokerToBroker : public ConnectFromBrokerToBroker_Base {
+class IPCZ_ALIGN(max_align_t) ConnectFromBrokerToBroker : public ConnectFromBrokerToBroker_Base {
  public:
   static constexpr uint8_t kId = 7;
   ConnectFromBrokerToBroker();
@@ -2182,7 +2182,7 @@ class ConnectFromBrokerToBroker : public ConnectFromBrokerToBroker_Base {
   const ParamsType::V1* v1() const { return params().v1(); }
 };
 
-class RequestIntroduction : public RequestIntroduction_Base {
+class IPCZ_ALIGN(max_align_t) RequestIntroduction : public RequestIntroduction_Base {
  public:
   static constexpr uint8_t kId = 10;
   RequestIntroduction();
@@ -2200,7 +2200,7 @@ class RequestIntroduction : public RequestIntroduction_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class AcceptIntroduction : public AcceptIntroduction_Base {
+class IPCZ_ALIGN(max_align_t) AcceptIntroduction : public AcceptIntroduction_Base {
  public:
   static constexpr uint8_t kId = 11;
   AcceptIntroduction();
@@ -2224,7 +2224,7 @@ class AcceptIntroduction : public AcceptIntroduction_Base {
   const ParamsType::V1* v1() const { return params().v1(); }
 };
 
-class RejectIntroduction : public RejectIntroduction_Base {
+class IPCZ_ALIGN(max_align_t) RejectIntroduction : public RejectIntroduction_Base {
  public:
   static constexpr uint8_t kId = 12;
   RejectIntroduction();
@@ -2242,7 +2242,7 @@ class RejectIntroduction : public RejectIntroduction_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class RequestIndirectIntroduction : public RequestIndirectIntroduction_Base {
+class IPCZ_ALIGN(max_align_t) RequestIndirectIntroduction : public RequestIndirectIntroduction_Base {
  public:
   static constexpr uint8_t kId = 13;
   RequestIndirectIntroduction();
@@ -2260,7 +2260,7 @@ class RequestIndirectIntroduction : public RequestIndirectIntroduction_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class AddBlockBuffer : public AddBlockBuffer_Base {
+class IPCZ_ALIGN(max_align_t) AddBlockBuffer : public AddBlockBuffer_Base {
  public:
   static constexpr uint8_t kId = 14;
   AddBlockBuffer();
@@ -2278,7 +2278,7 @@ class AddBlockBuffer : public AddBlockBuffer_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class AcceptParcel : public AcceptParcel_Base {
+class IPCZ_ALIGN(max_align_t) AcceptParcel : public AcceptParcel_Base {
  public:
   static constexpr uint8_t kId = 20;
   AcceptParcel();
@@ -2296,7 +2296,7 @@ class AcceptParcel : public AcceptParcel_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class AcceptParcelDriverObjects : public AcceptParcelDriverObjects_Base {
+class IPCZ_ALIGN(max_align_t) AcceptParcelDriverObjects : public AcceptParcelDriverObjects_Base {
  public:
   static constexpr uint8_t kId = 21;
   AcceptParcelDriverObjects();
@@ -2314,7 +2314,7 @@ class AcceptParcelDriverObjects : public AcceptParcelDriverObjects_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class RouteClosed : public RouteClosed_Base {
+class IPCZ_ALIGN(max_align_t) RouteClosed : public RouteClosed_Base {
  public:
   static constexpr uint8_t kId = 22;
   RouteClosed();
@@ -2332,7 +2332,7 @@ class RouteClosed : public RouteClosed_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class RouteDisconnected : public RouteDisconnected_Base {
+class IPCZ_ALIGN(max_align_t) RouteDisconnected : public RouteDisconnected_Base {
  public:
   static constexpr uint8_t kId = 23;
   RouteDisconnected();
@@ -2350,7 +2350,7 @@ class RouteDisconnected : public RouteDisconnected_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class BypassPeer : public BypassPeer_Base {
+class IPCZ_ALIGN(max_align_t) BypassPeer : public BypassPeer_Base {
  public:
   static constexpr uint8_t kId = 30;
   BypassPeer();
@@ -2368,7 +2368,7 @@ class BypassPeer : public BypassPeer_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class AcceptBypassLink : public AcceptBypassLink_Base {
+class IPCZ_ALIGN(max_align_t) AcceptBypassLink : public AcceptBypassLink_Base {
  public:
   static constexpr uint8_t kId = 31;
   AcceptBypassLink();
@@ -2386,7 +2386,7 @@ class AcceptBypassLink : public AcceptBypassLink_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class StopProxying : public StopProxying_Base {
+class IPCZ_ALIGN(max_align_t) StopProxying : public StopProxying_Base {
  public:
   static constexpr uint8_t kId = 32;
   StopProxying();
@@ -2404,7 +2404,7 @@ class StopProxying : public StopProxying_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class ProxyWillStop : public ProxyWillStop_Base {
+class IPCZ_ALIGN(max_align_t) ProxyWillStop : public ProxyWillStop_Base {
  public:
   static constexpr uint8_t kId = 33;
   ProxyWillStop();
@@ -2422,7 +2422,7 @@ class ProxyWillStop : public ProxyWillStop_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class BypassPeerWithLink : public BypassPeerWithLink_Base {
+class IPCZ_ALIGN(max_align_t) BypassPeerWithLink : public BypassPeerWithLink_Base {
  public:
   static constexpr uint8_t kId = 34;
   BypassPeerWithLink();
@@ -2440,7 +2440,7 @@ class BypassPeerWithLink : public BypassPeerWithLink_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class StopProxyingToLocalPeer : public StopProxyingToLocalPeer_Base {
+class IPCZ_ALIGN(max_align_t) StopProxyingToLocalPeer : public StopProxyingToLocalPeer_Base {
  public:
   static constexpr uint8_t kId = 35;
   StopProxyingToLocalPeer();
@@ -2458,7 +2458,7 @@ class StopProxyingToLocalPeer : public StopProxyingToLocalPeer_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class FlushRouter : public FlushRouter_Base {
+class IPCZ_ALIGN(max_align_t) FlushRouter : public FlushRouter_Base {
  public:
   static constexpr uint8_t kId = 36;
   FlushRouter();
@@ -2476,7 +2476,7 @@ class FlushRouter : public FlushRouter_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class RequestMemory : public RequestMemory_Base {
+class IPCZ_ALIGN(max_align_t) RequestMemory : public RequestMemory_Base {
  public:
   static constexpr uint8_t kId = 64;
   RequestMemory();
@@ -2494,7 +2494,7 @@ class RequestMemory : public RequestMemory_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class ProvideMemory : public ProvideMemory_Base {
+class IPCZ_ALIGN(max_align_t) ProvideMemory : public ProvideMemory_Base {
  public:
   static constexpr uint8_t kId = 65;
   ProvideMemory();
@@ -2512,7 +2512,7 @@ class ProvideMemory : public ProvideMemory_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class RelayMessage : public RelayMessage_Base {
+class IPCZ_ALIGN(max_align_t) RelayMessage : public RelayMessage_Base {
  public:
   static constexpr uint8_t kId = 66;
   RelayMessage();
@@ -2530,7 +2530,7 @@ class RelayMessage : public RelayMessage_Base {
   const ParamsType::V0* v0() const { return params().v0(); }
 };
 
-class AcceptRelayedMessage : public AcceptRelayedMessage_Base {
+class IPCZ_ALIGN(max_align_t) AcceptRelayedMessage : public AcceptRelayedMessage_Base {
  public:
   static constexpr uint8_t kId = 67;
   AcceptRelayedMessage();
