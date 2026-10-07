@@ -59,6 +59,10 @@ component("x") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
+
   defines = [ "IS_UI_BASE_X_IMPL" ]
 
   public_deps = [
