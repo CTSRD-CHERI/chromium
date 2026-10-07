@@ -578,7 +578,11 @@ class RemoteProcessState {
   void NotifyError(const std::string& error_message, bool disconnected) {
     base::AutoLock lock(lock_);
     CHECK(!disconnected_);
+#if __cpp_lib_string_contains
     EXPECT_TRUE(error_message.contains(expected_error_message_));
+#else
+    EXPECT_TRUE(error_message.find(expected_error_message_) != std::string::npos);
+#endif
     disconnected_ = disconnected;
     ++call_count_;
     if (error_callback_) {
