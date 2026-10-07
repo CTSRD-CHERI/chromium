@@ -240,7 +240,7 @@ class {{m.message}}_Base
 // message parameters. See message_params_declaration_macros.h for their
 // definitions.
 {% for m in messages %}
-class {{m.message}} : public {{m.message}}_Base {
+class IPCZ_ALIGN(max_align_t) {{m.message}} : public {{m.message}}_Base {
  public:
   static constexpr uint8_t kId = {{m.msgid}};
   {{m.message}}();
