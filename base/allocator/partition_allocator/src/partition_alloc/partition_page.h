@@ -525,7 +525,7 @@ PA_ALWAYS_INLINE PartitionPageMetadata* PartitionPageMetadata::FromAddr(
   PA_DCHECK(IsWithinSuperPagePayload(address));
 #endif
 
-  uintptr_t partition_page_index =
+  size_t partition_page_index =
       (address & kSuperPageOffsetMask) >> PartitionPageShift();
   // Index 0 is invalid because it is the super page extent metadata and the
   // last index is invalid because the whole PartitionPage is set as guard

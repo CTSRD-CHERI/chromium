@@ -41,13 +41,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PoolOffsetLookup {
   PoolOffsetLookup()
       : base_address_(0), base_mask_(static_cast<size_t>(-1)) {}
 
-  PA_ALWAYS_INLINE uintptr_t GetOffset(uintptr_t address) const {
+  PA_ALWAYS_INLINE size_t GetOffset(uintptr_t address) const {
     PA_DCHECK(Includes(address));
     return address & ~base_mask_;
   }
 
   // Similar to `GetOffset()`, but with MTE tag left in the top bits.
-  PA_ALWAYS_INLINE uintptr_t GetTaggedOffset(void* ptr) const {
+  PA_ALWAYS_INLINE size_t GetTaggedOffset(void* ptr) const {
     const uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
     PA_DCHECK(Includes(address));
     return address & (kPtrTagMask | ~base_mask_);
@@ -262,7 +262,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   }
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 
-  PA_ALWAYS_INLINE static uintptr_t OffsetInBRPPool(uintptr_t address) {
+  PA_ALWAYS_INLINE static size_t OffsetInBRPPool(uintptr_t address) {
     PA_DCHECK(IsInBRPPool(address));
     return address - setup_.brp_pool_base_address_;
   }
@@ -508,7 +508,7 @@ PA_ALWAYS_INLINE pool_handle GetPool(uintptr_t address) {
   return GetPoolInfo(address).handle;
 }
 
-PA_ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
+PA_ALWAYS_INLINE size_t OffsetInBRPPool(uintptr_t address) {
   return PartitionAddressSpace::OffsetInBRPPool(address);
 }
 
