@@ -39,12 +39,23 @@ static bool CompareParameter(const ReplacementOffset& elem1,
   return elem1.parameter < elem2.parameter;
 }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+// On CHERI platforms ptraddr_t is the size of INTEGER_WORDSZ.  This aligns
+// with the intent of using the largest available general purpose register to
+// perform integer operations such as bit-wise masking.
+using MachineWord = ptraddr_t;
+#else
 // Assuming that a pointer is the size of a "machine word", then
 // uintptr_t is an integer type that is also a machine word.
 using MachineWord = uintptr_t;
+#endif
 
 inline bool IsMachineWordAligned(const void* pointer) {
+#if __has_builtin(__builtin_is_aligned)
+  return __builtin_is_aligned(pointer, sizeof(MachineWord));
+#else
   return !(reinterpret_cast<MachineWord>(pointer) & (sizeof(MachineWord) - 1));
+#endif
 }
 
 template <typename T, typename CharT = typename T::value_type>
