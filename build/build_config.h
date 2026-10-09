@@ -420,4 +420,10 @@
 #endif
 #endif
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+#define BUILDFLAG_INTERNAL_IS_CHERI() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_CHERI() (0)
+#endif
+
 #endif  // BUILD_BUILD_CONFIG_H_
