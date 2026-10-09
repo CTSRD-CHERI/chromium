@@ -60,23 +60,23 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
       "maximum direct mapped allocation");
 
   // Check that some of our zanier calculations worked out as expected.
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_BUILDFLAG(IS_CHERI)
   static_assert(BucketIndexLookup::kMinBucketSize %  internal::kAlignment == 0,
 #else
   static_assert(BucketIndexLookup::kMinBucketSize == internal::kAlignment,
-#endif
+#endif  // !PA_BUILDFLAG(IS_CHERI)
                 "generic smallest bucket");
   static_assert(BucketIndexLookup::kMaxBucketSize == 983040,
                 "generic max bucketed");
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_BUILDFLAG(IS_CHERI)
   STATIC_ASSERT_OR_PA_CHECK(
       internal::MaxSystemPagesPerRegularSlotSpan() <= 32,
       "System pages per slot span must be no greater than 32.");
-#else   // !__CHERI_PURE_CAPABILITY__
+#else
   STATIC_ASSERT_OR_PA_CHECK(
       internal::MaxSystemPagesPerRegularSlotSpan() <= 16,
       "System pages per slot span must be no greater than 16.");
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif  // !PA_BUILDFLAG(IS_CHERI)
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   STATIC_ASSERT_OR_PA_CHECK(

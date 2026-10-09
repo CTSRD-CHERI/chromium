@@ -30,13 +30,13 @@
 // Assert that the heuristic in partition_alloc.gni is accurate on supported
 // configurations.
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_BUILDFLAG(IS_CHERI)
 #include <stddef.h>
 static_assert(sizeof(ptraddr_t) == 8, "");
 static_assert(sizeof(void*) == 16, "");
-#else // defined(__CHERI_PURE_CAPABILITY__)
+#else
 static_assert(sizeof(void*) == 8, "");
-#endif // defined(__CHERI_PURE_CAPABILITY__)
+#endif  // !PA_BUILDFLAG(IS_CHERI)
 #else
 static_assert(sizeof(void*) != 8, "");
 #endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
@@ -85,7 +85,7 @@ static_assert(sizeof(void*) != 8, "");
 // slot. In case Use-after-Free happens, we'd rather not hand out a valid,
 // ready-to-use pointer.
 #if PA_BUILDFLAG(PA_ARCH_CPU_LITTLE_ENDIAN)
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_BUILDFLAG(IS_CHERI)
 #define PA_CONFIG_HAS_FREELIST_SHADOW_ENTRY() 0
 #else
 #define PA_CONFIG_HAS_FREELIST_SHADOW_ENTRY() 1

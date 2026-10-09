@@ -75,14 +75,14 @@ uintptr_t SystemAllocPagesInternal(uintptr_t hint,
 #if defined (__FreeBSD__)
   // Set the maximum protections for the mmaped memory.
   access_flag |= PROT_MAX(PROT_READ | PROT_WRITE | PROT_EXEC);
-#if defined (__CHERI_PURE_CAPABILITY__)
+#if PA_BUILDFLAG(IS_CHERI)
   // TODO(https://github.com/CTSRD-CHERI/cheribsd/issues/1818): On CHERI
   // architectures set PROT_WRITE so that the mapped memory gains permissions
   // to write capabilities: VM_PROT_ADD_CAP is never called on prot and
   // max_prot in mprotect itself.
   access_flag |= PROT_WRITE;
-#endif    // __CHERI_PURE_CAPABILITY__
-#endif    // __FreeBSD__
+#endif // PA_BUILDFLAG(IS_CHERI)
+#endif // __FreeBSD__
   int map_flags = MAP_ANONYMOUS | MAP_PRIVATE;
 
 #if PA_BUILDFLAG(IS_APPLE)
