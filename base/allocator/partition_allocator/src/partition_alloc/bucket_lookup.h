@@ -162,11 +162,11 @@ class BucketIndexLookup final {
  public:
   BucketIndexLookup() = delete;
 
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_BUILDFLAG(IS_CHERI)
   static constexpr size_t kMinBucketSize = 2 * sizeof(uintptr_t);
 #else
   static constexpr size_t kMinBucketSize = LinearMap::kStep;
-#endif
+#endif  // !PA_BUILDFLAG(IS_CHERI)
   // The largest bucketed order is 20, storing nearly 1 MiB (983040 bytes
   // precisely).
   static constexpr size_t kMaxBucketSize = ExponentialMap::GetSize(

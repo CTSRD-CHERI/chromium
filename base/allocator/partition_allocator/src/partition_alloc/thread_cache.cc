@@ -485,9 +485,9 @@ ThreadCache* ThreadCache::Create(PartitionRoot* root) {
 
 ThreadCache::ThreadCache(PartitionRoot* root)
     : should_purge_(false),
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS) && !defined(__CHERI_PURE_CAPABILITY__)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS) && !PA_BUILDFLAG(IS_CHERI)
       offset_lookup_(root->GetOffsetLookup()),
-#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS) && !PA_BUILDFLAG(IS_CHERI)
       root_(root),
       thread_id_(internal::base::PlatformThread::CurrentId()),
       next_(nullptr),
@@ -702,20 +702,20 @@ void ThreadCache::ClearBucket(Bucket& bucket, size_t limit) {
     auto* head = bucket.freelist_head;
     size_t items = 1;  // Cannot free the freelist head.
     while (items < limit) {
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS) && !defined(__CHERI_PURE_CAPABILITY__)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS) && !PA_BUILDFLAG(IS_CHERI)
       head = head->GetNextForThreadCache(bucket.slot_size, offset_lookup_);
 #else
       head = head->GetNextForThreadCache(bucket.slot_size);
-#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS) && !__CHERI_PURE_CAPABILITY__
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS) && !PA_BUILDFLAG(IS_CHERI)
       items++;
     }
 
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS) && !defined(__CHERI_PURE_CAPABILITY__)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS) && !PA_BUILDFLAG(IS_CHERI)
     FreeAfter(head->GetNextForThreadCache(bucket.slot_size, offset_lookup_),
               bucket.slot_size);
 #else
     FreeAfter(head->GetNextForThreadCache(bucket.slot_size), bucket.slot_size);
-#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS) && !defined(__CHERI_PURE_CAPABILITY__)
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS) && !PA_BUILDFLAG(IS_CHERI)
     head->SetNext(nullptr);
   }
   bucket.count = limit;
@@ -735,11 +735,11 @@ void ThreadCache::FreeAfter(internal::FreelistEntry* head, size_t slot_size) {
   while (head) {
     internal::UntaggedSlotStart slot_start =
         internal::SlotStart::Unchecked(head).Untag();
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS) && !defined(__CHERI_PURE_CAPABILITY__)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS) && !PA_BUILDFLAG(IS_CHERI)
     head = head->GetNextForThreadCache(slot_size, offset_lookup_);
 #else
     head = head->GetNextForThreadCache(slot_size);
-#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS) && !PA_BUILDFLAG(IS_CHERI)
     internal::SlotSpanMetadata* slot_span =
         internal::SlotSpanMetadata::FromSlotStart(slot_start, root_);
     root_->RawFreeLocked(slot_start, slot_span);
@@ -870,13 +870,13 @@ bool ThreadCache::IsInFreelist(internal::UntaggedSlotStart address,
       position = index;
       return true;
     }
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS) && !defined(__CHERI_PURE_CAPABILITY__)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS) && !PA_BUILDFLAG(IS_CHERI)
     internal::FreelistEntry* next =
         entry->GetNextForThreadCache(bucket.slot_size, offset_lookup_);
 #else
     internal::FreelistEntry* next =
         entry->GetNextForThreadCache(bucket.slot_size);
-#endif
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS) && !PA_BUILDFLAG(IS_CHERI)
     entry = next;
     ++index;
   }

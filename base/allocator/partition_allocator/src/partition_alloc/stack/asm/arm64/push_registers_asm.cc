@@ -13,6 +13,8 @@
 // Calling convention source:
 // https://en.wikipedia.org/wiki/Calling_convention#ARM_(A64)
 
+#include "partition_alloc/build_config.h"
+
 asm(
 #if defined(__APPLE__)
     ".globl _PAPushAllRegistersAndIterateStack            \n"
@@ -28,7 +30,7 @@ asm(
     ".p2align 2                                           \n"
     "PAPushAllRegistersAndIterateStack:                   \n"
 #endif  // !defined(__APPLE__)
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_BUILDFLAG(IS_CHERI)
     // c19-c29 are callee-saved.
     "  stp c19, c20, [csp, #-32]!                         \n"
     "  stp c21, c22, [csp, #-32]!                         \n"
@@ -49,7 +51,7 @@ asm(
     "  ldp cfp, clr, [csp], #32                           \n"
     // Drop all callee-saved registers.
     "  add csp, csp, #160                                 \n"
-#else // defined(__CHERI_PURE_CAPABILITY__)
+#else
     // x19-x29 are callee-saved.
     "  stp x19, x20, [sp, #-16]!                          \n"
     "  stp x21, x22, [sp, #-16]!                          \n"
@@ -70,5 +72,5 @@ asm(
     "  ldp fp, lr, [sp], #16                              \n"
     // Drop all callee-saved registers.
     "  add sp, sp, #80                                    \n"
-#endif // defined(__CHERI_PURE_CAPABILITY__)
+#endif // !PA_BUILDFLAG(IS_CHERI)
     "  ret                                                \n");
