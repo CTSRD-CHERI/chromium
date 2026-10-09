@@ -169,7 +169,6 @@ pa_buildflag_header("buildflags") {
     "IS_ANDROID=$is_android",
     "IS_CASTOS=$is_castos",
     "IS_CAST_ANDROID=$is_cast_android",
-    "IS_CHERI=$is_cheri",
     "IS_CHROMEOS=$is_chromeos",
     "IS_DEBUG=$partition_alloc_is_debug",
     "IS_HWASAN=$is_hwasan",

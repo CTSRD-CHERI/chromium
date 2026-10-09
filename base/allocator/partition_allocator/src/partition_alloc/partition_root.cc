@@ -413,11 +413,11 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
   // what the run time page size is, kMaxSlotCount can always be simplified
   // to this expression.
   constexpr size_t kMaxSlotCount =
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_BUILDFLAG(IS_CHERI)
       8 * kMaxPurgeableSlotsPerSystemPage *
-#else   // !__CHERI_PURE_CAPABILITY__
+#else // !PA_BUILDFLAG(IS_CHERI)
       4 * kMaxPurgeableSlotsPerSystemPage *
-#endif  // !__CHERI_PURE_CAPABILITY__
+#endif// !PA_CONFIG(IS_CONFIG)
       internal::kMaxPartitionPagesPerRegularSlotSpan;
   PA_CHECK(kMaxSlotCount == (PartitionPageSize() *
                              internal::kMaxPartitionPagesPerRegularSlotSpan) /

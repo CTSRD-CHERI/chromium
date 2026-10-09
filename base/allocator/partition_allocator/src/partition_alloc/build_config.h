@@ -214,6 +214,10 @@
 #define PA_ARCH_CPU_LITTLE_ENDIAN
 #endif
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+#define PA_IS_CHERI
+#endif
+
 // The part below can be generated with the following script:
 // https://paste.googleplex.com/6324671838683136
 //
@@ -495,5 +499,12 @@
 #define PA_BUILDFLAG_INTERNAL_PA_LIBC_GLIBC() (0)
 #endif
 #undef PA_LIBC_GLIBC
+
+#if defined(PA_IS_CHERI)
+#define PA_BUILDFLAG_INTERNAL_IS_CHERI() (1)
+#else
+#define PA_BUILDFLAG_INTERNAL_IS_CHERI() (0)
+#endif
+#undef PA_IS_CHERI
 
 #endif  // PARTITION_ALLOC_BUILD_CONFIG_H_

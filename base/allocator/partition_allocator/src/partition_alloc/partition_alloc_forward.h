@@ -29,7 +29,7 @@ namespace internal {
 // the second one 16. We could technically return something different for
 // malloc() and operator new(), but this would complicate things, and most of
 // our allocations are presumably coming from operator new() anyway.
-#if defined(__i386__) && defined(OS_FREEBSD) &&!defined(__CHERI_PURE_CAPABILITY__)
+#if defined(__i386__) && defined(OS_FREEBSD) && !PA_BUILDFLAG(IS_CHERI)
 constexpr size_t kAlignment = 8;
 #else
 constexpr inline size_t kAlignment =

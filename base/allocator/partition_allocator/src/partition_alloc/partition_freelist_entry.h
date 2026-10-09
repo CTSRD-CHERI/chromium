@@ -13,7 +13,7 @@
 
 // Pool-offset encoding has better security characteristics, but requires
 // contiguous pool hence limited to 64-bit systems.
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_BUILDFLAG(IS_CHERI)
 #include "partition_alloc/identity_encoder.h"
 #else
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
@@ -21,7 +21,7 @@
 #else
 #include "partition_alloc/encoded_next_freelist.h"
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-#endif  // __CHERI_PURE_CAPABILITY__
+#endif  // PA_BUILDFLAG(IS_CHERI) 
 
 namespace partition_alloc::internal {
 
@@ -29,7 +29,7 @@ namespace partition_alloc::internal {
 // //base/allocator/partition_allocator/PartitionAlloc.md
 // and |Transform()| for the rationale and mechanism, respectively.
 class FreelistEntry {
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_BUILDFLAG(IS_CHERI)
   using EncodedPtr = IdentityEncoder;
 #else
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
@@ -37,7 +37,7 @@ class FreelistEntry {
 #else
   using EncodedPtr = EncodedFreelistPtr;
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-#endif  // __CHERI_PURE_CAPABILITY__
+#endif  // PA_BUILDFLAG(IS_CHERI)
 
   constexpr explicit FreelistEntry(std::nullptr_t)
       : encoded_next_(EncodedPtr(nullptr))
