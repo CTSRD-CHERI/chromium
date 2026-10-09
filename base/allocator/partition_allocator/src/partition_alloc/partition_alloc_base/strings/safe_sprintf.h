@@ -203,7 +203,7 @@ struct Arg {
   template <class T>
   Arg(T* p) : ptr((void*)p), type(POINTER) {}
 
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_BUILDFLAG(IS_CHERI)
   // TODO(gcjenkinson): For now print intptr_t and uintptr_t as integer
   // addresses rather than as capabilities.
   Arg(intptr_t j) : type(UINT) {
@@ -215,7 +215,7 @@ struct Arg {
     integer.i = __builtin_cheri_address_get(j);
     integer.width = sizeof(ptraddr_t);
   }
-#endif
+#endif // PA_BUILDFLAG(IS_CHERI)
 
   struct Integer {
     int64_t i;

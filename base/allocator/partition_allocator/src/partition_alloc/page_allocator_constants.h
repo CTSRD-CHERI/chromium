@@ -8,6 +8,7 @@
 #include <cstddef>
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 
@@ -210,13 +211,13 @@ SystemPageBaseMask() {
   return ~SystemPageOffsetMask();
 }
 
-#if defined(__CHERI_PURE_CAPABILITY__)
+#if PA_BUILDFLAG(IS_CHERI)
 // Increase PageMetadata as the PartitionSuperPageExtentEntry no longer fitted
 // within the 32B metadata size due to wider capabilities.
 constexpr size_t kPageMetadataShift = 6;  // 64 bytes per partition page.
-#else // defined(__CHERI_PURE_CAPABILITY__)
+#else
 constexpr size_t kPageMetadataShift = 5;  // 32 bytes per partition page.
-#endif // defined(__CHERI_PURE_CAPABILITY__)
+#endif  // !PA_BUILDFLAG(IS_CHERI)
 constexpr size_t kPageMetadataSize = 1 << kPageMetadataShift;
 
 }  // namespace internal
