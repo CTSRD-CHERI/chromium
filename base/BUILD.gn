@@ -3124,6 +3124,10 @@ test("base_perftests") {
   if (build_allocation_stack_trace_recorder) {
     sources += [ "debug/allocation_trace_perftest.cc" ]
   }
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 test("base_i18n_perftests") {
@@ -4478,13 +4482,7 @@ test("base_unittests") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
   if (is_bsd) {
-    libs = [
-      "epoll-shim",
-    ]
-
-    include_dirs = [
-      "${sysroot}/usr/local/include/libepoll-shim"
-    ]
+    configs += [ "//build/config/compiler:epoll_shim" ]
   }
 }
 
