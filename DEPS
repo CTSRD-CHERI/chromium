@@ -306,7 +306,7 @@ vars = {
   'skia_cheri_git': 'https://github.com/CTSRD-CHERI',
   'skia_git': 'https://skia.googlesource.com',
   'swiftshader_git': 'https://swiftshader.googlesource.com',
-  'webrtc_git': 'https://webrtc.googlesource.com',
+  'webrtc_git': 'https://github.com/CTSRD-CHERI',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -2994,7 +2994,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + 'b47e68e6966d5a5a0e4bc861ff364221600f31c3',
+    Var('webrtc_git') + '/webrtc.git' + '@' + 'f8ebe173d9983f808f23d8c42dcd511d1131cf3d',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
