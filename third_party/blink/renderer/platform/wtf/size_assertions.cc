@@ -49,10 +49,13 @@ struct SameSizeAsRefCounted {
 };
 
 template <typename T, wtf_size_t inlineCapacity = 0>
+struct SameSizeAsVectorWithoutInlineCapacity;
+
+template <typename T, wtf_size_t inlineCapacity = 0>
 struct SameSizeAsVectorWithInlineCapacity;
 
 template <typename T>
-struct SameSizeAsVectorWithInlineCapacity<T, 0> {
+struct SameSizeAsVectorWithoutInlineCapacity<T, 0> {
   void* buffer_pointer;
   wtf_size_t capacity;
   wtf_size_t size;
@@ -60,7 +63,9 @@ struct SameSizeAsVectorWithInlineCapacity<T, 0> {
 
 template <typename T, wtf_size_t inlineCapacity>
 struct SameSizeAsVectorWithInlineCapacity {
-  SameSizeAsVectorWithInlineCapacity<T, 0> base_capacity;
+  void* buffer_pointer;
+  wtf_size_t capacity;
+  wtf_size_t size;
 #if !defined(ANNOTATE_CONTIGUOUS_CONTAINER)
   T inline_buffer[inlineCapacity];
 #endif
@@ -72,7 +77,7 @@ ASSERT_SIZE(RefCounted<int>, SameSizeAsRefCounted);
 
 ASSERT_SIZE(std::unique_ptr<int>, int*);
 ASSERT_SIZE(scoped_refptr<RefCounted<int>>, int*);
-ASSERT_SIZE(Vector<int>, SameSizeAsVectorWithInlineCapacity<int>);
+ASSERT_SIZE(Vector<int>, SameSizeAsVectorWithoutInlineCapacity<int>);
 // This is to avoid problem of comma in macro parameters.
 #define INLINE_CAPACITY_PARAMS(i) int, i
 ASSERT_SIZE(Vector<INLINE_CAPACITY_PARAMS(1)>,
