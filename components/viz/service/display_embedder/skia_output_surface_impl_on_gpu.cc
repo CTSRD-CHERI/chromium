@@ -179,7 +179,7 @@ void RecordInsertRenderPassRecording(bool success) {
   }
 }
 
-#if BUILDFLAG(ENABLE_VULKAN)
+#if BUILDFLAG(ENABLE_VULKAN) || BUILDFLAG(SKIA_USE_DAWN)
 // Returns whether SkiaOutputDeviceX11 can be instantiated on this platform.
 bool MayFallBackToSkiaOutputDeviceX11() {
 #if BUILDFLAG(IS_OZONE)
