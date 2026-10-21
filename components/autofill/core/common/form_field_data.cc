@@ -673,7 +673,7 @@ std::ostream& PrintWithIndentation(std::ostream& os,
   }
   os << '\n';
 #define PRINT_PROPERTY(property)                                             \
-  os << space << "  " << #property << ": " << PrintWrapper(field.property()) \
+  os << space << "  " << #property << ": " << PrintWrapper<decltype(field.property())>(field.property()) \
      << ",\n"
   PRINT_PROPERTY(global_id);
   PRINT_PROPERTY(label);

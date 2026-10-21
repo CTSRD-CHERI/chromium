@@ -46,7 +46,7 @@ std::ostream& operator<<(std::ostream& os, PrintWrapper<T> pw) {
   if constexpr (requires(T x) {
                   { os << x.ToString() } -> std::same_as<std::ostream&>;
                 }) {
-    return os << PrintWrapper(pw.x.ToString());
+    return os << PrintWrapper<decltype(pw.x.ToString())>(pw.x.ToString());
   }
   if constexpr (std::is_enum_v<T>) {
     return os << base::to_underlying(pw.x);
@@ -64,7 +64,7 @@ std::ostream& operator<<(std::ostream& os, PrintWrapper<std::optional<T>> pw) {
 
 inline std::ostream& operator<<(std::ostream& os,
                                 PrintWrapper<url::Origin> pw) {
-  return os << PrintWrapper(pw.x.Serialize());
+  return os << PrintWrapper<decltype(pw.x.Serialize())>(pw.x.Serialize());
 }
 
 inline std::ostream& operator<<(std::ostream& os, PrintWrapper<bool> pw) {
