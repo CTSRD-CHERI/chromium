@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/to_underlying.h"
 #include "base/test/test_message_loop.h"
 #include "base/to_underlying.h"
 #include "build/build_config.h"
@@ -168,7 +169,7 @@ TEST_F(MediaMetricsProviderTest, TestUkm) {
       EXPECT_UKM(UkmEntry::kTimeToPlayReadyName,
                  kPlayReadyTime.InMilliseconds());
       EXPECT_UKM(UkmEntry::kContainerNameName,
-                 std::to_underlying(
+                 base::to_underlying(
                      container_names::MediaContainerName::kContainerMOV));
     }
   }
