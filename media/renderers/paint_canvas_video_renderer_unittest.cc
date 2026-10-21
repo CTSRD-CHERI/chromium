@@ -13,7 +13,6 @@
 #include <stdint.h>
 
 #include <array>
-#include <bit>
 
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
@@ -516,7 +515,7 @@ uint32_t MaybeConvertABGRToARGB(uint32_t abgr) {
     SK_A32_SHIFT == 24
   return abgr;
 #else
-  return (std::byteswap(abgr & 0x00FFFFFF) >> 8) | (abgr & 0xFF000000);
+  return (base::ByteSwap(abgr & 0x00FFFFFF) >> 8) | (abgr & 0xFF000000);
 #endif
 }
 
