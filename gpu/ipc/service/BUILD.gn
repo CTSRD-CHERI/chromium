@@ -157,4 +157,8 @@ component("service") {
   if (skia_use_dawn) {
     deps += [ "//third_party/dawn/include/dawn:cpp_headers" ]
   }
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
