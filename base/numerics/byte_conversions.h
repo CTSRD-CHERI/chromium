@@ -19,6 +19,14 @@ static_assert(std::endian::native == std::endian::little);
 
 namespace base {
 
+// Returns a value with all bytes in |x| swapped, i.e. reverses the endianness.
+// TODO(pkasting): Once C++23 is available, replace with std::byteswap.
+template <class T>
+  requires(std::is_integral_v<T>)
+[[nodiscard]] inline constexpr T ByteSwap(T value) {
+  return numerics_internal::SwapBytes(value);
+}
+
 // Returns a uint8_t with the value in `bytes` interpreted as the native endian
 // encoding of the integer for the machine.
 //
