@@ -568,10 +568,8 @@ static_library("libvpx") {
   }
   if (current_cpu == "arm64" || current_cpu == "arm64e") {
     deps += [ ":libvpx_intrinsics_neon_dotprod" ]
-    if (!is_cheri) {
-      deps += [ ":libvpx_intrinsics_neon_i8mm" ]
-    }
-    if (!is_win && !is_cheri) {
+    deps += [ ":libvpx_intrinsics_neon_i8mm" ]
+    if (!is_win) {
       deps += [
         ":libvpx_intrinsics_sve",
         ":libvpx_intrinsics_sve2",
