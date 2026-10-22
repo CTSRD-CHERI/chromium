@@ -136,7 +136,10 @@ impl<K: Ord, V> StoreBulkMut<K, V> for ShortBoxSlice<(K, V)> {
                 items.reserve_exact(existing_items.len() + other.size_hint().0);
                 // We use a plain extend with existing items, which are already valid and
                 // lm_extend will fold over rest of the iterator sorting and deduplicating as needed.
-                items.extend(existing_items);
+                #[cfg(not(version("1.80")))]
+                items.extend(alloc::vec::Vec::from(existing_items));
+                #[cfg(version("1.80"))]
+                items.extend(Vec::from(existing_items));
                 items.lm_extend(other);
             }
         }
