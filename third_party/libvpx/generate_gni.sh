@@ -407,6 +407,8 @@ x86_platforms="--enable-pic --as=yasm $DISABLE_AVX512 $HIGHBD"
 # third_party\llvm-build\Release+Asserts\lib\clang\18\include\arm_sve.h(271,1):
 # error: cannot mangle this built-in __SVInt8_t type yet
 disable_sve="--disable-sve --disable-sve2"
+#disable_neon="--disable-neon --disable-neon-i8mm"
+disable_neon="--disable-neon-i8mm"
 
 gen_config_files linux/ia32 \
   "--target=x86-linux-gcc ${all_platforms} ${x86_platforms}"
@@ -414,7 +416,7 @@ gen_config_files linux/x64 \
   "--target=x86_64-linux-gcc ${all_platforms} ${x86_platforms}"
 gen_config_files linux/arm-neon "--target=armv7-linux-gcc \
   --disable-runtime-cpu-detect ${all_platforms}"
-gen_config_files linux/arm64 "--target=armv8-linux-gcc ${all_platforms}"
+gen_config_files linux/arm64 "--target=armv8-linux-gcc ${all_platforms} ${disable_sve} ${disable_neon}"
 gen_config_files linux/arm-neon-highbd \
   "--target=armv7-linux-gcc --disable-runtime-cpu-detect \
   ${all_platforms} ${HIGHBD}"
