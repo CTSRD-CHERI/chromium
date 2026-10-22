@@ -130,7 +130,7 @@ impl SubdivisionId {
             } else {
                 Ok(code_units.split_at(region_len))
             }
-        };
+        }?;
         #[cfg(version("1.80"))]
         let (region_code_units, suffix_code_units) = code_units
             .split_at_checked(region_len)
