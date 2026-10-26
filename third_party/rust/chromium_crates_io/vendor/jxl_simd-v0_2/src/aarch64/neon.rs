@@ -80,7 +80,10 @@ macro_rules! fn_neon {
             #[target_feature(enable = "neon")]
             #[inline]
             fn inner($this: $self_ty, $($arg: $ty),*) $(-> $ret)? {
-                $body
+                // SAFETY: this function is only called through the wrapper below, which
+                // guarantees that the NEON target feature is available. The operation
+                // preconditions for the intrinsics are upheld by the safe SIMD API.
+                unsafe { $body }
             }
             // SAFETY: `self.1` is constructed iff neon is available.
             unsafe { inner(self, $($arg),*) }
@@ -191,13 +194,16 @@ unsafe impl F32SimdVec for F32VecNeon {
             dest: &mut [f32],
         ) {
             assert!(dest.len() >= 8 * F32VecNeon::LEN);
-            // NEON doesn't have vst8, so we use manual interleaving
-            // For 4-wide vectors, output is 32 elements: [a0,b0,c0,d0,e0,f0,g0,h0, a1,...]
+            // SAFETY: this helper is only called after checking the descriptor's NEON
+            // invariant, and the destination length is checked before the stores below.
+            unsafe {
+                // NEON doesn't have vst8, so we use manual interleaving
+                // For 4-wide vectors, output is 32 elements: [a0,b0,c0,d0,e0,f0,g0,h0, a1,...]
 
-            // Use zip to interleave pairs
-            let ae_lo = vzip1q_f32(a, e); // [a0, e0, a1, e1]
-            let ae_hi = vzip2q_f32(a, e); // [a2, e2, a3, e3]
-            let bf_lo = vzip1q_f32(b, f);
+                // Use zip to interleave pairs
+                let ae_lo = vzip1q_f32(a, e); // [a0, e0, a1, e1]
+                let ae_hi = vzip2q_f32(a, e); // [a2, e2, a3, e3]
+                let bf_lo = vzip1q_f32(b, f);
             let bf_hi = vzip2q_f32(b, f);
             let cg_lo = vzip1q_f32(c, g);
             let cg_hi = vzip2q_f32(c, g);
@@ -260,6 +266,7 @@ unsafe impl F32SimdVec for F32VecNeon {
                 vst1q_f32(ptr.add(24), out6);
                 vst1q_f32(ptr.add(28), out7);
             }
+            }
         }
 
         // SAFETY: neon is available from the safety invariant on the descriptor stored in `a`.
@@ -273,6 +280,8 @@ unsafe impl F32SimdVec for F32VecNeon {
         fn transpose4x4f32(d: NeonDescriptor, data: &mut [[f32; 4]], stride: usize) {
             assert!(data.len() > 3 * stride);
 
+            // SAFETY: this helper is called only when the descriptor guarantees NEON.
+            unsafe {
             let p0 = F32VecNeon::load_array(d, &data[0]).0;
             let p1 = F32VecNeon::load_array(d, &data[1 * stride]).0;
             let p2 = F32VecNeon::load_array(d, &data[2 * stride]).0;
@@ -294,6 +303,7 @@ unsafe impl F32SimdVec for F32VecNeon {
             F32VecNeon(p1, d).store_array(&mut data[1 * stride]);
             F32VecNeon(p2, d).store_array(&mut data[2 * stride]);
             F32VecNeon(p3, d).store_array(&mut data[3 * stride]);
+            }
         }
 
         /// Potentially faster variant of `transpose4x4f32` where `stride == 1`.
@@ -302,6 +312,8 @@ unsafe impl F32SimdVec for F32VecNeon {
         fn transpose4x4f32_contiguous(d: NeonDescriptor, data: &mut [[f32; 4]]) {
             assert!(data.len() > 3);
 
+            // SAFETY: this helper is called only when the descriptor guarantees NEON.
+            unsafe {
             // Transposed load
             // SAFETY: input is verified to be large enough for this pointer.
             let float32x4x4_t(p0, p1, p2, p3) = unsafe { vld4q_f32(data.as_ptr().cast()) };
@@ -310,6 +322,7 @@ unsafe impl F32SimdVec for F32VecNeon {
             F32VecNeon(p1, d).store_array(&mut data[1]);
             F32VecNeon(p2, d).store_array(&mut data[2]);
             F32VecNeon(p3, d).store_array(&mut data[3]);
+            }
         }
 
         if stride == 1 {
