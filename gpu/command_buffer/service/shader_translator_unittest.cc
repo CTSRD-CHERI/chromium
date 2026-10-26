@@ -466,7 +466,11 @@ TEST_F(ShaderTranslatorOutputVersionTest, DISABLED_CompatibilityOutput) {
         kShader, nullptr, &translated_source, &shader_version, nullptr, nullptr,
         nullptr, nullptr, nullptr));
     EXPECT_TRUE(translated_source.find("#version") == std::string::npos);
+#if __cpp_lib_string_contains
     if (!translated_source.contains("gl_Position =")) {
+#else
+    if (translated_source.find("gl_Position =") == std::string::npos) {
+#endif
       ADD_FAILURE() << "Did not find gl_Position initialization.";
       LOG(ERROR) << "Generated output:\n" << translated_source;
     }
@@ -483,8 +487,13 @@ TEST_F(ShaderTranslatorOutputVersionTest, DISABLED_CompatibilityOutput) {
     EXPECT_TRUE(fragment_translator->Translate(
         kShader, nullptr, &translated_source, &shader_version, nullptr, nullptr,
         nullptr, nullptr, nullptr));
+#if __cpp_lib_string_contains
     EXPECT_TRUE(translated_source.contains("#version 120"));
     if (translated_source.contains("#pragma STDGL invariant(all)")) {
+#else
+    EXPECT_TRUE(translated_source.find("#version 120") != std::string::npos);
+    if (translated_source.find("#pragma STDGL invariant(all)") != std::string::npos) {
+#endif
       ADD_FAILURE() << "Found forbidden pragma.";
       LOG(ERROR) << "Generated output:\n" << translated_source;
     }
@@ -521,10 +530,19 @@ TEST_P(ShaderTranslatorOutputVersionTest, HasCorrectOutputGLSLVersion) {
 
   std::string expected_version_directive = testing::get<1>(GetParam());
   if (expected_version_directive.empty()) {
-    EXPECT_TRUE(!translated_source.contains("#version")) << "Translation was:\n"
-                                                         << translated_source;
+#if __cpp_lib_string_contains
+    EXPECT_TRUE(!translated_source.contains("#version"))
+#else
+    EXPECT_TRUE(translated_source.find("#version") == std::string::npos) 
+#endif
+        << "Translation was:\n" 
+	<< translated_source;
   } else {
+#if __cpp_lib_string_contains
     EXPECT_TRUE(translated_source.contains(expected_version_directive))
+#else
+    EXPECT_TRUE(translated_source.find(expected_version_directive) != std::string::npos)
+#endif
         << "Translation was:\n"
         << translated_source;
   }
