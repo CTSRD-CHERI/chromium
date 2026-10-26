@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_message_loop.h"
+#include "base/to_underlying.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "media/cdm/clear_key_cdm_common.h"
