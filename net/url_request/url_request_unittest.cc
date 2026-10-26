@@ -13608,7 +13608,11 @@ class StorageAccessHeaderURLRequestTest : public URLRequestTestHTTP {
   static std::unique_ptr<test_server::HttpResponse> HandleAuthChallenge(
       const test_server::HttpRequest& request,
       std::unique_ptr<test_server::BasicHttpResponse> http_response) {
+#if __cpp_lib_string_contains
     EXPECT_FALSE(request.headers.contains("Authorization"));
+#else
+    EXPECT_FALSE(request.headers.find("Authorization") != std::string::npos);
+#endif
 
     http_response->set_code(HTTP_UNAUTHORIZED);
     http_response->AddCustomHeader("WWW-Authenticate", "Basic realm=\"REALM\"");
@@ -13622,9 +13626,17 @@ class StorageAccessHeaderURLRequestTest : public URLRequestTestHTTP {
     // //net/test/embedded_test_server/default_handlers.cc
     // (HandleBasicAuth).
 
+#if __cpp_lib_string_contains
     EXPECT_TRUE(request.headers.contains("Authorization"));
+#else
+    EXPECT_TRUE(request.headers.find("Authorization") != std::string::npos);
+#endif
     std::string auth = request.headers.at("Authorization");
+#if __cpp_lib_string_contains
     EXPECT_TRUE(auth.contains("Basic"));
+#else
+    EXPECT_TRUE(auth.find("Basic") != std::string::npos);
+#endif
     std::string b64str = auth.substr(std::string("Basic ").size());
     std::string userpass;
     base::Base64Decode(b64str, &userpass);
