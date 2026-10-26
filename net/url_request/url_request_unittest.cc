@@ -13624,7 +13624,11 @@ class StorageAccessHeaderURLRequestTest : public URLRequestTestHTTP {
 
     EXPECT_TRUE(request.headers.contains("Authorization"));
     std::string auth = request.headers.at("Authorization");
+#if __cpp_lib_string_contains
     EXPECT_TRUE(auth.contains("Basic"));
+#else
+    EXPECT_TRUE(auth.find("Basic") != std::string::npos);
+#endif
     std::string b64str = auth.substr(std::string("Basic ").size());
     std::string userpass;
     base::Base64Decode(b64str, &userpass);

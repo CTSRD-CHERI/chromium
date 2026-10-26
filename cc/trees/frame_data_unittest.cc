@@ -46,8 +46,13 @@ TEST(FrameDataTest, FrameDataAsValueTest) {
   std::string frame_string = frame.ToString();
 
   // Test that the frame has some strings set.
+#if __cpp_lib_string_contains
   EXPECT_TRUE(frame_string.contains("\"has_no_damage\": false"));
   EXPECT_TRUE(frame_string.contains("\"render_passes\": [ {"));
+#else
+  EXPECT_TRUE(frame_string.find("\"has_no_damage\": false") != std::string::npos);
+  EXPECT_TRUE(frame_string.find("\"render_passes\": [ {") != std::string::npos);
+#endif
 
   // Disable tracelog to avoid teardown failures.
   base::trace_event::TraceLog::GetInstance()->SetDisabled();
