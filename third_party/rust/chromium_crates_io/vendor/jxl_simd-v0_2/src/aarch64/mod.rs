@@ -42,7 +42,7 @@ macro_rules! simd_function_body_neon {
             return $name(d, $($val),*);
         } else if let Some(d) = $crate::NeonDescriptor::new() {
             #[target_feature(enable = "neon")]
-            fn neon(d: $crate::NeonDescriptor, $($arg: $ty),*) $(-> $ret)? {
+            unsafe fn neon(d: $crate::NeonDescriptor, $($arg: $ty),*) $(-> $ret)? {
                 $name(d, $($val),*)
             }
             // SAFETY: we just checked for neon.
@@ -87,7 +87,7 @@ macro_rules! test_neon {
                 use $crate::SimdDescriptor;
                 let Some(d) = $crate::NeonDescriptor::new() else { return; };
                 #[target_feature(enable = "neon")]
-                fn inner(d: $crate::NeonDescriptor) {
+                unsafe fn inner(d: $crate::NeonDescriptor) {
                     $name(d)
                 }
                 // SAFETY: we just checked for neon.
