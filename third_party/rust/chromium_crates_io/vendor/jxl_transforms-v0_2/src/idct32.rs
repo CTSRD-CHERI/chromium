@@ -462,7 +462,7 @@ pub(super) fn do_idct_32_rowblock<D: SimdDescriptor>(
     data: &mut [<D::F32Vec as F32SimdVec>::UnderlyingArray],
 ) {
     assert!(data.len() >= 32);
-    const { assert!(32usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(32usize % D::F32Vec::LEN == 0) };
     let row_stride = 32 / D::F32Vec::LEN;
     let mut v0 = D::F32Vec::load_array(
         d,
@@ -640,7 +640,7 @@ pub(super) fn do_idct_32_trh<D: SimdDescriptor>(
 ) {
     let row_stride = 16 / D::F32Vec::LEN;
     assert!(data.len() > 31 * row_stride);
-    const { assert!(16usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(16usize % D::F32Vec::LEN == 0) };
     let mut v0 = D::F32Vec::load_array(d, &data[row_stride * 0]);
     let mut v1 = D::F32Vec::load_array(d, &data[row_stride * 2]);
     let mut v2 = D::F32Vec::load_array(d, &data[row_stride * 4]);
@@ -721,7 +721,7 @@ pub(super) fn do_idct_32_trq<D: SimdDescriptor>(
 ) {
     let row_stride = 8 / D::F32Vec::LEN;
     assert!(data.len() > 31 * row_stride);
-    const { assert!(8usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(8usize % D::F32Vec::LEN == 0) };
     let mut v0 = D::F32Vec::load_array(d, &data[row_stride * 0]);
     let mut v1 = D::F32Vec::load_array(d, &data[row_stride * 4]);
     let mut v2 = D::F32Vec::load_array(d, &data[row_stride * 8]);
