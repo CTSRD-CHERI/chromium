@@ -5,7 +5,7 @@
 
 #![feature(cfg_version)]
 #![cfg_attr(not(version("1.79")), feature(inline_const))]
-
+ #![feature(target_feature_11)] 
 mod idct2d;
 mod reinterpreting_dct2d;
 pub mod transform;
