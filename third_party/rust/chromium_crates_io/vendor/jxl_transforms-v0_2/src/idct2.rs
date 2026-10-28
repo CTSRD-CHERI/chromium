@@ -43,7 +43,7 @@ pub(super) fn do_idct_2_rowblock<D: SimdDescriptor>(
     data: &mut [<D::F32Vec as F32SimdVec>::UnderlyingArray],
 ) {
     assert!(data.len() >= 2);
-    const { assert!(2usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(2usize % D::F32Vec::LEN == 0) };
     let row_stride = 2 / D::F32Vec::LEN;
     let mut v0 = D::F32Vec::load_array(
         d,

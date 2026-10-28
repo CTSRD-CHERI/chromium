@@ -9,8 +9,8 @@ use jxl_simd::{F32SimdVec, SimdDescriptor};
 #[inline(always)]
 fn idct2d_2_2_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
     assert_eq!(data.len(), 4, "Data length mismatch");
-    const { assert!(2usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(2usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(2usize % D::F32Vec::LEN == 0) };
+    const { assert!(2usize % D::F32Vec::LEN == 0) };
     let data = D::F32Vec::make_array_slice_mut(data);
     let chunks = 2 / D::F32Vec::LEN;
     for i in 0..chunks {
@@ -32,8 +32,8 @@ fn idct2d_2_2_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
 #[inline(always)]
 fn idct2d_4_4_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
     assert_eq!(data.len(), 16, "Data length mismatch");
-    const { assert!(4usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(4usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(4usize % D::F32Vec::LEN == 0) };
+    const { assert!(4usize % D::F32Vec::LEN == 0) };
     let data = D::F32Vec::make_array_slice_mut(data);
     let chunks = 4 / D::F32Vec::LEN;
     for i in 0..chunks {
@@ -55,8 +55,8 @@ fn idct2d_4_4_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
 #[inline(always)]
 fn idct2d_4_8_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
     assert_eq!(data.len(), 32, "Data length mismatch");
-    const { assert!(4usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(8usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(4usize % D::F32Vec::LEN == 0) };
+    const { assert!(8usize % D::F32Vec::LEN == 0) };
     let data = D::F32Vec::make_array_slice_mut(data);
     let column_chunks = 8 / D::F32Vec::LEN;
     let row_chunks = 4 / D::F32Vec::LEN;
@@ -77,8 +77,8 @@ fn idct2d_4_8_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
 #[inline(always)]
 fn idct2d_8_4_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
     assert_eq!(data.len(), 32, "Data length mismatch");
-    const { assert!(8usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(4usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(8usize % D::F32Vec::LEN == 0) };
+    const { assert!(4usize % D::F32Vec::LEN == 0) };
     let data = D::F32Vec::make_array_slice_mut(data);
     let column_chunks = 4 / D::F32Vec::LEN;
     let row_chunks = 8 / D::F32Vec::LEN;
@@ -109,8 +109,8 @@ fn idct2d_8_4_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
 #[inline(always)]
 fn idct2d_8_8_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
     assert_eq!(data.len(), 64, "Data length mismatch");
-    const { assert!(8usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(8usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(8usize % D::F32Vec::LEN == 0) };
+    const { assert!(8usize % D::F32Vec::LEN == 0) };
     let data = D::F32Vec::make_array_slice_mut(data);
     let chunks = 8 / D::F32Vec::LEN;
     for i in 0..chunks {
@@ -132,8 +132,8 @@ fn idct2d_8_8_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
 #[inline(always)]
 fn idct2d_8_16_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
     assert_eq!(data.len(), 128, "Data length mismatch");
-    const { assert!(8usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(16usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(8usize % D::F32Vec::LEN == 0) };
+    const { assert!(16usize % D::F32Vec::LEN == 0) };
     let data = D::F32Vec::make_array_slice_mut(data);
     let column_chunks = 16 / D::F32Vec::LEN;
     let row_chunks = 8 / D::F32Vec::LEN;
@@ -154,8 +154,8 @@ fn idct2d_8_16_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
 #[inline(always)]
 fn idct2d_8_32_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
     assert_eq!(data.len(), 256, "Data length mismatch");
-    const { assert!(8usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(32usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(8usize % D::F32Vec::LEN == 0) };
+    const { assert!(32usize % D::F32Vec::LEN == 0) };
     let data = D::F32Vec::make_array_slice_mut(data);
     let column_chunks = 32 / D::F32Vec::LEN;
     let row_chunks = 8 / D::F32Vec::LEN;
@@ -176,8 +176,8 @@ fn idct2d_8_32_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
 #[inline(always)]
 fn idct2d_16_8_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
     assert_eq!(data.len(), 128, "Data length mismatch");
-    const { assert!(16usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(8usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(16usize % D::F32Vec::LEN == 0) };
+    const { assert!(8usize % D::F32Vec::LEN == 0) };
     let data = D::F32Vec::make_array_slice_mut(data);
     let column_chunks = 8 / D::F32Vec::LEN;
     let row_chunks = 16 / D::F32Vec::LEN;
@@ -208,8 +208,8 @@ fn idct2d_16_8_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
 #[inline(always)]
 fn idct2d_16_16_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
     assert_eq!(data.len(), 256, "Data length mismatch");
-    const { assert!(16usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(16usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(16usize % D::F32Vec::LEN == 0) };
+    const { assert!(16usize % D::F32Vec::LEN == 0) };
     let data = D::F32Vec::make_array_slice_mut(data);
     let chunks = 16 / D::F32Vec::LEN;
     for i in 0..chunks {
@@ -231,8 +231,8 @@ fn idct2d_16_16_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
 #[inline(always)]
 fn idct2d_16_32_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
     assert_eq!(data.len(), 512, "Data length mismatch");
-    const { assert!(16usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(32usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(16usize % D::F32Vec::LEN == 0) };
+    const { assert!(32usize % D::F32Vec::LEN == 0) };
     let data = D::F32Vec::make_array_slice_mut(data);
     let column_chunks = 32 / D::F32Vec::LEN;
     let row_chunks = 16 / D::F32Vec::LEN;
@@ -253,8 +253,8 @@ fn idct2d_16_32_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
 #[inline(always)]
 fn idct2d_32_8_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
     assert_eq!(data.len(), 256, "Data length mismatch");
-    const { assert!(32usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(8usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(32usize % D::F32Vec::LEN == 0) };
+    const { assert!(8usize % D::F32Vec::LEN == 0) };
     let data = D::F32Vec::make_array_slice_mut(data);
     let column_chunks = 8 / D::F32Vec::LEN;
     let row_chunks = 32 / D::F32Vec::LEN;
@@ -285,8 +285,8 @@ fn idct2d_32_8_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
 #[inline(always)]
 fn idct2d_32_16_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
     assert_eq!(data.len(), 512, "Data length mismatch");
-    const { assert!(32usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(16usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(32usize % D::F32Vec::LEN == 0) };
+    const { assert!(16usize % D::F32Vec::LEN == 0) };
     let data = D::F32Vec::make_array_slice_mut(data);
     let column_chunks = 16 / D::F32Vec::LEN;
     let row_chunks = 32 / D::F32Vec::LEN;
@@ -317,8 +317,8 @@ fn idct2d_32_16_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
 #[inline(always)]
 fn idct2d_32_32_impl<D: SimdDescriptor>(d: D, data: &mut [f32]) {
     assert_eq!(data.len(), 1024, "Data length mismatch");
-    const { assert!(32usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(32usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(32usize % D::F32Vec::LEN == 0) };
+    const { assert!(32usize % D::F32Vec::LEN == 0) };
     let data = D::F32Vec::make_array_slice_mut(data);
     let chunks = 32 / D::F32Vec::LEN;
     for i in 0..chunks {
