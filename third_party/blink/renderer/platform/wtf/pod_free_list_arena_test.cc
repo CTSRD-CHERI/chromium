@@ -44,7 +44,7 @@ struct TestClass1 {
   float x, y, z, w;
 };
 
-struct TestClass2 {
+struct alignas(void*) TestClass2 {
   TestClass2() : padding(0) {
     static int test_ids = 0;
     id = test_ids++;
