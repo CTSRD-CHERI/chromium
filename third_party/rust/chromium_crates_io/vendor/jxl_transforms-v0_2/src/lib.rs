@@ -3,6 +3,9 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.79")), feature(inline_const))]
+
 mod idct2d;
 mod reinterpreting_dct2d;
 pub mod transform;
