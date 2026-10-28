@@ -340,7 +340,7 @@ fn do_idct_rowblock<D: SimdDescriptor>(
     scratch: &mut [D::F32Vec],
 ) {
     let n = storage.len();
-    assert!(n.is_multiple_of(D::F32Vec::LEN));
+    assert!(n % D::F32Vec::LEN == 0);
     assert!(data.len() >= n);
 
     let row_stride = n / D::F32Vec::LEN;
@@ -367,7 +367,7 @@ fn do_idct_trh<D: SimdDescriptor>(
     scratch: &mut [D::F32Vec],
 ) {
     let n = storage.len();
-    assert!(n.is_multiple_of(D::F32Vec::LEN));
+    assert!(n % D::F32Vec::LEN == 0);
     assert!(data.len() >= n);
 
     let row_stride = n / (2 * D::F32Vec::LEN);

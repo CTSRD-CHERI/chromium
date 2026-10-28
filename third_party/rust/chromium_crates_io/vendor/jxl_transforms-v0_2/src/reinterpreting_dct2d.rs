@@ -10,8 +10,8 @@ use jxl_simd::{F32SimdVec, SimdDescriptor};
 fn reinterpreting_dct2d_1_2_impl<D: SimdDescriptor>(d: D, data: &mut [f32], output: &mut [f32]) {
     assert_eq!(data.len(), 2, "Data length mismatch");
     assert!(output.len() > 1);
-    const { assert!(1usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(2usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(1usize % D::F32Vec::LEN == 0) };
+    const { assert!(2usize % D::F32Vec::LEN == 0) };
     {
         let data = D::F32Vec::make_array_slice_mut(data);
         do_reinterpreting_dct_2(d, data, 1);
@@ -27,8 +27,8 @@ fn reinterpreting_dct2d_1_2_impl<D: SimdDescriptor>(d: D, data: &mut [f32], outp
 fn reinterpreting_dct2d_2_1_impl<D: SimdDescriptor>(d: D, data: &mut [f32], output: &mut [f32]) {
     assert_eq!(data.len(), 2, "Data length mismatch");
     assert!(output.len() > 1);
-    const { assert!(2usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(1usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(2usize % D::F32Vec::LEN == 0) };
+    const { assert!(1usize % D::F32Vec::LEN == 0) };
     {
         let data = D::F32Vec::make_array_slice_mut(data);
         do_reinterpreting_dct_2(d, data, 1);
@@ -44,8 +44,8 @@ fn reinterpreting_dct2d_2_1_impl<D: SimdDescriptor>(d: D, data: &mut [f32], outp
 fn reinterpreting_dct2d_1_4_impl<D: SimdDescriptor>(d: D, data: &mut [f32], output: &mut [f32]) {
     assert_eq!(data.len(), 4, "Data length mismatch");
     assert!(output.len() > 3);
-    const { assert!(1usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(4usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(1usize % D::F32Vec::LEN == 0) };
+    const { assert!(4usize % D::F32Vec::LEN == 0) };
     {
         let data = D::F32Vec::make_array_slice_mut(data);
         do_reinterpreting_dct_4(d, data, 1);
@@ -61,8 +61,8 @@ fn reinterpreting_dct2d_1_4_impl<D: SimdDescriptor>(d: D, data: &mut [f32], outp
 fn reinterpreting_dct2d_4_1_impl<D: SimdDescriptor>(d: D, data: &mut [f32], output: &mut [f32]) {
     assert_eq!(data.len(), 4, "Data length mismatch");
     assert!(output.len() > 3);
-    const { assert!(4usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(1usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(4usize % D::F32Vec::LEN == 0) };
+    const { assert!(1usize % D::F32Vec::LEN == 0) };
     {
         let data = D::F32Vec::make_array_slice_mut(data);
         do_reinterpreting_dct_4(d, data, 1);
@@ -78,8 +78,8 @@ fn reinterpreting_dct2d_4_1_impl<D: SimdDescriptor>(d: D, data: &mut [f32], outp
 fn reinterpreting_dct2d_2_2_impl<D: SimdDescriptor>(d: D, data: &mut [f32], output: &mut [f32]) {
     assert_eq!(data.len(), 4, "Data length mismatch");
     assert!(output.len() > 17);
-    const { assert!(2usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(2usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(2usize % D::F32Vec::LEN == 0) };
+    const { assert!(2usize % D::F32Vec::LEN == 0) };
     {
         let data = D::F32Vec::make_array_slice_mut(data);
         let chunks = 2 / D::F32Vec::LEN;
@@ -109,8 +109,8 @@ fn reinterpreting_dct2d_2_2_impl<D: SimdDescriptor>(d: D, data: &mut [f32], outp
 fn reinterpreting_dct2d_2_4_impl<D: SimdDescriptor>(d: D, data: &mut [f32], output: &mut [f32]) {
     assert_eq!(data.len(), 8, "Data length mismatch");
     assert!(output.len() > 35);
-    const { assert!(2usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(4usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(2usize % D::F32Vec::LEN == 0) };
+    const { assert!(4usize % D::F32Vec::LEN == 0) };
     {
         let data = D::F32Vec::make_array_slice_mut(data);
         let column_chunks = 4 / D::F32Vec::LEN;
@@ -139,8 +139,8 @@ fn reinterpreting_dct2d_2_4_impl<D: SimdDescriptor>(d: D, data: &mut [f32], outp
 fn reinterpreting_dct2d_4_2_impl<D: SimdDescriptor>(d: D, data: &mut [f32], output: &mut [f32]) {
     assert_eq!(data.len(), 8, "Data length mismatch");
     assert!(output.len() > 35);
-    const { assert!(4usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(2usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(4usize % D::F32Vec::LEN == 0) };
+    const { assert!(2usize % D::F32Vec::LEN == 0) };
     {
         let data = D::F32Vec::make_array_slice_mut(data);
         let column_chunks = 2 / D::F32Vec::LEN;
@@ -184,8 +184,8 @@ fn reinterpreting_dct2d_4_2_impl<D: SimdDescriptor>(d: D, data: &mut [f32], outp
 fn reinterpreting_dct2d_4_4_impl<D: SimdDescriptor>(d: D, data: &mut [f32], output: &mut [f32]) {
     assert_eq!(data.len(), 16, "Data length mismatch");
     assert!(output.len() > 99);
-    const { assert!(4usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(4usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(4usize % D::F32Vec::LEN == 0) };
+    const { assert!(4usize % D::F32Vec::LEN == 0) };
     {
         let data = D::F32Vec::make_array_slice_mut(data);
         let chunks = 4 / D::F32Vec::LEN;
@@ -215,8 +215,8 @@ fn reinterpreting_dct2d_4_4_impl<D: SimdDescriptor>(d: D, data: &mut [f32], outp
 fn reinterpreting_dct2d_4_8_impl<D: SimdDescriptor>(d: D, data: &mut [f32], output: &mut [f32]) {
     assert_eq!(data.len(), 32, "Data length mismatch");
     assert!(output.len() > 199);
-    const { assert!(4usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(8usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(4usize % D::F32Vec::LEN == 0) };
+    const { assert!(8usize % D::F32Vec::LEN == 0) };
     {
         let data = D::F32Vec::make_array_slice_mut(data);
         let column_chunks = 8 / D::F32Vec::LEN;
@@ -245,8 +245,8 @@ fn reinterpreting_dct2d_4_8_impl<D: SimdDescriptor>(d: D, data: &mut [f32], outp
 fn reinterpreting_dct2d_8_4_impl<D: SimdDescriptor>(d: D, data: &mut [f32], output: &mut [f32]) {
     assert_eq!(data.len(), 32, "Data length mismatch");
     assert!(output.len() > 199);
-    const { assert!(8usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(4usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(8usize % D::F32Vec::LEN == 0) };
+    const { assert!(4usize % D::F32Vec::LEN == 0) };
     {
         let data = D::F32Vec::make_array_slice_mut(data);
         let column_chunks = 4 / D::F32Vec::LEN;
@@ -290,8 +290,8 @@ fn reinterpreting_dct2d_8_4_impl<D: SimdDescriptor>(d: D, data: &mut [f32], outp
 fn reinterpreting_dct2d_8_8_impl<D: SimdDescriptor>(d: D, data: &mut [f32], output: &mut [f32]) {
     assert_eq!(data.len(), 64, "Data length mismatch");
     assert!(output.len() > 455);
-    const { assert!(8usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(8usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(8usize % D::F32Vec::LEN == 0) };
+    const { assert!(8usize % D::F32Vec::LEN == 0) };
     {
         let data = D::F32Vec::make_array_slice_mut(data);
         let chunks = 8 / D::F32Vec::LEN;
@@ -321,8 +321,8 @@ fn reinterpreting_dct2d_8_8_impl<D: SimdDescriptor>(d: D, data: &mut [f32], outp
 fn reinterpreting_dct2d_8_16_impl<D: SimdDescriptor>(d: D, data: &mut [f32], output: &mut [f32]) {
     assert_eq!(data.len(), 128, "Data length mismatch");
     assert!(output.len() > 911);
-    const { assert!(8usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(16usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(8usize % D::F32Vec::LEN == 0) };
+    const { assert!(16usize % D::F32Vec::LEN == 0) };
     {
         let data = D::F32Vec::make_array_slice_mut(data);
         let column_chunks = 16 / D::F32Vec::LEN;
@@ -351,8 +351,8 @@ fn reinterpreting_dct2d_8_16_impl<D: SimdDescriptor>(d: D, data: &mut [f32], out
 fn reinterpreting_dct2d_16_8_impl<D: SimdDescriptor>(d: D, data: &mut [f32], output: &mut [f32]) {
     assert_eq!(data.len(), 128, "Data length mismatch");
     assert!(output.len() > 911);
-    const { assert!(16usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(8usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(16usize % D::F32Vec::LEN == 0) };
+    const { assert!(8usize % D::F32Vec::LEN == 0) };
     {
         let data = D::F32Vec::make_array_slice_mut(data);
         let column_chunks = 8 / D::F32Vec::LEN;
@@ -396,8 +396,8 @@ fn reinterpreting_dct2d_16_8_impl<D: SimdDescriptor>(d: D, data: &mut [f32], out
 fn reinterpreting_dct2d_16_16_impl<D: SimdDescriptor>(d: D, data: &mut [f32], output: &mut [f32]) {
     assert_eq!(data.len(), 256, "Data length mismatch");
     assert!(output.len() > 1935);
-    const { assert!(16usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(16usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(16usize % D::F32Vec::LEN == 0) };
+    const { assert!(16usize % D::F32Vec::LEN == 0) };
     {
         let data = D::F32Vec::make_array_slice_mut(data);
         let chunks = 16 / D::F32Vec::LEN;
@@ -427,8 +427,8 @@ fn reinterpreting_dct2d_16_16_impl<D: SimdDescriptor>(d: D, data: &mut [f32], ou
 fn reinterpreting_dct2d_16_32_impl<D: SimdDescriptor>(d: D, data: &mut [f32], output: &mut [f32]) {
     assert_eq!(data.len(), 512, "Data length mismatch");
     assert!(output.len() > 3871);
-    const { assert!(16usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(32usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(16usize % D::F32Vec::LEN == 0) };
+    const { assert!(32usize % D::F32Vec::LEN == 0) };
     {
         let data = D::F32Vec::make_array_slice_mut(data);
         let column_chunks = 32 / D::F32Vec::LEN;
@@ -457,8 +457,8 @@ fn reinterpreting_dct2d_16_32_impl<D: SimdDescriptor>(d: D, data: &mut [f32], ou
 fn reinterpreting_dct2d_32_16_impl<D: SimdDescriptor>(d: D, data: &mut [f32], output: &mut [f32]) {
     assert_eq!(data.len(), 512, "Data length mismatch");
     assert!(output.len() > 3871);
-    const { assert!(32usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(16usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(32usize % D::F32Vec::LEN == 0) };
+    const { assert!(16usize % D::F32Vec::LEN == 0) };
     {
         let data = D::F32Vec::make_array_slice_mut(data);
         let column_chunks = 16 / D::F32Vec::LEN;
@@ -502,8 +502,8 @@ fn reinterpreting_dct2d_32_16_impl<D: SimdDescriptor>(d: D, data: &mut [f32], ou
 fn reinterpreting_dct2d_32_32_impl<D: SimdDescriptor>(d: D, data: &mut [f32], output: &mut [f32]) {
     assert_eq!(data.len(), 1024, "Data length mismatch");
     assert!(output.len() > 7967);
-    const { assert!(32usize.is_multiple_of(D::F32Vec::LEN)) };
-    const { assert!(32usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(32usize % D::F32Vec::LEN == 0) };
+    const { assert!(32usize % D::F32Vec::LEN == 0) };
     {
         let data = D::F32Vec::make_array_slice_mut(data);
         let chunks = 32 / D::F32Vec::LEN;

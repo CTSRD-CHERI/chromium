@@ -218,7 +218,7 @@ pub(super) fn do_idct_16_rowblock<D: SimdDescriptor>(
     data: &mut [<D::F32Vec as F32SimdVec>::UnderlyingArray],
 ) {
     assert!(data.len() >= 16);
-    const { assert!(16usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(16usize % D::F32Vec::LEN == 0) };
     let row_stride = 16 / D::F32Vec::LEN;
     let mut v0 = D::F32Vec::load_array(
         d,
@@ -314,7 +314,7 @@ pub(super) fn do_idct_16_trh<D: SimdDescriptor>(
 ) {
     let row_stride = 8 / D::F32Vec::LEN;
     assert!(data.len() > 15 * row_stride);
-    const { assert!(8usize.is_multiple_of(D::F32Vec::LEN)) };
+    const { assert!(8usize % D::F32Vec::LEN == 0) };
     let mut v0 = D::F32Vec::load_array(d, &data[row_stride * 0]);
     let mut v1 = D::F32Vec::load_array(d, &data[row_stride * 2]);
     let mut v2 = D::F32Vec::load_array(d, &data[row_stride * 4]);
