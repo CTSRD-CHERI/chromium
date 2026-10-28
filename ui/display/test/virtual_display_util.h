@@ -58,8 +58,13 @@ class VirtualDisplayUtil {
   virtual void ResetDisplays() = 0;
 
   // Supported Display configurations.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  inline static const DisplayParams k1920x1080 = {gfx::Size(1920, 1080)};
+  inline static const DisplayParams k1024x768 = {gfx::Size(1024, 768)};
+#else
   static constexpr DisplayParams k1920x1080 = {gfx::Size(1920, 1080)};
   static constexpr DisplayParams k1024x768 = {gfx::Size(1024, 768)};
+#endif
 };
 
 }  // namespace test
