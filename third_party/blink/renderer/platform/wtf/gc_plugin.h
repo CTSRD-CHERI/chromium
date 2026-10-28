@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_GC_PLUGIN_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_GC_PLUGIN_H_
 
-#if defined(__clang__)
+#if defined(__clang__) && !defined(__CHERI_PURE_CAPABILITY__)
 // GC_PLUGIN_IGNORE is used to make the Blink GC plugin ignore a particular
 // class or field when checking for proper usage.  When using GC_PLUGIN_IGNORE a
 // reason must be provided as an argument. In most cases this will be a bug id
