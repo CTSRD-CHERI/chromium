@@ -139,7 +139,11 @@ constexpr bool FloatEqualForHash(T a, T b) {
 
 template <typename T>
 inline unsigned HashPointer(T* key) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  return HashInt(__builtin_cheri_address_get(key));
+#else
   return HashInt(reinterpret_cast<internal::IntHashBits<T*>>(key));
+#endif
 }
 
 // Useful compounding hash functions.
