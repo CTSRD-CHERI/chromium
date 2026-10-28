@@ -232,7 +232,11 @@ bool OneShotAccessibilityTreeSearch::Matches(BrowserAccessibility* node) {
     bool found_text_match = false;
     for (auto node_string : node_strings) {
       std::u16string node_string_lower = base::i18n::ToLower(node_string);
+#if __cpp_lib_string_contains
       if (node_string_lower.contains(search_text_lower)) {
+#else
+      if (node_string_lower.find(search_text_lower) != std::string::npos) {
+#endif
         found_text_match = true;
         break;
       }
