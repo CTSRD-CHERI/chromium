@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_ALLOW_DISCOURAGED_TYPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_ALLOW_DISCOURAGED_TYPE_H_
 
-#if defined(__clang__)
+#if defined(__clang__) && !defined(__CHERI_PURE_CAPABILITY__)
 #define ALLOW_DISCOURAGED_TYPE(reason) \
   __attribute__((annotate("allow_discouraged_type")))
 #else  // !defined(__clang__)
