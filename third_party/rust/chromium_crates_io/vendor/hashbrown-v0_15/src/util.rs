@@ -34,5 +34,5 @@ pub(crate) fn unlikely(b: bool) -> bool {
 #[inline(always)]
 #[allow(clippy::useless_transmute)] // clippy is wrong, cast and transmute are different here
 pub(crate) fn invalid_mut<T>(addr: usize) -> *mut T {
-    unsafe { core::mem::transmute(addr) }
+    unsafe { core::mem::transmute(addr as *mut T) }
 }
