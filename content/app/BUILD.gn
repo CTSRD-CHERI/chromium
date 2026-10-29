@@ -76,6 +76,9 @@ source_set("content_main_runner_app") {
   ]
 
   configs += extra_configs
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
   deps = content_app_deps + [
            "//components/power_monitor",
            "//content/browser",
