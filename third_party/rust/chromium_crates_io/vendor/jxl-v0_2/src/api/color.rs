@@ -1181,7 +1181,7 @@ pub trait JxlCms {
 
 /// Writes a u32 value in big-endian format to the slice at the given position.
 fn write_u32_be(slice: &mut [u8], pos: usize, value: u32) -> Result<(), Error> {
-    if pos.checked_add(4).is_none_or(|end| end > slice.len()) {
+    if pos.checked_add(4).map_or(true, |end| end > slice.len()) {
         return Err(Error::IccWriteOutOfBounds);
     }
     slice[pos..pos + 4].copy_from_slice(&value.to_be_bytes());
@@ -1190,7 +1190,7 @@ fn write_u32_be(slice: &mut [u8], pos: usize, value: u32) -> Result<(), Error> {
 
 /// Writes a u16 value in big-endian format to the slice at the given position.
 fn write_u16_be(slice: &mut [u8], pos: usize, value: u16) -> Result<(), Error> {
-    if pos.checked_add(2).is_none_or(|end| end > slice.len()) {
+    if pos.checked_add(2).map_or(true, |end| end > slice.len()) {
         return Err(Error::IccWriteOutOfBounds);
     }
     slice[pos..pos + 2].copy_from_slice(&value.to_be_bytes());
@@ -1202,7 +1202,7 @@ fn write_icc_tag(slice: &mut [u8], pos: usize, tag_str: &str) -> Result<(), Erro
     if tag_str.len() != 4 || !tag_str.is_ascii() {
         return Err(Error::IccInvalidTagString(tag_str.to_string()));
     }
-    if pos.checked_add(4).is_none_or(|end| end > slice.len()) {
+    if pos.checked_add(4).map_or(true, |end| end > slice.len()) {
         return Err(Error::IccWriteOutOfBounds);
     }
     slice[pos..pos + 4].copy_from_slice(tag_str.as_bytes());
