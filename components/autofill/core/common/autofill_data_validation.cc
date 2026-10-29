@@ -5,9 +5,8 @@
 #include "components/autofill/core/common/autofill_data_validation.h"
 
 #include <algorithm>
-#include <utility>
 
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"

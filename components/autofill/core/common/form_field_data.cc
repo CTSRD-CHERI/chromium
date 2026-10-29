@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <optional>
 #include <tuple>
-#include <utility>
 #include <variant>
 
 #include "base/i18n/rtl.h"
@@ -17,7 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/types/zip.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"

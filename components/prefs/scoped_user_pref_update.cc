@@ -5,7 +5,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 
 #include <string_view>
-#include <utility>
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
@@ -17,6 +16,7 @@
 // the problem.
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace subtle {
 

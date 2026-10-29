@@ -13,7 +13,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_types.h"
