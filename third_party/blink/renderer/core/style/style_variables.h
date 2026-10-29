@@ -75,7 +75,7 @@ class HashTrieNode : public GarbageCollected<HashTrieNode<Data>> {
   // from “exists, but with nullptr value”.
   std::optional<Data*> Get(const AtomicString& key,
                            unsigned shift = kAlignmentBits) const {
-    uintptr_t slot = GetSlot(key, shift);
+    auto slot = GetSlot(key, shift);
     if (keys_[slot].IsNull()) {
       if (children_[slot] == nullptr) {
         return std::nullopt;
@@ -98,7 +98,7 @@ class HashTrieNode : public GarbageCollected<HashTrieNode<Data>> {
                                   Data* value,
                                   unsigned& hash,
                                   unsigned shift = kAlignmentBits) {
-    uintptr_t slot = GetSlot(key, shift);
+    auto slot = GetSlot(key, shift);
     if (!keys_[slot].IsNull()) {
       if (keys_[slot] == key) {
         // This key already exists in the map.
@@ -283,14 +283,18 @@ class HashTrieNode : public GarbageCollected<HashTrieNode<Data>> {
   static constexpr unsigned kAlignmentBits = sizeof(AtomicString) == 8 ? 4 : 3;
 
   static unsigned GetSlot(const AtomicString& key, unsigned shift) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    const size_t address = __builtin_cheri_address_get(key.Impl());
+#else
+    const uintptr_t address = reinterpret_cast<uintptr_t>(key.Impl());
+#endif
 #if DCHECK_IS_ON()
-    uintptr_t alignment_bits =
-        reinterpret_cast<uintptr_t>(key.Impl()) & ((1u << kAlignmentBits) - 1);
+    size_t alignment_bits = address & ((1u << kAlignmentBits) - 1);
     DCHECK_EQ(0u, alignment_bits)
         << "AtomicString's Impl() was unexpectedly unaligned";
-    DCHECK_LT(shift, CHAR_BIT * sizeof(uintptr_t));
+    DCHECK_LT(shift, CHAR_BIT * sizeof(address));
 #endif
-    return (reinterpret_cast<uintptr_t>(key.Impl()) >> shift) & (kNumSlots - 1);
+    return static_cast<unsigned>((address >> shift) & (kNumSlots - 1));
   }
 
   // Add or remove the given key/value pair from the given hash.
