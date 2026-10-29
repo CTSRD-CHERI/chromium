@@ -3710,6 +3710,10 @@ source_set("browser") {
   if (is_chromeos) {
     deps += [ "//ash/constants" ]
   }
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 if (is_android) {
