@@ -118,7 +118,7 @@ impl<T, const N: usize> SmallVec<T, N> {
     pub fn extend<I: IntoIterator<Item = T>>(&mut self, iter: I) {
         let mut iter = iter.into_iter();
         let new_size = iter.size_hint().1.and_then(|x| x.checked_add(self.len()));
-        if new_size.is_none_or(|u| u > N) {
+        if new_size.map_or(true, |u| u > N) {
             self.move_to_heap();
         }
         let (len, data) = match self {
