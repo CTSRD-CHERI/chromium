@@ -67,9 +67,9 @@ impl RawImageBuffer {
     /// `align`.
     #[inline(always)]
     pub(super) fn is_aligned(&self, align: usize) -> bool {
-        self.bytes_per_row.is_multiple_of(align)
-            && self.bytes_between_rows.is_multiple_of(align)
-            && (self.buf as usize).is_multiple_of(align)
+        self.bytes_per_row % align == 0
+            && self.bytes_between_rows % align == 0
+            && (self.buf as usize) % align == 0
     }
 
     /// Creates a new RawImageBuffer from raw pointers.
