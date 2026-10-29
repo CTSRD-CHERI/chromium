@@ -36,8 +36,8 @@ impl Default for CacheLine {
 
 #[inline(always)]
 pub fn slice_from_cachelines<T: ImageDataType>(slice: &[CacheLine]) -> &[T] {
-    const { assert!(64usize.is_multiple_of(std::mem::align_of::<T>())) };
-    const { assert!(CACHE_LINE_BYTE_SIZE.is_multiple_of(std::mem::size_of::<T>())) };
+    const { assert!(64usize % std::mem::align_of::<T>() == 0) };
+    const { assert!(CACHE_LINE_BYTE_SIZE % std::mem::size_of::<T>() == 0) };
     const { assert!(CACHE_LINE_BYTE_SIZE == 64) };
     // SAFETY: CacheLine is 64 bytes with no padding, with higher alignment requirements than T.
     // T is guaranteed to be a bag-of-bits type by the safety requirements of ImageDataType.
@@ -53,8 +53,8 @@ pub fn slice_from_cachelines<T: ImageDataType>(slice: &[CacheLine]) -> &[T] {
 
 #[inline(always)]
 pub fn slice_from_cachelines_mut<T: ImageDataType>(slice: &mut [CacheLine]) -> &mut [T] {
-    const { assert!(64usize.is_multiple_of(std::mem::align_of::<T>())) };
-    const { assert!(CACHE_LINE_BYTE_SIZE.is_multiple_of(std::mem::size_of::<T>())) };
+    const { assert!(64usize % std::mem::align_of::<T>() == 0) };
+    const { assert!(CACHE_LINE_BYTE_SIZE % std::mem::size_of::<T>() == 0) };
     const { assert!(CACHE_LINE_BYTE_SIZE == 64) };
     // SAFETY: CacheLine is 64 bytes with no padding, with higher alignment requirements than T.
     // T is guaranteed to be a bag-of-bits type by the safety requirements of ImageDataType.

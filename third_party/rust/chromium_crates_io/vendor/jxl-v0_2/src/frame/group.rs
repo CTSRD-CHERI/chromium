@@ -152,7 +152,7 @@ fn dequant_block<D: SimdDescriptor>(
 
     let matrices = dequant_matrices.matrix(hf_type, 0);
 
-    assert!(BLOCK_SIZE.is_multiple_of(D::F32Vec::LEN));
+    assert!(BLOCK_SIZE % D::F32Vec::LEN == 0);
     for k in (0..covered_blocks * BLOCK_SIZE).step_by(D::F32Vec::LEN) {
         dequant_lane(
             d,
