@@ -60,9 +60,9 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   // These values are a subset of the `FormControlType` enum. They have the same
   // binary representation so that FormControlType() reduces to a type cast.
   enum Type : std::underlying_type_t<mojom::blink::FormControlType> {
-    kSubmit = std::to_underlying(mojom::blink::FormControlType::kButtonSubmit),
-    kReset = std::to_underlying(mojom::blink::FormControlType::kButtonReset),
-    kButton = std::to_underlying(mojom::blink::FormControlType::kButtonButton),
+    kSubmit = base::to_underlying(mojom::blink::FormControlType::kButtonSubmit),
+    kReset = base::to_underlying(mojom::blink::FormControlType::kButtonReset),
+    kButton = base::to_underlying(mojom::blink::FormControlType::kButtonButton),
   };
 
   mojom::blink::FormControlType FormControlType() const override;
