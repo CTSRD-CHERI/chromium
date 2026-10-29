@@ -9,7 +9,13 @@
 
 namespace blink {
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+#include <stddef.h>
+
+typedef size_t DisplayItemClientId;
+#else
 typedef uintptr_t DisplayItemClientId;
+#endif
 inline constexpr DisplayItemClientId kInvalidDisplayItemClientId = 0u;
 
 enum class RasterEffectOutset : uint8_t {

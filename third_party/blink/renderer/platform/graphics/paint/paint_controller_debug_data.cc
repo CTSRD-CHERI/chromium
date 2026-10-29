@@ -50,8 +50,13 @@ PaintController::PaintArtifactAsJSON::SubsequenceAsJSONObjectRecursive() {
 
   json_object->SetString(
       "subsequence",
+#if defined(__CHERI_PURE_CAPABILITY__)
+      StrCat({String::Format("client: 0x%" PRIxPTR " ",
+                             static_cast<uintptr_t>(subsequence.client_id)),
+#else
       StrCat({String::Format("client: %p ",
                              reinterpret_cast<void*>(subsequence.client_id)),
+#endif
               artifact_.ClientDebugName(subsequence.client_id)}));
   json_object->SetArray(
       "chunks", ChunksAsJSONArrayRecursive(subsequence.start_chunk_index,
