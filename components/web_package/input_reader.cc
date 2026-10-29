@@ -4,13 +4,11 @@
 
 #include "components/web_package/input_reader.h"
 
-#include <utility>
-
 #include "base/containers/contains.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/cbor/constants.h"
 #include "components/cbor/values.h"
 
