@@ -75,9 +75,13 @@ InkOverflow::InkOverflow(Type source_type, const InkOverflow& source) {
       break;
     case Type::kSmallSelf:
     case Type::kSmallContents:
+#if defined(__CHERI_PURE_CAPABILITY__)
+      outsets_ = source.outsets_;
+#else
       static_assert(sizeof(outsets_) == sizeof(single_),
                     "outsets should be the size of a pointer");
       single_ = source.single_;
+#endif
       DCHECK(base::span(outsets_) == base::span(source.outsets_));
       break;
     case Type::kSelf:
@@ -101,9 +105,13 @@ InkOverflow::InkOverflow(Type source_type, InkOverflow&& source) {
       break;
     case Type::kSmallSelf:
     case Type::kSmallContents:
+#if defined(__CHERI_PURE_CAPABILITY__)
+      outsets_ = source.outsets_;
+#else
       static_assert(sizeof(outsets_) == sizeof(single_),
                     "outsets should be the size of a pointer");
       single_ = source.single_;
+#endif
       DCHECK(base::span(outsets_) == base::span(source.outsets_));
       break;
     case Type::kSelf:
