@@ -25,8 +25,6 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 
-#include <utility>
-
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
