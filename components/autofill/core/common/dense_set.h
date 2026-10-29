@@ -12,14 +12,13 @@
 #include <iterator>
 #include <ranges>
 #include <type_traits>
-#include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace autofill {
 
