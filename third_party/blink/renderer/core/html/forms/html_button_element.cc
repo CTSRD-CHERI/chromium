@@ -80,7 +80,7 @@ void HTMLButtonElement::AdjustStyle(ComputedStyleBuilder& builder) {
 }
 
 FormControlType HTMLButtonElement::FormControlType() const {
-  return static_cast<mojom::blink::FormControlType>(std::to_underlying(type_));
+  return static_cast<mojom::blink::FormControlType>(base::to_underlying(type_));
 }
 
 const AtomicString& HTMLButtonElement::FormControlTypeAsString() const {
