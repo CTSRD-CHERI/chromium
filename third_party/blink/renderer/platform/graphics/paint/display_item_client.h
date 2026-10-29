@@ -31,7 +31,12 @@ class PLATFORM_EXPORT DisplayItemClient : public GarbageCollectedMixin {
   virtual ~DisplayItemClient() = default;
 
   DisplayItemClientId Id() const {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    return reinterpret_cast<DisplayItemClientId>(
+        __builtin_cheri_address_get(this));
+#else
     return reinterpret_cast<DisplayItemClientId>(this);
+#endif
   }
 
   virtual String DebugName() const = 0;

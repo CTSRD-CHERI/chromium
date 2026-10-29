@@ -240,6 +240,18 @@ void DisplayItem::PropertiesAsJSON(JSONObject& json,
 #endif  // DCHECK_IS_ON()
 
 String DisplayItem::Id::ToString() const {
+#if defined(__CHERI_PURE_CAPABILITY__)
+#if DCHECK_IS_ON()
+  return String::Format("0x%" PRIxPTR ":%s:%d",
+                        static_cast<uintptr_t>(client_id),
+                        DisplayItem::TypeAsDebugString(type).Utf8().c_str(),
+                        fragment);
+#else
+  return String::Format("0x%" PRIxPTR ":%d:%d",
+                        static_cast<uintptr_t>(client_id),
+                        static_cast<int>(type), fragment);
+#endif
+#else
 #if DCHECK_IS_ON()
   return String::Format("%p:%s:%d", reinterpret_cast<void*>(client_id),
                         DisplayItem::TypeAsDebugString(type).Utf8().c_str(),
@@ -247,6 +259,7 @@ String DisplayItem::Id::ToString() const {
 #else
   return String::Format("%p:%d:%d", reinterpret_cast<void*>(client_id),
                         static_cast<int>(type), fragment);
+#endif
 #endif
 }
 
