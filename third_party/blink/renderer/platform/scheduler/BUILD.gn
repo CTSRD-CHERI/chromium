@@ -187,6 +187,10 @@ blink_platform_sources("scheduler") {
     "//third_party/blink/renderer/platform/heap:heap",
     "//third_party/blink/renderer/platform/instrumentation",
   ]
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 source_set("test_support") {
