@@ -6,10 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_CLIENT_TYPES_H_
 
 #include <stdint.h>
+#include <stddef.h>
 
 namespace blink {
 
-typedef uintptr_t DisplayItemClientId;
+typedef size_t DisplayItemClientId;
 inline constexpr DisplayItemClientId kInvalidDisplayItemClientId = 0u;
 
 enum class RasterEffectOutset : uint8_t {
