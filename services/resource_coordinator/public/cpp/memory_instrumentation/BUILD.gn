@@ -52,6 +52,10 @@ component("memory_instrumentation") {
     "//services/resource_coordinator/public/mojom",
     "//services/tracing/public/cpp",
   ]
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 source_set("browser") {
