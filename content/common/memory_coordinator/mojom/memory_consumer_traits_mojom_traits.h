@@ -5,10 +5,8 @@
 #ifndef CONTENT_COMMON_MEMORY_COORDINATOR_MOJOM_MEMORY_CONSUMER_TRAITS_MOJOM_TRAITS_H_
 #define CONTENT_COMMON_MEMORY_COORDINATOR_MOJOM_MEMORY_CONSUMER_TRAITS_MOJOM_TRAITS_H_
 
-#include <utility>
-
 #include "base/memory_coordinator/traits.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "content/common/memory_coordinator/mojom/memory_coordinator.mojom.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
