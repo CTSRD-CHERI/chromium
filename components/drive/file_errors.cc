@@ -5,10 +5,9 @@
 #include "components/drive/file_errors.h"
 
 #include <type_traits>
-#include <utility>
 
 #include "base/notreached.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace drive {
 

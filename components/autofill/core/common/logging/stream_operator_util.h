@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/memory/stack_allocated.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "url/origin.h"
 
 namespace autofill {
