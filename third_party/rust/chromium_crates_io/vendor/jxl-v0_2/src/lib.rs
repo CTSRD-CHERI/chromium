@@ -3,6 +3,15 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.77")), feature(array_methods))]
+#![cfg_attr(not(version("1.79")), feature(inline_const))]
+#![cfg_attr(not(version("1.73")), feature(int_roundings))]
+#![cfg_attr(not(version("1.81")), feature(io_slice_advance))]
+#![cfg_attr(not(version("1.82")), feature(is_sorted))]
+#![cfg_attr(not(version("1.88")), feature(let_chains))]
+#![cfg_attr(not(version("1.81")), feature(lint_reasons))]
+
 #![deny(unsafe_code)]
 pub mod api;
 pub mod bit_reader;
