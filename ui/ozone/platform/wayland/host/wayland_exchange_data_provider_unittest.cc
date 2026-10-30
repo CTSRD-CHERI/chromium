@@ -73,8 +73,13 @@ TEST(WaylandExchangeDataProviderTest, FileNameAsUriList) {
 }
 
 TEST(WaylandExchangeDataProviderTest, FileContents) {
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  const std::string kName("filename");
+  const std::string kContents("contents");
+#else
   constexpr std::string kName("filename");
   constexpr std::string kContents("contents");
+#endif
   const std::string kMimeType("application/octet-stream;name=\"filename\"");
 
   WaylandExchangeDataProvider provider;
