@@ -88,7 +88,7 @@ cargo_crate("lib") {
 
   if (rustc_version == "rustc 1.72.1-dev") {
     assert(target_cpu == "arm64" && is_cheri)
-    rustflags = [ "-Zallow-features=cfg_version,lint_reasons" ]
+    rustflags = [ "-Zallow-features=cfg_version,inline_const,lint_reasons" ]
   } else {
     rustflags = [ "-Zallow-features=cfg_version" ]
   }
