@@ -78,6 +78,10 @@ component("snapshot") {
     ]
     weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 14.4
   }
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 source_set("snapshot_export") {
