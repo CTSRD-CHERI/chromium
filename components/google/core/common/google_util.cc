@@ -111,7 +111,11 @@ bool IsCanonicalHostGoogleHostname(std::string_view canonical_host,
     return true;
   }
 
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  static const auto google_tlds =
+#else
   static constexpr auto google_tlds =
+#endif
       base::MakeFixedFlatSet<std::string_view>({GOOGLE_TLD_LIST});
   return IsValidHostName(canonical_host, "google", subdomain_permission,
                          google_tlds);
@@ -119,7 +123,11 @@ bool IsCanonicalHostGoogleHostname(std::string_view canonical_host,
 
 bool IsCanonicalHostYoutubeHostname(std::string_view canonical_host,
                                     SubdomainPermission subdomain_permission) {
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  static const auto youtube_tlds =
+#else
   static constexpr auto youtube_tlds =
+#endif
       base::MakeFixedFlatSet<std::string_view>({YOUTUBE_TLD_LIST});
 
   return IsValidHostName(canonical_host, "youtube", subdomain_permission,
@@ -137,7 +145,11 @@ bool IsGoogleSearchSubdomainUrl(const GURL& url) {
   std::string_view host(url.host());
   StripTrailingDot(&host);
 
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  static const auto google_subdomains =
+#else
   static constexpr auto google_subdomains =
+#endif
       base::MakeFixedFlatSet<std::string_view>(
           {"ipv4.google.com", "ipv6.google.com"});
 

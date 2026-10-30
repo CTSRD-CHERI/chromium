@@ -34,7 +34,11 @@ namespace disk_cache_sql_queries {
 // Defines the set of queries that are used for schema and index creation. These
 // queries are not suitable for checking plans against an already-initialized
 // database.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const auto kSchemaAndIndexQueries = base::MakeFixedFlatSet<Query>({
+#else
 constexpr auto kSchemaAndIndexQueries = base::MakeFixedFlatSet<Query>({
+#endif
     Query::kInitSchema_CreateTableResources,
     Query::kInitSchema_CreateTableBlobs,
     Query::kIndex_ResourcesCacheKeyHashDoomed,

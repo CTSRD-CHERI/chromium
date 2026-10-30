@@ -115,14 +115,14 @@ bool ArcProcess::IsBackgroundProtected() const {
 }
 
 bool ArcProcess::IsArcProtected() const {
-  constexpr auto kSet = base::MakeFixedFlatSet<std::string_view>(
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kSet = base::MakeFixedFlatSet<std::string_view>(
       {"com.google.android.apps.work.clouddpc.arc"});
 
   return kSet.contains(process_name());
 }
 
 bool ArcProcess::IsGmsCoreProtected() const {
-  constexpr auto kSet = base::MakeFixedFlatSet<std::string_view>({
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kSet = base::MakeFixedFlatSet<std::string_view>({
       "com.google.process.gservices",
       "com.google.android.gms",
       "com.google.android.gms.persistent",

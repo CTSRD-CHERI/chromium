@@ -22,7 +22,11 @@
 namespace affiliations {
 
 namespace {
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const auto kRetryableHttpErrors =
+#else
 constexpr auto kRetryableHttpErrors =
+#endif
     base::MakeFixedFlatSet<net::HttpStatusCode>(
         {net::HTTP_INTERNAL_SERVER_ERROR, net::HTTP_BAD_GATEWAY,
          net::HTTP_SERVICE_UNAVAILABLE, net::HTTP_GATEWAY_TIMEOUT,

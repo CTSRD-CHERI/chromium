@@ -138,7 +138,11 @@ enum class CtapDeviceResponseCode : uint8_t {
   kCtap2ErrVendorLast = 0xFF
 };
 
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+inline const auto kCtapResponseCodeList = base::MakeFixedFlatSet<uint8_t>({
+#else
 inline constexpr auto kCtapResponseCodeList = base::MakeFixedFlatSet<uint8_t>({
+#endif
     static_cast<uint8_t>(CtapDeviceResponseCode::kSuccess),
     static_cast<uint8_t>(CtapDeviceResponseCode::kCtap1ErrInvalidCommand),
     static_cast<uint8_t>(CtapDeviceResponseCode::kCtap1ErrInvalidParameter),

@@ -92,7 +92,7 @@ std::string_view ToString(PrinterClass pclass) {
 }
 
 bool IsValidPrinterUri(const Uri& uri, std::string* error_message) {
-  static constexpr auto kKnownSchemes =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kKnownSchemes =
       base::MakeFixedFlatSet<std::string_view>(
           {"http", "https", "ipp", "ipps", "ippusb", "lpd", "socket", "usb"});
   static constexpr std::string_view kPrefix = "Malformed printer URI: ";
@@ -197,7 +197,7 @@ bool Printer::IsIppEverywhere() const {
 bool Printer::RequiresDriverlessUsb() const {
   // TODO(b/184293121): Replace this list with more generic logic after general
   // IPP-USB evaluation is complete.
-  static constexpr auto kDriverlessUsbMakeModels =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kDriverlessUsbMakeModels =
       base::MakeFixedFlatSet<std::string_view>({
           "epson et-4950 series",          // b/420836310
           "epson et-5180 series",          // b/319373509

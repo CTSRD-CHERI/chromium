@@ -136,7 +136,7 @@ bool ShouldShowAutofillContextMenu(const content::ContextMenuParams& params) {
 // Returns true if the given id is one generated for autofill context menu.
 bool IsAutofillCustomCommandId(
     AutofillContextMenuManager::CommandId command_id) {
-  static constexpr auto kAutofillCommands = base::MakeFixedFlatSet<int>({
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kAutofillCommands = base::MakeFixedFlatSet<int>({
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS,
       IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,

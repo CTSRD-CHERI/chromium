@@ -67,7 +67,7 @@ namespace on_device_translation {
 
 namespace {
 
-constexpr auto kLanguagePackKeys = base::MakeFixedFlatSet<LanguagePackKey>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kLanguagePackKeys = base::MakeFixedFlatSet<LanguagePackKey>({
     LanguagePackKey::kEn_Es, LanguagePackKey::kEn_Ja,
     LanguagePackKey::kAr_En, LanguagePackKey::kBn_En,
     LanguagePackKey::kDe_En, LanguagePackKey::kEn_Fr,

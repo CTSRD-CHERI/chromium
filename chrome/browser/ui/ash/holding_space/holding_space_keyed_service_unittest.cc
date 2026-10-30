@@ -196,7 +196,7 @@ GetExpectedTotalCountV2HistogramSamples(const HoldingSpaceModel* model) {
 
   // File system types are allowlisted based on need to limit the number of
   // recorded histograms arising from combinations with holding space item type.
-  constexpr auto kAllowlistedFsTypes = base::MakeFixedFlatSet<FileSystemType>(
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowlistedFsTypes = base::MakeFixedFlatSet<FileSystemType>(
       {FileSystemType::kDriveFs, FileSystemType::kLocal});
 
   // Fill "HoldingSpace.Item.TotalCountV2.All.FileSystemType.{fs_type}".

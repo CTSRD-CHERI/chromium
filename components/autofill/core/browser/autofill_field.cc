@@ -49,7 +49,7 @@ namespace {
 // new field types that do not have a clear corresponding HTML type. In these
 // cases, the local heuristics predictions will be used to determine the field
 // overall type.
-static constexpr auto kAutofillHeuristicsVsHtmlOverrides =
+static BASE_FIXED_FLAT_SET_CONSTEXPR auto kAutofillHeuristicsVsHtmlOverrides =
     base::MakeFixedFlatSet<std::pair<FieldType, HtmlFieldType>>(
         {{ADDRESS_HOME_ADMIN_LEVEL2, HtmlFieldType::kAddressLevel1},
          {ADDRESS_HOME_ADMIN_LEVEL2, HtmlFieldType::kAddressLevel2},
@@ -87,7 +87,7 @@ static constexpr auto kAutofillHeuristicsVsHtmlOverrides =
 // determine the field type.
 // TODO(crbug.com/359768803): Remove overrides for alternative names once the
 // feature is rolled out.
-static constexpr auto kAutofillHeuristicsVsServerOverrides =
+static BASE_FIXED_FLAT_SET_CONSTEXPR auto kAutofillHeuristicsVsServerOverrides =
     base::MakeFixedFlatSet<std::pair<FieldType, FieldType>>(
         {{ADDRESS_HOME_ADMIN_LEVEL2, ADDRESS_HOME_CITY},
          {ADDRESS_HOME_HOUSE_NUMBER_AND_APT, ADDRESS_HOME_HOUSE_NUMBER},

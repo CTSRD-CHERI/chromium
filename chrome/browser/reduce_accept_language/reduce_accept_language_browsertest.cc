@@ -386,7 +386,7 @@ class ReduceAcceptLanguageBrowserTest : public policy::PolicyTest {
     if (test_options_.is_fenced_frame) {
       base::StrAppend(&headers, {"Supports-Loading-Mode: fenced-frame\r\n"});
     }
-    static constexpr auto kSubresourcePaths =
+    static BASE_FIXED_FLAT_SET_CONSTEXPR auto kSubresourcePaths =
         base::MakeFixedFlatSet<std::string_view>({
             "/subframe_iframe_basic.html",
             "/subframe_iframe_3p.html",
@@ -430,7 +430,7 @@ class ReduceAcceptLanguageBrowserTest : public policy::PolicyTest {
       }
     }
 
-    static constexpr auto kServiceWorkerPaths =
+    static BASE_FIXED_FLAT_SET_CONSTEXPR auto kServiceWorkerPaths =
         base::MakeFixedFlatSet<std::string_view>({
             "/create_service_worker.html",
             "/navigation_preload_worker.js",
@@ -1713,7 +1713,7 @@ class SameOriginRedirectReduceAcceptLanguageBrowserTest
   }
 
   static constexpr const char kAcceptLanguage[] = "accept-language";
-  static constexpr auto kValidPaths = base::MakeFixedFlatSet<std::string_view>({
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kValidPaths = base::MakeFixedFlatSet<std::string_view>({
       "/same_origin_redirect.html",
       "/same_origin_redirect_a.html",
       "/same_origin_redirect_b.html",
@@ -1884,7 +1884,7 @@ class CrossOriginRedirectReduceAcceptLanguageBrowserTest
   }
 
   static constexpr const char kAcceptLanguage[] = "accept-language";
-  static constexpr auto kValidPaths = base::MakeFixedFlatSet<std::string_view>({
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kValidPaths = base::MakeFixedFlatSet<std::string_view>({
       "/cross_origin_redirect_a.html",
       "/cross_origin_redirect_b.html",
   });

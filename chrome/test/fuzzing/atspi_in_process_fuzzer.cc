@@ -47,7 +47,7 @@
 #include "ui/base/glib/scoped_gobject.h"
 
 // Controls (by name) which we shouldn't choose.
-constexpr auto kBlockedControls =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kBlockedControls =
     base::MakeFixedFlatSet<std::string_view>({"Close", "Relaunch"});
 
 // When developing this fuzzer, it's really useful to have this logging,

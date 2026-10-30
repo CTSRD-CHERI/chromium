@@ -56,7 +56,7 @@ bool RemoveCompatLayers(std::wstring& layers) {
   }
 
   // Remove all known compatibility mode layer names.
-  static constexpr auto kCompatModeTokens =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kCompatModeTokens =
       base::MakeFixedFlatSet<std::wstring_view>({
           L"NT4SP5",      L"VISTARTM",    L"VISTASP1",    L"VISTASP2",
           L"WIN10RTM",    L"WIN2000",     L"WIN4SP5",     L"WIN7RTM",

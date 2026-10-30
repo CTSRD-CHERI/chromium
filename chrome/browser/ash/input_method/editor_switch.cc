@@ -113,7 +113,7 @@ manta::FeatureSupportStatus FetchOrcaAccountCapabilityFromMantaService(
 }
 
 bool IsInputTypeAllowed(ui::TextInputType type) {
-  constexpr auto kTextInputTypeAllowlist =
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kTextInputTypeAllowlist =
       base::MakeFixedFlatSet<ui::TextInputType>(
           {ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE, ui::TEXT_INPUT_TYPE_TEXT,
            ui::TEXT_INPUT_TYPE_TEXT_AREA});
@@ -137,7 +137,7 @@ bool IsAppTypeAllowed(chromeos::AppType app_type) {
     return true;
   }
 
-  constexpr auto kAppTypeDenylist = base::MakeFixedFlatSet<chromeos::AppType>({
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kAppTypeDenylist = base::MakeFixedFlatSet<chromeos::AppType>({
       chromeos::AppType::ARC_APP,
       chromeos::AppType::CROSTINI_APP,
   });
@@ -170,7 +170,7 @@ bool IsUrlAllowed(GURL url) {
 }
 
 bool IsAppAllowed(std::string_view app_id) {
-  constexpr auto kNonWorkspaceAppIdDenylist =
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kNonWorkspaceAppIdDenylist =
       base::MakeFixedFlatSet<std::string_view>({
           extension_misc::kFilesManagerAppId,
           file_manager::kFileManagerSwaAppId,
@@ -180,7 +180,7 @@ bool IsAppAllowed(std::string_view app_id) {
     return false;
   }
 
-  constexpr auto kWorkspaceAppIdDenylist =
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kWorkspaceAppIdDenylist =
       base::MakeFixedFlatSet<std::string_view>({
           extension_misc::kGmailAppId,
           extension_misc::kCalendarAppId,

@@ -14,7 +14,7 @@
 
 namespace ash {
 
-constexpr auto kShiftKeys = base::MakeFixedFlatSet<ui::KeyboardCode>(
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kShiftKeys = base::MakeFixedFlatSet<ui::KeyboardCode>(
     {ui::VKEY_SHIFT, ui::VKEY_LSHIFT, ui::VKEY_RSHIFT});
 
 AcceleratorShiftDisableCapslockStateMachine::

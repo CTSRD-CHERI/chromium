@@ -256,7 +256,7 @@ class GbmDeviceWrapper {
     // For other use cases, GBM_BO_USE_SCANOUT may be preferred but is
     // ultimately optional, so we can fall back to allocation without that
     // flag.
-    constexpr auto kScanoutUsages = base::MakeFixedFlatSet<gfx::BufferUsage>(
+    BASE_FIXED_FLAT_SET_CONSTEXPR auto kScanoutUsages = base::MakeFixedFlatSet<gfx::BufferUsage>(
         {gfx::BufferUsage::SCANOUT,
          gfx::BufferUsage::PROTECTED_SCANOUT,
 #if !BUILDFLAG(USE_V4L2_CODEC)

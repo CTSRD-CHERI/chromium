@@ -76,7 +76,7 @@ using mojom::Operation;
 // id as key.
 using IdToNodeOutputMap = absl::flat_hash_map<OperandId, const NodeOutput*>;
 
-static constexpr auto kDmlFloatDataTypes =
+static BASE_FIXED_FLAT_SET_CONSTEXPR auto kDmlFloatDataTypes =
     base::MakeFixedFlatSet<DML_TENSOR_DATA_TYPE>(
         {DML_TENSOR_DATA_TYPE_FLOAT32, DML_TENSOR_DATA_TYPE_FLOAT16});
 

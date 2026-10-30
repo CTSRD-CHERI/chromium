@@ -103,7 +103,7 @@ base::expected<bool, AssistantBrowserDelegate::Error> ToEligibilityBool(
     return true;
   }
 
-  static constexpr auto non_transient_error =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto non_transient_error =
       base::MakeFixedFlatSet<AssistantBrowserDelegate::Error>(
           {AssistantBrowserDelegate::Error::kNewEntryPointNotEnabled,
            AssistantBrowserDelegate::Error::kNewEntryPointNotFound,

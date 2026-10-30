@@ -17,7 +17,7 @@ namespace {
 
 using CrosApiSearchResult = ::crosapi::mojom::SearchResult;
 
-constexpr auto kRestrictedAnswerTypes =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kRestrictedAnswerTypes =
     base::MakeFixedFlatSet<CrosApiSearchResult::AnswerType>({
         CrosApiSearchResult::AnswerType::kDefaultAnswer,
         CrosApiSearchResult::AnswerType::kDictionary,

@@ -50,11 +50,11 @@ struct DeviceId {
   }
 };
 
-constexpr auto kKeyboardAllowlist = base::MakeFixedFlatSet<DeviceId>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kKeyboardAllowlist = base::MakeFixedFlatSet<DeviceId>({
     {0x2516, 0x0016},  // CM Storm Quickfire Pro Ultimate
 });
 
-constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x0111, 0x1830},  // SteelSeries Rival 3 Wireless (Bluetooth)
     {0x0111, 0x183a},  // SteelSeries Aerox 3 Wireless (Bluetooth)
     {0x0111, 0x1854},  // SteelSeries Aerox 5 Wireless (Bluetooth)

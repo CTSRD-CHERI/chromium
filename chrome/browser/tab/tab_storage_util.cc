@@ -45,7 +45,7 @@ std::optional<TabCollection::Type> TabStorageTypeToTabCollectionType(
 }
 
 bool IsTabCollectionStorageType(TabStorageType type) {
-  constexpr auto kCollectionTypes = base::MakeFixedFlatSet<TabStorageType>({
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kCollectionTypes = base::MakeFixedFlatSet<TabStorageType>({
       TabStorageType::kTabStrip,
       TabStorageType::kPinned,
       TabStorageType::kUnpinned,

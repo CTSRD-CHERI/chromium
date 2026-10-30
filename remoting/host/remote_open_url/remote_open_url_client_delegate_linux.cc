@@ -45,7 +45,7 @@ void ShowMessageDialog(const std::string& message) {
 }
 
 bool IsBrowserValid(const std::string& browser) {
-  static constexpr auto invalid_browsers =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto invalid_browsers =
       base::MakeFixedFlatSet<std::string_view>({
           // This is the chromoting forwarder itself.
           "crd-url-forwarder.desktop",

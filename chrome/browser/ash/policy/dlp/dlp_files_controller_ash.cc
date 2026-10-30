@@ -146,7 +146,7 @@ file_manager::VolumeManager* GetVolumeManager(
 
 // Returns whether `url` represents the URL of a system application.
 bool IsSystemAppURL(const GURL& url) {
-  static constexpr auto kSystemURLsMap =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kSystemURLsMap =
       base::MakeFixedFlatSet<std::string_view>(
           {kFileManagerUrl, kImageLoaderUrl});
   return kSystemURLsMap.contains(url.spec());

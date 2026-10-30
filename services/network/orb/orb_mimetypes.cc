@@ -97,7 +97,11 @@ const char kXmlSuffix[] = "+xml";
 // support for this resource type.  And CORB also wants to protect
 // "application/pdf" even though Chrome happens to support this resource type.
 const auto& GetNeverSniffedMimeTypes() {
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  static const auto kNeverSniffedMimeTypes = base::MakeFixedFlatSet<
+#else
   static constexpr auto kNeverSniffedMimeTypes = base::MakeFixedFlatSet<
+#endif
       std::string_view>({
       // clang-format off
       // The types below (zip, protobuf, etc.) are based on most commonly used

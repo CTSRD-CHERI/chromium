@@ -251,7 +251,7 @@ bool RecentTabsSubMenuModel::GetAcceleratorForCommandId(
 bool RecentTabsSubMenuModel::ExecuteCustomCommand(int command_id,
                                                   int event_flags) {
   // Supported custom commands.
-  static constexpr auto custom_commands = base::MakeFixedFlatSet<int>(
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto custom_commands = base::MakeFixedFlatSet<int>(
       {IDC_SHOW_HISTORY, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
        IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS, IDC_RECENT_TABS_SEE_DEVICE_TABS});
 

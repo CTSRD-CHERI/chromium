@@ -13,7 +13,7 @@ namespace chromeos::editor_helpers {
 
 namespace {
 
-constexpr auto kStripedSymbols =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kStripedSymbols =
     base::MakeFixedFlatSet<char>({' ', '\t', '\n', '.', ','});
 
 }

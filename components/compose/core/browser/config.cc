@@ -45,11 +45,11 @@ std::vector<std::string> GetFieldTrialParamAsSplitString(
                            base::SPLIT_WANT_NONEMPTY);
 }
 
-constexpr auto DEFAULT_COMPOSE_ENABLED_COUNTRIES =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto DEFAULT_COMPOSE_ENABLED_COUNTRIES =
     base::MakeFixedFlatSet<std::string>({"bd", "ca", "gh", "in", "ke", "my",
                                          "ng", "ph", "pk", "sg", "tz", "ug",
                                          "us", "zm", "zw"});
-constexpr auto DEFAULT_PROACTIVE_NUDGE_ENABLED_COUNTRIES =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto DEFAULT_PROACTIVE_NUDGE_ENABLED_COUNTRIES =
     base::MakeFixedFlatSet<std::string>({"us"});
 
 }  // namespace

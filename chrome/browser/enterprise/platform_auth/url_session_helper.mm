@@ -26,7 +26,7 @@ namespace {
 constexpr NSString* kNsOrigin = @"Origin";
 
 // These lists contain the minimum required for Okta SSO request to work.
-constexpr auto kRequestHeadersAllowlist =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kRequestHeadersAllowlist =
     base::MakeFixedFlatSet<std::string_view>({
         "accept",
         "accept-language",
@@ -45,7 +45,7 @@ constexpr auto kFixedRequestHeaders =
         {"Sec-Fetch-Site", "same-origin"},
     });
 
-constexpr auto kResponseHeadersAllowlist =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kResponseHeadersAllowlist =
     base::MakeFixedFlatSet<std::string_view>({
         "accept-ch",
         "access-control-allow-credentials",

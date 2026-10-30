@@ -11,7 +11,7 @@ namespace autofill {
 
 namespace {
 
-constexpr auto kKnownUsernamePlaceholders =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kKnownUsernamePlaceholders =
     base::MakeFixedFlatSet<std::string_view>({
         "___.___.___-__",
         "+1",

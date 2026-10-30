@@ -13,6 +13,13 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
 
+// MakeFixedFlatSet isn't constexpr with libc++ versions before 18.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+#define BASE_FIXED_FLAT_SET_CONSTEXPR const
+#else
+#define BASE_FIXED_FLAT_SET_CONSTEXPR constexpr
+#endif
+
 namespace base {
 
 namespace internal {
@@ -88,13 +95,21 @@ using fixed_flat_set = base::flat_set<Key, Compare, std::array<const Key, N>>;
 //   constexpr auto kSet = base::MakeFixedFlatSet<std::string_view>(
 //       base::sorted_unique, {"bar", "baz", "foo", "qux"});
 template <class Key, size_t N, class Compare = std::less<>>
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const fixed_flat_set<Key, N, Compare> MakeFixedFlatSet(
+#else
 consteval fixed_flat_set<Key, N, Compare> MakeFixedFlatSet(
+#endif
     sorted_unique_t,
     std::common_type_t<Key> (&&data)[N],
     const Compare& comp = Compare()) {
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  DCHECK(internal::is_sorted_and_unique(data, comp));
+#else
   if (!internal::is_sorted_and_unique(data, comp)) {
     internal::FixedFlatSetInputNotSortedOrNotUnique();
   }
+#endif
   // Specify the value_type explicitly to ensure that the returned array has
   // immutable keys.
   return fixed_flat_set<Key, N, Compare>(
@@ -117,7 +132,11 @@ consteval fixed_flat_set<Key, N, Compare> MakeFixedFlatSet(
 // Note: Wrapping `Key` in `std::common_type_t` below requires callers to
 // explicitly specify `Key`, which is desired here.
 template <class Key, class Compare = std::less<>, size_t N>
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const fixed_flat_set<Key, N, Compare> MakeFixedFlatSet(
+#else
 consteval fixed_flat_set<Key, N, Compare> MakeFixedFlatSet(
+#endif
     std::common_type_t<Key> (&&data)[N],
     const Compare& comp = Compare()) {
   std::ranges::sort(data, comp);

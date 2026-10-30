@@ -379,7 +379,7 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
 }
 
 bool IsAutocorrectSupported(const std::string& engine_id) {
-  static constexpr auto kEnabledInputMethods =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kEnabledInputMethods =
       base::MakeFixedFlatSet<std::string_view>({
           "xkb:be::fra",        "xkb:be::ger",
           "xkb:be::nld",        "xkb:br::por",

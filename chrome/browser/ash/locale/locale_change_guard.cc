@@ -35,7 +35,7 @@ using ::content::WebContents;
 //
 // New language in kAcceptLanguageList should be added either here or to
 // to the exception list in unit test.
-constexpr auto kSkipShowNotificationLanguages =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kSkipShowNotificationLanguages =
     base::MakeFixedFlatSet<std::string_view>({"en", "de", "fr", "it"});
 
 }  // anonymous namespace

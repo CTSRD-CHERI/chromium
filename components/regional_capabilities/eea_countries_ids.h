@@ -13,7 +13,11 @@ namespace regional_capabilities {
 using CountryId = country_codes::CountryId;
 
 // Google-internal reference: http://go/geoscope-comparisons.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+inline const auto kEeaChoiceCountriesIds =
+#else
 inline constexpr auto kEeaChoiceCountriesIds =
+#endif
     base::MakeFixedFlatSet<CountryId>({
         CountryId("AT"),  // Austria
         CountryId("AX"),  // Åland Islands

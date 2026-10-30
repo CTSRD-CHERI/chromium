@@ -160,7 +160,7 @@ bool DoesExtensionHasAnyOfPermission(
 
 // Checks whether the extension has WebRequest* permissions.
 bool HasAnyWebRequestPermissions(const Extension& extension) {
-  static constexpr auto kPermissions = base::MakeFixedFlatSet<APIPermissionID>({
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kPermissions = base::MakeFixedFlatSet<APIPermissionID>({
       APIPermissionID::kWebRequest,
       APIPermissionID::kWebRequestBlocking,
   });
@@ -170,7 +170,7 @@ bool HasAnyWebRequestPermissions(const Extension& extension) {
 
 // Checks whether the extension has Declarative{Web|Net}Request* permissions.
 bool HasAnyDeclarativeWebRequestPermissions(const Extension& extension) {
-  static constexpr auto kPermissions = base::MakeFixedFlatSet<APIPermissionID>({
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kPermissions = base::MakeFixedFlatSet<APIPermissionID>({
       APIPermissionID::kDeclarativeWebRequest,
       APIPermissionID::kDeclarativeNetRequest,
       APIPermissionID::kDeclarativeNetRequestWithHostAccess,
