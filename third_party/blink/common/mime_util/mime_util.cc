@@ -29,7 +29,11 @@ namespace {
 
 // From WebKit's WebCore/platform/MIMETypeRegistry.cpp:
 
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const auto kSupportedImageTypes = base::MakeFixedFlatSet<std::string_view>({
+#else
 constexpr auto kSupportedImageTypes = base::MakeFixedFlatSet<std::string_view>({
+#endif
     "image/jpeg",
     "image/pjpeg",
     "image/jpg",
@@ -50,7 +54,11 @@ constexpr auto kSupportedImageTypes = base::MakeFixedFlatSet<std::string_view>({
 //  Support every script type mentioned in the spec, as it notes that "User
 //  agents must recognize all JavaScript MIME types." See
 //  https://html.spec.whatwg.org/#javascript-mime-type.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const auto kSupportedJavascriptTypes =
+#else
 constexpr auto kSupportedJavascriptTypes =
+#endif
     base::MakeFixedFlatSet<std::string_view>({
         "application/ecmascript",
         "application/javascript",
@@ -73,7 +81,11 @@ constexpr auto kSupportedJavascriptTypes =
 // These types are excluded from the logic that allows all text/ types because
 // while they are technically text, it's very unlikely that a user expects to
 // see them rendered in text form.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const auto kUnsupportedTextTypes =
+#else
 constexpr auto kUnsupportedTextTypes =
+#endif
     base::MakeFixedFlatSet<std::string_view>({
         "text/calendar",
         "text/x-calendar",
@@ -104,7 +116,11 @@ constexpr auto kUnsupportedTextTypes =
 // - does not include javascript types list (see supported_javascript_types)
 // - does not include types starting with "text/" (see
 //   IsSupportedNonImageMimeType())
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const auto kSupportedNonImageTypes =
+#else
 constexpr auto kSupportedNonImageTypes =
+#endif
     base::MakeFixedFlatSet<std::string_view>({
         "image/svg+xml",  // SVG is text-based XML, even though it has an image/
                           // type

@@ -36,7 +36,7 @@ BASE_FEATURE(kChromeAppsDeprecationComponentUpdater,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
-constexpr auto kCommonAllowlist = base::MakeFixedFlatSet<std::string_view>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kCommonAllowlist = base::MakeFixedFlatSet<std::string_view>({
     // go/keep-sorted start
     "aakfkoilmhehmmadlkedfbcelkbamdkj",
     "acdafoiapclbpdkhnighhilgampkglpc",
@@ -199,7 +199,7 @@ constexpr auto kCommonAllowlist = base::MakeFixedFlatSet<std::string_view>({
 
 constexpr auto kUserInstalledAllowlist = base::flat_set<std::string_view>();
 
-constexpr auto kKioskSessionAllowlist =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kKioskSessionAllowlist =
     base::MakeFixedFlatSet<std::string_view>({
         // go/keep-sorted start
         "adbijfidmjidmkkpiglnfkflcoblkfmn",

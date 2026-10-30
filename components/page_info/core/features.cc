@@ -14,7 +14,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace page_info {
-constexpr auto kDefaultLangs = base::MakeFixedFlatSet<std::string_view>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kDefaultLangs = base::MakeFixedFlatSet<std::string_view>({
     "ar", "bg", "ca", "cs", "da", "de", "el", "en", "es", "et",
     "fi", "fr", "he", "hi", "hr", "hu", "id", "it", "ja", "ko",
     "lt", "lv", "nb", "nl", "pl", "pt", "ro", "ru", "sk", "sl",

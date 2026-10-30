@@ -47,7 +47,7 @@ namespace {
 // TODO(crbug.com/40273612): Figure out why tests fail when removing
 // 127.0.0.1 even though that was added only for Lacros testing and hence
 // shouldn't be needed anymore.
-constexpr auto kHostAllowlist = base::MakeFixedFlatSet<std::string_view>(
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kHostAllowlist = base::MakeFixedFlatSet<std::string_view>(
     {"googleusercontent.com", "gstatic.com", "youtube.com",
      "127.0.0.1" /*FOR TESTING*/});
 

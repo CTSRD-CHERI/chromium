@@ -237,7 +237,7 @@ std::optional<AcceleratorLayoutDetails> GetAcceleratorLayout(uint32_t id);
 // A fixed set of accelerators that should not have a layout. This is used for
 // integrity check to make sure when a new accelerator is added, either it has
 // been added to `kAcceleratorLayouts` or here.
-constexpr auto kAshAcceleratorsWithoutLayout =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kAshAcceleratorsWithoutLayout =
     base::MakeFixedFlatSet<AcceleratorAction>({
         AcceleratorAction::kCycleBackwardMru,
         AcceleratorAction::kCycleForwardMru,

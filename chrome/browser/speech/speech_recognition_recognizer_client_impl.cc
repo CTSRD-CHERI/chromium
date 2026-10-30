@@ -131,7 +131,7 @@ SpeechRecognitionRecognizerClientImpl::GetServerBasedRecognitionAvailability(
         kServerBasedRecognitionNotAvailable;
   }
 
-  static constexpr auto kSupportedLanguagesAndLocales =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kSupportedLanguagesAndLocales =
       base::MakeFixedFlatSet<std::string_view>({
           "de",              // German
           "de-AT",           // German (Austria)

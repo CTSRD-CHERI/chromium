@@ -57,7 +57,7 @@ constexpr char kAppsUsageTimeHistogramPrefixV2[] = "Apps.UsageTimeV2.";
 
 constexpr base::TimeDelta kMaxDuration = base::Days(1);
 
-constexpr auto kAppTypeNameSet = base::MakeFixedFlatSet<apps::AppTypeName>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kAppTypeNameSet = base::MakeFixedFlatSet<apps::AppTypeName>({
     apps::AppTypeName::kArc,
     apps::AppTypeName::kCrostini,
     apps::AppTypeName::kChromeApp,

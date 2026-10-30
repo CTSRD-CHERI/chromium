@@ -20,7 +20,7 @@ namespace {
 
 // This should contain all the multiple-memory-plane modifiers because Dawn does
 // not yet support multiple memory plane formats.
-constexpr auto kModifierBlocklist = base::MakeFixedFlatSet<uint64_t>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kModifierBlocklist = base::MakeFixedFlatSet<uint64_t>({
     I915_FORMAT_MOD_Y_TILED_CCS,
     I915_FORMAT_MOD_Yf_TILED_CCS,
     I915_FORMAT_MOD_Y_TILED_GEN12_RC_CCS,

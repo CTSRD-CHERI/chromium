@@ -1026,7 +1026,7 @@ bool BrowserThemePack::GetTint(int id, color_utils::HSL* hsl) const {
 }
 
 bool BrowserThemePack::GetColor(int id, SkColor* color) const {
-  static constexpr auto kOpaqueColors =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kOpaqueColors =
       base::MakeFixedFlatSet<TP::OverwritableByUserThemeProperty>({
           // Background tabs must be opaque since the tabstrip expects to be
           // able to render text opaquely atop them.

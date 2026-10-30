@@ -1817,7 +1817,7 @@ base::Value::Dict CreateHeaderDictionary(const std::string& name,
 bool ShouldHideRequestHeader(content::BrowserContext* browser_context,
                              int extra_info_spec,
                              const std::string& name) {
-  static constexpr auto kRequestHeaders =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kRequestHeaders =
       base::MakeFixedFlatSet<std::string_view>({"accept-encoding",
                                                 "accept-language", "cookie",
                                                 "origin", "referer"});

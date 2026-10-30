@@ -14,10 +14,10 @@
 
 namespace ash {
 
-constexpr auto kMetaKeys =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kMetaKeys =
     base::MakeFixedFlatSet<ui::KeyboardCode>({ui::VKEY_LWIN, ui::VKEY_RWIN});
 
-constexpr auto kShiftKeys = base::MakeFixedFlatSet<ui::KeyboardCode>(
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kShiftKeys = base::MakeFixedFlatSet<ui::KeyboardCode>(
     {ui::VKEY_SHIFT, ui::VKEY_LSHIFT, ui::VKEY_RSHIFT});
 
 AcceleratorLauncherStateMachine::AcceleratorLauncherStateMachine(

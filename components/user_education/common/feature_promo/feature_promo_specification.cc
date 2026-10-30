@@ -34,7 +34,7 @@ bool IsAllowedLegalNotice(const base::Feature& promo_feature) {
 
 bool IsAllowedActionableAlert(const base::Feature& promo_feature) {
   // Add the text names of allowlisted actionable alerts here:
-  static constexpr auto kAllowedPromoNames =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowedPromoNames =
       base::MakeFixedFlatSet<std::string_view>({
           "IPH_DownloadEsbPromo",
           "IPH_HighEfficiencyMode",
@@ -48,7 +48,7 @@ bool IsAllowedActionableAlert(const base::Feature& promo_feature) {
 
 bool IsAllowedKeyedNotice(const base::Feature& promo_feature) {
   // Add the text names of allowlisted keyed notices here:
-  static constexpr auto kAllowedPromoNames =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowedPromoNames =
       base::MakeFixedFlatSet<std::string_view>({
           "IPH_DesktopPWAsLinkCapturingLaunch",
           "IPH_DesktopPWAsLinkCapturingLaunchAppInTab",
@@ -81,7 +81,7 @@ bool IsAllowedCustomUiPromo(const base::Feature& promo_feature) {
   // code for your new Custom UI promo.
   //
   // Add the text names of allowlisted rotating promos here:
-  static constexpr auto kAllowedPromoNames =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowedPromoNames =
       base::MakeFixedFlatSet<std::string_view>(
           {"IPH_ExtensionsZeroStatePromo", "IPH_iOSEnhancedBrowsingDesktop",
            "IPH_iOSLensPromoDesktop", "IPH_iOSPasswordPromoDesktop"});
@@ -91,7 +91,7 @@ bool IsAllowedCustomUiPromo(const base::Feature& promo_feature) {
 bool IsAllowedLegacyPromo(const base::Feature& promo_feature) {
   // NOTE: LEGACY PROMOS ARE DEPRECATED.
   // NO NEW ITEMS SHOULD BE ADDED TO THIS LIST, EVER.
-  static constexpr auto kAllowedPromoNames =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowedPromoNames =
       base::MakeFixedFlatSet<std::string_view>({
           "IPH_AutofillExternalAccountProfileSuggestion",
           "IPH_AutofillVirtualCardSuggestion",
@@ -121,7 +121,7 @@ bool IsAllowedToastWithoutScreenreaderText(const base::Feature& promo_feature) {
 
   // TODO(crbug.com/421471598): Remove this exemption once we have a separate
   // string for screenreader.
-  static constexpr auto kAllowedPromoNames =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowedPromoNames =
       base::MakeFixedFlatSet<std::string_view>({"IPH_TabSearchToolbarButton"});
   return kAllowedPromoNames.contains(promo_feature.name);
 }
@@ -132,7 +132,7 @@ bool IsAllowedPreconditionExemption(const base::Feature& promo_feature) {
     return true;
   }
 
-  static constexpr auto kAllowedPromoNames =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowedPromoNames =
       base::MakeFixedFlatSet<std::string_view>({"IPH_AutofillAiOptIn"});
   return kAllowedPromoNames.contains(promo_feature.name);
 }

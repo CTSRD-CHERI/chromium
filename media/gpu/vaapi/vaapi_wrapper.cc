@@ -401,7 +401,7 @@ bool IsThreadSafeDriver(media::VAImplementation implementation_type) {
   // Only iHD and Mesa Gallium are known to be thread safe at the moment.
   // * Mesa Gallium: b/144877595
   // * iHD: crbug.com/1123429.
-  constexpr auto kNoVaapiLockImplementations =
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kNoVaapiLockImplementations =
       base::MakeFixedFlatSet<media::VAImplementation>(
           {media::VAImplementation::kMesaGallium,
            media::VAImplementation::kIntelIHD});

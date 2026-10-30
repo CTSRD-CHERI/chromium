@@ -22,7 +22,7 @@ namespace {
 
 // Apps/extensions explicitly allowlisted for skipping warnings for MGS (Managed
 // guest sessions) users.
-constexpr auto kManagedGuestSessionAllowlist = base::MakeFixedFlatSet<
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kManagedGuestSessionAllowlist = base::MakeFixedFlatSet<
     std::string_view>({
     // Managed guest sessions in general:
     "cbkkbcmdlboombapidmoeolnmdacpkch",  // Chrome RDP

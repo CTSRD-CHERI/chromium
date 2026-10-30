@@ -472,7 +472,7 @@ size_t AddAttributes(const CupsOptionProvider& printer,
   int num_options = ippGetCount(attr);
   static const base::NoDestructor<HandlerMap> handlers(GenerateHandlers());
   // The names of attributes that we know are not supported (b/266573545).
-  static constexpr auto kOptionsToIgnore =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kOptionsToIgnore =
       base::MakeFixedFlatSet<std::string_view>(
           {"finishings-col", "ipp-attribute-fidelity", "job-name",
            "number-up-layout"});

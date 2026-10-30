@@ -79,7 +79,7 @@ bool IsURLHandledByNetworkStack(const GURL& url) {
 }
 
 bool IsSafeRedirectTarget(const GURL& from_url, const GURL& to_url) {
-  static constexpr auto kUnsafeSchemes =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kUnsafeSchemes =
       base::MakeFixedFlatSet<std::string_view>({
           url::kAboutScheme,
           url::kFileScheme,

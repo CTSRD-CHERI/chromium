@@ -295,7 +295,7 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
       job_settings.FindDict(kSettingAdvancedSettings);
   if (advanced_settings) {
     for (const auto item : *advanced_settings) {
-      static constexpr auto kNonJobAttributes =
+      static BASE_FIXED_FLAT_SET_CONSTEXPR auto kNonJobAttributes =
           base::MakeFixedFlatSet<std::string_view>(
               {"printer-info", "printer-make-and-model", "system_driverinfo"});
       if (!kNonJobAttributes.contains(item.first)) {

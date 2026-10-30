@@ -15,7 +15,7 @@ namespace ash::input_method {
 
 namespace {
 
-constexpr auto kAllowedLanguagesForShowingL10nStrings =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowedLanguagesForShowingL10nStrings =
     base::MakeFixedFlatSet<std::string_view>({"de", "en", "en-GB", "fr", "ja"});
 
 }

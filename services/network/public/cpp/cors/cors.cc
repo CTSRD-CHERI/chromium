@@ -284,7 +284,11 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
   }
 
   // CORS-Safelisted headers are the only headers permitted in a CORS request.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  static const auto safe_names = base::MakeFixedFlatSet<std::string_view>({
+#else
   static constexpr auto safe_names = base::MakeFixedFlatSet<std::string_view>({
+#endif
 
       // [Block 1 - Specification]
       // Headers in this section are included in the order listed by:

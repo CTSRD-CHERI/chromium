@@ -342,7 +342,11 @@ constexpr std::array kIgnoredFields = {
 
 // These headers are completely ignored for the purposes of matching when they
 // appear in the `headers` field.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const auto kIgnoredHeaders = base::MakeFixedFlatSet<std::string_view>({
+#else
 constexpr auto kIgnoredHeaders = base::MakeFixedFlatSet<std::string_view>({
+#endif
     "purpose",
     "sec-purpose",
 });

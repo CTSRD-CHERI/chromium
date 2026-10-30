@@ -41,12 +41,12 @@ struct CmpEvent {
   }
 };
 
-constexpr auto kAllowedEventStatuses =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowedEventStatuses =
     base::MakeFixedFlatSet<CalendarEvent::EventStatus>(
         {CalendarEvent::EventStatus::kConfirmed,
          CalendarEvent::EventStatus::kTentative});
 
-constexpr auto kAllowedResponseStatuses =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowedResponseStatuses =
     base::MakeFixedFlatSet<CalendarEvent::ResponseStatus>(
         {CalendarEvent::ResponseStatus::kAccepted,
          CalendarEvent::ResponseStatus::kNeedsAction,

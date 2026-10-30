@@ -690,7 +690,7 @@ std::pair<uint16_t, uint16_t> GamepadIdList::GetDeviceIdsFromGamepadId(
 }
 
 bool GamepadIdList::HasTriggerRumbleSupport(GamepadId gamepad_id) const {
-  static constexpr auto kTriggerRumbleGamepadIds =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kTriggerRumbleGamepadIds =
       base::MakeFixedFlatSet<GamepadId>({
           // Xbox One USB
           GamepadId::kMicrosoftProduct02d1,

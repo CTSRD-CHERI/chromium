@@ -303,7 +303,7 @@ bool ValidHostPrefix(const std::string& host) {
   // There are 66 (5*11) valid, e.g. 'docs5.google.com', so rather than check
   // all 66, we just check the 6 prefixes. Keep these prefixes consistent with
   // those in `ExtractDocIdFromUrl()`.
-  constexpr auto kValidHostPrefixes = base::MakeFixedFlatSet<std::string_view>({
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kValidHostPrefixes = base::MakeFixedFlatSet<std::string_view>({
       "spreadsheets",
       "docs",
       "drive",

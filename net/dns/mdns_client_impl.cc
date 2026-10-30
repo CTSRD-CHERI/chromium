@@ -56,7 +56,11 @@ enum class mdnsQueryType {
 };
 
 void RecordQueryMetric(mdnsQueryType query_type, std::string_view host) {
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  const auto kPrintScanServices = base::MakeFixedFlatSet<std::string_view>({
+#else
   constexpr auto kPrintScanServices = base::MakeFixedFlatSet<std::string_view>({
+#endif
       "_ipps._tcp.local",
       "_ipp._tcp.local",
       "_pdl-datastream._tcp.local",

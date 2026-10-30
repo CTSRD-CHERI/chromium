@@ -27,13 +27,13 @@
 #include "components/variations/service/variations_service_utils.h"
 #include "net/base/load_flags.h"
 
-constexpr auto kLoggingDisallowedCountries =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kLoggingDisallowedCountries =
     base::MakeFixedFlatSet<std::string_view>(
         {"at", "be", "bg", "cy", "cz", "de", "dk", "ee", "es", "fi", "fr",
          "gb", "gr", "hr", "hu", "ie", "is", "it", "li", "lt", "lu", "lv",
          "mt", "nl", "no", "pl", "pt", "ro", "se", "si", "sk"});
 
-constexpr auto kAidaSupportedCountries =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kAidaSupportedCountries =
     base::MakeFixedFlatSet<std::string_view>(
         {"ae", "ag", "ai", "am", "ao", "ar", "as", "at", "au", "aw", "az", "bb",
          "bd", "be", "bf", "bg", "bh", "bi", "bj", "bl", "bm", "bn", "bo", "bq",

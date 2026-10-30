@@ -89,7 +89,7 @@ static_assert(AcceleratorAction::kDesksActivate0 ==
 
 // This is a predetermined, fixed list of accelerators and should never be
 // appended to with new accelerators.
-constexpr auto kSystemShortcutPolicyBlockedAccelerators =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kSystemShortcutPolicyBlockedAccelerators =
     base::MakeFixedFlatSet<std::pair<ui::KeyboardCode, ui::EventFlags>>(
         {{ui::VKEY_D, ui::EF_COMMAND_DOWN},
          {ui::VKEY_E, ui::EF_COMMAND_DOWN},

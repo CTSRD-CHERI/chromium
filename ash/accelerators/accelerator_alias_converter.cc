@@ -115,7 +115,7 @@ std::optional<ui::KeyboardDevice> GetInternalKeyboard() {
 
 // Identifies media keys which exist only on external keyboards.
 bool IsMediaKey(ui::KeyboardCode key_code) {
-  static constexpr auto kMediaKeyCodes =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kMediaKeyCodes =
       base::MakeFixedFlatSet<ui::KeyboardCode>(
           {ui::VKEY_MEDIA_PAUSE, ui::VKEY_MEDIA_PLAY,
            ui::VKEY_OEM_103,  // Media Rewind

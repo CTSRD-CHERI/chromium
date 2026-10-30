@@ -202,7 +202,7 @@ class UpdateScreen : public BaseScreen,
   bool did_prepare_quick_start_for_update_ = false;
 
   // EU country list.
-  inline static constexpr auto kEUCountriesSet =
+  inline static BASE_FIXED_FLAT_SET_CONSTEXPR auto kEUCountriesSet =
       base::MakeFixedFlatSet<std::string_view>(
           {"at", "be", "bg", "hr", "cy", "cz", "dk", "ee", "fi",
            "fr", "de", "gr", "hu", "ie", "it", "lv", "lt", "lu",

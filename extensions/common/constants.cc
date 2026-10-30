@@ -62,7 +62,11 @@ constexpr char kBlazeyAttractLoopAppId[] = "lceekekmpiieklnpocjfahfakahjkhha";
 constexpr char kBlazeyHighlightsAppId[] = "jbpnmbcpgemgfblnjfhnmlffhkofekmf";
 
 bool IsDemoModeChromeApp(std::string_view extension_id) {
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  const auto kDemoModeApps = base::MakeFixedFlatSet<std::string_view>({
+#else
   constexpr auto kDemoModeApps = base::MakeFixedFlatSet<std::string_view>({
+#endif
       // clang-format off
       kHighlightsAppId,
       kScreensaverAppId,
@@ -78,7 +82,11 @@ bool IsDemoModeChromeApp(std::string_view extension_id) {
 }
 
 bool IsSystemUIApp(std::string_view extension_id) {
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  const auto kApps = base::MakeFixedFlatSet<std::string_view>({
+#else
   constexpr auto kApps = base::MakeFixedFlatSet<std::string_view>({
+#endif
       // clang-format off
       kChromeVoxExtensionId,
       kFilesManagerAppId,
@@ -92,7 +100,11 @@ bool IsSystemUIApp(std::string_view extension_id) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool IsQuickOfficeExtension(std::string_view extension_id) {
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  const auto kQuickOfficeIds = base::MakeFixedFlatSet<std::string_view>({
+#else
   constexpr auto kQuickOfficeIds = base::MakeFixedFlatSet<std::string_view>({
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
       kQuickOfficeComponentExtensionId,
 #endif
@@ -104,7 +116,11 @@ bool IsQuickOfficeExtension(std::string_view extension_id) {
 
 // TODO(crbug.com/40796281): remove after default app migration is done.
 bool IsPreinstalledAppId(std::string_view app_id) {
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  const auto kPreinstalledApps = base::MakeFixedFlatSet<std::string_view>({
+#else
   constexpr auto kPreinstalledApps = base::MakeFixedFlatSet<std::string_view>({
+#endif
       // clang-format off
       kGmailAppId,
       kGoogleDocsAppId,

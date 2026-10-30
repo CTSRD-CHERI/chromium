@@ -64,7 +64,7 @@ const char kFileHandlingLearnMore[] =
     "https://support.google.com/chrome/?p=pwa_default_associations";
 
 bool ShouldHideMoreSettings(const std::string& app_id) {
-  constexpr auto kAppIdsWithHiddenMoreSettings =
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kAppIdsWithHiddenMoreSettings =
       base::MakeFixedFlatSet<std::string_view>({
           extensions::kWebStoreAppId,
           extension_misc::kFilesManagerAppId,
@@ -74,7 +74,7 @@ bool ShouldHideMoreSettings(const std::string& app_id) {
 }
 
 bool ShouldHidePinToShelf(const std::string& app_id) {
-  constexpr auto kAppIdsWithHiddenPinToShelf =
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kAppIdsWithHiddenPinToShelf =
       base::MakeFixedFlatSet<std::string_view>({
           app_constants::kChromeAppId,
       });
@@ -84,7 +84,7 @@ bool ShouldHidePinToShelf(const std::string& app_id) {
 
 bool ShouldHideStoragePermission(const std::string& app_id) {
 #if BUILDFLAG(IS_CHROMEOS)
-  constexpr auto kAppIdsWithHiddenStoragePermission =
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kAppIdsWithHiddenStoragePermission =
       base::MakeFixedFlatSet<std::string_view>({
           arc::kPlayStoreAppId,
       });

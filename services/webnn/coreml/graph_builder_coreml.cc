@@ -249,12 +249,12 @@ constexpr char kOpParamZeroPoint[] = "zero_point";
 // Hard coded path used in the model file to point at the weight path.
 constexpr char kWeightsRelativeFilePath[] = "@model_path/weights/weights.bin";
 
-static constexpr auto kFloatDataTypes =
+static BASE_FIXED_FLAT_SET_CONSTEXPR auto kFloatDataTypes =
     base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
         {CoreML::Specification::MILSpec::DataType::FLOAT16,
          CoreML::Specification::MILSpec::DataType::FLOAT32});
 
-static constexpr auto kFloatsAndInt32DataTypes =
+static BASE_FIXED_FLAT_SET_CONSTEXPR auto kFloatsAndInt32DataTypes =
     base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
         {CoreML::Specification::MILSpec::DataType::FLOAT16,
          CoreML::Specification::MILSpec::DataType::FLOAT32,

@@ -210,7 +210,11 @@ inline constexpr auto kAutofillModelRules =
 
 // Set of pairs (country_code, field_type) that represent a collection of
 // synthesized nodes for all countries.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+inline const auto kAutofillSynthesizeNodes =
+#else
 inline constexpr auto kAutofillSynthesizeNodes =
+#endif
     base::MakeFixedFlatSet<std::pair<std::string_view, FieldType>>({
       {"IN", ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK},
       {"IN", ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK}

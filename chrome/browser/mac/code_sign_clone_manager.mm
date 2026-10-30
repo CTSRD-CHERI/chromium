@@ -395,7 +395,7 @@ bool ValidateUniqueDirSuffix(const std::string& unique_temp_dir_suffix) {
   // The portable filename character set:
   // https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap03.html#tag_03_282
   //
-  static constexpr auto kFormat = base::MakeFixedFlatSet<const char>({
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kFormat = base::MakeFixedFlatSet<const char>({
       'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
       'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

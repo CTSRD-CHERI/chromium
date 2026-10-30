@@ -949,7 +949,7 @@ bool URLHasExtensionPermission(extensions::ProcessMap* process_map,
 // Returns true if |extension_id| is allowed to run as an Isolated Context,
 // giving it access to additional APIs.
 bool IsExtensionIdAllowedToUseIsolatedContext(std::string_view extension_id) {
-  constexpr auto kAllowedIsolatedContextExtensionIds =
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowedIsolatedContextExtensionIds =
       base::MakeFixedFlatSet<std::string_view>({
           "algkcnfjnajfhgimadimbjhmpaeohhln",  // Secure Shell Extension (dev)
           "iodihamcpbpeioajjeobimgagajmlibd",  // Secure Shell Extension

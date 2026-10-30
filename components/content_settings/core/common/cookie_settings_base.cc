@@ -181,7 +181,11 @@ bool CookieSettingsBase::CookieSettingWithMetadata::
 // static
 const CookieSettingsBase::CookieSettingsTypeSet&
 CookieSettingsBase::GetContentSettingsTypes() {
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  static const auto kInstance =
+#else
   static constexpr auto kInstance =
+#endif
       base::MakeFixedFlatSet<ContentSettingsType>({
           ContentSettingsType::COOKIES,
           ContentSettingsType::LEGACY_COOKIE_ACCESS,

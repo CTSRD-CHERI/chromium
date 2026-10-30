@@ -33,13 +33,13 @@ namespace remoting {
 namespace {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
-constexpr auto kAllowedCallerProgramNames =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowedCallerProgramNames =
     base::MakeFixedFlatSet<base::FilePath::StringViewType>({
         "remote-open-url",
         "remote-webauthn",
     });
 #elif BUILDFLAG(IS_WIN)
-constexpr auto kAllowedCallerProgramNames =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowedCallerProgramNames =
     base::MakeFixedFlatSet<base::FilePath::StringViewType>({
         L"remote_open_url.exe",
         L"remote_webauthn.exe",

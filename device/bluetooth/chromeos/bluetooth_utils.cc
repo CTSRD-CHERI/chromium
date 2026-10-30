@@ -278,7 +278,7 @@ bool IsNonPhonePolyDevice(const device::BluetoothDevice* device) {
   // namely ViaVideo and PictureTel.
   // Actually there are still others belonging in this category, but they are
   // truly phones, e.g. Voyant and Spectralink, so we omit those here.
-  constexpr auto kNonPhonePolyOuis = base::MakeFixedFlatSet<std::string_view>(
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kNonPhonePolyOuis = base::MakeFixedFlatSet<std::string_view>(
       {"64:16:7F", "48:25:67", "00:04:F2", "00:E0:DB", "00:10:1A"});
 
   return kNonPhonePolyOuis.contains(device->GetOuiPortionOfBluetoothAddress());

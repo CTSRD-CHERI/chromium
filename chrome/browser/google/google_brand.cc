@@ -103,7 +103,7 @@ bool IsOrganic(const std::string& brand) {
     return true;
   }
 
-  constexpr auto kOrganicBrands = base::MakeFixedFlatSet<std::string_view>(
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kOrganicBrands = base::MakeFixedFlatSet<std::string_view>(
       {"CHCA", "CHCB", "CHCG", "CHCH", "CHCI", "CHCJ", "CHCK", "CHCL", "CHFO",
        "CHFT", "CHHS", "CHHM", "CHMA", "CHMB", "CHME", "CHMF", "CHMG", "CHMH",
        "CHMI", "CHMQ", "CHMV", "CHNB", "CHNC", "CHNG", "CHNH", "CHNI", "CHOA",

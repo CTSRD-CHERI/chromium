@@ -25,7 +25,7 @@ namespace arc {
 // frameworks/base/mime/java-res/android.mime.types.
 //
 // The comment for each extension shows its corresponding MIME type in T.
-constexpr auto kAndroidSupportedMediaExtensions = base::MakeFixedFlatSet<
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kAndroidSupportedMediaExtensions = base::MakeFixedFlatSet<
     std::string_view>({
     ".323",       // text/h323
     ".3g2",       // video/3gpp2

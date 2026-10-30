@@ -69,7 +69,7 @@ bool g_accept_requests = true;
 ExternalProtocolHandler::Delegate* g_external_protocol_handler_delegate =
     nullptr;
 
-constexpr auto kDeniedSchemes = base::MakeFixedFlatSet<std::string_view>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kDeniedSchemes = base::MakeFixedFlatSet<std::string_view>({
     "afp",
     "data",
     "disk",

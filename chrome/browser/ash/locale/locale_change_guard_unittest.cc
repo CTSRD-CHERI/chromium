@@ -18,7 +18,7 @@ namespace {
 
 // These languages require user notification when locale is automatically
 // switched between different regions within the same language.
-constexpr auto kShowNotificationLanguages =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kShowNotificationLanguages =
     base::MakeFixedFlatSet<std::string_view>({
         "af",   // Afrikaans
         "ak",   // Twi

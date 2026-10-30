@@ -51,7 +51,7 @@ constexpr size_t kMaxSaveAndRecallDeskCount = 6u;
 constexpr size_t kMaxCoralDeskCount = 6u;
 
 // Set of valid desk types.
-constexpr auto kValidDeskTypes = base::MakeFixedFlatSet<ash::DeskTemplateType>(
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kValidDeskTypes = base::MakeFixedFlatSet<ash::DeskTemplateType>(
     {ash::DeskTemplateType::kTemplate, ash::DeskTemplateType::kSaveAndRecall,
      ash::DeskTemplateType::kCoral});
 

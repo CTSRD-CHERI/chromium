@@ -23,7 +23,7 @@ namespace ash {
 namespace {
 
 // Set of Device IDs (Vendor ID:Product ID) for devices with companion apps.
-constexpr auto kDevicesWithCompanionApps =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kDevicesWithCompanionApps =
     base::MakeFixedFlatSet<std::string_view>(
         {"1038:1824", "1038:1830", "1038:1836", "1038:1838", "1038:1850",
          "1038:1852", "1038:1858", "0111:185a", "1b1c:1b79"});

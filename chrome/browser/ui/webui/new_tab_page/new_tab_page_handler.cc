@@ -120,7 +120,7 @@ constexpr char kDisableInteraction[] = "disable";
 constexpr char kDismissInteraction[] = "dismiss";
 constexpr char kIgnoreInteraction[] = "ignore";
 constexpr char kUseInteraction[] = "use";
-constexpr auto kModuleInteractionNames =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kModuleInteractionNames =
     base::MakeFixedFlatSet<std::string_view>(
         {kDisableInteraction, kDismissInteraction, kIgnoreInteraction,
          kUseInteraction});
@@ -148,7 +148,7 @@ bool ShouldForceDarkForegroundColorsForLogo(const ThemeService* theme_service) {
                                  ThemeType::kExtension) {
     return false;
   }
-  static constexpr auto kPrideThemeExtensionIdsDarkForeground =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kPrideThemeExtensionIdsDarkForeground =
       base::MakeFixedFlatSet<std::string_view>({
           "klnkeldihpjnjoopojllmnpepbpljico",
           "iffdmpenldeofnlfjmbjcdmafhoekmka",

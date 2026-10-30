@@ -102,7 +102,7 @@ constexpr int kChromeAppWindowId = 1777;
 constexpr int kExampleDeskChromeAppIndex = 2;
 constexpr int kExampleDeskProgressiveWebAppIndex = 3;
 
-constexpr auto kWindowOpenDispositionValues = base::MakeFixedFlatSet<
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kWindowOpenDispositionValues = base::MakeFixedFlatSet<
     sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition>(
     {sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_UNKNOWN,
      sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_CURRENT_TAB,
@@ -118,7 +118,7 @@ constexpr auto kWindowOpenDispositionValues = base::MakeFixedFlatSet<
      sync_pb::
          WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_PICTURE_IN_PICTURE});
 
-constexpr auto kLaunchContainerValues = base::MakeFixedFlatSet<
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kLaunchContainerValues = base::MakeFixedFlatSet<
     sync_pb::WorkspaceDeskSpecifics_LaunchContainer>({
     sync_pb::WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_WINDOW,
     sync_pb::
@@ -127,7 +127,7 @@ constexpr auto kLaunchContainerValues = base::MakeFixedFlatSet<
     sync_pb::WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_NONE,
 });
 
-constexpr auto kTabGroupColors = base::MakeFixedFlatSet<SyncTabGroupColor>(
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kTabGroupColors = base::MakeFixedFlatSet<SyncTabGroupColor>(
     {SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREY,
      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_BLUE,
      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_RED,

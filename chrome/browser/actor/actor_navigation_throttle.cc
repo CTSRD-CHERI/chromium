@@ -25,7 +25,7 @@
 
 namespace actor {
 namespace {
-constexpr auto kBlockedMimeTypes = base::MakeFixedFlatSet<std::string_view>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kBlockedMimeTypes = base::MakeFixedFlatSet<std::string_view>({
     "application/javascript",
     "application/json",
     "application/xml",

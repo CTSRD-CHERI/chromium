@@ -29,37 +29,37 @@ int AsSteps(double font_scale) {
 
 std::vector<std::string> GetSupportedFonts(std::string_view language_code) {
   // If you modify the set of fonts here, also change `LogFontName()` below.
-  static constexpr auto kPoppinsLangs =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kPoppinsLangs =
       base::MakeFixedFlatSet<std::string_view>(
           {"af", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
            "fr", "hi", "hr", "hu", "id", "it", "lt", "lv", "mr", "ms",
            "nl", "pl", "pt", "ro", "sk", "sl", "sv", "sw", "tr"});
-  static constexpr auto kComicNeueLangs =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kComicNeueLangs =
       base::MakeFixedFlatSet<std::string_view>(
           {"af", "ca",  "cs", "da", "de", "en", "es", "et",
            "fi", "fil", "fr", "hr", "hu", "id", "it", "ms",
            "nl", "pl",  "pt", "sk", "sl", "sv", "sw"});
-  static constexpr auto kLexendDecaLangs =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kLexendDecaLangs =
       base::MakeFixedFlatSet<std::string_view>(
           {"af", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
            "fr", "hr", "hu", "id", "it", "lt", "lv", "ms", "nl", "pl",
            "pt", "ro", "sk", "sl", "sv", "sw", "tr", "vi"});
-  static constexpr auto kEbGaramondLangs =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kEbGaramondLangs =
       base::MakeFixedFlatSet<std::string_view>(
           {"af", "bg", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
            "fr", "hr", "hu", "id", "it", "lt", "lv", "ms", "nl", "pl", "pt",
            "ro", "ru", "sk", "sl", "sr", "sv", "sw", "tr", "uk", "vi"});
-  static constexpr auto kStixTwoTextLangs =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kStixTwoTextLangs =
       base::MakeFixedFlatSet<std::string_view>(
           {"af", "bg", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
            "fr", "hr", "hu", "id", "it", "lt", "lv", "ms", "nl", "pl", "pt",
            "ro", "ru", "sk", "sl", "sr", "sv", "sw", "tr", "uk", "vi"});
-  static constexpr auto kAndikaLangs = base::MakeFixedFlatSet<std::string_view>(
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kAndikaLangs = base::MakeFixedFlatSet<std::string_view>(
       {"af", "bg",  "ca", "cs", "da", "de", "en", "es", "et",
        "fi", "fil", "fr", "hr", "hu", "id", "it", "kr", "lt",
        "lu", "lv",  "ms", "nd", "nl", "nr", "pl", "pt", "ro",
        "ru", "sk",  "sl", "sr", "sv", "sw", "tr", "uk", "vi"});
-  static constexpr auto kAtkinsonHyperlegibleNextLangs =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kAtkinsonHyperlegibleNextLangs =
       base::MakeFixedFlatSet<std::string_view>(
           {"aa",  "aat", "abq", "af",  "ami", "an",  "are", "ast", "aud", "ay",
            "ba",  "bi",  "bik", "br",  "bs",  "cak", "cbk", "ceb", "ch",  "cic",

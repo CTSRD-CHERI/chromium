@@ -459,7 +459,7 @@ bool MahiWebContentsManagerImpl::ShouldSkip(
     content::WebContents* web_contents) {
   const auto url = web_contents->GetURL();
 
-  static constexpr auto kSkipUrls = base::MakeFixedFlatSet<std::string_view>(
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kSkipUrls = base::MakeFixedFlatSet<std::string_view>(
       {// blank and default pages.
        "about:blank", "chrome://newtab/",
        // Workspace

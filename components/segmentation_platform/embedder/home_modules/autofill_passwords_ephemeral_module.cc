@@ -24,14 +24,14 @@ namespace {
 
 // Defines the signals that must all evaluate to true for
 // `AutofillPasswordsEphemeralModule` to be shown.
-constexpr auto kRequiredSignals = base::MakeFixedFlatSet<std::string_view>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kRequiredSignals = base::MakeFixedFlatSet<std::string_view>({
     segmentation_platform::kDidNotUsePasswordAutofill,
     segmentation_platform::kPasswordManagerAllowedByEnterprisePolicy,
 });
 
 // Defines the signals that, if any are present and evaluate to true, will
 // prevent `AutofillPasswordsEphemeralModule` from being shown.
-constexpr auto kDisqualifyingSignals =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kDisqualifyingSignals =
     base::MakeFixedFlatSet<std::string_view>({
         segmentation_platform::kIsNewUser,
     });

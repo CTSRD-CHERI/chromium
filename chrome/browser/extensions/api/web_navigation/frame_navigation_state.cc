@@ -29,7 +29,7 @@ FrameNavigationState::~FrameNavigationState() = default;
 
 // static
 bool FrameNavigationState::IsValidUrl(const GURL& url) {
-  constexpr auto kValidSchemes = base::MakeFixedFlatSet<std::string_view>({
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kValidSchemes = base::MakeFixedFlatSet<std::string_view>({
       content::kChromeUIScheme,
       url::kHttpScheme,
       url::kHttpsScheme,

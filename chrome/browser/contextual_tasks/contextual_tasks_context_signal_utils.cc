@@ -16,7 +16,7 @@ namespace contextual_tasks {
 namespace {
 
 // TODO: crbug.com/452036470 - Do i18n of this set and related logic.
-constexpr auto kStopWords = base::MakeFixedFlatSet<std::string>(
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kStopWords = base::MakeFixedFlatSet<std::string>(
     {"a",      "an",    "the",  "and",  "but",   "or",   "is",   "are",
      "was",    "were",  "be",   "been", "being", "in",   "on",   "at",
      "of",     "for",   "with", "it",   "its",   "if",   "that", "this",

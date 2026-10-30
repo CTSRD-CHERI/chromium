@@ -16,7 +16,7 @@ constexpr char kIsDefaultBrowserSignalKey[] = "is_default_browser_chrome_ios";
 
 // Defines the signals that must all evaluate to false for
 // `DefaultBrowserPromoEphemeralModule` to be shown.
-constexpr auto kDisqualifyingSignals =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kDisqualifyingSignals =
     base::MakeFixedFlatSet<std::string_view>({
         segmentation_platform::kIsNewUser,
         kIsDefaultBrowserSignalKey,
