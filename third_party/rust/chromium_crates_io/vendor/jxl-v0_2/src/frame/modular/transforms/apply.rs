@@ -83,11 +83,13 @@ impl TransformStepChunk {
             );
             return Ok(vec![]);
         }
+        let mut single_buf_out = [0];
         let buf_out: &[usize] = match &self.step {
             TransformStep::Rct { buf_out, .. } => buf_out,
             TransformStep::Palette { buf_out, .. } => buf_out,
             TransformStep::HSqueeze { buf_out, .. } | TransformStep::VSqueeze { buf_out, .. } => {
-                &[*buf_out]
+                single_buf_out[0] = *buf_out;
+                &single_buf_out
             }
         };
 
