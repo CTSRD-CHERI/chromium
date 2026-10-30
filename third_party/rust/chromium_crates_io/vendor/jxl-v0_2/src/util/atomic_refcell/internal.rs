@@ -149,7 +149,7 @@ impl<'a, T: ?Sized> AtomicRef<'a, T> {
         // Safety note: `f(&*orig)` is derived from `orig.ptr` (via `Deref` impl), therefore `ptr`
         // is derived from the same `AtomicRefCell` that `orig.token` is obtained from.
         AtomicRef {
-            ptr: NonNull::from_ref(f(&*orig)),
+            ptr: NonNull::from(f(&*orig)),
             token: orig.token,
         }
     }
@@ -215,7 +215,7 @@ impl<'a, T: ?Sized> AtomicRefMut<'a, T> {
         // Safety note: `f(&*orig)` is derived from `orig.ptr` (via `DerefMut` impl), therefore
         // `ptr` is derived from the same `AtomicRefCell` that `orig.token` is obtained from.
         AtomicRefMut {
-            ptr: NonNull::from_ref(f(&mut *orig)),
+            ptr: NonNull::from(f(&mut *orig)),
             token: orig.token,
             _phantom: PhantomData,
         }
