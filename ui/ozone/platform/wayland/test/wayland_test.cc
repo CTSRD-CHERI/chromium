@@ -8,6 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
