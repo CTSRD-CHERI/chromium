@@ -518,13 +518,28 @@ impl Frame {
                 && alpha_in_color.is_some()
                 && !source_alpha_associated;
 
-            let color_source_channels: &[usize] =
+            let mut color_source_channel_storage = [0; 4];
+            let color_source_channel_count =
                 match (pixel_format.color_type.is_grayscale(), alpha_in_color) {
-                    (true, None) => &[0],
-                    (true, Some(c)) => &[0, c],
-                    (false, None) => &[0, 1, 2],
-                    (false, Some(c)) => &[0, 1, 2, c],
+                    (true, None) => 1,
+                    (true, Some(c)) => {
+                        color_source_channel_storage[1] = c;
+                        2
+                    }
+                    (false, None) => {
+                        color_source_channel_storage[1] = 1;
+                        color_source_channel_storage[2] = 2;
+                        3
+                    }
+                    (false, Some(c)) => {
+                        color_source_channel_storage[1] = 1;
+                        color_source_channel_storage[2] = 2;
+                        color_source_channel_storage[3] = c;
+                        4
+                    }
                 };
+            let color_source_channels =
+                &color_source_channel_storage[..color_source_channel_count];
             if let Some(df) = &pixel_format.color_data_format {
                 // Add premultiply stage if needed (before conversion to output format)
                 if should_premultiply && let Some(alpha_channel) = alpha_in_color {
