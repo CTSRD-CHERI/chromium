@@ -129,7 +129,11 @@ bool ParseRgbColorString(const std::string& color_string, SkColor* result) {
   double alpha = 1.0;
 
   // Percentage rgb values are not supported.
+#if __cpp_lib_string_contains
   if (color_string.contains('%')) {
+#else
+  if (color_string.find('%') != std::string::npos) {
+#endif
     NOTIMPLEMENTED();
     return false;
   }

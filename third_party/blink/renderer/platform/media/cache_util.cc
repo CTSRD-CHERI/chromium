@@ -49,15 +49,27 @@ uint32_t GetReasonsForUncacheability(const WebURLResponse& response) {
   std::string cache_control_header =
       base::ToLowerASCII(response.HttpHeaderField("cache-control").Utf8());
 
+#if __cpp_lib_string_contains
   if (cache_control_header.contains("no-cache")) {
+#else
+  if (cache_control_header.find("no-cache") != std::string::npos) {
+#endif
     reasons |= kNoCache;
   }
 
+#if __cpp_lib_string_contains
   if (cache_control_header.contains("no-store")) {
+#else
+  if (cache_control_header.find("no-store") != std::string::npos) {
+#endif
     reasons |= kNoStore;
   }
 
+#if __cpp_lib_string_contains
   if (cache_control_header.contains("must-revalidate")) {
+#else
+  if (cache_control_header.find("must-revalidate") != std::string::npos) {
+#endif
     reasons |= kHasMustRevalidate;
   }
 
@@ -92,8 +104,13 @@ base::TimeDelta GetCacheValidUntil(const WebURLResponse& response) {
   std::string cache_control_header =
       base::ToLowerASCII(response.HttpHeaderField("cache-control").Utf8());
 
+#if __cpp_lib_string_contains
   if (cache_control_header.contains("no-cache") ||
       cache_control_header.contains("must-revalidate")) {
+#else
+  if (cache_control_header.find("no-cache") != std::string::npos ||
+      cache_control_header.find("must-revalidate") != std::string::npos) {
+#endif
     return base::TimeDelta();
   }
 
