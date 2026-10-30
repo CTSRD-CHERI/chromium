@@ -168,7 +168,7 @@ TEST_F(ZwpTextInputV3Test, SetCursorRect) {
 
 TEST_F(ZwpTextInputV3Test, SetSurroundingText) {
   const std::string text("surroundingすしはおいしいですtext");
-  constexpr std::string kSurroundingText("surroundingtext");
+  const std::string kSurroundingText("surroundingtext");
   constexpr gfx::Range kPreeditRange(11, 38);
   gfx::Range selection_range;
 
@@ -345,7 +345,7 @@ TEST_F(ZwpTextInputV3Test, SetSurroundingText) {
 TEST_F(ZwpTextInputV3Test, PendingRequestsSentOnDone) {
   constexpr gfx::Rect kRect(50, 20, 1, 1);
   const std::string text("surroundingすしはおいしいですtext");
-  constexpr std::string kSurroundingText("surroundingtext");
+  const std::string kSurroundingText("surroundingtext");
   constexpr gfx::Range kPreeditRange(11, 38);
   constexpr gfx::Range kSelectionRange(38, 38);
 
@@ -615,7 +615,7 @@ TEST_F(ZwpTextInputV3Test, OnPreeditString) {
 }
 
 TEST_F(ZwpTextInputV3Test, OnCommitString) {
-  constexpr std::string kCommitString("CommitString");
+  const std::string kCommitString("CommitString");
   EXPECT_CALL(test_client_, OnDeleteSurroundingText(_, _)).Times(0);
   EXPECT_CALL(test_client_, OnCommitString(kCommitString));
   PostToServerAndWait([kCommitString](wl::TestWaylandServerThread* server) {
@@ -713,9 +713,9 @@ TEST_F(ZwpTextInputV3Test, OnDeleteSurroundingTextLengthMorethanText) {
 }
 
 TEST_F(ZwpTextInputV3Test, OnDoneWithCommitAndPreedit) {
-  constexpr std::string kPreeditString("PreeditString");
+  const std::string kPreeditString("PreeditString");
   constexpr gfx::Range kPreeditCursor{0, 13};
-  constexpr std::string kCommitString("CommitString");
+  const std::string kCommitString("CommitString");
   InSequence s;
   EXPECT_CALL(test_client_, OnDeleteSurroundingText(_, _)).Times(0);
   EXPECT_CALL(test_client_, OnCommitString(kCommitString));
@@ -751,7 +751,7 @@ TEST_F(ZwpTextInputV3Test, OnDoneWithDeleteSurroundingAndCommit) {
   constexpr gfx::Range kSelectionRange = {11, 38};
   text_input_v3_->SetSurroundingText(text, gfx::Range::InvalidRange(),
                                      kSelectionRange);
-  constexpr std::string kCommitString("CommitString");
+  const std::string kCommitString("CommitString");
 
   InSequence s;
   EXPECT_CALL(test_client_, OnDeleteSurroundingText(10, 29));
@@ -773,7 +773,7 @@ TEST_F(ZwpTextInputV3Test, OnDoneWithDeleteSurroundingAndPreedit) {
   constexpr gfx::Range kSelectionRange = {11, 38};
   text_input_v3_->SetSurroundingText(text, gfx::Range::InvalidRange(),
                                      kSelectionRange);
-  constexpr std::string kPreeditString("PreeditString");
+  const std::string kPreeditString("PreeditString");
   constexpr gfx::Range kPreeditCursor{0, 13};
 
   InSequence s;
@@ -800,8 +800,8 @@ TEST_F(ZwpTextInputV3Test, OnDoneWithDeleteSurroundingCommitAndPreedit) {
   constexpr gfx::Range kSelectionRange = {11, 38};
   text_input_v3_->SetSurroundingText(text, gfx::Range::InvalidRange(),
                                      kSelectionRange);
-  constexpr std::string kCommitString("CommitString");
-  constexpr std::string kPreeditString("PreeditString");
+  const std::string kCommitString("CommitString");
+  const std::string kPreeditString("PreeditString");
   constexpr gfx::Range kPreeditCursor{0, 13};
 
   InSequence s;
@@ -826,7 +826,7 @@ TEST_F(ZwpTextInputV3Test, OnDoneWithDeleteSurroundingCommitAndPreedit) {
 }
 
 TEST_F(ZwpTextInputV3Test, PendingInputEventsClearedOnEnable) {
-  constexpr std::string kCommitString("CommitString");
+  const std::string kCommitString("CommitString");
   constexpr std::string_view kPreeditString("PreeditString");
   constexpr gfx::Range kPreeditCursor{0, 13};
   PostToServerAndWait([kPreeditString, kPreeditCursor,
@@ -863,7 +863,7 @@ TEST_F(ZwpTextInputV3Test, PendingInputEventsClearedOnEnable) {
 }
 
 TEST_F(ZwpTextInputV3Test, PendingInputEventsClearedOnDisable) {
-  constexpr std::string kCommitString("CommitString");
+  const std::string kCommitString("CommitString");
   constexpr std::string_view kPreeditString("PreeditString");
   constexpr gfx::Range kPreeditCursor{0, 13};
   PostToServerAndWait([kPreeditString, kPreeditCursor,
@@ -900,7 +900,7 @@ TEST_F(ZwpTextInputV3Test, PendingInputEventsClearedOnDisable) {
 }
 
 TEST_F(ZwpTextInputV3Test, PendingInputEventsClearedOnReset) {
-  constexpr std::string kCommitString("CommitString");
+  const std::string kCommitString("CommitString");
   constexpr std::string_view kPreeditString("PreeditString");
   constexpr gfx::Range kPreeditCursor{0, 13};
   PostToServerAndWait([kPreeditString, kPreeditCursor,
