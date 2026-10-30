@@ -77,7 +77,7 @@ fn new_namespaces(existing: &Namespace, new: &Namespace, seen_first_event: bool)
         // Don't add the first empty default namespace, as the parser synthesizes it and
         // it likely did not come from the input document.
         // See: https://github.com/kornelski/xml-rs/issues/48
-        if existing.get(new_prefix).is_none_or(|uri| uri != new_uri)
+        if existing.get(new_prefix).map_or(true, |uri| uri != new_uri)
             && (seen_first_event || !new_prefix.is_empty() || !new_uri.is_empty())
         {
             result.put(new_prefix, new_uri);
