@@ -173,6 +173,7 @@ BASE_FIXED_FLAT_SET_CONSTEXPR auto kDumpProviderAllowlist =
         "WebMediaPlayer_MediaThread",
         // clang-format on
     });
+#endif
 
 // A list of string names that are allowed for the memory allocator dumps in
 // background mode.
@@ -669,6 +670,7 @@ BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllocatorDumpNameAllowlist =
         "tracing/heap_profiler_partition_alloc/AllocationRegister",
         // clang-format on
     });
+#endif
 
 base::span<const std::string_view> g_dump_provider_allowlist_for_testing;
 base::span<const std::string_view> g_allocator_dump_name_allowlist_for_testing;
@@ -677,7 +679,11 @@ base::span<const std::string_view> g_allocator_dump_name_allowlist_for_testing;
 
 bool IsMemoryDumpProviderInAllowlist(const char* mdp_name) {
   if (g_dump_provider_allowlist_for_testing.empty()) {
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+    return GetDumpProviderAllowlist().contains(mdp_name);
+#else
     return kDumpProviderAllowlist.contains(mdp_name);
+#endif
   } else {
     return base::Contains(g_dump_provider_allowlist_for_testing, mdp_name);
   }
@@ -725,7 +731,11 @@ bool IsMemoryAllocatorDumpNameInAllowlist(const std::string& name) {
   }
 
   if (g_allocator_dump_name_allowlist_for_testing.empty()) {
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+    return GetAllocatorDumpNameAllowlist().contains(stripped_str);
+#else
     return kAllocatorDumpNameAllowlist.contains(stripped_str);
+#endif
   } else {
     return base::Contains(g_allocator_dump_name_allowlist_for_testing,
                           stripped_str);
