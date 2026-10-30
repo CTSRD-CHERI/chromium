@@ -22,7 +22,7 @@ struct CONTENT_EXPORT DesktopMediaID {
   enum Type { TYPE_NONE, TYPE_SCREEN, TYPE_WINDOW, TYPE_WEB_CONTENTS };
   enum class AudioType { kNone, kSystem, kApplication };
 
-  using Id = intptr_t;
+  using Id = size_t;
 
   // Represents an "unset" value for either |id| or |window_id|.
   static constexpr Id kNullId = 0;
