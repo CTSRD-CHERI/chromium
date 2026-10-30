@@ -19,7 +19,7 @@ namespace ui {
 namespace {
 
 // All the native OS colors which are retrieved from the system directly.
-constexpr auto kNativeOSColorIds = base::MakeFixedFlatSet<ColorId>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kNativeOSColorIds = base::MakeFixedFlatSet<ColorId>({
     // clang-format off
     kColorFocusableBorderFocused,
     kColorLabelSelectionBackground,

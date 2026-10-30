@@ -255,7 +255,7 @@ bool IsFallbackFileHandler(const FullTaskDescriptor& task) {
   // handler of image files (e.g. Keep, Photos) would take precedence. But we
   // want that only to occur if the user has explicitly set the preference for
   // an app other than kMediaAppId to be the default (b/153387960).
-  constexpr auto kBuiltInApps = base::MakeFixedFlatSet<std::string_view>({
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kBuiltInApps = base::MakeFixedFlatSet<std::string_view>({
       // clang-format off
       kFileManagerAppId,
       kFileManagerSwaAppId,
@@ -333,7 +333,7 @@ void PostProcessFoundTasks(Profile* profile,
 // is used to handle certain action IDs of the file manager.
 bool ShouldBeOpenedWithBrowser(const std::string& extension_id,
                                const std::string& action_id) {
-  constexpr auto kOpenWithBrowserActions =
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kOpenWithBrowserActions =
       base::MakeFixedFlatSet<std::string_view>({
           // clang-format off
           "view-pdf",

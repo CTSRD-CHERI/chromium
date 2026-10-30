@@ -45,7 +45,7 @@ constexpr auto kGetExistingDlcsTimeout = base::Minutes(3);
 
 std::string_view ToDlcServiceError(dbus::ErrorResponse* err_response) {
   const std::string& error_name = err_response->GetErrorName();
-  static constexpr auto kErrSet = base::MakeFixedFlatSet<std::string_view>({
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kErrSet = base::MakeFixedFlatSet<std::string_view>({
       dlcservice::kErrorNone,
       dlcservice::kErrorInternal,
       dlcservice::kErrorBusy,

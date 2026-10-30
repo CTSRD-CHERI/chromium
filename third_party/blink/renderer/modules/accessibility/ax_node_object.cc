@@ -1074,7 +1074,11 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     return kIncludeObject;
   }
 
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  static const auto always_included_computed_roles =
+#else
   static constexpr auto always_included_computed_roles =
+#endif
       base::MakeFixedFlatSet<ax::mojom::blink::Role>({
           ax::mojom::blink::Role::kAbbr,
           ax::mojom::blink::Role::kApplication,

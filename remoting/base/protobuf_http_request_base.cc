@@ -79,7 +79,7 @@ bool ProtobufHttpRequestBase::HandleRetry(HttpStatus::Code code) {
   // network error, and uses max retries rather than an absolute deadline for
   // setting the limit. Hence we use our own retry logic.
 
-  static constexpr auto kRetriableErrorCodes =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kRetriableErrorCodes =
       base::MakeFixedFlatSet<HttpStatus::Code>(
           {HttpStatus::Code::ABORTED, HttpStatus::Code::UNAVAILABLE,
            HttpStatus::Code::NETWORK_ERROR});

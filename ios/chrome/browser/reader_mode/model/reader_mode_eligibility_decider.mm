@@ -39,7 +39,7 @@ ReaderModeHeuristicResult GetReaderModeHeuristicResult(
 }
 
 // These are known google websites that don't support reader mode.
-static constexpr auto kGoogleWorkspaceBlocklist =
+static BASE_FIXED_FLAT_SET_CONSTEXPR auto kGoogleWorkspaceBlocklist =
     base::MakeFixedFlatSet<std::string_view>(
         {"assistant.google.com", "calendar.google.com", "docs.google.com",
          "drive.google.com", "mail.google.com", "photos.google.com"});

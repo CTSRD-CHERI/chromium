@@ -33,7 +33,7 @@ FARPROC WINAPI DelayLoadFailureHook(unsigned reason, DelayLoadInfo* dll_info) {
     // triggered by the delay load runtime. Returning 0 will tell the runtime
     // that this failure hasn't been handled and it'll cause the exception to be
     // raised.
-    static constexpr auto kOptionalModules =
+    static BASE_FIXED_FLAT_SET_CONSTEXPR auto kOptionalModules =
         base::MakeFixedFlatSet<std::string_view>(
             {"bthprops.cpl", "mf.dll", "mfplat.dll", "mfreadwrite.dll"});
     // Copy and transform the module name into lower case.

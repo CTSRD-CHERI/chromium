@@ -49,7 +49,7 @@ constexpr base::TimeDelta kLongpressActivationDelay = base::Milliseconds(500);
 
 // TODO(b/217560706): Make this different based on current engine after research
 // is conducted.
-constexpr auto kDefaultLongpressEnabledKeys = base::MakeFixedFlatSet<char>(
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kDefaultLongpressEnabledKeys = base::MakeFixedFlatSet<char>(
     {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
      'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
      'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

@@ -48,7 +48,7 @@ bool ImeKeyboard::IsCapsLockEnabled() {
 }
 
 bool ImeKeyboard::IsISOLevel5ShiftAvailable() const {
-  constexpr auto kSet = base::MakeFixedFlatSet<std::string_view>({
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kSet = base::MakeFixedFlatSet<std::string_view>({
       "ca(multix)",
       "de(neo)",
   });
@@ -57,7 +57,7 @@ bool ImeKeyboard::IsISOLevel5ShiftAvailable() const {
 }
 
 bool ImeKeyboard::IsAltGrAvailable() const {
-  constexpr auto kSet = base::MakeFixedFlatSet<std::string_view>({
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kSet = base::MakeFixedFlatSet<std::string_view>({
       "be",
       "bg",
       "bg(phonetic)",

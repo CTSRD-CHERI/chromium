@@ -36,7 +36,7 @@ enum class TransliterationId {
 };
 
 // List of country codes where the `TransliterationId::kGerman` can be applied.
-static constexpr auto kCountriesWithGermanTransliteration =
+static BASE_FIXED_FLAT_SET_CONSTEXPR auto kCountriesWithGermanTransliteration =
     base::MakeFixedFlatSet<std::string_view>(
         {"AT", "BE", "CH", "DE", "IT", "LI", "LU"});
 

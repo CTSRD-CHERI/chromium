@@ -59,7 +59,7 @@ constexpr std::array<const char*, 6> kServiceNames = {
 // protocol.  Don't allow IPP/IPPS connections for printers in this list.
 // Printers in this list should be all lowercase.  See b/268531843 for more
 // context.
-constexpr auto kIppRejectList = base::MakeFixedFlatSet<std::string_view>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kIppRejectList = base::MakeFixedFlatSet<std::string_view>({
     "brother mfc-9340cdw",
     "canon e480 series",
     "canon ib4000 series",

@@ -125,7 +125,7 @@ static const char* kEnglishDictationCommands[] = {
     "move to the next sentence",
     "move to the previous sentence"};
 
-constexpr auto kOfflineNotSupportedLocaleSet =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kOfflineNotSupportedLocaleSet =
     base::MakeFixedFlatSet<std::string_view>({"af-ZA", "kn-IN"});
 
 PrefService* GetActiveUserPrefs() {

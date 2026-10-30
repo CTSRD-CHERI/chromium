@@ -97,7 +97,7 @@ std::vector<Token> ExtractContent(const std::string& content_id,
 }
 
 bool IsNonLatinLocale(const std::string& locale) {
-  static constexpr auto kNonLatinLocales =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kNonLatinLocales =
       base::MakeFixedFlatSet<std::string_view>(
           {"am", "ar", "be", "bg", "bn", "el", "fa", "gu", "hi", "hy", "iw",
            "ja", "ka", "kk", "km", "kn", "ko", "ky", "lo", "mk", "ml", "mn",
@@ -113,7 +113,7 @@ bool IsStopword(const std::u16string& word, const std::string& locale) {
     return false;
 
   // A set of stopwords in English. This set is taken from NLTK library.
-  static constexpr auto kEnglishStopWords =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kEnglishStopWords =
       base::MakeFixedFlatSet<std::string_view>(
           {"i",         "me",         "my",        "myself",  "we",
            "our",       "ours",       "ourselves", "you",     "you're",

@@ -21,7 +21,7 @@ namespace {
 // 3. Bind these receivers to a generic implementation, and terminate the
 //    execution context if it receives a synchronous message.
 // Stores the list of interface names that declare sync methods.
-constexpr auto kSyncMethodInterfaces = base::MakeFixedFlatSet<std::string_view>(
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kSyncMethodInterfaces = base::MakeFixedFlatSet<std::string_view>(
     {"blink.mojom.NotificationService"});
 
 }  // namespace

@@ -20,7 +20,7 @@ class URLDeduplicationHelper;
 
 namespace visited_url_ranking {
 
-inline constexpr auto kBlocklistedCategories =
+inline BASE_FIXED_FLAT_SET_CONSTEXPR auto kBlocklistedCategories =
     base::MakeFixedFlatSet<std::string_view>(
         {"/g/11b76fyj2r", "/m/09lkz", "/m/012mj", "/m/01rbb", "/m/02px0wr",
          "/m/028hh", "/m/034qg", "/m/034dj", "/m/0jxxt", "/m/015fwp",
@@ -29,7 +29,7 @@ inline constexpr auto kBlocklistedCategories =
 
 // For Android, this set should be consistent with sDefaultAppBlocklist in
 // TabResumptionModuleUtils.java.
-inline constexpr auto kDefaultAppBlocklist =
+inline BASE_FIXED_FLAT_SET_CONSTEXPR auto kDefaultAppBlocklist =
     base::MakeFixedFlatSet<std::string_view>(
         {"assistant.google.com", "calendar.google.com", "docs.google.com",
          "drive.google.com", "mail.google.com", "music.youtube.com",

@@ -459,11 +459,11 @@ bool IsMatchTypeSupported(const std::string& match_type) {
   // types that have already been used. One should change this if we start using
   // new types in the future. Note that most unsupported match types are either
   // useless in CrOS or inapplicable to the non-X environment.
-  constexpr auto kSupportedMatchTypes =
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kSupportedMatchTypes =
       base::MakeFixedFlatSet<std::string_view>(
           {"MatchProduct", "MatchDevicePath", "MatchUSBID", "MatchDMIProduct",
            "MatchIsPointer", "MatchIsTouchpad", "MatchIsTouchscreen"});
-  constexpr auto kUnsupportedMatchTypes =
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kUnsupportedMatchTypes =
       base::MakeFixedFlatSet<std::string_view>(
           {"MatchVendor", "MatchOS", "MatchPnPID", "MatchDriver", "MatchTag",
            "MatchLayout", "MatchIsKeyboard", "MatchIsJoystick",

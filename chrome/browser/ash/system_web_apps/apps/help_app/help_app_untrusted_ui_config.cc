@@ -56,7 +56,7 @@ namespace ash {
 namespace {
 
 // Refer https://crbug.com/458812793 for the source of this set.
-constexpr auto kCrosSwitcherCountriesSet =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kCrosSwitcherCountriesSet =
     base::MakeFixedFlatSet<std::string_view>(
         {"us", "ae", "ar", "at", "au", "be", "bg", "br", "ca", "ch", "cl",
          "co", "cz", "de", "ee", "es", "fi", "fr", "gb", "gr", "hk", "hr",

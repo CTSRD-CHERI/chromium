@@ -50,7 +50,7 @@ namespace {
 
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
 
-constexpr auto kAllowedCallerPrograms =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowedCallerPrograms =
     base::MakeFixedFlatSet<base::FilePath::StringViewType>({
         "/opt/google/chrome/chrome",
         "/opt/google/chrome-beta/chrome",
@@ -62,7 +62,7 @@ constexpr auto kAllowedCallerPrograms =
 
 // Names of environment variables that store the path to directories where apps
 // are installed.
-constexpr auto kAppsDirectoryEnvVars =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kAppsDirectoryEnvVars =
     base::MakeFixedFlatSet<base::cstring_view>({
         "PROGRAMFILES",
 
@@ -77,7 +77,7 @@ constexpr auto kAppsDirectoryEnvVars =
     });
 
 // Relative to the Program Files directory.
-constexpr auto kAllowedCallerPrograms =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowedCallerPrograms =
     base::MakeFixedFlatSet<base::FilePath::StringViewType>({
         L"Google\\Chrome\\Application\\chrome.exe",
         L"Google\\Chrome Beta\\Application\\chrome.exe",

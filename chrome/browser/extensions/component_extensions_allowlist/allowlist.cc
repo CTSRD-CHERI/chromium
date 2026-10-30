@@ -31,7 +31,7 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 namespace extensions {
 
 bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
-  constexpr auto kAllowed = base::MakeFixedFlatSet<std::string_view>({
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowed = base::MakeFixedFlatSet<std::string_view>({
       extension_misc::kInAppPaymentsSupportAppId,
       extension_misc::kPdfExtensionId,
 #if BUILDFLAG(IS_CHROMEOS)
@@ -117,7 +117,7 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
 #if BUILDFLAG(IS_CHROMEOS)
 bool IsComponentExtensionAllowlistedForSignInProfile(
     const std::string& extension_id) {
-  constexpr auto kAllowed = base::MakeFixedFlatSet<std::string_view>({
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowed = base::MakeFixedFlatSet<std::string_view>({
       extension_misc::kAccessibilityCommonExtensionId,
       extension_misc::kChromeVoxExtensionId,
       extension_misc::kEspeakSpeechSynthesisExtensionId,

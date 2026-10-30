@@ -150,7 +150,7 @@ constexpr uint32_t kScancodesDrallion[] = {
 
 // For Vivaldi keyboard, some are having delete key on the top row.
 constexpr uint32_t kScancodeDelete = 0xD3;
-constexpr auto kModelsWithTopRowDelete =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kModelsWithTopRowDelete =
     base::MakeFixedFlatSet<std::string_view>({"rull", "teltic"});
 
 // Turkish F-Type xkb keyboard layout id which is used to differentiate between

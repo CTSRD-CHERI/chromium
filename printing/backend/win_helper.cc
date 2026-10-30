@@ -483,7 +483,7 @@ std::vector<std::string> GetDriverInfo(HANDLE printer) {
 }
 
 bool DoesDriverDisplayFileDialogForPrinting(const std::string& printer_name) {
-  static constexpr auto kPortNames = base::MakeFixedFlatSet<std::wstring_view>(
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kPortNames = base::MakeFixedFlatSet<std::wstring_view>(
       {kPrinterDriverPortFile, kPrinterDriverPortPrompt,
        kPrinterDriverPortFax});
   return kPortNames.contains(GetPrinterDriverPort(printer_name));

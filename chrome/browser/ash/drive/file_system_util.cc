@@ -298,7 +298,7 @@ ConnectionStatus GetDriveConnectionStatus(Profile* const profile,
 }
 
 bool IsPinnableGDocMimeType(const std::string& mime_type) {
-  constexpr auto kPinnableGDocMimeTypes =
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kPinnableGDocMimeTypes =
       base::MakeFixedFlatSet<std::string_view>({
           "application/vnd.google-apps.document",
           "application/vnd.google-apps.drawing",

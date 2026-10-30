@@ -25,7 +25,11 @@ enum class SecurityDomainId {
   kMaxValue = kPasskeys,
 };
 
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+inline const auto kAllSecurityDomainIdValues =
+#else
 inline constexpr auto kAllSecurityDomainIdValues =
+#endif
     base::MakeFixedFlatSet<SecurityDomainId>(
         {SecurityDomainId::kChromeSync, SecurityDomainId::kPasskeys});
 static_assert(static_cast<int>(SecurityDomainId::kMaxValue) ==

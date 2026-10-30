@@ -378,7 +378,7 @@ void DictationTestUtils::WaitForEditableFocus() {
 void DictationTestUtils::WaitForPumpkinTaggerReady() {
   std::string locale =
       profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
-  static constexpr auto kPumpkinLocales =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kPumpkinLocales =
       base::MakeFixedFlatSet<std::string_view>(
           {"en-US", "fr-FR", "it-IT", "de-DE", "es-ES"});
   if (!kPumpkinLocales.contains(locale)) {

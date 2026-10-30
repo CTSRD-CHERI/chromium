@@ -32,7 +32,7 @@ namespace autofill {
 
 namespace {
 // The list of countries where the fallback parsing is not supported.
-static constexpr auto countries_not_supporting_fallback_parsing =
+static BASE_FIXED_FLAT_SET_CONSTEXPR auto countries_not_supporting_fallback_parsing =
     base::MakeFixedFlatSet<AddressCountryCode>({AddressCountryCode("IN")});
 }  // namespace
 

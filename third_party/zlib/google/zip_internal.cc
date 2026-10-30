@@ -403,7 +403,11 @@ Compression GetCompressionMethod(const base::FilePath& path) {
 
   // Well known filename extensions of files that a likely to be already
   // compressed. The extensions are in lower case without the leading dot.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  static const auto kExts =
+#else
   static constexpr auto kExts =
+#endif
       base::MakeFixedFlatSet<base::FilePath::StringViewType>({
           FILE_PATH_LITERAL("3g2"),   //
           FILE_PATH_LITERAL("3gp"),   //

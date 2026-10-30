@@ -600,7 +600,7 @@ void XboxControllerMac::SetLEDPattern(LEDPattern pattern) {
 }
 
 bool XboxControllerMac::SupportsVibration() const {
-  static constexpr auto kNoVibration = base::MakeFixedFlatSet<GamepadId>({
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kNoVibration = base::MakeFixedFlatSet<GamepadId>({
       // The Xbox Adaptive Controller has no vibration actuators.
       GamepadId::kMicrosoftProduct0b0a,
       // SteelSeries Stratus Duo is XInput but does not support vibration.

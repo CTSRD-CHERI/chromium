@@ -40,7 +40,11 @@ std::string GetDomainFromEmail(const std::string& email) {
 }
 
 bool IsGmailDomain(const std::string& email_domain) {
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  static const auto kGmailDomains =
+#else
   static constexpr auto kGmailDomains =
+#endif
       base::MakeFixedFlatSet<std::string_view>({"gmail.com", "googlemail.com"});
 
   return kGmailDomains.contains(email_domain);
@@ -59,7 +63,11 @@ bool AccountManagedStatusFinder::MayBeEnterpriseDomain(
   // `KNOWN_INVALID_DOMAINS` from GetAgencySignupStateProducerModule.java.
   // Sharing this in open source Chromium code was green-lighted according to
   // https://chromium-review.googlesource.com/c/chromium/src/+/2945029/comment/d8731200_4064534e/
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  static const auto kKnownConsumerDomains =
+#else
   static constexpr auto kKnownConsumerDomains =
+#endif
       base::MakeFixedFlatSet<std::string_view>({"123mail.org",
                                                 "150mail.com",
                                                 "150ml.com",

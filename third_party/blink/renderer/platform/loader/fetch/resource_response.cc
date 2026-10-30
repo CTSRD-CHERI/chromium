@@ -53,7 +53,7 @@ namespace blink {
 
 namespace {
 
-constexpr auto kSupportedContentEncodingValues =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kSupportedContentEncodingValues =
     base::MakeFixedFlatSet<std::string_view>({
         "br",
         "dcb",

@@ -22,7 +22,7 @@
 namespace policy {
 namespace {
 
-constexpr auto kKnownGoogleIntegrations =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kKnownGoogleIntegrations =
     base::MakeFixedFlatSet<std::string_view>(
         {ash::prefs::kGoogleCalendarIntegrationName,
          ash::prefs::kGoogleClassroomIntegrationName,

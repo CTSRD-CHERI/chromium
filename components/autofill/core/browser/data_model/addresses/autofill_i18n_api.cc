@@ -49,7 +49,7 @@ std::u16string GetFormattingExpressionOverrides(
   // The list of countries for which the street location is composed of the
   // house number followed by the street name. The default value returned by the
   // formatting API is the opposite (i.e. street name followed by house number).
-  static constexpr auto kHouseNumberFirstCountriesSet =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kHouseNumberFirstCountriesSet =
       base::MakeFixedFlatSet<std::string_view>(
           {"AU", "CA", "CN", "FR", "IE", "IL", "MY", "NZ", "PK", "PH", "SA",
            "SG", "LK", "TH", "GB", "US", "VN", "ZA"});
@@ -70,7 +70,7 @@ std::u16string GetFormattingExpressionOverrides(
 
   // The set of countries without separate address model
   // with space zip code separator.
-  static constexpr auto kSpaceZipCodeSeparatorCountriesSet =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kSpaceZipCodeSeparatorCountriesSet =
       base::MakeFixedFlatSet<std::string_view>(
           {"CZ", "GB", "GR", "HR", "IE", "LB", "MT", "SE", "SK", "IN"});
 

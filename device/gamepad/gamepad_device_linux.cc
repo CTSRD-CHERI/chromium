@@ -269,7 +269,7 @@ bool GamepadDeviceLinux::IsEmpty() const {
 }
 
 bool GamepadDeviceLinux::SupportsVibration() const {
-  static constexpr auto kNoVibration = base::MakeFixedFlatSet<GamepadId>({
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kNoVibration = base::MakeFixedFlatSet<GamepadId>({
       // The Xbox Adaptive Controller reports force feedback capability, but
       // the device itself does not have any vibration actuators.
       GamepadId::kMicrosoftProduct0b0a,

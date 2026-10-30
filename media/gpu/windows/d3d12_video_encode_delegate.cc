@@ -177,7 +177,7 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
       supported_profile.profile = profile;
       supported_profile.gpu_supported_pixel_formats = formats;
       if (supports_shared_image) {
-        static constexpr auto kSupportedPixelFormatD3D12VideoProcessing =
+        static BASE_FIXED_FLAT_SET_CONSTEXPR auto kSupportedPixelFormatD3D12VideoProcessing =
             base::MakeFixedFlatSet<VideoPixelFormat>(
                 {PIXEL_FORMAT_I420, PIXEL_FORMAT_NV12, PIXEL_FORMAT_YV12,
                  PIXEL_FORMAT_NV21, PIXEL_FORMAT_ARGB, PIXEL_FORMAT_XRGB,

@@ -84,10 +84,10 @@ static constexpr CLSID kIntelAV1HybridEncoderCLSID = {
     0x4794,
     {0x8c, 0x5a, 0xfb, 0xef, 0xfe, 0xff, 0xb8, 0x2d}};
 
-static constexpr auto kSupportedPixelFormats =
+static BASE_FIXED_FLAT_SET_CONSTEXPR auto kSupportedPixelFormats =
     base::MakeFixedFlatSet<VideoPixelFormat>(
         {PIXEL_FORMAT_I420, PIXEL_FORMAT_NV12});
-static constexpr auto kSupportedPixelFormatsD3DVideoProcessing =
+static BASE_FIXED_FLAT_SET_CONSTEXPR auto kSupportedPixelFormatsD3DVideoProcessing =
     base::MakeFixedFlatSet<VideoPixelFormat>(
         {PIXEL_FORMAT_I420, PIXEL_FORMAT_NV12, PIXEL_FORMAT_YV12,
          PIXEL_FORMAT_NV21, PIXEL_FORMAT_ARGB, PIXEL_FORMAT_XRGB,

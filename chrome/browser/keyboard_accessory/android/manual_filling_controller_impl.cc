@@ -41,7 +41,7 @@ using FillingSource = ManualFillingController::FillingSource;
 
 namespace {
 
-constexpr auto kAllowedFillingSources = base::MakeFixedFlatSet<FillingSource>(
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowedFillingSources = base::MakeFixedFlatSet<FillingSource>(
     {FillingSource::PASSWORD_FALLBACKS, FillingSource::CREDIT_CARD_FALLBACKS,
      FillingSource::ADDRESS_FALLBACKS});
 

@@ -224,7 +224,11 @@ TextDirection GetTextDirectionForLocaleInStartUp(const char* locale_name) {
 
   CHECK(locale_name && locale_name[0]);
 
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  static const auto kRtlLanguageCodes =
+#else
   static constexpr auto kRtlLanguageCodes =
+#endif
       base::MakeFixedFlatSet<std::string_view>({"ar", "fa", "he", "iw", "ur"});
   std::vector<std::string_view> locale_split =
       SplitStringPiece(locale_name, "-_", KEEP_WHITESPACE, SPLIT_WANT_ALL);

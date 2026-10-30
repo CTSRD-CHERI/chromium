@@ -65,7 +65,7 @@ UsbConnectionTracker* GetConnectionTracker(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // These extensions can claim the smart card USB class and automatically gain
 // permissions for devices that have an interface with this class.
-constexpr auto kSmartCardPrivilegedExtensionIds =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kSmartCardPrivilegedExtensionIds =
     base::MakeFixedFlatSet<std::string_view>({
         // Smart Card Connector Extension and its Beta version, see
         // crbug.com/1233881.
@@ -205,7 +205,7 @@ void ChromeUsbDelegate::AdjustProtectedInterfaceClasses(
 #if BUILDFLAG(IS_CHROMEOS)
   // These extensions can claim the protected HID interface class (example: used
   // as badge readers)
-  static constexpr auto kHidPrivilegedExtensionIds =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kHidPrivilegedExtensionIds =
       base::MakeFixedFlatSet<std::string_view>({
           // Imprivata Extensions, see crbug.com/1065112 and crbug.com/995294.
           "baobpecgllpajfeojepgedjdlnlfffde",

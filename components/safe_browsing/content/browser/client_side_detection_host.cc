@@ -103,7 +103,7 @@ const int kInnerTextMinThresholdBytes = 5;
 // Set of suspicious tokens that could be used to construct a malicious command.
 // The explanation and rationale behind this list can be found internally at
 // go/sus-commands.
-constexpr auto kSusCommands = base::MakeFixedFlatSet<std::string_view>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kSusCommands = base::MakeFixedFlatSet<std::string_view>({
     // go/keep-sorted start
     "bash",
     "bitsadmin",

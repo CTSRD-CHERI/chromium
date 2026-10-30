@@ -460,7 +460,7 @@ bool AppShouldDefaultHandleLinksInApp(const std::string& app_id) {
 // Returns true if the package with the given |package_name| should open
 // supported links inside the browser by default, on managed devices.
 bool PackageShouldDefaultHandleLinksInBrowser(const std::string& package_name) {
-  constexpr auto allowlist = base::MakeFixedFlatSet<std::string_view>({
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto allowlist = base::MakeFixedFlatSet<std::string_view>({
       "com.google.android.apps.docs",                 // Google Drive
       "com.google.android.apps.docs.editors.docs",    // Google Docs
       "com.google.android.apps.docs.editors.sheets",  // Google Sheets

@@ -316,7 +316,7 @@ bool ParseJSON(std::string_view hsts_json,
                std::string_view pins_json,
                TransportSecurityStateEntries* entries,
                Pinsets* pinsets) {
-  static constexpr auto valid_hsts_keys =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto valid_hsts_keys =
       base::MakeFixedFlatSet<std::string_view>({
           kNameJSONKey,
           kPolicyJSONKey,
@@ -325,7 +325,7 @@ bool ParseJSON(std::string_view hsts_json,
           kPinsJSONKey,
       });
 
-  static constexpr auto valid_pins_keys =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto valid_pins_keys =
       base::MakeFixedFlatSet<std::string_view>({
           kNameJSONKey,
           kIncludeSubdomainsJSONKey,

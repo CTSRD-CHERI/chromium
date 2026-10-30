@@ -458,7 +458,7 @@ void PingManager::AttachThreatDetailsAndLaunchSurvey(
   if (!hats_delegate_) {
     return;
   }
-  static constexpr auto valid_report_types =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto valid_report_types =
       base::MakeFixedFlatSet<ClientSafeBrowsingReportRequest::ReportType>(
           {ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING,
            ClientSafeBrowsingReportRequest::URL_PHISHING,

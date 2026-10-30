@@ -1104,7 +1104,7 @@ bool ExtensionTabUtil::IsKillURL(const GURL& url) {
   }
 
   // Also disallow a few more hosts which are not covered by the check above.
-  constexpr auto kKillHosts = base::MakeFixedFlatSet<std::string_view>({
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kKillHosts = base::MakeFixedFlatSet<std::string_view>({
       chrome::kChromeUIDelayedHangUIHost,
       chrome::kChromeUIHangUIHost,
       chrome::kChromeUIQuitHost,

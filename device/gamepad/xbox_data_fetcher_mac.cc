@@ -28,7 +28,7 @@ namespace device {
 namespace {
 
 // XboxDataFetcher recognizes the following devices connected over USB.
-constexpr auto kSupportedDeviceIds = base::MakeFixedFlatSet<GamepadId>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kSupportedDeviceIds = base::MakeFixedFlatSet<GamepadId>({
     GamepadId::kAcerProduct1304,         // Acer GC501 (X-INPUT mode)
     GamepadId::kAcerProduct1305,         // Acer Nitro (X-INPUT mode)
     GamepadId::kAmazonProduct041a,       // Amazon Luna Controller

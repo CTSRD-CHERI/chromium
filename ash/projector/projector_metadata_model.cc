@@ -34,7 +34,7 @@ constexpr std::string_view kGroupIdKey = "groupId";
 
 // Source of common English abbreviations: icu's sentence break exception list
 // https://source.chromium.org/chromium/chromium/src/+/main:third_party/icu/source/data/brkitr/en.txt.
-constexpr auto kEnglishAbbreviationsInLowerCase =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kEnglishAbbreviationsInLowerCase =
     base::MakeFixedFlatSet<std::string>(
         {"l.p.",    "alt.", "approx.", "e.g.",     "o.",    "maj.",   "misc.",
          "p.o.",    "j.d.", "jam.",    "card.",    "dec.",  "sept.",  "mr.",

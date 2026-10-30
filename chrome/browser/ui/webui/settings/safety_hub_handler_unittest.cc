@@ -1065,7 +1065,7 @@ TEST_F(SafetyHubHandlerTest, HandleGetSafeBrowsingCardData_DisabledByUser) {
 TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
   // TODO(crbug.com/40066645): Remove this after adding names for those
   // types.
-  static constexpr auto kNoNameTypes =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kNoNameTypes =
       base::MakeFixedFlatSet<ContentSettingsType>({
           // clang-format off
           ContentSettingsType::MIDI,

@@ -37,7 +37,7 @@ std::string GetStoredPermanentCountry(
   return variations_service->GetStoredPermanentCountry();
 }
 
-constexpr auto kPrivacySandboxConsentCountries =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kPrivacySandboxConsentCountries =
     base::MakeFixedFlatSet<std::string_view>({
         "gb", "at", "ax", "be", "bg", "bl", "ch", "cy", "cz", "de", "dk",
         "ee", "es", "fi", "fr", "gf", "gg", "gi", "gp", "gr", "hr", "hu",

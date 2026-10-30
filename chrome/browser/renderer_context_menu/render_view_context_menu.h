@@ -580,7 +580,7 @@ class RenderViewContextMenu
   // change.
   //
   // LINT.IfChange(CommandsGatedOnFencedFrameUntrustedNetworkStatus)
-  static constexpr auto kFencedFrameUntrustedNetworkStatusGatedCommands =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kFencedFrameUntrustedNetworkStatusGatedCommands =
       base::MakeFixedFlatSet<int>(
           {// For opening a link.
            IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,

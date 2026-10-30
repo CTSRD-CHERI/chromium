@@ -52,7 +52,7 @@ bool CanAccessMantaFeaturesWithoutMinorRestrictions(Profile* profile) {
   return canAccessMantaFeaturesWithoutMinorRestrictions;
 }
 
-constexpr auto kSeaPenTextInputSupportedLanguages =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kSeaPenTextInputSupportedLanguages =
     base::MakeFixedFlatSet<std::string_view>({"en", "fr", "de", "ja", "es",
                                               "nl", "it", "sv", "nb", "da",
                                               "fi", "pt"});

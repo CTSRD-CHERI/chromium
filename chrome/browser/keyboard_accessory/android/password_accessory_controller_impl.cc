@@ -90,7 +90,7 @@ using password_manager_util::GetLoginMatchType;
 
 namespace {
 
-constexpr auto kRequiresTrustedVaultRetrievalErrorTypes =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kRequiresTrustedVaultRetrievalErrorTypes =
     base::MakeFixedFlatSet<BackendErrorType>(
         {BackendErrorType::kKeyRetrievalRequired,
          BackendErrorType::kEmptySecurityDomain,

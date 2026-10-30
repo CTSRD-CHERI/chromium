@@ -130,7 +130,7 @@ static_assert(std::size(kBlockedCameraNames) == BLOCKED_CAMERA_MAX + 1,
               "BlockedCameraNames enum");
 
 // Use this list only for USB webcams.
-constexpr auto kModelIdsBlockedForMediaFoundation =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kModelIdsBlockedForMediaFoundation =
     base::MakeFixedFlatSet<std::string_view>(
         {// Devices using Empia 2860 or 2820 chips, see
          // https://crbug.com/849636.
@@ -165,14 +165,14 @@ constexpr auto kModelIdsBlockedForMediaFoundation =
          "04f2:b7a3"});
 
 // Use this list only for USB webcams.
-constexpr auto kModelIdsBlockedForMediaFoundationD3D11VideoCapture =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kModelIdsBlockedForMediaFoundationD3D11VideoCapture =
     base::MakeFixedFlatSet<std::string_view>(
         {// D3D11 calls on textures produced by these cameras take so much time
          // that MFCaptureEngine fails with E_MF_SAMPLEALLOCATOREMPTY error
          "05a3:9331", "04f2:b6bf"});
 
 // Use this list only for non-USB webcams.
-constexpr auto kDisplayNamesBlockedForMediaFoundation =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kDisplayNamesBlockedForMediaFoundation =
     base::MakeFixedFlatSet<std::string_view>(
         {// VMware Virtual Webcams cause hangs when there is no physical Webcam.
          // See https://crbug.com/1044974.
