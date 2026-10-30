@@ -53,7 +53,7 @@ namespace ash {
 namespace {
 
 // TODO: b/330936766 - Prioritise "earlier" domains in this list.
-constexpr auto kGoogleCorpGotoHosts = base::MakeFixedFlatSet<std::string_view>(
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kGoogleCorpGotoHosts = base::MakeFixedFlatSet<std::string_view>(
     {"goto2.corp.google.com", "goto.corp.google.com", "goto.google.com", "go"});
 
 constexpr int kMaxGifsToSearch = 25;

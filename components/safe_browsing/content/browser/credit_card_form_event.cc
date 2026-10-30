@@ -27,7 +27,7 @@ CreditCardFormEvent GetCreditCardFormEvent(SiteVisit site_visit,
 #if BUILDFLAG(IS_ANDROID)
 ReferringApp FromReferringAppInfo(internal::ReferringAppInfo info) {
   static constexpr char kAndroidAppPrefix[] = "android-app://";
-  static constexpr auto kSmsApps = base::MakeFixedFlatSet<std::string_view>({
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kSmsApps = base::MakeFixedFlatSet<std::string_view>({
       "android.messages",
       "com.samsung.android.messaging",
   });

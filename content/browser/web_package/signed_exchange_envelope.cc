@@ -29,7 +29,11 @@ namespace {
 bool IsUncachedHeader(std::string_view name) {
   DCHECK_EQ(name, base::ToLowerASCII(name));
 
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  static const auto kUncachedHeaders = base::MakeFixedFlatSet<std::string_view>({
+#else
   constexpr auto kUncachedHeaders = base::MakeFixedFlatSet<std::string_view>({
+#endif
       // "Hop-by-hop header fields listed in the Connection header field
       // (Section 6.1 of {{!RFC7230}})." [spec text]
       // Note: The Connection header field itself is banned as uncached headers,

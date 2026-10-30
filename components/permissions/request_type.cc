@@ -382,7 +382,7 @@ std::optional<ContentSettingsType> RequestTypeToContentSettingsType(
 
 // Returns whether confirmation chips can be displayed
 bool IsConfirmationChipSupported(RequestType for_request_type) {
-  static constexpr auto kRequestsWithChip =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kRequestsWithChip =
       base::MakeFixedFlatSet<RequestType>({
           // clang-format off
           RequestType::kNotifications,

@@ -53,7 +53,7 @@ inline constexpr char kUsedPasswordAutofill[] = "UsedPasswordAutofill";
 // LINT.IfChange(signal_registrations)
 
 // Tips signals attached to a profile.
-inline constexpr auto kProfileSignalNames =
+inline BASE_FIXED_FLAT_SET_CONSTEXPR auto kProfileSignalNames =
     base::MakeFixedFlatSet<std::string_view>({
         signals::kLensUsed,
         signals::kOpenedShoppingWebsite,
@@ -66,7 +66,7 @@ inline constexpr auto kProfileSignalNames =
 // Tips signals related to the device or application itself. These
 // signals are typically used for tracking local events that are not specific
 // to any profile.
-inline constexpr auto kLocalSignalNames =
+inline BASE_FIXED_FLAT_SET_CONSTEXPR auto kLocalSignalNames =
     base::MakeFixedFlatSet<std::string_view>({
         signals::kAddressBarPositionChoiceScreenDisplayed,
     });

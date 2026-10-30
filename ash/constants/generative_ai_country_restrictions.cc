@@ -9,7 +9,7 @@
 namespace ash {
 
 namespace {
-constexpr auto kCountryAllowlist = base::MakeFixedFlatSet<std::string_view>(
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kCountryAllowlist = base::MakeFixedFlatSet<std::string_view>(
     {"ae", "ag", "ai", "am", "ao", "aq", "ar", "as", "at", "au", "aw", "az",
      "bb", "bd", "be", "bf", "bg", "bh", "bi", "bj", "bl", "bm", "bn", "bo",
      "bq", "br", "bs", "bt", "bw", "bz", "ca", "cc", "cd", "cf", "cg", "ch",

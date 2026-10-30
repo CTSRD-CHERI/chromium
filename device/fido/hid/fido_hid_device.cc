@@ -615,7 +615,11 @@ FidoTransportProtocol FidoHidDevice::DeviceTransport() const {
 void FidoHidDevice::DiscoverSupportedProtocolAndDeviceInfo(
     base::OnceClosure done) {
   // The following devices cannot handle GetInfo messages.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  static const auto kForceU2fCompatibilitySet =
+#else
   static constexpr auto kForceU2fCompatibilitySet =
+#endif
       base::MakeFixedFlatSet<std::string_view>({
           "10c4:8acf",  // U2F Zero
           "20a0:4287",  // Nitrokey FIDO U2F

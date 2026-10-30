@@ -28,7 +28,7 @@ constexpr auto kOnDeviceModelType =
 
 // Currently, the following errors, which are used when a model may have been
 // installed but not yet loaded, are treated as waitable.
-static constexpr auto kWaitableReasons =
+static BASE_FIXED_FLAT_SET_CONSTEXPR auto kWaitableReasons =
     base::MakeFixedFlatSet<optimization_guide::OnDeviceModelEligibilityReason>({
         optimization_guide::OnDeviceModelEligibilityReason::
             kConfigNotAvailableForFeature,

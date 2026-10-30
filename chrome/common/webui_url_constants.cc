@@ -31,7 +31,7 @@ namespace chrome {
 bool IsSystemWebUIHost(std::string_view host) {
   // Compares host instead of full URL for performance (the strings are
   // shorter).
-  constexpr auto kHosts = base::MakeFixedFlatSet<std::string_view>({
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kHosts = base::MakeFixedFlatSet<std::string_view>({
       kChromeUIAccountManagerErrorHost,
       kChromeUIAccountMigrationWelcomeHost,
       kChromeUIAddSupervisionHost,

@@ -32,7 +32,7 @@ namespace {
 
 constexpr char16_t kA11yDelimiter[] = u", ";
 
-constexpr auto kAllowedLaunchAppIds = base::MakeFixedFlatSet<std::string_view>(
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowedLaunchAppIds = base::MakeFixedFlatSet<std::string_view>(
     {"egmafekfmcnknbdlbfbhafbllplmjlhn", "pnkcfpnngfokcnnijgkllghjlhkailce"});
 
 void LogIconLoadStatus(apps::DiscoveryError status) {

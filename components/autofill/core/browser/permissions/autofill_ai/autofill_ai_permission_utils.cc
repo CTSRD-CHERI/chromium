@@ -56,7 +56,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
 [[nodiscard]] bool IsWalletSupportedCountry(
     const GeoIpCountryCode& country_code) {
   // List of countries where Wallet is supported.
-  constexpr static auto kWalletSupportedCountries =
+  BASE_FIXED_FLAT_SET_CONSTEXPR static auto kWalletSupportedCountries =
       base::MakeFixedFlatSet<std::string_view>(
           {"AD", "AE", "AF", "AG", "AI", "AL", "AM", "AO", "AQ", "AR", "AS",
            "AT", "AU", "AW", "AX", "AZ", "BA", "BB", "BD", "BE", "BF", "BG",

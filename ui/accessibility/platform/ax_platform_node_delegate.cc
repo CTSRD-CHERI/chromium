@@ -901,7 +901,11 @@ bool AXPlatformNodeDelegate::HasDefaultActionVerb() const {
 
 std::vector<ax::mojom::Action> AXPlatformNodeDelegate::GetSupportedActions()
     const {
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  static const auto kActionsThatCanBeExposed =
+#else
   static constexpr auto kActionsThatCanBeExposed =
+#endif
       base::MakeFixedFlatSet<ax::mojom::Action>(
           {ax::mojom::Action::kDecrement, ax::mojom::Action::kIncrement,
            ax::mojom::Action::kScrollUp, ax::mojom::Action::kScrollDown,

@@ -24,7 +24,11 @@ namespace blink {
 namespace {
 
 // TODO(crbug.com/410949688): Figure out how to retrieve these from the model.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+static const auto kSupportedLanguages =
+#else
 static constexpr auto kSupportedLanguages =
+#endif
     base::MakeFixedFlatSet<std::string_view>({
         "af",      "am", "ar",      "ar-Latn", "az",      "be",  "bg",
         "bg-Latn", "bn", "bs",      "ca",      "ceb",     "co",  "cs",

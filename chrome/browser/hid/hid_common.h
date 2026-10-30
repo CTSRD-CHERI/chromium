@@ -11,7 +11,7 @@
 
 // The set of extension IDs that are allowed to bypass the HID blocklist to
 // access FIDO security keys.
-inline constexpr auto kPrivilegedFidoExtensionIds =
+inline BASE_FIXED_FLAT_SET_CONSTEXPR auto kPrivilegedFidoExtensionIds =
     base::MakeFixedFlatSet<std::string_view>({
         // gnubbyd-v3 dev
         "ckcendljdlmgnhghiaomidhiiclmapok",

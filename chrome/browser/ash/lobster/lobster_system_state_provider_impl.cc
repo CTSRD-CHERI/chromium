@@ -59,7 +59,7 @@ std::string GetCurrentImeEngineId() {
 }
 
 bool IsInputTypeAllowed(ui::TextInputType type) {
-  static constexpr auto kTextInputTypeAllowlist =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kTextInputTypeAllowlist =
       base::MakeFixedFlatSet<ui::TextInputType>(
           {ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE, ui::TEXT_INPUT_TYPE_TEXT,
            ui::TEXT_INPUT_TYPE_TEXT_AREA});
@@ -68,7 +68,7 @@ bool IsInputTypeAllowed(ui::TextInputType type) {
 }
 
 bool IsImeAllowed(std::string_view current_ime_id) {
-  static constexpr auto kImeAllowlist =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kImeAllowlist =
       base::MakeFixedFlatSet<std::string_view>({
           "xkb:ca:eng:eng",           // Canada
           "xkb:gb::eng",              // UK

@@ -97,7 +97,7 @@ inline constexpr char kLensEphemeralModuleShopVariation[] =
     "lens_ephemeral_module_shop_variation";
 inline constexpr char kLensEphemeralModuleTranslateVariation[] =
     "lens_ephemeral_module_translate_variation";
-inline constexpr auto kLensEphemeralModuleVariationLabels =
+inline BASE_FIXED_FLAT_SET_CONSTEXPR auto kLensEphemeralModuleVariationLabels =
     base::MakeFixedFlatSet<std::string_view>({
         kLensEphemeralModuleSearchVariation,
         kLensEphemeralModuleShopVariation,

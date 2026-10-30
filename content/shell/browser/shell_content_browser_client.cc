@@ -369,7 +369,11 @@ bool ShellContentBrowserClient::IsHandledURL(const GURL& url) {
   if (!url.is_valid()) {
     return false;
   }
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  const auto kProtocolList = base::MakeFixedFlatSet<std::string_view>({
+#else
   constexpr auto kProtocolList = base::MakeFixedFlatSet<std::string_view>({
+#endif
       url::kHttpScheme,
       url::kHttpsScheme,
       url::kWsScheme,

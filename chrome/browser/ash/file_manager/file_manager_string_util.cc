@@ -90,11 +90,11 @@ const int kGoogleDriveErrorHelpNumber = 2649458;
 const int kNoActionForFileHelpNumber = 1700055;
 
 // Supported locales of Google One offer banner.
-constexpr auto kGoogleOneOfferBannerSupportedLocales =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kGoogleOneOfferBannerSupportedLocales =
     base::MakeFixedFlatSet<std::string>({"en-US", "en-GB", "en-AU", "en-CA"});
 
 // Supported countries of Google One offer banner.
-constexpr auto kGoogleOneOfferBannerSupportedCountries =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kGoogleOneOfferBannerSupportedCountries =
     base::MakeFixedFlatSet<std::string>({"us", "gb", "au", "ca"});
 
 #define SET_STRING(id, idr) dict->Set(id, l10n_util::GetStringUTF16(idr))

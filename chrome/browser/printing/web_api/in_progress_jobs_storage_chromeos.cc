@@ -31,7 +31,7 @@ static constexpr auto kJobStatusToJobStateMapping =
 
 // Terminal states. Once the job reaches one of these, it will no longer be
 // tracked (and hence removed from the storage).
-static constexpr auto kTerminalJobStates =
+static BASE_FIXED_FLAT_SET_CONSTEXPR auto kTerminalJobStates =
     base::MakeFixedFlatSet<WebPrintJobState>({
         // clang-format off
         WebPrintJobState::kCompleted,

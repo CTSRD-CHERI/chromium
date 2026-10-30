@@ -103,7 +103,7 @@ bool IsValidZip(std::u16string_view text,
 
     // A set of some of the biggest countries with a strictly numeric zip code
     // format.
-    static constexpr auto kNumericZipCodeCountriesSet =
+    static BASE_FIXED_FLAT_SET_CONSTEXPR auto kNumericZipCodeCountriesSet =
         base::MakeFixedFlatSet<std::string_view>(
             {"IN", "FR", "DE", "IT", "ES", "JP", "PL", "MX", "RU",
              "AU", "IR", "ZA", "BE", "ID", "PT", "PH", "RO", "TR",

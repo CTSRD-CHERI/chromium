@@ -74,7 +74,7 @@ constexpr float kMinTemperature = 0.0f;
 
 // Base set of supported language codes when features don't have their own
 // set of supported languages.
-constexpr auto kDefaultSupportedBaseLanguages =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kDefaultSupportedBaseLanguages =
     base::MakeFixedFlatSet<std::string_view>({"en"});
 
 const char kUnsupportedLanguageError[] =

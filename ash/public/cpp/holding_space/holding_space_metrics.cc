@@ -121,7 +121,7 @@ void RecordItemCounts(const std::string& prefix,
 
   // File system types are allowlisted based on need to limit the number of
   // recorded histograms arising from combinations with holding space item type.
-  constexpr auto kAllowlistedFsTypes = base::MakeFixedFlatSet<FileSystemType>(
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowlistedFsTypes = base::MakeFixedFlatSet<FileSystemType>(
       {FileSystemType::kDriveFs, FileSystemType::kLocal});
 
   std::map<FileSystemType, std::string> fs_type_strings;

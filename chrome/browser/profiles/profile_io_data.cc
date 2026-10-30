@@ -30,7 +30,7 @@
 bool ProfileIOData::IsHandledProtocol(std::string_view scheme) {
   DCHECK_EQ(scheme, base::ToLowerASCII(scheme));
 
-  constexpr auto kProtocolList = base::MakeFixedFlatSet<std::string_view>({
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kProtocolList = base::MakeFixedFlatSet<std::string_view>({
       url::kHttpScheme,
       url::kHttpsScheme,
 #if BUILDFLAG(ENABLE_WEBSOCKETS)

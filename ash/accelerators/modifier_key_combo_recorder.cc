@@ -31,34 +31,34 @@ using Modifier = ModifierKeyComboRecorder::Modifier;
 using ModifierFlag = ModifierKeyComboRecorder::ModifierFlag;
 using ModifierLocation = ModifierKeyComboRecorder::ModifierLocation;
 
-constexpr auto kShiftKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kShiftKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
     ui::VKEY_SHIFT,
     ui::VKEY_LSHIFT,
     ui::VKEY_RSHIFT,
 });
 
-constexpr auto kAltKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kAltKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
     ui::VKEY_MENU,
     ui::VKEY_LMENU,
     ui::VKEY_RMENU,
 });
 
-constexpr auto kAltGrKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kAltGrKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
     ui::VKEY_ALTGR,
 });
 
-constexpr auto kMetaKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kMetaKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
     ui::VKEY_LWIN,
     ui::VKEY_RWIN,
 });
 
-constexpr auto kControlKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kControlKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
     ui::VKEY_CONTROL,
     ui::VKEY_LCONTROL,
     ui::VKEY_RCONTROL,
 });
 
-constexpr auto kFunctionKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kFunctionKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
     ui::VKEY_FUNCTION,
 });
 

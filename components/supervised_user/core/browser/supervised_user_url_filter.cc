@@ -213,7 +213,7 @@ bool IsNonStandardUrlScheme(const GURL& effective_url) {
 
 bool IsAlwaysAllowedHost(const GURL& effective_url) {
   // Allow navigations to allowed origins.
-  constexpr auto kAllowedHosts = base::MakeFixedFlatSet<std::string_view>(
+  BASE_FIXED_FLAT_SET_CONSTEXPR auto kAllowedHosts = base::MakeFixedFlatSet<std::string_view>(
       {"accounts.google.com", "families.google.com", "familylink.google.com",
        "myaccount.google.com", "ogs.google.com", "policies.google.com",
        "support.google.com", "myactivity.google.com", "families.google"});

@@ -56,7 +56,7 @@ constexpr char kHistogramQueryMostVisitedURLsNumReceived[] =
 constexpr char kHistogramQueryMostVisitedURLsDuration[] =
     "Omnibox.MostVisitedProvider.QueryMostVisitedURLs.Duration";
 
-constexpr auto kMostVisitedBlocklist =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kMostVisitedBlocklist =
     base::MakeFixedFlatSet<std::string_view>({
         "accounts.google.com",
     });

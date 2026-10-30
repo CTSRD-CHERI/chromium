@@ -72,7 +72,7 @@ namespace {
 // Chromium uses additional initiatorType values that are not in this list.
 // These values should be converted to "other" according to the
 // PerformanceResourceTiming specification.
-constexpr auto kInitiatorTypeValues = base::MakeFixedFlatSet<std::string_view>({
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kInitiatorTypeValues = base::MakeFixedFlatSet<std::string_view>({
     "navigation", "body",   "css",         "script", "xmlhttprequest", "font",
     "fetch",      "beacon", "video",       "audio",  "track",          "img",
     "image",      "input",  "ping",        "iframe", "frame",          "embed",

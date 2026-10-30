@@ -252,7 +252,11 @@ void PersistentCacheCollection::Clear() {
 namespace {
 
 // All characters allowed in filenames.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const auto kAllowedCharsInFilenames = base::MakeFixedFlatSet<char>(
+#else
 constexpr auto kAllowedCharsInFilenames = base::MakeFixedFlatSet<char>(
+#endif
     base::sorted_unique,
     {' ', '!', '#', '$', '&', '\'', '(', ')', '+', ',', '-', '.', '0', '1',
      '2', '3', '4', '5', '6', '7',  '8', '9', ';', '=', '@', '[', ']', '_',

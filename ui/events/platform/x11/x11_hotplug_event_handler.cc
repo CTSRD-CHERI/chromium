@@ -159,7 +159,11 @@ struct DisplayState {
 // this may return false negatives.
 bool IsKnownInvalidKeyboardDevice(const std::string& name) {
   // TODO(https://crbug.com/41135719): Identify these devices using udev rules.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  const auto kSet = base::MakeFixedFlatSet<std::string_view>(
+#else
   constexpr auto kSet = base::MakeFixedFlatSet<std::string_view>(
+#endif
       {"Power Button", "Sleep Button", "Video Bus", "gpio-keys.5",
        "gpio-keys.12", "ROCKCHIP-I2S Headset Jack"});
 

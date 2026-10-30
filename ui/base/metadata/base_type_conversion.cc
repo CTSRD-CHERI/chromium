@@ -450,7 +450,11 @@ bool TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::GetNextColor(
     std::u16string::const_iterator& next_token) {
   static const auto open_paren = u'(';
   static const auto close_paren = u')';
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  static const auto schemes = base::MakeFixedFlatSet<std::u16string_view>(
+#else
   static constexpr auto schemes = base::MakeFixedFlatSet<std::u16string_view>(
+#endif
       {u"hsl", u"hsla", u"rgb", u"rgba"});
 
   base::String16Tokenizer tokenizer(

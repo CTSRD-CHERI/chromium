@@ -27,7 +27,7 @@ namespace {
 // Note: On Android, restrict the verbatim URLs allowed to be default. We
 // explicitly exclude schemes that may be used to execute Javascript code
 // snippet in the context of the current page on mobile devices.
-constexpr auto kAndroidNavigableSchemes =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kAndroidNavigableSchemes =
     base::MakeFixedFlatSet<std::string_view>({
         url::kHttpScheme,
         url::kHttpsScheme,

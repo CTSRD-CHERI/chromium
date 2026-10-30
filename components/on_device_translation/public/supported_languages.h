@@ -69,7 +69,11 @@ enum class SupportedLanguage {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/translate/enums.xml:SupportedLanguage)
 
 // The supported languages for on-device translation.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+static const auto kSupportedLanguageCodes =
+#else
 static constexpr auto kSupportedLanguageCodes =
+#endif
     base::MakeFixedFlatSet<std::string_view>({
         "en", "es", "ja", "ar", "bn", "de", "fr", "hi", "it",      "ko",
         "nl", "pl", "pt", "ru", "th", "tr", "vi", "zh", "zh-Hant", "bg",

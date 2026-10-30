@@ -63,7 +63,7 @@ const int kGetDeviceIdRequest = 0;
 
 // Generic USB make_and_model strings that are reused across device.
 bool IsGenericUsbDescription(const std::string& make_and_model) {
-  static constexpr auto kGenericUsbModels =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kGenericUsbModels =
       base::MakeFixedFlatSet<std::string_view>({
           "canon canon capt usb device",
           "epson usb1.1 mfp(hi-speed)",

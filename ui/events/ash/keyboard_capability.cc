@@ -80,7 +80,7 @@ const int kCustomNullScanCode = 0xC0000;
 const int kHotrodRemoteVendorId = 0x0471;
 const int kHotrodRemoteProductId = 0x21cc;
 
-constexpr auto kQuickInsertBlocklist =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kQuickInsertBlocklist =
     base::MakeFixedFlatSet<std::string_view>({"eve", "nocturne", "atlas"});
 
 constexpr std::string_view kRevenBoardName = "reven";
@@ -128,7 +128,7 @@ constexpr auto kVKeyToTopRowActionKeyMap =
     });
 
 // Some ChromeOS compatible keyboards have a capslock key.
-constexpr auto kChromeOSKeyboardsWithCapsLock =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kChromeOSKeyboardsWithCapsLock =
     base::MakeFixedFlatSet<VendorProductId>({
         {0x046d, 0xb370}  // Logitech Signature K650
     });

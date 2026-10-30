@@ -27,7 +27,7 @@ namespace {
 QuickAnswersState* g_quick_answers_state = nullptr;
 
 // Supported languages of the Quick Answers feature.
-constexpr auto kSupportedLanguages =
+BASE_FIXED_FLAT_SET_CONSTEXPR auto kSupportedLanguages =
     base::MakeFixedFlatSet<std::string>({"en", "es", "it", "fr", "pt", "de"});
 
 // TODO(b/340628526): extract Error and ConsentStatus enums to a shared place.

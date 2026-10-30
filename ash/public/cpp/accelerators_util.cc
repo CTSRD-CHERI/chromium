@@ -140,7 +140,7 @@ bool IsAlphaOrPunctuationKey(ui::KeyboardCode key_code) {
     return true;
   }
 
-  static constexpr auto kPunctuationKeys =
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kPunctuationKeys =
       base::MakeFixedFlatSet<ui::KeyboardCode>({
           ui::VKEY_OEM_1,
           ui::VKEY_OEM_PLUS,
@@ -166,7 +166,7 @@ bool IsDigitKey(ui::KeyboardCode key_code) {
 }
 
 bool IsSixPackKey(ui::KeyboardCode key_code) {
-  static constexpr auto kSixPackKeys = base::MakeFixedFlatSet<ui::KeyboardCode>(
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kSixPackKeys = base::MakeFixedFlatSet<ui::KeyboardCode>(
       {ui::VKEY_PRIOR, ui::VKEY_NEXT, ui::VKEY_END, ui::VKEY_HOME,
        ui::VKEY_INSERT, ui::VKEY_DELETE});
   return kSixPackKeys.contains(key_code);
@@ -180,7 +180,7 @@ bool IsNumpadKey(ui::KeyboardCode key_code) {
 // This includes only the top row keys we know about, it is possible there are
 // other on external keyboards. They would instead be considered misc keys.
 bool IsTopRowKey(ui::KeyboardCode key_code, ui::DomCode dom_code) {
-  static constexpr auto kTopRowKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
+  static BASE_FIXED_FLAT_SET_CONSTEXPR auto kTopRowKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
       ui::VKEY_F1,
       ui::VKEY_F2,
       ui::VKEY_F3,
