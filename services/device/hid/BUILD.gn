@@ -51,6 +51,8 @@ source_set("hid") {
       "hid_service_freebsd.cc",
       "hid_service_freebsd.h",
     ]
+
+    configs += [ "//build/config/compiler:epoll_shim" ]
   }
 
   if ((is_linux || is_chromeos) && !is_bsd && use_udev) {

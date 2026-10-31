@@ -161,6 +161,10 @@ static_library("usb") {
       "//dbus",
     ]
   }
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 static_library("test_support") {

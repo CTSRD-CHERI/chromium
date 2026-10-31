@@ -27,6 +27,9 @@ source_set("lib") {
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 
   public_deps = [
     ":privacy_check",
@@ -81,6 +84,10 @@ source_set("test_utils") {
       "perfetto/system_test_utils.cc",
       "perfetto/system_test_utils.h",
     ]
+  }
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
   }
 }
 

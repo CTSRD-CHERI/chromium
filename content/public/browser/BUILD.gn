@@ -540,6 +540,9 @@ source_set("browser_sources") {
     "//build/config/compiler:wexit_time_destructors",
     "//content:content_implementation",
   ]
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 
   if (is_android) {
     sources += [ "color_chooser.h" ]
