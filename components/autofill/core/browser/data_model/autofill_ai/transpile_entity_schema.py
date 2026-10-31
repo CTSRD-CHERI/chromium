@@ -221,7 +221,7 @@ def generate_cpp_functions(schema):
       yield '      }'
     if excluded_geo_ips:
       ip_string = ', '.join(f'"{ip.upper()}"' for ip in excluded_geo_ips)
-      yield '      static constexpr auto banned_ips = base::MakeFixedFlatSet<std::string_view>({'
+      yield '      static BASE_FIXED_FLAT_SET_CONSTEXPR auto banned_ips = base::MakeFixedFlatSet<std::string_view>({'
       yield f'          {ip_string}'
       yield '      });'
       yield '      return !country_code || !banned_ips.contains(**country_code);'
