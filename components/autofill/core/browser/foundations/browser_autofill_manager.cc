@@ -57,6 +57,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/types/zip.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -2372,7 +2373,7 @@ void BrowserAutofillManager::DidShowSuggestions(
         base::JoinString(base::ToVector(shown_suggestion_types,
                                         [](SuggestionType type) {
                                           return base::NumberToString(
-                                              std::to_underlying(type));
+                                              base::to_underlying(type));
                                         }),
                          ","));
 
