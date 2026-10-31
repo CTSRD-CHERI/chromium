@@ -280,7 +280,7 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
   yield '// generated an individual map for each JSON file, then, assuming four'
   yield '// JSON files, the duplicate keys would cause 60% overhead, which'
   yield '// adds up to >10K binary size on Android.'
-  yield 'constexpr auto kPatternMap = base::MakeFixedFlatMap<' \
+  yield 'BASE_FIXED_FLAT_SET_CONSTEXPR auto kPatternMap = base::MakeFixedFlatMap<' \
       'NameAndLanguage, '\
       'std::array<base::span<const MatchPatternRef>, ' \
       f'{max_pattern_id - min_pattern_id + 1}' \
