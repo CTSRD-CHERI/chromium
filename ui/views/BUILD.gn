@@ -978,6 +978,10 @@ component("views") {
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 if (is_win || is_mac || is_linux || is_chromeos) {
