@@ -52,7 +52,7 @@ impl log::Log for RustLogger {
 static RUST_LOGGER: RustLogger = RustLogger;
 
 /// Wrap a `std::fmt::Arguments` to pass to C++ code.
-struct RustFmtArguments<'a>(std::fmt::Arguments<'a>);
+pub struct RustFmtArguments<'a>(std::fmt::Arguments<'a>);
 
 impl<'a> RustFmtArguments<'a> {
     /// Format `msg` to the C++-provided stream in `wrapper`.
