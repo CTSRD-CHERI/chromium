@@ -21,6 +21,10 @@ component("service") {
     "//components/discardable_memory/common",
     "//components/discardable_memory/public/mojom",
   ]
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 source_set("unit_tests") {
