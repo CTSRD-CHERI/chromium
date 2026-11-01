@@ -68,6 +68,10 @@
 //! [`UTS #35: Unicode LDML 3. Likely Subtags`]: https://www.unicode.org/reports/tr35/#Likely_Subtags.
 //! [`UTS #35: Unicode LDML 3. LocaleId Canonicalization`]: http://unicode.org/reports/tr35/#LocaleId_Canonicalization,
 
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.81")), feature(lint_reasons))]
+#![cfg_attr(not(version("1.79")), feature(inline_const))]
+
 // https://github.com/unicode-org/icu4x/blob/main/documents/process/boilerplate.md#library-annotations
 #![cfg_attr(not(any(test, doc)), no_std)]
 #![cfg_attr(
