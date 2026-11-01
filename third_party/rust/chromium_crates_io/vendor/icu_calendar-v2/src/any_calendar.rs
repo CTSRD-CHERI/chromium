@@ -409,7 +409,7 @@ impl Calendar for AnyCalendar {
         date2: &Self::DateInner,
         options: DateDifferenceOptions,
     ) -> Result<types::DateDuration, Self::DifferenceError> {
-        let Ok(r) = match (self, date1, date2) {
+        let r = match (self, date1, date2) {
             (Self::Buddhist(c1), AnyDateInner::Buddhist(d1), AnyDateInner::Buddhist(d2)) => {
                 c1.until(d1, d2, options)
             }
@@ -469,7 +469,8 @@ impl Calendar for AnyCalendar {
             _ => {
                 return Err(AnyCalendarDifferenceError::MismatchedCalendars);
             }
-        };
+        }
+        .unwrap_or_else(|never| match never {});
         Ok(r)
     }
 
