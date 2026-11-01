@@ -242,6 +242,12 @@
 //! [ixdtf]: https://www.rfc-editor.org/rfc/rfc9557.txt
 //! [proposal]: https://github.com/tc39/proposal-temporal
 //! [spec]: https://tc39.es/proposal-temporal/
+
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.79")), feature(const_caller_location))]
+#![cfg_attr(not(version("1.79")), feature(const_location_fields))]
+#![cfg_attr(not(version("1.79")), feature(inline_const))]
+
 #![doc(
     html_logo_url = "https://raw.githubusercontent.com/boa-dev/boa/main/assets/logo.svg",
     html_favicon_url = "https://raw.githubusercontent.com/boa-dev/boa/main/assets/logo.svg"
