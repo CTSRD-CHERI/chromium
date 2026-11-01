@@ -11,7 +11,7 @@ pub const STARTING_YEAR: i32 = 1300;
 
 #[rustfmt::skip]
 #[allow(clippy::unwrap_used)] // const
-pub const DATA: &[PackedHijriYearData] = {
+pub(super) const DATA: &[PackedHijriYearData] = {
     use calendrical_calculations::gregorian::fixed_from_gregorian as gregorian;
     let l = true; // long
     let s = false; // short
