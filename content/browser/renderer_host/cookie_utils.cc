@@ -511,7 +511,11 @@ void EmitCookieWarningsAndMetrics(
         cookie->cookie_or_line->is_cookie() &&
         cookie->cookie_or_line->get_cookie().Name().empty()) {
       cookie_set_has_empty_name = true;
+#if __cpp_lib_string_contains
       if (cookie->cookie_or_line->get_cookie().Value().contains('=')) {
+#else
+      if (cookie->cookie_or_line->get_cookie().Value().find('=') != std::string::npos) {
+#endif
         cookie_set_has_empty_name_and_ambiguous_value = true;
       }
     }
