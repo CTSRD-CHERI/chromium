@@ -72,6 +72,13 @@
 //!
 //! [`ICU4X`]: ../icu/index.html
 
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.81")), feature(error_in_core))]
+#![cfg_attr(not(version("1.83")), feature(const_option))]
+#![cfg_attr(not(version("1.80")), feature(exclusive_range_pattern))]
+#![cfg_attr(not(version("1.79")), feature(inline_const))]
+#![cfg_attr(not(version("1.81")), feature(lint_reasons))]
+
 // https://github.com/unicode-org/icu4x/blob/main/documents/process/boilerplate.md#library-annotations
 #![cfg_attr(not(any(test, doc)), no_std)]
 #![cfg_attr(
