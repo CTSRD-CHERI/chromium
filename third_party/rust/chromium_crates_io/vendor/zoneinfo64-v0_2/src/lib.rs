@@ -39,6 +39,10 @@
 //! );
 //! ```
 
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.79")), feature(inline_const))]
+#![cfg_attr(not(version("1.81")), feature(lint_reasons))]
+
 use std::fmt::Debug;
 
 use calendrical_calculations::rata_die::RataDie;
