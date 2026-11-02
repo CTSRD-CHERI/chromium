@@ -13,6 +13,9 @@
 //!
 //! [`temporal_rs`]: http://crates.io/crates/temporal_rs
 
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.81")), feature(lint_reasons))]
+
 #![no_std]
 #![cfg_attr(
     not(test),
