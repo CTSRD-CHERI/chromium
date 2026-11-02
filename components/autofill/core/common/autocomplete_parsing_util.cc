@@ -18,7 +18,7 @@
 namespace autofill {
 namespace {
 
-static constexpr auto kStandardizedAttributes =
+static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kStandardizedAttributes =
     base::MakeFixedFlatMap<std::string_view, HtmlFieldType>({
         {"additional-name", HtmlFieldType::kAdditionalName},
         {"address-level1", HtmlFieldType::kAddressLevel1},
@@ -122,7 +122,7 @@ std::optional<HtmlFieldType> ParseStandardizedAutocompleteAttribute(
 // but which are not standardized, to their HtmlFieldType.
 std::optional<HtmlFieldType> ParseProposedAutocompleteAttribute(
     std::string_view value) {
-  static constexpr auto proposed_attributes =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto proposed_attributes =
       base::MakeFixedFlatMap<std::string_view, HtmlFieldType>({
           {"address", HtmlFieldType::kStreetAddress},
           {"coupon-code", HtmlFieldType::kMerchantPromoCode},
@@ -140,7 +140,7 @@ std::optional<HtmlFieldType> ParseProposedAutocompleteAttribute(
 // HtmlFieldType. This is primarily a list of "reasonable guesses".
 std::optional<HtmlFieldType> ParseNonStandarizedAutocompleteAttribute(
     std::string_view value) {
-  static constexpr auto non_standardized_attributes =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto non_standardized_attributes =
       base::MakeFixedFlatMap<std::string_view, HtmlFieldType>({
           {"company", HtmlFieldType::kOrganization},
           {"first-name", HtmlFieldType::kGivenName},

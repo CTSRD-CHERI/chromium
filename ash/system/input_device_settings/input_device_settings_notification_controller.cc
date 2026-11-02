@@ -92,7 +92,7 @@ using SimulateRightClickModifier = ui::mojom::SimulateRightClickModifier;
 using SixPackShortcutModifier = ui::mojom::SixPackShortcutModifier;
 
 // Maps a six pack key to the search/alt shortcut strings.
-static constexpr auto kSixPackNotificationsMap =
+static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSixPackNotificationsMap =
     base::MakeFixedFlatMap<ui::KeyboardCode, std::array<int, 2>>({
         {ui::KeyboardCode::VKEY_DELETE,
          {IDS_ASH_SETTINGS_SIX_PACK_KEY_DELETE_ALT,
@@ -111,7 +111,7 @@ static constexpr auto kSixPackNotificationsMap =
           IDS_ASH_SETTINGS_SIX_PACK_KEY_PAGE_UP_SEARCH}},
     });
 
-constexpr auto kSixPackKeyToPrefName =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSixPackKeyToPrefName =
     base::MakeFixedFlatMap<ui::KeyboardCode, const char*>({
         {ui::KeyboardCode::VKEY_DELETE,
          {prefs::kSixPackKeyDeleteNotificationsRemaining}},
@@ -127,7 +127,7 @@ constexpr auto kSixPackKeyToPrefName =
          {prefs::kSixPackKeyInsertNotificationsRemaining}},
     });
 
-constexpr auto kKeyCodeToSixPackKeyPrefName =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kKeyCodeToSixPackKeyPrefName =
     base::MakeFixedFlatMap<ui::KeyboardCode, const char*>({
         {ui::KeyboardCode::VKEY_DELETE, {prefs::kSixPackKeyDelete}},
         {ui::KeyboardCode::VKEY_HOME, {prefs::kSixPackKeyHome}},
@@ -137,7 +137,7 @@ constexpr auto kKeyCodeToSixPackKeyPrefName =
         {ui::KeyboardCode::VKEY_INSERT, {prefs::kSixPackKeyInsert}},
     });
 
-constexpr auto kKeyCodeToSixPackKeyRemappingNudgeShownCountPref =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kKeyCodeToSixPackKeyRemappingNudgeShownCountPref =
     base::MakeFixedFlatMap<ui::KeyboardCode, const char*>({
         {ui::KeyboardCode::VKEY_DELETE,
          {prefs::kDeleteRemappingNudgeShownCount}},
@@ -151,7 +151,7 @@ constexpr auto kKeyCodeToSixPackKeyRemappingNudgeShownCountPref =
          {prefs::kInsertRemappingNudgeShownCount}},
     });
 
-constexpr auto kKeyCodeToSixPackKeyRemappingNudgeLastShownPref =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kKeyCodeToSixPackKeyRemappingNudgeLastShownPref =
     base::MakeFixedFlatMap<ui::KeyboardCode, const char*>({
         {ui::KeyboardCode::VKEY_DELETE,
          {prefs::kDeleteRemappingNudgeLastShown}},

@@ -11,7 +11,7 @@
 namespace ui {
 namespace {
 
-constexpr auto kTopRowActionKeyToName =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTopRowActionKeyToName =
     base::MakeFixedFlatMap<TopRowActionKey, const char*>({
 #define TOP_ROW_ACTION_KEYS_ENTRY(action) {TopRowActionKey::k##action, #action},
 #define TOP_ROW_ACTION_KEYS_LAST_ENTRY(action) \

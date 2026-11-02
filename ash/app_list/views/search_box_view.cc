@@ -148,7 +148,7 @@ constexpr auto kGamingPlaceholders =
 
 // List of all categories with their corresponding string id that would be shown
 // in the menu.
-constexpr auto kCategories =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kCategories =
     base::MakeFixedFlatMap<AppListSearchControlCategory, int>(
         {{AppListSearchControlCategory::kApps,
           IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_APPS},

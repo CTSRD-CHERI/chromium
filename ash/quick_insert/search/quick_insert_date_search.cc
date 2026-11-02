@@ -34,12 +34,12 @@ constexpr LazyRE2 kDaysOrWeeksAwayRegex = {
 constexpr LazyRE2 kDayOfWeekRegex = {
     "(this |next |last |)"
     "(sunday|monday|tuesday|wednesday|thursday|friday|saturday)"};
-constexpr auto kTextToDays = base::MakeFixedFlatMap<std::string_view, int>({
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTextToDays = base::MakeFixedFlatMap<std::string_view, int>({
     {"yesterday", -1},
     {"today", 0},
     {"tomorrow", 1},
 });
-constexpr auto kWordToNumber = base::MakeFixedFlatMap<std::string_view, int>({
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kWordToNumber = base::MakeFixedFlatMap<std::string_view, int>({
     {"one", 1},
     {"two", 2},
     {"three", 3},
@@ -51,7 +51,7 @@ constexpr auto kWordToNumber = base::MakeFixedFlatMap<std::string_view, int>({
     {"nine", 9},
     {"ten", 10},
 });
-constexpr auto kDayOfWeekToNumber =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kDayOfWeekToNumber =
     base::MakeFixedFlatMap<std::string_view, int>({
         {"sunday", 0},
         {"monday", 1},

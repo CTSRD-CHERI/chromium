@@ -44,7 +44,7 @@ void AppendSyncTypesIfRequired(const base::Value& browsing_data_type,
                                syncer::UserSelectableTypeSet* sync_types) {
   // Map of browsing data types to sync types that need to be disabled for
   // them.
-  static constexpr auto kDataToSyncTypesMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kDataToSyncTypesMap =
       base::MakeFixedFlatMap<std::string_view, syncer::UserSelectableTypeSet>(
           {{policy_data_types::kBrowsingHistoryName,
             {syncer::UserSelectableType::kHistory,
@@ -162,7 +162,7 @@ base::flat_set<std::string> GetBrowsingDataLifetimePlatformUnsupportedTypes(
 
 std::optional<PolicyDataType> NameToPolicyDataType(
     const std::string& type_name) {
-  static constexpr auto kNameToDataType =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kNameToDataType =
       base::MakeFixedFlatMap<std::string_view, PolicyDataType>({
           {policy_data_types::kBrowsingHistoryName,
            PolicyDataType::kBrowsingHistory},

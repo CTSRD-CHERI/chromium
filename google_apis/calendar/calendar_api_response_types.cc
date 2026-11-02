@@ -69,13 +69,13 @@ constexpr char kAttachmentFileUrl[] = "fileUrl";
 constexpr char kAttachmentIconLink[] = "iconLink";
 constexpr char kAttachmentFileId[] = "fileId";
 
-constexpr auto kEventStatuses =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kEventStatuses =
     base::MakeFixedFlatMap<std::string_view, CalendarEvent::EventStatus>(
         {{"cancelled", CalendarEvent::EventStatus::kCancelled},
          {"confirmed", CalendarEvent::EventStatus::kConfirmed},
          {"tentative", CalendarEvent::EventStatus::kTentative}});
 
-constexpr auto kAttendeesResponseStatuses =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kAttendeesResponseStatuses =
     base::MakeFixedFlatMap<std::string_view, CalendarEvent::ResponseStatus>(
         {{"accepted", CalendarEvent::ResponseStatus::kAccepted},
          {"declined", CalendarEvent::ResponseStatus::kDeclined},

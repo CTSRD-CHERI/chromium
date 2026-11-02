@@ -42,7 +42,7 @@ Scheme SchemeForURL(NSURL* url) {
     return Scheme::kUnknown;
   }
 
-  static constexpr auto kSchemeMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSchemeMap =
       base::MakeFixedFlatMap<std::string_view, Scheme>({
           {"about", Scheme::kAbout},
           {"blob", Scheme::kBlob},

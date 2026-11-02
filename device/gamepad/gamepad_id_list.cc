@@ -22,7 +22,7 @@ static base::LazyInstance<GamepadIdList>::Leaky g_singleton =
 //
 // When recording metrics for connected gamepads, vendor and product IDs will
 // only be recorded for devices that are in kGamepadInfo.
-constexpr auto kGamepadInfo = base::MakeFixedFlatMap<
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kGamepadInfo = base::MakeFixedFlatMap<
     std::pair<uint16_t /*vendor_id*/, uint16_t /*product_id*/>,
     XInputType>({
     {{0x0010, 0x0082}, kXInputTypeNone},

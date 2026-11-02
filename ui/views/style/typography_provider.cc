@@ -350,7 +350,7 @@ ui::ColorId TypographyProvider::GetColorIdImpl(int context, int style) const {
 }
 
 int TypographyProvider::GetLineHeightImpl(int context, int style) const {
-  static constexpr auto kLineHeights = base::MakeFixedFlatMap<int, int>({
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kLineHeights = base::MakeFixedFlatMap<int, int>({
       {style::STYLE_HEADLINE_1, 32},      {style::STYLE_HEADLINE_2, 24},
       {style::STYLE_HEADLINE_3, 24},      {style::STYLE_HEADLINE_4, 24},
       {style::STYLE_HEADLINE_4_BOLD, 24}, {style::STYLE_HEADLINE_5, 20},

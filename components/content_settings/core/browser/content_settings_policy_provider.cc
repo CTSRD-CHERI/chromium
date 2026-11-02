@@ -326,7 +326,7 @@ void ReportCookiesAllowedForUrlsUsage(
       !has_pattern_with_wildcard_secondary && !has_pattern_with_no_wildcard) {
     return;
   }
-  constexpr auto usage_map =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto usage_map =
       base::MakeFixedFlatMap<size_t, net::CookiesAllowedForUrlsUsage>({
           {0b001, net::CookiesAllowedForUrlsUsage::kWildcardPrimaryOnly},
           {0b010, net::CookiesAllowedForUrlsUsage::kWildcardSecondaryOnly},

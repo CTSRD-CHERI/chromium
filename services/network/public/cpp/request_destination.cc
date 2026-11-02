@@ -49,7 +49,7 @@ constexpr char kDictionary[] = "dictionary";
 constexpr char kSpeculationRules[] = "speculationrules";
 constexpr char kSharedStorageWorklet[] = "sharedstorageworklet";
 
-constexpr auto kRequestDestinationToStringMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kRequestDestinationToStringMap =
     base::MakeFixedFlatMap<network::mojom::RequestDestination, const char*>(
         {{network::mojom::RequestDestination::kEmpty, kEmpty},
          {network::mojom::RequestDestination::kAudio, kAudio},
@@ -84,7 +84,7 @@ constexpr auto kRequestDestinationToStringMap =
          {network::mojom::RequestDestination::kSharedStorageWorklet,
           kSharedStorageWorklet}});
 
-constexpr auto kRequestDestinationFromStringMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kRequestDestinationFromStringMap =
     base::MakeFixedFlatMap<std::string_view,
                            network::mojom::RequestDestination>(
         {{kEmpty, network::mojom::RequestDestination::kEmpty},

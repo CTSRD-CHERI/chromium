@@ -65,7 +65,7 @@ constexpr const char* kBoolStrings[2] = {"false", "true"};
 #include "ui/actions/action_id_macros.inc"
 
 // clang-format off
-constexpr auto kActionIdStrings =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kActionIdStrings =
     base::MakeFixedFlatMap<actions::ActionId, const char*>({
         ACTION_IDS
         EXAMPLES_ACTION_IDS

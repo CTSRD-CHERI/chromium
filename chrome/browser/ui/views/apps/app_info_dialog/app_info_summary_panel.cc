@@ -85,7 +85,7 @@ int LaunchOptionsComboboxModel::GetIndexForLaunchType(
     }
   }
 
-  static constexpr auto kLaunchTypeStrings =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kLaunchTypeStrings =
       base::MakeFixedFlatMap<extensions::LaunchType, std::string_view>({
           {extensions::LaunchType::kInvalid, "kInvalid"},
           {extensions::LaunchType::kPinned, "kPinned"},

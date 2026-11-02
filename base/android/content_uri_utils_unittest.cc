@@ -50,7 +50,7 @@ TEST(ContentUriUtilsTest, Test) {
 }
 
 TEST(ContentUriUtilsTest, TranslateOpenFlagsToJavaMode) {
-  constexpr auto kTranslations = MakeFixedFlatMap<uint32_t, std::string>({
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTranslations = MakeFixedFlatMap<uint32_t, std::string>({
       {File::FLAG_OPEN | File::FLAG_READ, "r"},
       {File::FLAG_OPEN_ALWAYS | File::FLAG_READ, "r"},
       {File::FLAG_CREATE | File::FLAG_READ, "r"},

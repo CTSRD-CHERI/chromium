@@ -34,7 +34,7 @@ constexpr base::TimeDelta kTimeout = base::Seconds(30);
 using Tone = proto::RequestConfig::Tone;
 
 std::optional<Tone> GetTone(const std::string& tone) {
-  static constexpr auto tone_map =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto tone_map =
       base::MakeFixedFlatMap<std::string_view, Tone>({
           {"UNSPECIFIED", proto::RequestConfig::UNSPECIFIED},
           {"SHORTEN", proto::RequestConfig::SHORTEN},

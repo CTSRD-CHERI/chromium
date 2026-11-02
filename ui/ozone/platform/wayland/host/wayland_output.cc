@@ -86,7 +86,7 @@ Metrics& Metrics::operator=(Metrics&&) = default;
 Metrics::~Metrics() = default;
 
 void Metrics::DumpState(std::ostream& out) const {
-  constexpr auto kTransformMap = base::MakeFixedFlatMap<int32_t, const char*>({
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTransformMap = base::MakeFixedFlatMap<int32_t, const char*>({
       {WL_OUTPUT_TRANSFORM_NORMAL, "normal"},
       {WL_OUTPUT_TRANSFORM_90, "90"},
       {WL_OUTPUT_TRANSFORM_180, "180"},

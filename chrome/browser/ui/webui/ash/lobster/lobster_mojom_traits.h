@@ -18,7 +18,7 @@ namespace mojo {
 template <>
 struct EnumTraits<lobster::mojom::StatusCode, ash::LobsterErrorCode> {
   static lobster::mojom::StatusCode ToMojom(ash::LobsterErrorCode error_code) {
-    static constexpr auto lobster_status_code_map =
+    static BASE_FIXED_FLAT_MAP_CONSTEXPR auto lobster_status_code_map =
         base::MakeFixedFlatMap<ash::LobsterErrorCode,
                                lobster::mojom::StatusCode>(
             {{ash::LobsterErrorCode::kBlockedOutputs,

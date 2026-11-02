@@ -82,7 +82,7 @@ struct FrameSizeCompare {
   }
 };
 
-constexpr auto kResolutions =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kResolutions =
     base::MakeFixedFlatMap<gfx::Size, VideoResolutionDesignation>(
         {
             {{160, 120}, VideoResolutionDesignation::kQQVGA},

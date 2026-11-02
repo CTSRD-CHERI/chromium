@@ -178,7 +178,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
     return;
   }
 
-  constexpr auto kIdentifiers =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kIdentifiers =
       base::MakeFixedFlatMap<std::string_view, IBD::InfoBarIdentifier>({
           {"dev_tools", IBD::DEV_TOOLS_INFOBAR_DELEGATE},
           {"extension_dev_tools", IBD::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE},

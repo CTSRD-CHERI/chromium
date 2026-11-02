@@ -50,7 +50,7 @@ constexpr std::pair<std::string_view, TagName> TagNameEntry(
 
 // Mapping of tag names to their constants. This must remain sorted by the
 // string value.
-constexpr auto kTagNames = base::MakeFixedFlatMap({
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTagNames = base::MakeFixedFlatMap({
     TagNameEntry("EXT-X-BITRATE", MediaPlaylistTagName::kXBitrate),
     TagNameEntry("EXT-X-BYTERANGE", MediaPlaylistTagName::kXByteRange),
     TagNameEntry("EXT-X-CONTENT-STEERING",

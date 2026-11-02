@@ -57,7 +57,7 @@ namespace content {
 namespace {
 
 int GetMessageIdForIconEnum(const std::string& icon_type) {
-  static constexpr auto kIconTypeToMessageIdMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kIconTypeToMessageIdMap =
       base::MakeFixedFlatMap<std::string_view, int>({
           {"ICON_PLUS", IDS_AX_IMAGE_ANNOTATION_ICON_PLUS},
           {"ICON_ARROW_BACKWARD", IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_BACKWARD},

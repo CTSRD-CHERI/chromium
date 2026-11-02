@@ -348,7 +348,7 @@ enum class LoggedScheme {
 // LINT.ThenChange(/tools/metrics/histograms/metadata/permissions/enums.xml:ExternalProtocolScheme)
 
 void LogRequestForScheme(const std::string& scheme) {
-  constexpr auto kSchemeToBucket =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSchemeToBucket =
       base::MakeFixedFlatMap<std::string_view, LoggedScheme>(
           {{"search-ms", LoggedScheme::SEARCH_MS},
            {"search", LoggedScheme::SEARCH},

@@ -90,7 +90,7 @@ bool FilterSourceStream::MayHaveMoreBytes() const {
 SourceStreamType FilterSourceStream::ParseEncodingType(
     std::string_view encoding) {
   std::string lower_encoding = base::ToLowerASCII(encoding);
-  static constexpr auto kEncodingMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kEncodingMap =
       base::MakeFixedFlatMap<std::string_view, SourceStreamType>({
           {"", SourceStreamType::kNone},
           {kBrotli, SourceStreamType::kBrotli},

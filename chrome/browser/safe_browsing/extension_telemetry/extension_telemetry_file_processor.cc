@@ -34,7 +34,7 @@ constexpr base::FilePath::CharType kHTMLFileSuffix[] =
     FILE_PATH_LITERAL(".html");
 constexpr base::FilePath::CharType kCSSFileSuffix[] = FILE_PATH_LITERAL(".css");
 
-constexpr auto kFileTypePriorityMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kFileTypePriorityMap =
     base::MakeFixedFlatMap<base::FilePath::StringViewType, int>(
         {{kJSFileSuffix, 3}, {kHTMLFileSuffix, 2}, {kCSSFileSuffix, 1}});
 

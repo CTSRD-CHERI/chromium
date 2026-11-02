@@ -64,7 +64,7 @@ std::vector<std::u16string> GetDiacriticsFor(char key_character,
   // Current diacritics ordering is based on the Gboard ordering so it keeps
   // distance from target key consistent.
   // TODO(b/260915965): Add more sets here for other engines.
-  static constexpr auto kUSEnglishDiacriticsMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kUSEnglishDiacriticsMap =
       base::MakeFixedFlatMap<char, std::u16string_view>(
           {{'a', u"à;á;â;ä;æ;ã;å;ā"},
            {'A', u"À;Á;Â;Ä;Æ;Ã;Å;Ā"},

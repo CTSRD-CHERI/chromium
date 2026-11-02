@@ -19,7 +19,7 @@ using PrintJobStatus = crosapi::mojom::PrintJobStatus;
 using WebPrintJobState = blink::mojom::WebPrintJobState;
 
 // Accepted job states. The ones not listed here are silently discarded.
-static constexpr auto kJobStatusToJobStateMapping =
+static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kJobStatusToJobStateMapping =
     base::MakeFixedFlatMap<PrintJobStatus, WebPrintJobState>({
         // clang-format off
         {PrintJobStatus::kStarted,   WebPrintJobState::kProcessing},

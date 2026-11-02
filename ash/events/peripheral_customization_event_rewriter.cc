@@ -60,7 +60,7 @@ constexpr int kGraphicsTabletRemappableFlags =
     ui::EF_RIGHT_MOUSE_BUTTON | ui::EF_BACK_MOUSE_BUTTON |
     ui::EF_FORWARD_MOUSE_BUTTON | ui::EF_MIDDLE_MOUSE_BUTTON;
 
-constexpr auto kStaticActionToMouseButtonFlag =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kStaticActionToMouseButtonFlag =
     base::MakeFixedFlatMap<mojom::StaticShortcutAction, ui::EventFlags>({
         {mojom::StaticShortcutAction::kLeftClick, ui::EF_LEFT_MOUSE_BUTTON},
         {mojom::StaticShortcutAction::kRightClick, ui::EF_RIGHT_MOUSE_BUTTON},

@@ -104,7 +104,7 @@ enum class EnterpriseReportingEventType {
 };
 
 // Mapping from event name to UMA enum for logging histogram.
-inline constexpr auto kEventNameToUmaEnumMap =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kEventNameToUmaEnumMap =
     base::MakeFixedFlatMap<std::string_view, EnterpriseReportingEventType>({
         {kKeyPasswordReuseEvent,
          EnterpriseReportingEventType::kPasswordReuseEvent},

@@ -109,7 +109,7 @@ void ReadFile(const base::FilePath downloads,
   // Terminal gets files from /usr/share/chromeos-assets/crosh-builtin.
   // In chromium tests, these files don't exist, so we serve dummy values.
   if (!result) {
-    static constexpr auto kTestFiles =
+    static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTestFiles =
         base::MakeFixedFlatMap<std::string_view, std::string_view>({
             {"html/crosh.html", ""},
             {"html/terminal.html", "<script src='/js/terminal.js'></script>"},

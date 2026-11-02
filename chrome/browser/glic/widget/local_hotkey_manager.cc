@@ -35,7 +35,7 @@ constexpr int kFocusToggleAcceleratorModifiers =
     ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN;
 #endif
 
-constexpr auto kHotkeyToPrefMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kHotkeyToPrefMap =
     base::MakeFixedFlatMap<LocalHotkeyManager::Hotkey, const char*>(
         {{LocalHotkeyManager::Hotkey::kFocusToggle,
           prefs::kGlicFocusToggleHotkey}});
@@ -54,7 +54,7 @@ constexpr std::array kTitleBarContextMenuAccelerators = {
     ui::Accelerator{ui::VKEY_SPACE, ui::EF_ALT_DOWN}};
 #endif
 
-constexpr auto kHotkeyToStaticAcceleratorsMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kHotkeyToStaticAcceleratorsMap =
     base::MakeFixedFlatMap<LocalHotkeyManager::Hotkey,
                            base::span<const ui::Accelerator>>(
         {{LocalHotkeyManager::Hotkey::kClose, kCloseAccelerators},

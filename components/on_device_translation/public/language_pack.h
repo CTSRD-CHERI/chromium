@@ -424,7 +424,7 @@ inline constexpr LanguagePackComponentConfig kTranslateKitEnMrConfig = {
                        0x9d, 0x2e, 0xe3, 0xde, 0x5e, 0x42, 0x00, 0x02}};
 
 // The config for each language pack.
-inline constexpr auto kLanguagePackComponentConfigMap =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kLanguagePackComponentConfigMap =
     base::MakeFixedFlatMap<LanguagePackKey, const LanguagePackComponentConfig*>(
         {{LanguagePackKey::kEn_Es, &kTranslateKitEnEsConfig},
          {LanguagePackKey::kEn_Ja, &kTranslateKitEnJaConfig},

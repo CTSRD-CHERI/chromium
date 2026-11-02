@@ -48,7 +48,7 @@ namespace ui {
 
 namespace {
 
-constexpr auto kMouseButtonToStringMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMouseButtonToStringMap =
     base::MakeFixedFlatMap<int, const char*>({
         {EF_LEFT_MOUSE_BUTTON, "Left"},
         {EF_MIDDLE_MOUSE_BUTTON, "Middle"},
@@ -57,7 +57,7 @@ constexpr auto kMouseButtonToStringMap =
         {EF_FORWARD_MOUSE_BUTTON, "Forward"},
     });
 
-constexpr auto kModifierToStringMap = base::MakeFixedFlatMap<int, const char*>({
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kModifierToStringMap = base::MakeFixedFlatMap<int, const char*>({
     {ui::EF_SHIFT_DOWN, "Shift"},
     {ui::EF_CONTROL_DOWN, "Control"},
     {ui::EF_ALT_DOWN, "Alt"},

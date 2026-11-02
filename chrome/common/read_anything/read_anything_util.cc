@@ -127,7 +127,7 @@ void LogFontName(std::string_view font_name) {
     kMaxValue = kAtkinsonHyperlegibleNext,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingFontName)
-  static constexpr auto kFontMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kFontMap =
       base::MakeFixedFlatMap<std::string_view, ReadAnythingFont>(
           {{"Poppins", ReadAnythingFont::kPoppins},
            {"Sans-serif", ReadAnythingFont::kSansSerif},

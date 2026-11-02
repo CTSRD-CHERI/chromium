@@ -42,7 +42,7 @@ bool IsDomKeyUnicodeCharacter(char32_t c) {
 }
 
 DomKey DomKeyFromKeyCode(unsigned short key_code) {
-  constexpr auto kMap = base::MakeFixedFlatMap<unsigned short, DomKey>({
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMap = base::MakeFixedFlatMap<unsigned short, DomKey>({
       {VKEY_RETURN, DomKey::ENTER},
       {VKEY_TAB, DomKey::TAB},
       {VKEY_BACK, DomKey::BACKSPACE},
@@ -106,7 +106,7 @@ DomKey DomKeyFromKeyCode(unsigned short key_code) {
 DomKey DomKeyFromNsCharCode(char32_t char_code) {
   // Refer to:
   // https://github.com/WebKit/WebKit/blob/main/Source/WebCore/platform/ios/KeyEventCodesIOS.h#L40
-  constexpr auto kMap = base::MakeFixedFlatMap<char32_t, DomKey>(
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMap = base::MakeFixedFlatMap<char32_t, DomKey>(
       {{0xF700, DomKey::ARROW_UP},
        {0xF701, DomKey::ARROW_DOWN},
        {0xF702, DomKey::ARROW_LEFT},
@@ -217,7 +217,7 @@ char32_t ReadLastUnicodeCharacter(NSString* characters) {
 KeyboardCode KeyboardCodeFromUIKeyCode(UIKeyboardHIDUsage key_code) {
   // Refer to:
   // https://developer.apple.com/documentation/uikit/uikeyboardhidusage?language=objc
-  constexpr auto kMap =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMap =
       base::MakeFixedFlatMap<UIKeyboardHIDUsage, KeyboardCode>(
           {{UIKeyboardHIDUsageKeyboardLeftArrow, KeyboardCode::VKEY_LEFT},
            {UIKeyboardHIDUsageKeyboardRightArrow, KeyboardCode::VKEY_RIGHT},

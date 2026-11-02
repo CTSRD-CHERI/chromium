@@ -184,7 +184,7 @@ void OmniboxMetricsProvider::ProvideCurrentSessionData(
 ClientSummarizedResultType
 OmniboxMetricsProvider::GetClientSummarizedResultType(
     metrics::OmniboxEventProto::Suggestion::ResultType type) {
-  static constexpr auto kResultTypesToClientSummarizedResultTypes =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kResultTypesToClientSummarizedResultTypes =
       base::MakeFixedFlatMap<OmniboxEventProto::Suggestion::ResultType,
                              ClientSummarizedResultType>({
           {OmniboxEventProto::Suggestion::URL_WHAT_YOU_TYPED,

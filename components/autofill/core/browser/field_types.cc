@@ -37,7 +37,7 @@ std::ostream& operator<<(std::ostream& o, FieldTypeSet field_type_set) {
 // You are free to add or remove the String representation of FieldType,
 // but don't change any existing values, Android WebView presents them to
 // Autofill Service as part of APIs.
-static constexpr auto kTypeNameToFieldType =
+static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTypeNameToFieldType =
     base::MakeFixedFlatMap<std::string_view, FieldType>(
         {{"NO_SERVER_DATA", NO_SERVER_DATA},
          {"UNKNOWN_TYPE", UNKNOWN_TYPE},

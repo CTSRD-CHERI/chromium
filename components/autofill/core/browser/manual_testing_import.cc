@@ -47,7 +47,7 @@ constexpr std::string_view kKeyProfiles = "profiles";
 constexpr std::string_view kKeyCreditCards = "credit-cards";
 constexpr std::string_view kKeyRecordType = "record_type";
 constexpr std::string_view kKeyNickname = "nickname";
-constexpr auto kRecordTypeMapping =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kRecordTypeMapping =
     base::MakeFixedFlatMap<std::string_view, AutofillProfile::RecordType>(
         {{"account", AutofillProfile::RecordType::kAccount},
          {"accountHome", AutofillProfile::RecordType::kAccountHome},

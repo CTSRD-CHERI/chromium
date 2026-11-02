@@ -384,13 +384,13 @@ void UpdateNetwork(
 // of a tie (Ethernet Connected & WiFi Connected for ex), the network
 // type considered to have the higher priority will take precedence.
 int GetScoreForNetwork(const mojom::NetworkPtr& network) {
-  static constexpr auto kNetworkStatePriorityMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kNetworkStatePriorityMap =
       base::MakeFixedFlatMap<mojom::NetworkState, int>(
           {{mojom::NetworkState::kOnline, 300},
            {mojom::NetworkState::kPortal, 200},
            {mojom::NetworkState::kConnected, 100}});
 
-  static constexpr auto kNetworkTypePriorityMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kNetworkTypePriorityMap =
       base::MakeFixedFlatMap<mojom::NetworkType, int>(
           {{mojom::NetworkType::kEthernet, 3},
            {mojom::NetworkType::kWiFi, 2},

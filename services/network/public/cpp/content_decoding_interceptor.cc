@@ -33,7 +33,7 @@ namespace {
 
 // Defines suffixes for UMA histogram names based on the client type that
 // initiated the content decoding interception requiring a data pipe.
-constexpr auto kClientTypeToMetricsSuffix =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kClientTypeToMetricsSuffix =
     base::MakeFixedFlatMap<ContentDecodingInterceptor::ClientType,
                            std::string_view>({
         {ContentDecodingInterceptor::ClientType::kTest, "Test"},

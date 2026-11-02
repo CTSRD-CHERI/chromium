@@ -31,7 +31,7 @@ constexpr char kExpectedEndPointDomain[] = "aratea-pa.googleapis.com";
 // Maps the RpcErrorInfo.reason to MantaStatusCode.
 std::optional<MantaStatusCode> MapServerFailureReasonToMantaStatusCode(
     const std::string& reason) {
-  static constexpr auto reason_map =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto reason_map =
       base::MakeFixedFlatMap<std::string_view, MantaStatusCode>({
           {"MISSING_INPUT", MantaStatusCode::kInvalidInput},
           {"INVALID_INPUT", MantaStatusCode::kInvalidInput},
@@ -51,7 +51,7 @@ std::optional<MantaStatusCode> MapServerFailureReasonToMantaStatusCode(
 std::optional<MantaStatusCode> MapServerStatusCodeToMantaStatusCode(
     const int32_t server_status_code) {
   // TODO(b/288019728): add more items when needed.
-  static constexpr auto code_map =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto code_map =
       base::MakeFixedFlatMap<int32_t, MantaStatusCode>({
           {3 /*INVALID_ARGUMENT*/, MantaStatusCode::kInvalidInput},
           {8 /*RESOURCE_EXHAUSTED*/, MantaStatusCode::kResourceExhausted},

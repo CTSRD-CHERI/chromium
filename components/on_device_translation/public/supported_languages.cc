@@ -10,7 +10,7 @@ namespace on_device_translation {
 namespace {
 
 // Map from `SupportedLanguage` to the language code.
-inline constexpr auto kSupportedLanguageCodeMap = base::MakeFixedFlatMap<
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSupportedLanguageCodeMap = base::MakeFixedFlatMap<
     SupportedLanguage,
     std::string_view>(
     {{SupportedLanguage::kEn, "en"},          {SupportedLanguage::kEs, "es"},
@@ -38,7 +38,7 @@ static_assert(std::size(kSupportedLanguageCodeMap) ==
               "All languages must be in kSupportedLanguageCodeMap.");
 
 // The inverse of kSupportedLanguageCodeMap.
-inline constexpr auto kSupportedLanguageCodeInverseMap = base::MakeFixedFlatMap<
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSupportedLanguageCodeInverseMap = base::MakeFixedFlatMap<
     std::string_view,
     SupportedLanguage>(
     {{"en", SupportedLanguage::kEn},          {"es", SupportedLanguage::kEs},

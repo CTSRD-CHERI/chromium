@@ -454,7 +454,7 @@ void RecordLinuxDistro() {
   }
 
   using enum UmaLinuxDistro;
-  static constexpr auto kDistroPrefixes =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kDistroPrefixes =
       base::MakeFixedFlatMap<std::string_view, UmaLinuxDistro>({
           {"alma", kAlma},
           {"alpine", kAlpine},

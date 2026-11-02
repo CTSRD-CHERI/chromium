@@ -307,7 +307,7 @@ extern const char kEmbedderConditionsBufferIdentifier[];
 // (header name, header delimiter). Currently, this list contains all standard
 // HTTP request headers that support multiple values in a single entry. This
 // list may be extended in the future to support custom headers.
-inline constexpr auto kDNRRequestHeaderAppendAllowList =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kDNRRequestHeaderAppendAllowList =
     base::MakeFixedFlatMap<std::string_view, std::string_view>(
         {{"accept", ", "},
          {"accept-encoding", ", "},

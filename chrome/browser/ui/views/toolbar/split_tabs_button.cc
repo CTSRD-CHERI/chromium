@@ -180,7 +180,7 @@ void SplitTabsToolbarButton::UpdateButtonIcon() {
     const split_tabs::SplitTabActiveLocation location =
         split_tabs::GetLastActiveTabLocation(tab_strip_model,
                                              active_tab->GetSplit().value());
-    constexpr auto icons =
+    BASE_FIXED_FLAT_MAP_CONSTEXPR auto icons =
         base::MakeFixedFlatMap<split_tabs::SplitTabActiveLocation,
                                const gfx::VectorIcon*>({
             {split_tabs::SplitTabActiveLocation::kStart, &kSplitSceneLeftIcon},

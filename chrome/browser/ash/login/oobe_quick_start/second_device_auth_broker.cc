@@ -94,7 +94,7 @@ constexpr char kGetChallengeDataRequest[] = R"({
       "targetDeviceType": "CHROME_OS"
     })";
 
-constexpr auto kRejectionReasonErrorMap = base::MakeFixedFlatMap<
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kRejectionReasonErrorMap = base::MakeFixedFlatMap<
     std::string_view,
     SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason>({
     {"invalid_oauth_token", SecondDeviceAuthBroker::AuthCodeRejectionResponse::

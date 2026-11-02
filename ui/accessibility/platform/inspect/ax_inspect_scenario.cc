@@ -120,7 +120,7 @@ AXInspectScenario AXInspectScenario::From(
 AXInspectScenario::Directive AXInspectScenario::ParseDirective(
     const std::string& directive_prefix,
     std::string_view directive) {
-  static constexpr auto kMapping =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMapping =
       base::MakeFixedFlatMap<std::string_view, Directive>(
           {{"NO-LOAD-EXPECTED", kNoLoadExpected},
            {"WAIT-FOR", kWaitFor},

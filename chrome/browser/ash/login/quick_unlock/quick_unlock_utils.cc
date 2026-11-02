@@ -32,7 +32,7 @@ namespace quick_unlock {
 namespace {
 
 // Maps FingerprintLocation to FingerprintDescriptionStrings.
-constexpr auto kFingerprintLocationToStringsMap = base::MakeFixedFlatMap<
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kFingerprintLocationToStringsMap = base::MakeFixedFlatMap<
     quick_unlock::FingerprintLocation,
     quick_unlock::FingerprintDescriptionStrings>(
     {{quick_unlock::FingerprintLocation::TABLET_POWER_BUTTON,

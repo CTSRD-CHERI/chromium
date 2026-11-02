@@ -59,7 +59,7 @@ struct DbusServiceInfo {
   const char* object_path;
 };
 
-constexpr auto kServiceInfos = base::MakeFixedFlatMap<DBusApi, DbusServiceInfo>(
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kServiceInfos = base::MakeFixedFlatMap<DBusApi, DbusServiceInfo>(
     {{DBusApi::kGnome,
       {"org.gnome.SessionManager", "org.gnome.SessionManager",
        "/org/gnome/SessionManager"}},

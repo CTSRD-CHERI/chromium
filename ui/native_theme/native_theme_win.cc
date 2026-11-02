@@ -231,7 +231,7 @@ int GetWindowsPart(NativeTheme::Part part,
                : TKP_TRACK;
   }
 
-  static constexpr auto kPartMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kPartMap =
       base::MakeFixedFlatMap<NativeTheme::Part, int>(
           {{NativeTheme::kCheckbox, BP_CHECKBOX},
            {NativeTheme::kPushButton, BP_PUSHBUTTON},
@@ -342,7 +342,7 @@ int GetWindowsState(NativeTheme::Part part,
     return 0;
   }
 
-  static constexpr auto kStateMap = base::MakeFixedFlatMap<
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kStateMap = base::MakeFixedFlatMap<
       NativeTheme::Part, std::array<int, NativeTheme::kNumStates>>(
       {{NativeTheme::kInnerSpinButton,
         {DNS_DISABLED, DNS_HOT, DNS_NORMAL, DNS_PRESSED}},

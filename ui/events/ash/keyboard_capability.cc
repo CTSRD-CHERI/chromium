@@ -99,7 +99,7 @@ constexpr size_t kNumCustomTopRowFKeys =
     (kMaxCustomTopRowLayoutFKeyCode - VKEY_F1) + 1;
 
 // Map used to convert VKEY -> TopRowActionKey and vice versa.
-constexpr auto kVKeyToTopRowActionKeyMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kVKeyToTopRowActionKeyMap =
     base::MakeFixedFlatMap<ui::KeyboardCode, TopRowActionKey>({
         {VKEY_BROWSER_BACK, TopRowActionKey::kBack},
         {VKEY_BROWSER_FORWARD, TopRowActionKey::kForward},

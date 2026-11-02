@@ -216,7 +216,7 @@ void NativeThemeFluent::PaintArrowButton(
   const SkColor fg_color = GetScrollbarArrowForegroundColor(
       bg_color, extra_params, state, dark_mode, contrast, color_provider);
   if (const auto typeface = GetArrowIconTypeface()) {
-    static constexpr auto kCodePointMap =
+    static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kCodePointMap =
         base::MakeFixedFlatMap<Part, base::cstring_view>(
             {{kScrollbarDownArrow, "\uEDDC"},
              {kScrollbarLeftArrow, "\uEDD9"},

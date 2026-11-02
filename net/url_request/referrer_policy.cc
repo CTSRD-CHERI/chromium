@@ -22,7 +22,7 @@ std::optional<ReferrerPolicy> ReferrerPolicyFromHeader(
 
   // Map from lower-cased token to ReferrerPolicy. It's good for compile speed
   // to keep this sorted.
-  static constexpr auto kTokenToReferrerPolicy =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTokenToReferrerPolicy =
       base::MakeFixedFlatMap<std::string_view, ReferrerPolicy>(
           {{"no-referrer", NO_REFERRER},
            {"no-referrer-when-downgrade",

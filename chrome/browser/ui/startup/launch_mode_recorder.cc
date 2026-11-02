@@ -199,7 +199,7 @@ std::optional<LaunchMode> GetLaunchModeSlow(
                            : LaunchMode::kShortcutUnknown;
     }
     if (!is_app_launch) {
-      static constexpr auto kDirToLaunchModeMap =
+      static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kDirToLaunchModeMap =
           base::MakeFixedFlatMap<int, LaunchMode>({
               {base::DIR_TASKBAR_PINS, LaunchMode::kShortcutTaskbar},
               {base::DIR_COMMON_START_MENU, LaunchMode::kShortcutStartMenu},
@@ -209,7 +209,7 @@ std::optional<LaunchMode> GetLaunchModeSlow(
           });
       return kDirToLaunchModeMap.at(shortcut_location.value());
     }
-    static constexpr auto kDirToWebAppLaunchModeMap =
+    static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kDirToWebAppLaunchModeMap =
         base::MakeFixedFlatMap<int, LaunchMode>({
             {base::DIR_TASKBAR_PINS, LaunchMode::kWebAppShortcutTaskbar},
             {base::DIR_COMMON_START_MENU, LaunchMode::kWebAppShortcutStartMenu},

@@ -204,7 +204,7 @@ int LayoutProvider::GetCornerRadiusMetric(Emphasis emphasis,
 }
 
 ShapeSysTokens GetShapeSysToken(ShapeContextTokens id) {
-  static constexpr auto shape_token_map =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto shape_token_map =
       base::MakeFixedFlatMap<ShapeContextTokens, ShapeSysTokens>({
           {ShapeContextTokens::kBadgeRadius, ShapeSysTokens::kXSmall},
           {ShapeContextTokens::kButtonRadius, ShapeSysTokens::kFull},

@@ -58,7 +58,7 @@ void PageColorsController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 void PageColorsController::MigrateObsoleteProfilePrefs(
     PrefService* profile_prefs) {
   if (profile_prefs->HasPrefPath(kPageColors)) {
-    static constexpr auto kPrefMap =
+    static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kPrefMap =
         base::MakeFixedFlatMap<int, PageColors>({{0, PageColors::kOff},
                                                  {1, PageColors::kDusk},
                                                  {2, PageColors::kDesert},
@@ -118,7 +118,7 @@ void PageColorsController::RecomputePageColors() {
   // If there are explicit page colors, change the desired color/contrast values
   // accordingly.
   if (page_colors != PageColors::kNoPreference) {
-    static constexpr auto kColorMap =
+    static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kColorMap =
         base::MakeFixedFlatMap<PageColors, ui::ColorProviderKey::ForcedColors>(
             {{PageColors::kOff, ui::ColorProviderKey::ForcedColors::kNone},
              {PageColors::kDusk, ui::ColorProviderKey::ForcedColors::kDusk},

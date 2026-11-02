@@ -56,7 +56,7 @@ AXApiType::Type::operator std::string() const {
 
 // static
 AXApiType::Type AXApiType::From(const std::string& type_str) {
-  static constexpr auto kTypeToString =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTypeToString =
       base::MakeFixedFlatMap<std::string_view, TypeConstant>(
           {{kAndroidString, kAndroid},
            {kAndroidExternalString, kAndroidExternal},

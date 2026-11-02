@@ -289,7 +289,7 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 MakeCredentialStatus WinErrorNameToMakeCredentialStatus(
     std::u16string_view error_name) {
   // See WebAuthNGetErrorName in <webauthn.h> for these string literals.
-  constexpr auto kResponseCodeMap =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kResponseCodeMap =
       base::MakeFixedFlatMap<std::u16string_view, MakeCredentialStatus>({
           {u"Success", MakeCredentialStatus::kSuccess},
           {u"InvalidStateError",
@@ -317,7 +317,7 @@ GetAssertionStatus WinErrorNameToGetAssertionStatus(
   // "NotAllowedError" indicates the user cancelled, there was no matching
   // credential, or a timeout. Other errors indicate that either the
   // request was rejected or there was an error processing it.
-  constexpr auto kResponseCodeMap = base::MakeFixedFlatMap<std::u16string_view,
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kResponseCodeMap = base::MakeFixedFlatMap<std::u16string_view,
                                                            GetAssertionStatus>({
       {u"Success", GetAssertionStatus::kSuccess},
       {u"InvalidStateError", GetAssertionStatus::kAuthenticatorResponseInvalid},

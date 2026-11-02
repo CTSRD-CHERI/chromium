@@ -84,7 +84,7 @@ void DevicePostureRegistryWatcherWin::RemoveObserver(
 
 std::optional<DevicePostureType> DevicePostureRegistryWatcherWin::ParsePosture(
     std::string_view posture_state) {
-  static constexpr auto kPostureStateToPostureType =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kPostureStateToPostureType =
       base::MakeFixedFlatMap<std::string_view, DevicePostureType>(
           {{"MODE_HANDHELD", DevicePostureType::kFolded},
            {"MODE_DUAL_ANGLE", DevicePostureType::kFolded},

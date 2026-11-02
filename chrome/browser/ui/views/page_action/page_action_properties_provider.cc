@@ -12,7 +12,7 @@
 #include "ui/actions/action_id.h"
 
 namespace {
-constexpr auto kPageActionProperties =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kPageActionProperties =
     base::MakeFixedFlatMap<actions::ActionId,
                            page_actions::PageActionProperties>({
         {

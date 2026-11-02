@@ -200,7 +200,7 @@ StatisticsProviderImpl::StatisticsSources CreateDefaultSources() {
 // tools/metrics/histograms/metadata/chromeos/histograms.xml.
 std::string_view StatisticNameToMachineStatisticVariant(
     std::string_view statistic_name) {
-  static constexpr auto kStatisticNameToVariant =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kStatisticNameToVariant =
       base::MakeFixedFlatMap<std::string_view, std::string_view>({
           {kActivateDateKey, "ActivateDate"},
           {kBlockDevModeKey, "BlockDevmode"},

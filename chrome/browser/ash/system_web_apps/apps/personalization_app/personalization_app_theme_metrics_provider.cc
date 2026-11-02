@@ -31,7 +31,7 @@ constexpr SkColor kLightPurple = SkColorSetA(
     SkColor(ash::personalization_app::mojom::kStaticColorLightPurple),
     SK_AlphaOPAQUE);
 
-constexpr auto kSkColorToStaticColor =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSkColorToStaticColor =
     base::MakeFixedFlatMap<SkColor,
                            ash::personalization_app::mojom::StaticColor>({
         {gfx::kGoogleBlue500,

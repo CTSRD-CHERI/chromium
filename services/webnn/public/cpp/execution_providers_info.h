@@ -76,7 +76,7 @@ struct EpInfo {
 // The listed EPs must match the names of the histogram variants
 // WebNNOrtExecutionProvider in
 // tools/metrics/histograms/metadata/webnn/histograms.xml.
-inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
                                                          EpInfo>({
     // AMD
     {

@@ -59,7 +59,7 @@ const auto& GetAppGroupIdMap() {
   static constexpr char kGmailOpenedEvent[] = "GmailOpened";
   static constexpr char kGooglePhotosOpenedEvent[] = "PhotosOpened";
 
-  static constexpr auto kAppGroupIdMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kAppGroupIdMap =
       base::MakeFixedFlatMap<std::string_view, std::string_view>({
           // Docs:
           {kGoogleDocsAppIdPwa, kGoogleDocsOpenedEvent},

@@ -596,7 +596,7 @@ ConvertErrorEventToPAggType(
 
   using ReservedErrorEventType = auction_worklet::mojom::ReservedErrorEventType;
   using PAggErrorEvent = blink::mojom::PrivateAggregationErrorEvent;
-  constexpr auto kErrorEventMap =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kErrorEventMap =
       base::MakeFixedFlatMap<ReservedErrorEventType, PAggErrorEvent>({
           {ReservedErrorEventType::kReportSuccess,
            PAggErrorEvent::kReportSuccess},

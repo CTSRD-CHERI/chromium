@@ -34,7 +34,7 @@ const std::u16string RemoveDiacritics(const std::u16string& str) {
   // "Ç > C; Ñ > N;"
 
   // clang-format off
-  static constexpr auto kConversionMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kConversionMap =
     base::MakeFixedFlatMap<char16_t, char16_t>({
       {u'á', u'a'}, {u'à', u'a'}, {u'â', u'a'}, {u'ä', u'a'}, {u'ā', u'a'}, {u'å', u'a'},
       {u'Á', u'A'}, {u'À', u'A'}, {u'Â', u'A'}, {u'Ä', u'A'}, {u'Ā', u'A'}, {u'Å', u'A'},

@@ -1208,7 +1208,7 @@ void VaapiVideoEncodeAccelerator::SetState(State state) {
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   if (VLOG_IS_ON(2)) {
-    constexpr auto kStateToString = base::MakeFixedFlatMap<State, const char*>(
+    BASE_FIXED_FLAT_MAP_CONSTEXPR auto kStateToString = base::MakeFixedFlatMap<State, const char*>(
         {{kUninitialized, "kUninitialized"},
          {kEncoding, "kEncoding"},
          {kError, "kError"}});

@@ -43,7 +43,7 @@ ComponentMetricsProvider::~ComponentMetricsProvider() = default;
 // static
 SystemProfileProto_ComponentId ComponentMetricsProvider::CrxIdToComponentId(
     const std::string& app_id) {
-  static constexpr auto kComponentMap = base::MakeFixedFlatMap<
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kComponentMap = base::MakeFixedFlatMap<
       std::string_view, SystemProfileProto_ComponentId>({
       {"aagaghndoahmfdbmfnajfklaomcanlnh",
        SystemProfileProto_ComponentId_REAL_TIME_URL_CHECKS_ALLOWLIST},

@@ -131,7 +131,7 @@ bool IsStringLowerCaseASCII(std::string_view s) {
   return std::ranges::none_of(s, base::IsAsciiUpper<char>);
 }
 
-constexpr auto kRequestHeaderEntries =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kRequestHeaderEntries =
     base::MakeFixedFlatMap<std::string_view, RequestHeaderType>(
         {{"accept", RequestHeaderType::kAccept},
          {"accept-charset", RequestHeaderType::kAcceptCharset},
@@ -251,7 +251,7 @@ void RecordDNRResponseHeaderRemoved(ResponseHeaderType type) {
       "Extensions.DeclarativeNetRequest.ResponseHeaderRemoved", type);
 }
 
-constexpr auto kResponseHeaderEntries =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kResponseHeaderEntries =
     base::MakeFixedFlatMap<std::string_view, ResponseHeaderType>({
         {"accept-patch", ResponseHeaderType::kAcceptPatch},
         {"accept-ranges", ResponseHeaderType::kAcceptRanges},

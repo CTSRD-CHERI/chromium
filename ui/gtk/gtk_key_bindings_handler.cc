@@ -25,7 +25,7 @@ constexpr char kGtkKeyTheme[] = "gtk-key-theme";
 constexpr char kEmacsKeyTheme[] = "Emacs";
 
 // This should contain at least all of the bindings in gtk/gtk-keys.css.emacs.
-constexpr auto kEmacsBindings =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kEmacsBindings =
     base::MakeFixedFlatMap<KeyWithMods, ui::TextEditCommand>({
         {{ui::KeyboardCode::VKEY_BACK, ui::EF_ALT_DOWN},
          ui::TextEditCommand::DELETE_WORD_BACKWARD},

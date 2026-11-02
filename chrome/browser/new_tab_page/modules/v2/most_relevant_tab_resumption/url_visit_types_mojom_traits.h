@@ -16,7 +16,7 @@ struct EnumTraits<ntp::most_relevant_tab_resumption::mojom::FormFactor,
                   syncer::DeviceInfo::FormFactor> {
   static ntp::most_relevant_tab_resumption::mojom::FormFactor ToMojom(
       syncer::DeviceInfo::FormFactor input) {
-    static constexpr auto form_factor_map = base::MakeFixedFlatMap<
+    static BASE_FIXED_FLAT_MAP_CONSTEXPR auto form_factor_map = base::MakeFixedFlatMap<
         syncer::DeviceInfo::FormFactor,
         ntp::most_relevant_tab_resumption::mojom::FormFactor>(
         {{syncer::DeviceInfo::FormFactor::kUnknown,
@@ -39,7 +39,7 @@ struct EnumTraits<ntp::most_relevant_tab_resumption::mojom::FormFactor,
   static bool FromMojom(
       ntp::most_relevant_tab_resumption::mojom::FormFactor input,
       syncer::DeviceInfo::FormFactor* out) {
-    static constexpr auto form_factor_map = base::MakeFixedFlatMap<
+    static BASE_FIXED_FLAT_MAP_CONSTEXPR auto form_factor_map = base::MakeFixedFlatMap<
         ntp::most_relevant_tab_resumption::mojom::FormFactor,
         syncer::DeviceInfo::FormFactor>(
         {{ntp::most_relevant_tab_resumption::mojom::FormFactor::kUnknown,

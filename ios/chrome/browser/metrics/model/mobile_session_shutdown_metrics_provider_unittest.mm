@@ -33,7 +33,7 @@ namespace {
 using FiveBooleans = std::tuple<bool, bool, bool, bool, bool>;
 
 // Expected bucket for each possible value of FiveBooleans.
-static constexpr auto kExpectedShutdownTypes =
+static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kExpectedShutdownTypes =
     base::MakeFixedFlatMap<FiveBooleans, MobileSessionShutdownType>({
         {
             {false, false, false, false, false},

@@ -24,7 +24,7 @@ namespace enterprise_connectors {
 
 namespace {
 
-inline constexpr auto kUmaEnumToStringMap =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kUmaEnumToStringMap =
     base::MakeFixedFlatMap<EnterpriseReportingEventType, std::string_view>({
         {EnterpriseReportingEventType::kPasswordReuseEvent,
          kPasswordReuseUmaMetricName},
@@ -51,7 +51,7 @@ inline constexpr auto kUmaEnumToStringMap =
          kExtensionTelemetryUmaMetricName},
     });
 
-inline constexpr auto kEventCaseToUmaEnumMap =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kEventCaseToUmaEnumMap =
     base::MakeFixedFlatMap<EventCase, EnterpriseReportingEventType>({
         {EventCase::kPasswordReuseEvent,
          EnterpriseReportingEventType::kPasswordReuseEvent},

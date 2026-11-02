@@ -12,7 +12,7 @@ namespace data_controls {
 
 namespace {
 
-static constexpr auto kStringToComponentMap =
+static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kStringToComponentMap =
     base::MakeFixedFlatMap<std::string_view, Component>(
         {{kArc, Component::kArc},
          {kCrostini, Component::kCrostini},
@@ -51,7 +51,7 @@ std::string GetComponentMapping(Component component) {
 }
 
 ::dlp::DlpComponent GetComponentProtoMapping(const std::string& component) {
-  static constexpr auto kComponentsMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kComponentsMap =
       base::MakeFixedFlatMap<std::string_view, ::dlp::DlpComponent>(
           {{kArc, ::dlp::DlpComponent::ARC},
            {kCrostini, ::dlp::DlpComponent::CROSTINI},

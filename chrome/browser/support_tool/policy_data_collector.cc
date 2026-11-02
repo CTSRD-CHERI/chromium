@@ -43,7 +43,7 @@ std::optional<redaction::PIIType> GetPIITypeOfStatusField(
   // List of keys in policy status that will be considered as PII and will be
   // redacted selectively.
   // TODO(crbug.com/41486252): Convert to MakeFixedFlatMap().
-  static constexpr auto kPersonallyIdentifiableStatusFields =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kPersonallyIdentifiableStatusFields =
       base::MakeFixedFlatMap<std::string_view, redaction::PIIType>({
 #if !BUILDFLAG(IS_CHROMEOS)
           {policy::kDeviceIdKey, redaction::PIIType::kStableIdentifier},

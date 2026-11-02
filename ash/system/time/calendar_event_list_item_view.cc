@@ -66,7 +66,7 @@ constexpr char kPastEventsColorId[] = "0";
 // Map of Calendar API color ids and their respective hex color code. For color
 // id "0", it's not part of the Calendar API color, but it's used for past
 // events for a gray out effect.
-constexpr auto kEventHexColorCodes =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kEventHexColorCodes =
     base::MakeFixedFlatMap<std::string_view, std::string_view>(
         {{"0", "1B1B1F"},
          {"1", "6994FF"},
@@ -86,7 +86,7 @@ constexpr auto kEventHexColorCodes =
 // between calendars when viewing events.
 // Modified events have been prepended with a marker (`kInjectedColorIdPrefix`)
 // to indicate that the calendar color map should be used to decode the color.
-constexpr auto kCalendarHexColorCodes =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kCalendarHexColorCodes =
     base::MakeFixedFlatMap<std::string_view, std::string_view>(
         {{"c1", "ac725e"},  {"c2", "d06b64"},  {"c3", "f83a22"},
          {"c4", "fa573c"},  {"c5", "ff7537"},  {"c6", "ffad46"},

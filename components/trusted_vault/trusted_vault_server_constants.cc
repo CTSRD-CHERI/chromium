@@ -12,7 +12,7 @@ std::optional<SecurityDomainId> GetSecurityDomainByName(std::string_view name) {
   static_assert(static_cast<int>(SecurityDomainId::kMaxValue) == 1,
                 "Update GetSecurityDomainByName and its unit tests when adding "
                 "SecurityDomainId enum values");
-  static constexpr auto kSecurityDomainNames =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSecurityDomainNames =
       base::MakeFixedFlatMap<std::string_view, SecurityDomainId>({
           {kSyncSecurityDomainName, SecurityDomainId::kChromeSync},
           {kPasskeysSecurityDomainName, SecurityDomainId::kPasskeys},

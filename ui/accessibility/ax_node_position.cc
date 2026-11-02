@@ -34,7 +34,7 @@ ScopedAXEmbeddedObjectBehaviorSetter::~ScopedAXEmbeddedObjectBehaviorSetter() {
 }
 
 std::string ToString(const AXPositionKind kind) {
-  static constexpr auto kKindToString =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kKindToString =
       base::MakeFixedFlatMap<AXPositionKind, const char*>(
           {{AXPositionKind::NULL_POSITION, "NullPosition"},
            {AXPositionKind::TREE_POSITION, "TreePosition"},

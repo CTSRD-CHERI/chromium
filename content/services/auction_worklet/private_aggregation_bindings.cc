@@ -103,7 +103,7 @@ bool ConvertToPASignalValueOr(AuctionV8Helper* v8_helper,
   }
 }
 
-constexpr auto kBaseValueNames =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kBaseValueNames =
     base::MakeFixedFlatMap<std::string_view, mojom::BaseValue>({
         {"winning-bid", mojom::BaseValue::kWinningBid},
         {"highest-scoring-other-bid",

@@ -36,7 +36,7 @@ enum class DnsQueryType : uint8_t {
 using DnsQueryTypeSet =
     base::EnumSet<DnsQueryType, DnsQueryType::UNSPECIFIED, DnsQueryType::MAX>;
 
-inline constexpr auto kDnsQueryTypes =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kDnsQueryTypes =
     base::MakeFixedFlatMap<DnsQueryType, std::string_view>(
         {{DnsQueryType::UNSPECIFIED, "UNSPECIFIED"},
          {DnsQueryType::A, "A"},

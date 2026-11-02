@@ -25,7 +25,7 @@ enum class SecureDnsMode : int {
   kSecure = 2,
 };
 
-inline constexpr auto kSecureDnsModes =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSecureDnsModes =
     base::MakeFixedFlatMap<SecureDnsMode, std::string_view>(
         {{SecureDnsMode::kOff, "Off"},
          {SecureDnsMode::kAutomatic, "Automatic"},

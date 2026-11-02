@@ -38,7 +38,7 @@ constexpr char kSingleEventsParameterName[] = "singleEvents";
 constexpr char kTimeMaxParameterName[] = "timeMax";
 constexpr char kTimeMinParameterName[] = "timeMin";
 
-constexpr auto kEventTypeToStringMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kEventTypeToStringMap =
     base::MakeFixedFlatMap<EventType, std::string_view>(
         {{EventType::kDefault, "default"},
          {EventType::kFocusTime, "focusTime"},

@@ -97,7 +97,7 @@ bool IsValidZip(std::u16string_view text,
     // length + 1, because it's safer to use a smaller value than the exact
     // minimal zip length in case the zip format changes.
     // [Ref: https://en.wikipedia.org/wiki/List_of_postal_codes]
-    static constexpr auto kZipCodeMinLengthMap =
+    static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kZipCodeMinLengthMap =
         base::MakeFixedFlatMap<std::string_view, std::size_t>(
             {{"BR", 6}, {"CA", 4}, {"IE", 4}, {"JP", 4}, {"PL", 3}, {"PT", 5}});
 

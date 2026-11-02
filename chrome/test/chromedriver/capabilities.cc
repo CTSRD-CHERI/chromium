@@ -997,7 +997,7 @@ void Switches::SetMultivaluedSwitch(const std::string& name,
 
 namespace {
 
-constexpr auto kMultivaluedSwitches =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMultivaluedSwitches =
     base::MakeFixedFlatMap<std::string_view, std::string_view>({
         {"enable-blink-features", ","},
         {"disable-blink-features", ","},

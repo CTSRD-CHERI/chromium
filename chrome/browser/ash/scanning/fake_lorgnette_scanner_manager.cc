@@ -48,7 +48,7 @@ std::string GetColorModeString(ProtoColorMode color_mode) {
   }
 }
 
-static constexpr auto kPageSizeToPageSizeStrMap =
+static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kPageSizeToPageSizeStrMap =
     base::MakeFixedFlatMap<std::pair<double, double>, std::string_view>({
         {{297, 420}, "a3"},           // ISO A3: 297 x 420 mm
         {{210, 297}, "a4"},           // ISO A4: 210 x 297 mm.
@@ -102,7 +102,7 @@ std::string GetScanSettingsMapKey(const lorgnette::ScanSettings& settings) {
 // by `CreateJpeg` to generate a JPEG image. The generated JPEG image will
 // be used to validate that a set of scan settings will always produce the
 // same output.
-static constexpr auto kScanSettingsToAlphaMap =
+static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kScanSettingsToAlphaMap =
     base::MakeFixedFlatMap<std::string_view, int>(
         {{"flatbed_jpeg_color_letter_300_dpi", /*alpha=*/1},
          {"adf_simplex_jpeg_grayscale_max_150_dpi", /*alpha=*/2},

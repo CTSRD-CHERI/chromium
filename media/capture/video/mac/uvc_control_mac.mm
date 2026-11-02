@@ -146,7 +146,7 @@ static constexpr int kCtZoomAbsoluteControlBitIndex = 9;
 static constexpr int kCtPanTiltAbsoluteControlBitIndex = 11;
 static constexpr int kCtFocusAutoControlBitIndex = 17;
 
-static constexpr auto kProcessingUnitControlBitIndexes =
+static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kProcessingUnitControlBitIndexes =
     base::MakeFixedFlatMap<int, size_t>(
         {{uvc::kPuBrightnessAbsoluteControl,
           kPuBrightnessAbsoluteControlBitIndex},
@@ -162,7 +162,7 @@ static constexpr auto kProcessingUnitControlBitIndexes =
          {uvc::kPuWhiteBalanceTemperatureAutoControl,
           kPuWhiteBalanceTemperatureAutoControlBitIndex}});
 
-static constexpr auto kCameraTerminalControlBitIndexes =
+static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kCameraTerminalControlBitIndexes =
     base::MakeFixedFlatMap<int, size_t>({
         {uvc::kCtAutoExposureModeControl, kCtAutoExposureModeControlBitIndex},
         {uvc::kCtExposureTimeAbsoluteControl,

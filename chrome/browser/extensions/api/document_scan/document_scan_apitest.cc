@@ -48,7 +48,7 @@ enum class ExtensionType {
 // Mapping of the different extension types used in the test to the specific
 // manifest file names to create an extension of that type. The actual location
 // of these files is at //chrome/test/data/extensions/api_test/document_scan/.
-static constexpr auto kManifestFileNames =
+static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kManifestFileNames =
     base::MakeFixedFlatMap<ExtensionType, std::string_view>(
         {{ExtensionType::kChromeApp, "manifest_chrome_app.json"},
          {ExtensionType::kExtensionMV2, "manifest_extension_v2.json"},

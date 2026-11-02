@@ -493,7 +493,7 @@ void WaylandWindow::OnDisplayColorSpacesChanged(
 }
 
 void WaylandWindow::DumpState(std::ostream& out) const {
-  constexpr auto kWindowTypeToString =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kWindowTypeToString =
       base::MakeFixedFlatMap<PlatformWindowType, const char*>(
           {{PlatformWindowType::kWindow, "window"},
            {PlatformWindowType::kPopup, "popup"},
@@ -510,7 +510,7 @@ void WaylandWindow::DumpState(std::ostream& out) const {
   if (has_touch_focus_) {
     out << ", has_touch_focus";
   }
-  constexpr auto kOpacityToString =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kOpacityToString =
       base::MakeFixedFlatMap<PlatformWindowOpacity, const char*>(
           {{PlatformWindowOpacity::kInferOpacity, "infer"},
            {PlatformWindowOpacity::kOpaqueWindow, "opaque"},

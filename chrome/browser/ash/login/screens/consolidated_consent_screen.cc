@@ -78,7 +78,7 @@ constexpr const char kAcceptButtonClicked[] = "tos-accept";
 
 enum class ToS { GOOGLE_EULA, CROS_EULA, ARC, PRIVACY_POLICY };
 
-static constexpr auto kTermsTypeToUrlAndSwitch =
+static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTermsTypeToUrlAndSwitch =
     base::MakeFixedFlatMap<ToS, std::pair<const char*, const char*>>(
         {{ToS::GOOGLE_EULA,
           {chrome::kGoogleEulaOnlineURLPath, switches::kOobeEulaUrlForTests}},

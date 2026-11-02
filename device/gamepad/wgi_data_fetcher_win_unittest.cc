@@ -331,7 +331,7 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
       int canonical_button_index,
       ABI::Windows::Gaming::Input::GamepadButtons input_buttons_bit_mask,
       base::span<GamepadButton const> output_buttons) {
-    static constexpr auto kCanonicalButtonBitMaskMapping =
+    static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kCanonicalButtonBitMaskMapping =
         base::MakeFixedFlatMap<int,
                                ABI::Windows::Gaming::Input::GamepadButtons>(
             {{BUTTON_INDEX_PRIMARY,

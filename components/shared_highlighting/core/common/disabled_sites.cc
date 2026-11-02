@@ -31,7 +31,7 @@ bool ShouldOfferLinkToText(const GURL& url) {
   // If a URL's host matches a key in the map, then the path will be tested
   // against the RE stored in the value. For example, {"foo.com", ".*"} means
   // any page on the foo.com domain.
-  static constexpr auto kBlocklist =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kBlocklist =
       base::MakeFixedFlatMap<std::string_view, std::string_view>(
           {{"facebook.com", ".*"},
            // TODO(crbug.com/40736718): special case this to cover other Google

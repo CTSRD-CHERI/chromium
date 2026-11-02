@@ -57,7 +57,7 @@ extern const char kFileUrlNavigationAllowed[];
 // appended to the error message displayed in the Chrome Webstore.
 extern const char kBlockedInstallMessage[];
 
-inline constexpr auto kAllowedTypesMap =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kAllowedTypesMap =
     base::MakeFixedFlatMap<std::string_view, Manifest::Type>({
         {"extension", Manifest::TYPE_EXTENSION},
         {"theme", Manifest::TYPE_THEME},

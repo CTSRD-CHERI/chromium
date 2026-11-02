@@ -53,7 +53,7 @@ class TypesMojomTraitsTest : public testing::Test {
 };
 
 TEST_F(TypesMojomTraitsTest, ScreenBacklightStateMatches) {
-  constexpr auto enums = base::MakeFixedFlatMap<mojom::ScreenBacklightState,
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto enums = base::MakeFixedFlatMap<mojom::ScreenBacklightState,
                                                 ash::ScreenBacklightState>({
       {mojom::ScreenBacklightState::ON, ash::ScreenBacklightState::ON},
       {mojom::ScreenBacklightState::OFF, ash::ScreenBacklightState::OFF},

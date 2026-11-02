@@ -17,7 +17,7 @@ namespace version_info::nix {
 version_info::Channel GetChannel(base::Environment& env) {
   std::string env_str = env.GetVar(kChromeVersionExtra).value_or(std::string());
 
-  static constexpr auto kEnvToChannel =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kEnvToChannel =
       base::MakeFixedFlatMap<std::string_view, version_info::Channel>(
           {{"beta", version_info::Channel::BETA},
            {"canary", version_info::Channel::CANARY},

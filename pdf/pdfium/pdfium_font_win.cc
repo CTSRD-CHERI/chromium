@@ -36,7 +36,7 @@ namespace chrome_pdf {
 
 namespace {
 
-constexpr auto kBase14Substs =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kBase14Substs =
     base::MakeFixedFlatMap<base::cstring_view, base::cstring_view>({
         // PDF Fonts
         {"Courier", "Courier New"},

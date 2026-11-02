@@ -63,7 +63,7 @@ class ShimlessRmaMojoToProtoTest : public testing::Test {
 };
 
 TEST_F(ShimlessRmaMojoToProtoTest, StatesMatch) {
-  constexpr auto enums = base::MakeFixedFlatMap<mojom::State,
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto enums = base::MakeFixedFlatMap<mojom::State,
                                                 rmad::RmadState::StateCase>(
       {{mojom::State::kWelcomeScreen, rmad::RmadState::kWelcome},
        {mojom::State::kSelectComponents, rmad::RmadState::kComponentsRepair},
@@ -107,7 +107,7 @@ TEST_F(ShimlessRmaMojoToProtoTest, StatesMatch) {
 }
 
 TEST_F(ShimlessRmaMojoToProtoTest, ErrorsMatch) {
-  constexpr auto enums = base::MakeFixedFlatMap<mojom::RmadErrorCode,
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto enums = base::MakeFixedFlatMap<mojom::RmadErrorCode,
                                                 rmad::RmadErrorCode>(
       {{mojom::RmadErrorCode::kOk, rmad::RmadErrorCode::RMAD_ERROR_OK},
        {mojom::RmadErrorCode::kWait, rmad::RmadErrorCode::RMAD_ERROR_WAIT},
@@ -206,7 +206,7 @@ TEST_F(ShimlessRmaMojoToProtoTest, ErrorsMatch) {
 }
 
 TEST_F(ShimlessRmaMojoToProtoTest, RepairComponentsMatch) {
-  constexpr auto enums =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto enums =
       base::MakeFixedFlatMap<mojom::ComponentType, rmad::RmadComponent>(
           {{mojom::ComponentType::kAudioCodec,
             rmad::RmadComponent::RMAD_COMPONENT_AUDIO_CODEC},
@@ -259,7 +259,7 @@ TEST_F(ShimlessRmaMojoToProtoTest, RepairComponentsMatch) {
 }
 
 TEST_F(ShimlessRmaMojoToProtoTest, RepairStatesMatch) {
-  constexpr auto enums = base::MakeFixedFlatMap<
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto enums = base::MakeFixedFlatMap<
       mojom::ComponentRepairStatus,
       rmad::ComponentsRepairState::ComponentRepairStatus::RepairStatus>(
       {{mojom::ComponentRepairStatus::kOriginal,
@@ -285,7 +285,7 @@ TEST_F(ShimlessRmaMojoToProtoTest, RepairStatesMatch) {
 }
 
 TEST_F(ShimlessRmaMojoToProtoTest, WriteProtectDisableCompleteActionMatch) {
-  constexpr auto enums =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto enums =
       base::MakeFixedFlatMap<mojom::WriteProtectDisableCompleteAction,
                              rmad::WriteProtectDisableCompleteState::Action>(
           {{mojom::WriteProtectDisableCompleteAction::kSkippedAssembleDevice,
@@ -306,7 +306,7 @@ TEST_F(ShimlessRmaMojoToProtoTest, WriteProtectDisableCompleteActionMatch) {
 }
 
 TEST_F(ShimlessRmaMojoToProtoTest, UpdateRoFirmwareStatusMatch) {
-  constexpr auto enums = base::MakeFixedFlatMap<mojom::UpdateRoFirmwareStatus,
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto enums = base::MakeFixedFlatMap<mojom::UpdateRoFirmwareStatus,
                                                 rmad::UpdateRoFirmwareStatus>(
       {{mojom::UpdateRoFirmwareStatus::kWaitUsb,
         rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_WAIT_USB},
@@ -326,7 +326,7 @@ TEST_F(ShimlessRmaMojoToProtoTest, UpdateRoFirmwareStatusMatch) {
 }
 
 TEST_F(ShimlessRmaMojoToProtoTest, ProvisioningStatusMatch) {
-  constexpr auto enums = base::MakeFixedFlatMap<mojom::ProvisioningStatus,
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto enums = base::MakeFixedFlatMap<mojom::ProvisioningStatus,
                                                 rmad::ProvisionStatus::Status>(
       {{mojom::ProvisioningStatus::kInProgress,
         rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS},
@@ -342,7 +342,7 @@ TEST_F(ShimlessRmaMojoToProtoTest, ProvisioningStatusMatch) {
 }
 
 TEST_F(ShimlessRmaMojoToProtoTest, FinalizationStatusMatch) {
-  constexpr auto enums = base::MakeFixedFlatMap<mojom::FinalizationStatus,
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto enums = base::MakeFixedFlatMap<mojom::FinalizationStatus,
                                                 rmad::FinalizeStatus::Status>(
       {{mojom::FinalizationStatus::kInProgress,
         rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS},

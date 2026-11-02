@@ -116,7 +116,7 @@ void AppMenuBrowserTest::ShowUi(const std::string& name) {
     return;
   }
 
-  constexpr auto kSubmenus = base::MakeFixedFlatMap<std::string_view, int>({
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSubmenus = base::MakeFixedFlatMap<std::string_view, int>({
       // Submenus present in all versions.
       {"history", IDC_RECENT_TABS_MENU},
       {"bookmarks", IDC_BOOKMARKS_MENU},

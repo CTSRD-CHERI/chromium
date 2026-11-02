@@ -23,7 +23,7 @@ const char* kHtmlWhitespace = " \n\t\r\f";
 
 WebSandboxFlags ParseWebSandboxToken(std::string_view token) {
   using enum WebSandboxFlags;
-  static constexpr auto kTokenToWebSandboxFlags =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTokenToWebSandboxFlags =
       base::MakeFixedFlatMap<std::string_view, WebSandboxFlags>({
           {"allow-downloads", kDownloads},
           {"allow-forms", kForms},

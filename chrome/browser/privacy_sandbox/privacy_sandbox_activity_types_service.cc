@@ -61,7 +61,7 @@ void RecordPercentageMetrics(const base::Value::List& activity_type_record) {
     activity_type_percentages[key] = std::round(raw_percentage);
   }
 
-  constexpr auto kTypesToHistogramSuffix =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTypesToHistogramSuffix =
       base::MakeFixedFlatMap<ActivityType, std::string_view>(
           {{ActivityType::kOther, "Other"},
            {ActivityType::kTabbed, "BrApp"},

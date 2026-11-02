@@ -25,7 +25,7 @@ namespace {
 const CSVPassword::Label* NameToLabel(std::string_view name) {
   using Label = CSVPassword::Label;
   // Recognised column names for origin URL, usernames and passwords.
-  static constexpr auto kLabelMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kLabelMap =
       base::MakeFixedFlatMap<std::string_view, Label>({
           {"url", Label::kOrigin},
           {"website", Label::kOrigin},
@@ -59,7 +59,7 @@ const CSVPassword::Label* NameToLabel(std::string_view name) {
 size_t GetNoteHeaderPriority(std::string_view name) {
   DCHECK_EQ(*NameToLabel(name), CSVPassword::Label::KNote);
   // Mapping names for note columns to their priorities.
-  static constexpr auto kNoteLabelsPriority =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kNoteLabelsPriority =
       base::MakeFixedFlatMap<std::string_view, size_t>({
           {"note", 0},
           {"notes", 1},

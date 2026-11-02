@@ -37,7 +37,7 @@ constexpr size_t kLocaleCapacity =
 
 // Mapping of fields needed for identifying libaddressinput fields that
 // considered required in Autofill.
-constexpr auto kRequiredFieldMapping =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kRequiredFieldMapping =
     base::MakeFixedFlatMap<FieldType, RequiredFieldsForAddressImport>(
         {{FieldType::ADDRESS_HOME_STATE,
           RequiredFieldsForAddressImport::ADDRESS_REQUIRES_STATE},

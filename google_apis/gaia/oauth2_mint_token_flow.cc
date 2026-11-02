@@ -76,7 +76,7 @@ constexpr char kTokenBindingChallengeHeader[] =
 constexpr char kTokenBindingResponseKey[] = "tokenBindingResponse";
 constexpr char kDirectedResponseKey[] = "directedResponse";
 
-constexpr auto kOAuth2ResponseByErrorReason =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kOAuth2ResponseByErrorReason =
     base::MakeFixedFlatMap<std::string_view, OAuth2Response>({
         {"authError", OAuth2Response::kInvalidGrant},
         {"badRequest", OAuth2Response::kInvalidRequest},

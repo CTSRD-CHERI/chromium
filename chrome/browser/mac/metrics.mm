@@ -22,7 +22,7 @@
 namespace {
 
 mac_metrics::FileSystemType VolumeTagToFileSystemType(enum vtagtype tag) {
-  static constexpr auto map =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto map =
       base::MakeFixedFlatMap<enum vtagtype, mac_metrics::FileSystemType>({
           {VT_HFS, mac_metrics::FileSystemType::kHFS},
           {VT_APFS, mac_metrics::FileSystemType::kAPFS},

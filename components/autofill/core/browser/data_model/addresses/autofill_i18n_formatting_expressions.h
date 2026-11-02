@@ -19,7 +19,7 @@ namespace autofill::i18n_model_definition {
 using CountryAndFieldType = std::pair<std::string_view, FieldType>;
 
 // A lookup map for formatting expressions for countries and field types.
-inline constexpr auto kAutofillFormattingRulesMap =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kAutofillFormattingRulesMap =
     base::MakeFixedFlatMap<CountryAndFieldType, std::u16string_view>({
       {{"AU", ADDRESS_HOME_ADDRESS}, u"${ADDRESS_HOME_STREET_ADDRESS;;}\n${ADDRESS_HOME_CITY;;} ${ADDRESS_HOME_STATE;;} ${ADDRESS_HOME_ZIP;;}"},
       {{"AU", ADDRESS_HOME_STREET_ADDRESS}, u"${ADDRESS_HOME_SUBPREMISE;;}  ${ADDRESS_HOME_STREET_LOCATION;;}"},

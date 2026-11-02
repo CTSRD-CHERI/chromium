@@ -31,7 +31,7 @@ bool ShouldUseNewFopDisplay() {
 #endif
 }
 
-constexpr auto kOldDataResources = base::MakeFixedFlatMap<Suggestion::Icon,
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kOldDataResources = base::MakeFixedFlatMap<Suggestion::Icon,
                                                           int>({
     {Suggestion::Icon::kCardAmericanExpress, IDR_AUTOFILL_METADATA_CC_AMEX_OLD},
     {Suggestion::Icon::kCardDiners, IDR_AUTOFILL_METADATA_CC_DINERS_OLD},
@@ -63,7 +63,7 @@ constexpr auto kOldDataResources = base::MakeFixedFlatMap<Suggestion::Icon,
 #endif  // BUILDFLAG(IS_ANDROID)
 });
 
-constexpr auto kDataResources = base::MakeFixedFlatMap<Suggestion::Icon, int>({
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kDataResources = base::MakeFixedFlatMap<Suggestion::Icon, int>({
     {Suggestion::Icon::kCardAmericanExpress, IDR_AUTOFILL_METADATA_CC_AMEX},
     {Suggestion::Icon::kCardDiners, IDR_AUTOFILL_METADATA_CC_DINERS},
     {Suggestion::Icon::kCardDiscover, IDR_AUTOFILL_METADATA_CC_DISCOVER},

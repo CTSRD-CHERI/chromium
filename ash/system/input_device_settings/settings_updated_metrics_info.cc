@@ -19,7 +19,7 @@ using Category = SettingsUpdatedMetricsInfo::Category;
 constexpr char kLocalFirstConnectionKey[] = "initial_connection_time";
 constexpr char kCategoryKey[] = "category";
 
-constexpr auto kTimePeriodToKey =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTimePeriodToKey =
     base::MakeFixedFlatMap<TimePeriod, const char*>({
         {TimePeriod::kOneHour, "one_hour"},
         {TimePeriod::kThreeHours, "three_hours"},
@@ -28,7 +28,7 @@ constexpr auto kTimePeriodToKey =
         {TimePeriod::kOneWeek, "one_week"},
     });
 
-constexpr auto kTimePeriodToTimeDelta =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTimePeriodToTimeDelta =
     base::MakeFixedFlatMap<TimePeriod, base::TimeDelta>({
         {TimePeriod::kOneHour, base::Hours(1)},
         {TimePeriod::kThreeHours, base::Hours(3)},

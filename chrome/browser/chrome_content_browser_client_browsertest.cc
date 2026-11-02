@@ -766,7 +766,7 @@ INSTANTIATE_TEST_SUITE_P(
                     ui::NativeTheme::PreferredContrast::kCustom),
     ([](const ::testing::TestParamInfo<PrefersContrastTest::ParamType>& info) {
       using enum ui::NativeTheme::PreferredContrast;
-      static constexpr auto kContrastValues =
+      static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kContrastValues =
           base::MakeFixedFlatMap<ui::NativeTheme::PreferredContrast,
                                  std::string_view>({{kNoPreference, "Default"},
                                                     {kMore, "More"},

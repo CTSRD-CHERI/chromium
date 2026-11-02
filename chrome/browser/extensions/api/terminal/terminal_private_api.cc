@@ -793,7 +793,7 @@ ExtensionFunction::ResponseAction TerminalPrivateSetPrefsFunction::Run() {
   PrefService* service =
       Profile::FromBrowserContext(browser_context())->GetPrefs();
 
-  static constexpr auto kAllowList =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kAllowList =
       base::MakeFixedFlatMap<std::string_view, base::Value::Type>(
           {{guest_os::prefs::kGuestOsTerminalSettings,
             base::Value::Type::DICT}});

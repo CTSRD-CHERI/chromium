@@ -29,7 +29,7 @@ using segmentation_platform::processing::ProcessedValue;
 const base::FeatureParam<int> kGroupSuggestionCacheTTLSecs{
     &features::kGroupSuggestionService, "group_suggestion_cache_ttl_secs", 900};
 
-constexpr auto kReasonToMaxOverlappingTabs =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kReasonToMaxOverlappingTabs =
     base::MakeFixedFlatMap<GroupSuggestion::SuggestionReason, float>({
         {GroupSuggestion::SuggestionReason::kRecentlyOpened, 0.55},
         {GroupSuggestion::SuggestionReason::kSwitchedBetween, 0.60},

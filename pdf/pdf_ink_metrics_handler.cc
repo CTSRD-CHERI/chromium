@@ -17,7 +17,7 @@ namespace chrome_pdf {
 namespace {
 
 // LINT.IfChange(PenSizes)
-constexpr auto kPenSizes =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kPenSizes =
     base::MakeFixedFlatMap<float, StrokeMetricBrushSize>({
         {1.0f, StrokeMetricBrushSize::kExtraThin},
         {2.0f, StrokeMetricBrushSize::kThin},
@@ -28,7 +28,7 @@ constexpr auto kPenSizes =
 // LINT.ThenChange(//chrome/browser/resources/pdf/elements/ink_size_selector.ts:PenSizes)
 
 // LINT.IfChange(HighlighterSizes)
-constexpr auto kHighlighterSizes =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kHighlighterSizes =
     base::MakeFixedFlatMap<float, StrokeMetricBrushSize>({
         {4.0f, StrokeMetricBrushSize::kExtraThin},
         {6.0f, StrokeMetricBrushSize::kThin},
@@ -39,7 +39,7 @@ constexpr auto kHighlighterSizes =
 // LINT.ThenChange(//chrome/browser/resources/pdf/elements/ink_size_selector.ts:HighlighterSizes)
 
 // LINT.IfChange(PenColors)
-constexpr auto kPenColors =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kPenColors =
     base::MakeFixedFlatMap<SkColor, StrokeMetricPenColor>({
         {SK_ColorBLACK, StrokeMetricPenColor::kBlack},
         {SkColorSetRGB(0x5F, 0x63, 0x68), StrokeMetricPenColor::kDarkGrey2},
@@ -65,7 +65,7 @@ constexpr auto kPenColors =
 // LINT.ThenChange(//chrome/browser/resources/pdf/elements//ink_annotation_brush_mixin.ts:PenColors)
 
 // LINT.IfChange(HighlighterColors)
-constexpr auto kHighlighterColors =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kHighlighterColors =
     base::MakeFixedFlatMap<SkColor, StrokeMetricHighlighterColor>({
         {SkColorSetRGB(0xF2, 0x8B, 0x82),
          StrokeMetricHighlighterColor::kLightRed},

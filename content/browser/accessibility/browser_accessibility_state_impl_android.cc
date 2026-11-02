@@ -29,7 +29,7 @@ namespace {
 // The string values in this map are used to form the names of histograms
 // (e.g., "Accessibility.Android.AccessibilitySuite"). If you change these
 // values, ensure the corresponding histogram definitions are also updated.
-constexpr auto kAssistiveTechMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kAssistiveTechMap =
     base::MakeFixedFlatMap<uint32_t, std::string_view>(
         {{0x349d4b1a, "AccessibilitySuite"},
          {0xa5a469fc, "SoundAmplifier"},

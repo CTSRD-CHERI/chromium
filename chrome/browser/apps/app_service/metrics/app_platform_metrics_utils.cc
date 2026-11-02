@@ -47,7 +47,7 @@
 
 namespace {
 
-constexpr auto kAppTypeNameMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kAppTypeNameMap =
     base::MakeFixedFlatMap<std::string_view, apps::AppTypeName>({
         {apps::kArcHistogramName, apps::AppTypeName::kArc},
         {apps::kCrostiniHistogramName, apps::AppTypeName::kCrostini},

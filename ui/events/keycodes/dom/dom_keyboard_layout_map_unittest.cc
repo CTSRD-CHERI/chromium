@@ -47,7 +47,7 @@ DomKey GetKeyFromFullLookupTable(DomCode dom_code) {
   // use this table to retrieve valid DomKeys for each DomCode to simulate a
   // 'complete' keyboard layout.  They can also use this to construct a partial
   // layout with valid DomKey values for the populated entries.
-  static constexpr auto kFullLookupTable =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kFullLookupTable =
       base::MakeFixedFlatMap<DomCode, DomKey>(
           {{DomCode::DIGIT0, DomKey::FromCharacter('0')},
            {DomCode::DIGIT1, DomKey::FromCharacter('1')},

@@ -29,7 +29,7 @@ using healthd::TelemetryInfo;
 using healthd::TelemetryInfoPtr;
 using ProbeCategories = healthd::ProbeCategoryEnum;
 
-constexpr auto vendor_map = base::MakeFixedFlatMap<uint16_t, std::string_view>({
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto vendor_map = base::MakeFixedFlatMap<uint16_t, std::string_view>({
     {0x03eb, "Atmel"},
     {0x0457, "Silicon Integrated Systems"},
     {0x04b4, "Cypress"},

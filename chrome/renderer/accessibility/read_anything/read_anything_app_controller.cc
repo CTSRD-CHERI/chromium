@@ -2071,7 +2071,7 @@ void ReadAnythingAppController::OnLineFocusChanged(int line_focus) {
 
 double ReadAnythingAppController::GetLineSpacingValue(int line_spacing) const {
   using read_anything::mojom::LineSpacing;
-  static constexpr auto kEnumToValue =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kEnumToValue =
       base::MakeFixedFlatMap<LineSpacing, double>({
           {LineSpacing::kTightDeprecated, 1.0},
           // This value needs to be at least 1.35 to avoid cutting off
@@ -2087,7 +2087,7 @@ double ReadAnythingAppController::GetLineSpacingValue(int line_spacing) const {
 double ReadAnythingAppController::GetLetterSpacingValue(
     int letter_spacing) const {
   using read_anything::mojom::LetterSpacing;
-  static constexpr auto kEnumToValue =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kEnumToValue =
       base::MakeFixedFlatMap<LetterSpacing, double>({
           {LetterSpacing::kTightDeprecated, -0.05},
           {LetterSpacing::kStandard, 0},

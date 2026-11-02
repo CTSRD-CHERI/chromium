@@ -140,7 +140,7 @@ inline constexpr char kUnknownUmaMetricName[] =
     "Enterprise.ReportingEvent.Unknown.";
 
 // Mapping from event name to UMA metric name.
-inline constexpr auto kEventNameToUmaMetricNameMap =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kEventNameToUmaMetricNameMap =
     base::MakeFixedFlatMap<std::string_view, std::string_view>(
         {{kKeyPasswordReuseEvent, kPasswordReuseUmaMetricName},
          {kKeyPasswordChangedEvent, kPasswordChangedUmaMetricName},
@@ -157,7 +157,7 @@ inline constexpr auto kEventNameToUmaMetricNameMap =
          {kExtensionTelemetryEvent, kExtensionTelemetryUmaMetricName}});
 
 // Mapping from event case to UMA metric name.
-inline constexpr auto kEventCaseToUmaMetricNameMap =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kEventCaseToUmaMetricNameMap =
     base::MakeFixedFlatMap<EventCase, std::string_view>(
         {{EventCase::kPasswordReuseEvent, kPasswordReuseUmaMetricName},
          {EventCase::kPasswordChangedEvent, kPasswordChangedUmaMetricName},
@@ -176,7 +176,7 @@ inline constexpr auto kEventCaseToUmaMetricNameMap =
           kExtensionTelemetryUmaMetricName}});
 
 // Mapping from event case to UMA metric name.
-inline constexpr auto kEventCaseToEventNameMap =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kEventCaseToEventNameMap =
     base::MakeFixedFlatMap<EventCase, std::string_view>(
         {{EventCase::kPasswordReuseEvent, kKeyPasswordReuseEvent},
          {EventCase::kPasswordChangedEvent, kKeyPasswordChangedEvent},

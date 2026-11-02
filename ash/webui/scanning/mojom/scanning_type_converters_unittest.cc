@@ -256,7 +256,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Test that mapping between lorgnette::ColorMode and mojo_ipc::ColorMode
 // behaves as expected.
 TEST(ScanningMojomTraitsTest, ColorMode) {
-  constexpr auto enums =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto enums =
       base::MakeFixedFlatMap<MojomColorMode, ProtoColorMode>({
           {MojomColorMode::kBlackAndWhite, ProtoColorMode::MODE_LINEART},
           {MojomColorMode::kGrayscale, ProtoColorMode::MODE_GRAYSCALE},
@@ -270,7 +270,7 @@ TEST(ScanningMojomTraitsTest, ColorMode) {
 // Test that mapping between lorgnette::SourceType and mojo_ipc::SourceType
 // behaves as expected.
 TEST(ScanningMojomTraitsTest, SourceType) {
-  constexpr auto enums =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto enums =
       base::MakeFixedFlatMap<MojomSourceType, ProtoSourceType>({
           {MojomSourceType::kFlatbed, ProtoSourceType::SOURCE_PLATEN},
           {MojomSourceType::kAdfSimplex, ProtoSourceType::SOURCE_ADF_SIMPLEX},
@@ -284,7 +284,7 @@ TEST(ScanningMojomTraitsTest, SourceType) {
 }
 
 TEST(ScanningMojomTraitsTest, FileType) {
-  constexpr auto enums =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto enums =
       base::MakeFixedFlatMap<MojomFileType, ProtoImageFormat>({
           {MojomFileType::kPng, ProtoImageFormat::IMAGE_FORMAT_PNG},
           {MojomFileType::kJpg, ProtoImageFormat::IMAGE_FORMAT_JPEG},
@@ -310,7 +310,7 @@ TEST(ScanningMojomTraitsTest, FileType) {
 // Test that mapping between lorgnette::ScanFailureMode and mojo_ipc::ScanResult
 // behaves as expected.
 TEST(ScanningMojomTraitsTest, ScanResult) {
-  constexpr auto enums =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto enums =
       base::MakeFixedFlatMap<MojomScanResult, ProtoScanFailureMode>({
           {MojomScanResult::kSuccess,
            ProtoScanFailureMode::SCAN_FAILURE_MODE_NO_FAILURE},

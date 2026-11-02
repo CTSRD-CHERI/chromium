@@ -240,7 +240,7 @@ Uri Printer::ReplaceHostAndPort(const net::IPEndPoint& ip) const {
 }
 
 Printer::PrinterProtocol Printer::GetProtocol() const {
-  static constexpr auto kProtocolMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kProtocolMap =
       base::MakeFixedFlatMap<std::string_view, Printer::PrinterProtocol>({
           {"usb", PrinterProtocol::kUsb},
           {"ipp", PrinterProtocol::kIpp},

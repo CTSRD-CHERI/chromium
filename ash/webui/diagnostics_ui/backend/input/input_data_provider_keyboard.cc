@@ -56,7 +56,7 @@ enum {
 
 // Numeric values of evdev KEY_F# are non-contiguous, making this mapping
 // non-trivial.
-constexpr auto kFKeyOrder =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kFKeyOrder =
     base::MakeFixedFlatMap<uint32_t, unsigned int>({{KEY_F1, kFKey1},
                                                     {KEY_F2, kFKey2},
                                                     {KEY_F3, kFKey3},

@@ -103,7 +103,7 @@ using enum WindowSnapGrouping;
 // Note the map does not contain all WindowStateTypes, for the ones that's not
 // in the map, they can't be put into the window state restore history stack,
 // and restore from those state will simply go back to kNormal window state.
-constexpr auto kWindowStateRestoreHistoryLayerMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kWindowStateRestoreHistoryLayerMap =
     base::MakeFixedFlatMap<WindowStateType, int>({
         {WindowStateType::kNormal, 0},
         {WindowStateType::kDefault, 0},

@@ -76,7 +76,7 @@ constexpr char kUserActionThirdLevelPopupSuggestionAccepted[] =
 
 // Translates structured name types into simple names that are used for
 // naming histograms.
-constexpr auto kStructuredNameTypeToNameMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kStructuredNameTypeToNameMap =
     base::MakeFixedFlatMap<FieldType, std::string_view>(
         {{NAME_FULL, "Full"},
          {NAME_FIRST, "First"},
@@ -87,7 +87,7 @@ constexpr auto kStructuredNameTypeToNameMap =
 
 // Translates structured address types into simple names that are used for
 // naming histograms.
-constexpr auto kStructuredAddressTypeToNameMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kStructuredAddressTypeToNameMap =
     base::MakeFixedFlatMap<FieldType, std::string_view>(
         {{ADDRESS_HOME_STREET_ADDRESS, "StreetAddress"},
          {ADDRESS_HOME_STREET_NAME, "StreetName"},

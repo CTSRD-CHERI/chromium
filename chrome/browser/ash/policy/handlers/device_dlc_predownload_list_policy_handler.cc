@@ -59,7 +59,7 @@ DeviceDlcPredownloadListPolicyHandler::DecodeDeviceDlcPredownloadListPolicy(
     const google::protobuf::RepeatedPtrField<std::string>& raw_policy_value,
     std::string& out_warning) {
   std::vector<std::string> unknown_dlcs;
-  constexpr auto policy_value_to_dlc_id =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto policy_value_to_dlc_id =
       base::MakeFixedFlatMap<std::string_view, std::string_view>(
           {{"scanner_drivers", "sane-backends-pfu"}});
 

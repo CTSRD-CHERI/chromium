@@ -104,7 +104,7 @@ inline constexpr std::string_view kDisabled = "disabled";
 // These app Id constants need to be kept in sync with java/com/
 // google/chrome/cros/policyconverter/ChromePolicySettingsProcessor.java
 // LINT.IfChange
-constexpr auto kPreinstalledWebAppsMapping =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kPreinstalledWebAppsMapping =
     base::MakeFixedFlatMap<std::string_view, std::string_view>(
         {{"cursive", ash::kCursiveAppId}, {"canvas", ash::kCanvasAppId}});
 // LINT.ThenChange(//depot/google3/java/com/google/chrome/cros/policyconverter/ChromePolicySettingsProcessor.java)

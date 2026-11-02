@@ -69,7 +69,7 @@ void RealTimeReportController::GenerateAndUploadReport(
     return;
   }
 
-  static constexpr auto kConfigs =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kConfigs =
       base::MakeFixedFlatMap<RealTimeReportType, ReportConfig>({
           {RealTimeReportType::kExtensionRequest,
            {RealTimeReportType::kExtensionRequest,

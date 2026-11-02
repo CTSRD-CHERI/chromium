@@ -179,7 +179,7 @@ bool GetCommandDictAndOutputPaths(base::Value::Dict* commands,
     base::FilePath::StringType extension =
         base::ToLowerASCII(path.FinalExtension());
 
-    static constexpr auto kImageFileTypes =
+    static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kImageFileTypes =
         base::MakeFixedFlatMap<base::FilePath::StringViewType, const char*>({
             {FILE_PATH_LITERAL(".jpeg"), "jpeg"},
             {FILE_PATH_LITERAL(".jpg"), "jpeg"},

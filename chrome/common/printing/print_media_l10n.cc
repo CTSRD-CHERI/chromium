@@ -34,7 +34,7 @@ MediaSizeInfo InfoForStandardSize(const gfx::Size& size) {
     MediaSizeGroup sort_group;
   };
 
-  static constexpr auto kMediaMap = base::MakeFixedFlatMap<gfx::Size,
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMediaMap = base::MakeFixedFlatMap<gfx::Size,
                                                            RegisteredMediaInfo>(
       {
           {{2600, 3700},

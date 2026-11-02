@@ -16,7 +16,7 @@
 
 namespace {
 
-constexpr auto kCameraSigninStringsMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kCameraSigninStringsMap =
     base::MakeFixedFlatMap<std::string_view, SignInNotificationIds>(
         {{"image/jpeg",
           {IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_TITLE_PHOTO,
@@ -36,7 +36,7 @@ struct UploadDoneNotificationTitleIds {
   int google_drive_id;
 };
 
-constexpr auto kCameraUploadDoneTitleMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kCameraUploadDoneTitleMap =
     base::MakeFixedFlatMap<std::string_view, UploadDoneNotificationTitleIds>(
         {{"image/jpeg",
           {IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_DONE_TITLE_ONEDRIVE,
@@ -51,7 +51,7 @@ constexpr auto kCameraUploadDoneTitleMap =
           {IDS_POLICY_SKYVAULT_CAMERA_SCAN_UPLOAD_DONE_TITLE_ONEDRIVE,
            IDS_POLICY_SKYVAULT_CAMERA_SCAN_UPLOAD_DONE_TITLE_GOOGLE_DRIVE}}});
 
-constexpr auto kCameraUploadErrorMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kCameraUploadErrorMap =
     base::MakeFixedFlatMap<std::string_view, UploadErrorIds>(
         {{"image/jpeg",
           {IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_ERROR_TITLE,

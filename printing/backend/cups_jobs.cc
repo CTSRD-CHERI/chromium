@@ -177,7 +177,7 @@ CupsJob::JobState ToJobState(ipp_attribute_t* attr) {
 // `PReason::kUnknownReason` if the string is not recognized.
 PrinterStatus::PrinterReason::Reason ToReason(std::string_view reason) {
   // Returns a lookup map from strings to PrinterReason::Reason.
-  static constexpr auto kLabelToReasonMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kLabelToReasonMap =
       base::MakeFixedFlatMap<std::string_view, PReason>({
           {kNone, PReason::kNone},
           {kMediaNeeded, PReason::kMediaNeeded},

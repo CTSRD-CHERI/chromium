@@ -17,7 +17,7 @@
 namespace policy {
 namespace {
 
-constexpr auto kDomainPrefixMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kDomainPrefixMap =
     base::MakeFixedFlatMap<DeviceLocalAccountType, std::string_view>({
         {DeviceLocalAccountType::kPublicSession, "public-accounts"},
         {DeviceLocalAccountType::kKioskApp, "kiosk-apps"},
