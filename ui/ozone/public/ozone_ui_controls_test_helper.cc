@@ -11,11 +11,11 @@
 
 namespace ui {
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
 void OzoneUIControlsTestHelper::ForceUseScreenCoordinatesOnce() {
   NOTREACHED();
 }
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
 
 std::unique_ptr<OzoneUIControlsTestHelper> CreateOzoneUIControlsTestHelper() {
   return PlatformObject<OzoneUIControlsTestHelper>::Create();
