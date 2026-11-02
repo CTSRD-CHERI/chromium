@@ -283,7 +283,11 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
     // Check to see whether the server supports byte ranges.
     std::string accept_ranges =
         response.HttpHeaderField("Accept-Ranges").Utf8();
+#if __cpp_lib_string_contains
     if (accept_ranges.contains("bytes")) {
+#else
+    if (accept_ranges.find("bytes") != std::string::npos) {
+#endif
       destination_url_data->set_range_supported();
     }
 

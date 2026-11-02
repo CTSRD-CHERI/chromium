@@ -49,7 +49,11 @@ ui::NativeTheme::PreferredContrast OsSettingsProviderGtk::PreferredContrast()
       base::ToLowerASCII(GetGtkSettingsStringProperty(
           gtk_settings_get_default(), "gtk-theme-name"));
   const bool high_contrast =
+#if __cpp_lib_string_contains
       theme_name.contains("high") && theme_name.contains("contrast");
+#else
+      theme_name.find("high") != std::string::npos && theme_name.find("contrast") != std::string::npos;
+#endif
   return high_contrast ? ui::NativeTheme::PreferredContrast::kMore
                        : ui::NativeTheme::PreferredContrast::kNoPreference;
 }

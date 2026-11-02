@@ -445,7 +445,11 @@ bool IsSpecialSymbol(char16_t c) {
   // `kSpecialSymbols` does not become a char. If that happened, the call to
   // `base::Contains` would lead to (silent) overflow.
   static_assert(sizeof(decltype(kSpecialSymbols)::value_type) == sizeof(c));
+#if __cpp_lib_string_contains
   return kSpecialSymbols.contains(c);
+#else
+  return kSpecialSymbols.find(c) != std::string::npos;
+#endif
 }
 
 bool IsSingleUsernameType(autofill::FieldType type) {
