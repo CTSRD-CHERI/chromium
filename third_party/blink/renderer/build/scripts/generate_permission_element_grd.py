@@ -90,7 +90,7 @@ struct LookupHelper {
 std::optional<uint16_t> GetPermissionElementMessageId(
     std::string_view language_code,
     uint16_t base_message) {
-  static constexpr auto kMessageIds =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMessageIds =
       base::MakeFixedFlatMap<std::pair<LangStringSlice, uint16_t>, uint16_t>({
 '''
 kStringMapCcSuffix = '''
