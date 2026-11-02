@@ -29,6 +29,10 @@ source_set("lib") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
+
   public_deps = [
     "//base",
     "//mojo/public/cpp/bindings",
