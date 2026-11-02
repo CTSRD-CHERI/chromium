@@ -7329,7 +7329,11 @@ class MockViewObserver : public ViewObserver {
 ACTION_TEMPLATE(ExpectThatViewProperty,
                 HAS_1_TEMPLATE_PARAMS(typename, T),
                 AND_1_VALUE_PARAMS(Matcher)) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  EXPECT_THAT(ui::ClassPropertyCaster<T*>::FromIntptr(arg0), Matcher);
+#else
   EXPECT_THAT(ui::ClassPropertyCaster<T*>::FromInt64(arg0), Matcher);
+#endif
 }
 
 TEST_F(ViewObserverTest, ViewPropertyChanged) {
