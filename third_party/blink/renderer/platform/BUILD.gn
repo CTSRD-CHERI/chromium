@@ -2087,6 +2087,10 @@ static_library("test_support") {
     "//third_party/blink/renderer:non_test_config",
   ]
 
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
+
   public_deps = [
     ":platform",
     "//cc",

@@ -221,6 +221,10 @@ source_set("test_support") {
   ]
 
   configs += [ "//third_party/blink/renderer/platform:blink_platform_config" ]
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 source_set("unit_tests") {
