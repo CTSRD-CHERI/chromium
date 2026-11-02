@@ -7,13 +7,12 @@
 
 #include <optional>
 #include <string>
-#include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 

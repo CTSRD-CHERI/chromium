@@ -6,12 +6,11 @@
 
 #include <stddef.h>
 
-#include <utility>
-
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/to_underlying.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/gesture_event_details.h"
 
