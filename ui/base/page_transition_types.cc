@@ -5,11 +5,10 @@
 #include "ui/base/page_transition_types.h"
 
 #include <ostream>
-#include <utility>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace ui {
 

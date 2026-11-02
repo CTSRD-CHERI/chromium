@@ -4,11 +4,9 @@
 
 #include "ui/events/blink/web_input_event.h"
 
-#include <utility>
-
 #include "base/feature_list.h"
 #include "base/notimplemented.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/ui_base_features.h"
