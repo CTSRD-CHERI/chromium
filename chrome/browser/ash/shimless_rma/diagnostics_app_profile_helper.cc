@@ -70,7 +70,7 @@ constexpr base::TimeDelta kExtensionReadyPollingInterval =
 constexpr base::TimeDelta kExtensionReadyPollingTimeout = base::Seconds(3);
 
 // The set of allowlisted permission policy for diagnostics IWA.
-constexpr auto kAllowlistedPermissionPolicyStringMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kAllowlistedPermissionPolicyStringMap =
     base::MakeFixedFlatMap<network::mojom::PermissionsPolicyFeature, int>(
         {{network::mojom::PermissionsPolicyFeature::kCamera,
           IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION_CAMERA},

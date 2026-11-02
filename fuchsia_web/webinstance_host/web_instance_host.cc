@@ -452,7 +452,7 @@ void InstanceBuilder::OfferMissingDirectoriesFromVoid() {
 // static
 std::string_view InstanceBuilder::GetDirectoryName(
     OptionalDirectory directory) {
-  static constexpr auto kNames =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kNames =
       base::MakeFixedFlatMap<OptionalDirectory, std::string_view>({
           {OptionalDirectory::kCdmData, "cdm_data"},
           {OptionalDirectory::kCommandLineConfig, "command-line-config"},

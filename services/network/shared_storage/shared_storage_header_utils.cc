@@ -16,14 +16,14 @@ namespace network {
 
 namespace {
 
-constexpr auto kSharedStorageModifierMethodTypeMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSharedStorageModifierMethodTypeMap =
     base::MakeFixedFlatMap<std::string_view, SharedStorageModifierMethodType>(
         {{"set", SharedStorageModifierMethodType::kSet},
          {"append", SharedStorageModifierMethodType::kAppend},
          {"delete", SharedStorageModifierMethodType::kDelete},
          {"clear", SharedStorageModifierMethodType::kClear}});
 
-constexpr auto kSharedStorageHeaderParamTypeMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSharedStorageHeaderParamTypeMap =
     base::MakeFixedFlatMap<std::string_view, SharedStorageHeaderParamType>(
         {{"key", SharedStorageHeaderParamType::kKey},
          {"value", SharedStorageHeaderParamType::kValue},

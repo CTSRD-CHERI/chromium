@@ -67,7 +67,7 @@ struct WindowProxyAccessCounters {
   WebFeature cross_origin_property_access_from_other_page;
 };
 
-inline constexpr auto kWindowProxyAccessTypeToCounters = base::MakeFixedFlatMap<
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kWindowProxyAccessTypeToCounters = base::MakeFixedFlatMap<
     mojom::blink::WindowProxyAccessType,
     WindowProxyAccessCounters>({
     {

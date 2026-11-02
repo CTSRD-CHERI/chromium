@@ -25,7 +25,7 @@ namespace {
 //   value of 30 times the level number specified in Table A.8.
 //
 // https://github.com/microsoft/DirectX-Specs/blob/master/d3d/D3D12VideoEncoding.md#level_idc-mappings-for-hevc
-constexpr auto kD3D12H265LevelToH265LevelIDCMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kD3D12H265LevelToH265LevelIDCMap =
     base::MakeFixedFlatMap<D3D12_VIDEO_ENCODER_LEVELS_HEVC, uint8_t>({
         {D3D12_VIDEO_ENCODER_LEVELS_HEVC_1, 30},
         {D3D12_VIDEO_ENCODER_LEVELS_HEVC_2, 60},
@@ -42,7 +42,7 @@ constexpr auto kD3D12H265LevelToH265LevelIDCMap =
         {D3D12_VIDEO_ENCODER_LEVELS_HEVC_62, 186},
     });
 
-constexpr auto kVideoCodecProfileToD3D12Profile =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kVideoCodecProfileToD3D12Profile =
     base::MakeFixedFlatMap<VideoCodecProfile, D3D12_VIDEO_ENCODER_PROFILE_HEVC>(
         {
             {HEVCPROFILE_MAIN, D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN},

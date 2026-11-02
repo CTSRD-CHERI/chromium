@@ -40,7 +40,7 @@ namespace {
 
 // The map with pairs Office file extensions with their corresponding
 // `OfficeOpenExtensions` enum.
-constexpr auto kExtensionToOfficeOpenExtensionsEnum =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kExtensionToOfficeOpenExtensionsEnum =
     base::MakeFixedFlatMap<std::string_view, OfficeOpenExtensions>(
         {{".doc", OfficeOpenExtensions::kDoc},
          {".docm", OfficeOpenExtensions::kDocm},

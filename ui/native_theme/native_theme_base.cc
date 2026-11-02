@@ -295,7 +295,7 @@ SkColor NativeThemeBase::GetControlColor(
     bool dark_mode,
     PreferredContrast contrast,
     const ColorProvider* color_provider) const {
-  static constexpr auto kColorMap = base::MakeFixedFlatMap<ControlColorId,
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kColorMap = base::MakeFixedFlatMap<ControlColorId,
                                                            ColorId>(
       {{kBorder, kColorWebNativeControlBorder},
        {kDisabledBorder, kColorWebNativeControlBorderDisabled},

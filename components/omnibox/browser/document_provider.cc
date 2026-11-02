@@ -129,7 +129,7 @@ constexpr char kPresentationMimetype[] =
 
 // Returns mappings from MIME types to overridden icons.
 AutocompleteMatch::DocumentType GetIconForMIMEType(std::string_view mimetype) {
-  constexpr auto kIconMap =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kIconMap =
       base::MakeFixedFlatMap<std::string_view, AutocompleteMatch::DocumentType>(
           {
               {kDocumentMimetype, AutocompleteMatch::DocumentType::DRIVE_DOCS},

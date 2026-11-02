@@ -240,7 +240,7 @@ enum class PaletteId {
 // A look-up table mapping representative color of the palettes to the
 // respective palette identifier. Used to look up palette identifier given a
 // best matching representative color selected by the palette resolution logic.
-inline constexpr auto kPalettes = base::MakeFixedFlatMap<SkColor, PaletteId>({
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kPalettes = base::MakeFixedFlatMap<SkColor, PaletteId>({
     {kColorGrapePrimary, PaletteId::kGrape},
     {kColorCandyPrimary, PaletteId::kCandy},
     {kColorGumPrimary, PaletteId::kGum},
@@ -277,7 +277,7 @@ enum ColorId : size_t {
 
 // A look-up table mapping palette identifiers to the array of colors within the
 // palette. The colors are indexed by the `ColorId` values.
-inline constexpr auto kPaletteColors =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kPaletteColors =
     base::MakeFixedFlatMap<PaletteId, std::array<SkColor, ColorId::kMax>>(
         {{PaletteId::kFallback,
           {

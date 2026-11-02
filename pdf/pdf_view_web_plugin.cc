@@ -1818,7 +1818,7 @@ void PdfViewWebPlugin::OnMessage(const base::Value::Dict& message) {
 
   using MessageHandler = void (PdfViewWebPlugin::*)(const base::Value::Dict&);
 
-  static constexpr auto kMessageHandlers =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMessageHandlers =
       base::MakeFixedFlatMap<std::string_view, MessageHandler>({
           {"displayAnnotations",
            &PdfViewWebPlugin::HandleDisplayAnnotationsMessage},

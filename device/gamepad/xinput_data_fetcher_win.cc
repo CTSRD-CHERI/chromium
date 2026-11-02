@@ -111,7 +111,7 @@ void XInputDataFetcherWin::EnumerateDevices() {
         pad.vibration_actuator.not_null = true;
 
         const auto name = [](BYTE sub_type) -> std::u16string_view {
-          static constexpr auto kNames =
+          static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kNames =
               base::MakeFixedFlatMap<BYTE, std::u16string_view>({
                   {kDeviceSubTypeGamepad, u"GAMEPAD"},
                   {kDeviceSubTypeWheel, u"WHEEL"},

@@ -20,7 +20,7 @@ namespace media {
 namespace {
 
 using H264LevelIDC = H264SPS::H264LevelIDC;
-constexpr auto kD3D12H264LevelToH264LevelIDCMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kD3D12H264LevelToH264LevelIDCMap =
     base::MakeFixedFlatMap<D3D12_VIDEO_ENCODER_LEVELS_H264, uint8_t>({
         {D3D12_VIDEO_ENCODER_LEVELS_H264_1, H264LevelIDC::kLevelIDC1p0},
         {D3D12_VIDEO_ENCODER_LEVELS_H264_1b, H264LevelIDC::kLevelIDC1B},
@@ -44,7 +44,7 @@ constexpr auto kD3D12H264LevelToH264LevelIDCMap =
         {D3D12_VIDEO_ENCODER_LEVELS_H264_62, H264LevelIDC::kLevelIDC6p2},
     });
 
-constexpr auto kVideoCodecProfileToD3D12Profile =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kVideoCodecProfileToD3D12Profile =
     base::MakeFixedFlatMap<VideoCodecProfile, D3D12_VIDEO_ENCODER_PROFILE_H264>(
         {
             {H264PROFILE_BASELINE, D3D12_VIDEO_ENCODER_PROFILE_H264_MAIN},

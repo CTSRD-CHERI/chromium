@@ -67,7 +67,7 @@ void ExpectThatEventually(Observer& observer, const Matcher& matcher) {
   ADD_FAILURE() << "Timed out waiting for value to match.";
 }
 
-constexpr auto kUrlToTitleMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kUrlToTitleMap =
     base::MakeFixedFlatMap<std::string_view, std::string_view>({
         {"/why-cats-are-liquid", "The Physics of Feline Fluid Dynamics"},
         {"/sentient-toaster-manual", "My Toaster Is Evil: A User's Guide"},

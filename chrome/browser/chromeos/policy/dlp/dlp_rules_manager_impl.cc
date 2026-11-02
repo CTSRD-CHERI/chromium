@@ -150,7 +150,7 @@ void OnSetDlpFilesPolicy(const ::dlp::SetDlpFilesPolicyResponse response) {
 }
 
 ::dlp::DlpRuleLevel GetLevelProtoEnum(const DlpRulesManager::Level level) {
-  static constexpr auto kLevelsMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kLevelsMap =
       base::MakeFixedFlatMap<DlpRulesManager::Level, ::dlp::DlpRuleLevel>(
           {{DlpRulesManager::Level::kNotSet, ::dlp::DlpRuleLevel::UNSPECIFIED},
            {DlpRulesManager::Level::kReport, ::dlp::DlpRuleLevel::UNSPECIFIED},

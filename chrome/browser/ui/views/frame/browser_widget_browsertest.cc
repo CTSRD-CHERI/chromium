@@ -49,7 +49,7 @@ ui::mojom::BrowserColorVariant GetColorVariant(
   }
 
   using SV = ui::ColorProviderKey::SchemeVariant;
-  static constexpr auto kColorMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kColorMap =
       base::MakeFixedFlatMap<SV, BCV>({{SV::kTonalSpot, BCV::kTonalSpot},
                                        {SV::kNeutral, BCV::kNeutral},
                                        {SV::kVibrant, BCV::kVibrant},

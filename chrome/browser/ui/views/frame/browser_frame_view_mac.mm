@@ -255,7 +255,7 @@ void BrowserFrameViewMac::UpdateFullscreenTopUI() {
         views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
             GetBrowserView()->GetWidget()->GetNativeWindow())
             ->GetNSWindowMojo();
-    static constexpr auto kStyleMap =
+    static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kStyleMap =
         base::MakeFixedFlatMap<FullscreenToolbarStyle,
                                remote_cocoa::mojom::ToolbarVisibilityStyle>(
             {{FullscreenToolbarStyle::TOOLBAR_PRESENT,

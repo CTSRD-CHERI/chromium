@@ -224,7 +224,7 @@ enum class FieldsForUma {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:PrefetchMatchesResourceRequestField)
 
-constexpr auto kUmaEnumMap = base::MakeFixedFlatMap<Fields, FieldsForUma>({
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kUmaEnumMap = base::MakeFixedFlatMap<Fields, FieldsForUma>({
     {Fields::kmethod, FieldsForUma::kMethod},
     {Fields::kurl, FieldsForUma::kUrl},
     {Fields::ksite_for_cookies, FieldsForUma::kSiteForCookies},

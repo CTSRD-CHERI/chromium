@@ -317,7 +317,7 @@ constexpr std::partial_ordering FocusModeSoundsView::ToastData::operator<=>(
   }
 
   if (action_type != other.action_type) {
-    constexpr auto kActionValue =
+    BASE_FIXED_FLAT_MAP_CONSTEXPR auto kActionValue =
         base::MakeFixedFlatMap<ErrorMessageToast::ButtonActionType, int>(
             {{ErrorMessageToast::ButtonActionType::kReload, 0},
              {ErrorMessageToast::ButtonActionType::kDismiss, 1},

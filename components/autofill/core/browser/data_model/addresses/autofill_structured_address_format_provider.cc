@@ -15,7 +15,7 @@ namespace autofill {
 namespace {
 
 std::u16string GetHomeStreetAddressPattern(std::string_view country_code) {
-  static constexpr auto kHomeStreetAddressCountryMap = base::MakeFixedFlatMap<
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kHomeStreetAddressCountryMap = base::MakeFixedFlatMap<
       std::string_view, std::u16string_view>(
       {{"BR",
         u"${ADDRESS_HOME_STREET_NAME}${ADDRESS_HOME_HOUSE_NUMBER;, }"

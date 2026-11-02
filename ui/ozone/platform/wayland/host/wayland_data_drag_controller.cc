@@ -281,7 +281,7 @@ bool WaylandDataDragController::IsWindowDragSessionRunning() const {
 }
 
 void WaylandDataDragController::DumpState(std::ostream& out) const {
-  constexpr auto kStateToString = base::MakeFixedFlatMap<State, const char*>(
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kStateToString = base::MakeFixedFlatMap<State, const char*>(
       {{State::kIdle, "idle"},
        {State::kStarted, "started"},
        {State::kFetching, "fetching"}});

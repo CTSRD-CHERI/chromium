@@ -179,7 +179,7 @@ std::optional<base::Value> DecodeIntegerValue(google::protobuf::int64 value) {
 }
 
 std::optional<base::Value> DecodeConnectionType(int value) {
-  static constexpr auto kConnectionTypes =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kConnectionTypes =
       base::MakeFixedFlatMap<int, std::string_view>({
           {em::AutoUpdateSettingsProto::CONNECTION_TYPE_ETHERNET,
            shill::kTypeEthernet},

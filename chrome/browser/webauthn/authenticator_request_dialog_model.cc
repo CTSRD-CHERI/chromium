@@ -257,7 +257,7 @@ AUTHENTICATOR_EVENTS
 std::ostream& operator<<(std::ostream& os,
                          const AuthenticatorRequestDialogModel::Step& step) {
   using Step = AuthenticatorRequestDialogModel::Step;
-  constexpr auto kStepNames = base::MakeFixedFlatMap<Step, std::string_view>({
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kStepNames = base::MakeFixedFlatMap<Step, std::string_view>({
       {Step::kNotStarted, "kNotStarted"},
       {Step::kPasskeyAutofill, "kPasskeyAutofill"},
       {Step::kPasskeyUpgrade, "kPasskeyUpgrade"},

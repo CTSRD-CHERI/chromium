@@ -353,7 +353,7 @@ std::string_view GetSettingsUpdatedPrefName() {
 
 std::string_view GetSettingsUpdatedTimePeriodMetricName(
     SettingsUpdatedMetricsInfo::TimePeriod time_period) {
-  constexpr auto kTimePeriodToMetricName =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTimePeriodToMetricName =
       base::MakeFixedFlatMap<SettingsUpdatedMetricsInfo::TimePeriod,
                              std::string_view>({
           {SettingsUpdatedMetricsInfo::TimePeriod::kOneHour, "OneHour"},
@@ -367,7 +367,7 @@ std::string_view GetSettingsUpdatedTimePeriodMetricName(
 
 std::string_view GetSettingsUpdatedCategoryName(
     SettingsUpdatedMetricsInfo::Category category) {
-  constexpr auto kCategoryToMetricName =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kCategoryToMetricName =
       base::MakeFixedFlatMap<SettingsUpdatedMetricsInfo::Category,
                              std::string_view>({
           {SettingsUpdatedMetricsInfo::Category::kFirstEver, "FirstEver"},

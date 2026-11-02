@@ -192,7 +192,7 @@ inline constexpr FieldTypeDescription kModel_XX[] = {
 // The lookup map for the autofill hierarchy connections per country. The value
 // type is a span of FieldTypeDescription, representing the connections required to
 // construct the hierarchy model.
-inline constexpr auto kAutofillModelRules =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kAutofillModelRules =
     base::MakeFixedFlatMap<std::string_view, base::span<const FieldTypeDescription>>({
       {"AU", kModel_AU},
       {"BR", kModel_BR},

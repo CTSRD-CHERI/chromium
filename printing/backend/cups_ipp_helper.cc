@@ -50,14 +50,14 @@ namespace {
 constexpr double kMMPerInch = 25.4;
 constexpr double kCmPerInch = kMMPerInch * 0.1;
 
-constexpr auto kColorMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kColorMap =
     base::MakeFixedFlatMap<std::string_view, mojom::ColorModel>({
         {CUPS_PRINT_COLOR_MODE_COLOR, mojom::ColorModel::kColorModeColor},
         {CUPS_PRINT_COLOR_MODE_MONOCHROME,
          mojom::ColorModel::kColorModeMonochrome},
     });
 
-constexpr auto kDuplexMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kDuplexMap =
     base::MakeFixedFlatMap<std::string_view, mojom::DuplexMode>({
         {CUPS_SIDES_ONE_SIDED, mojom::DuplexMode::kSimplex},
         {CUPS_SIDES_TWO_SIDED_PORTRAIT, mojom::DuplexMode::kLongEdge},

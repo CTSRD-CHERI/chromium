@@ -330,7 +330,7 @@ void LaunchTerminalSettings(Profile* profile, int64_t display_id) {
 }
 
 void RecordTerminalSettingsChangesUMAs(Profile* profile) {
-  static constexpr auto kSettingsMap = base::MakeFixedFlatMap<std::string_view,
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSettingsMap = base::MakeFixedFlatMap<std::string_view,
                                                               TerminalSetting>({
       {"alt-gr-mode", TerminalSetting::kAltGrMode},
       {"alt-backspace-is-meta-backspace",

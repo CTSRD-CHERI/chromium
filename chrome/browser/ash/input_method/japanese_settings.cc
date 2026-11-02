@@ -18,13 +18,13 @@ using ::base::UmaHistogramBoolean;
 using ::base::UmaHistogramCustomCounts;
 using ::base::UmaHistogramEnumeration;
 
-constexpr auto kHistValInputModes =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kHistValInputModes =
     base::MakeFixedFlatMap<JapaneseSettings::InputMode, HistInputMode>({
         {JapaneseSettings::InputMode::kRomaji, HistInputMode::kRomaji},
         {JapaneseSettings::InputMode::kKana, HistInputMode::kKana},
     });
 
-constexpr auto kHistValPunctuations =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kHistValPunctuations =
     base::MakeFixedFlatMap<JapaneseSettings::PunctuationStyle,
                            HistPunctuationStyle>({
         {JapaneseSettings::PunctuationStyle::kToutenKuten,
@@ -37,7 +37,7 @@ constexpr auto kHistValPunctuations =
          HistPunctuationStyle::kCommaKuten},
     });
 
-constexpr auto kHistValSymbols =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kHistValSymbols =
     base::MakeFixedFlatMap<JapaneseSettings::SymbolStyle, HistSymbolStyle>({
         {JapaneseSettings::SymbolStyle::kCornerBracketMiddleDot,
          HistSymbolStyle::kCornerBracketMiddleDot},
@@ -49,7 +49,7 @@ constexpr auto kHistValSymbols =
          HistSymbolStyle::kSquareBracketMiddleDot},
     });
 
-constexpr auto kHistValSpaceInputStyles =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kHistValSpaceInputStyles =
     base::MakeFixedFlatMap<JapaneseSettings::SpaceInputStyle,
                            HistSpaceInputStyle>({
         {JapaneseSettings::SpaceInputStyle::kInputMode,
@@ -60,7 +60,7 @@ constexpr auto kHistValSpaceInputStyles =
          HistSpaceInputStyle::kHalfWidth},
     });
 
-constexpr auto kHistValSelectionShortcuts =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kHistValSelectionShortcuts =
     base::MakeFixedFlatMap<JapaneseSettings::SelectionShortcut,
                            HistSelectionShortcut>({
         {JapaneseSettings::SelectionShortcut::kDigits123456789,
@@ -71,7 +71,7 @@ constexpr auto kHistValSelectionShortcuts =
          HistSelectionShortcut::kNoShortcut},
     });
 
-constexpr auto kHistValKeymapStyles =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kHistValKeymapStyles =
     base::MakeFixedFlatMap<JapaneseSettings::KeymapStyle, HistKeymapStyle>({
         {JapaneseSettings::KeymapStyle::kCustom, HistKeymapStyle::kCustom},
         {JapaneseSettings::KeymapStyle::kAtok, HistKeymapStyle::kAtok},
@@ -81,7 +81,7 @@ constexpr auto kHistValKeymapStyles =
         {JapaneseSettings::KeymapStyle::kChromeos, HistKeymapStyle::kChromeos},
     });
 
-constexpr auto kHistValShiftKeyModeStyles =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kHistValShiftKeyModeStyles =
     base::MakeFixedFlatMap<JapaneseSettings::ShiftKeyModeStyle,
                            HistShiftKeyModeStyle>({
         {JapaneseSettings::ShiftKeyModeStyle::kOff,
@@ -92,7 +92,7 @@ constexpr auto kHistValShiftKeyModeStyles =
          HistShiftKeyModeStyle::kKatakana},
     });
 
-constexpr auto kInputModes =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kInputModes =
     base::MakeFixedFlatMap<std::string_view, JapaneseSettings::InputMode>({
         {kJpPrefInputModeRomaji, JapaneseSettings::InputMode::kRomaji},
         {kJpPrefInputModeKana, JapaneseSettings::InputMode::kKana},
@@ -102,7 +102,7 @@ constexpr auto kInputModes =
 // without changing their CrOS-Prefs-persisted string values), so they match
 // Mozc Config protobuf, just like JapaneseSettings::PunctuationStyle Mojo enum.
 // The misnomers originate from Mozc Config protobuf but have been fixed there.
-constexpr auto kPunctuations =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kPunctuations =
     base::MakeFixedFlatMap<std::string_view,
                            JapaneseSettings::PunctuationStyle>({
         {kJpPrefPunctuationStyleKutenTouten,
@@ -115,7 +115,7 @@ constexpr auto kPunctuations =
          JapaneseSettings::PunctuationStyle::kCommaKuten},
     });
 
-constexpr auto kSymbols =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSymbols =
     base::MakeFixedFlatMap<std::string_view, JapaneseSettings::SymbolStyle>({
         {kJpPrefSymbolStyleCornerBracketMiddleDot,
          JapaneseSettings::SymbolStyle::kCornerBracketMiddleDot},
@@ -127,7 +127,7 @@ constexpr auto kSymbols =
          JapaneseSettings::SymbolStyle::kSquareBracketMiddleDot},
     });
 
-constexpr auto kSpaceInputStyles =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSpaceInputStyles =
     base::MakeFixedFlatMap<std::string_view, JapaneseSettings::SpaceInputStyle>(
         {
             {kJpPrefSpaceInputStyleInputMode,
@@ -138,7 +138,7 @@ constexpr auto kSpaceInputStyles =
              JapaneseSettings::SpaceInputStyle::kHalfWidth},
         });
 
-constexpr auto kSelectionShortcuts =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSelectionShortcuts =
     base::MakeFixedFlatMap<std::string_view,
                            JapaneseSettings::SelectionShortcut>({
         {kJpPrefSelectionShortcutDigits123456789,
@@ -149,7 +149,7 @@ constexpr auto kSelectionShortcuts =
          JapaneseSettings::SelectionShortcut::kNoShortcut},
     });
 
-constexpr auto kKeymapStyles =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kKeymapStyles =
     base::MakeFixedFlatMap<std::string_view, JapaneseSettings::KeymapStyle>({
         {kJpPrefKeymapStyleCustom, JapaneseSettings::KeymapStyle::kCustom},
         {kJpPrefKeymapStyleAtok, JapaneseSettings::KeymapStyle::kAtok},
@@ -159,7 +159,7 @@ constexpr auto kKeymapStyles =
         {kJpPrefKeymapStyleChromeOs, JapaneseSettings::KeymapStyle::kChromeos},
     });
 
-constexpr auto kShiftKeyModeStyle =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kShiftKeyModeStyle =
     base::MakeFixedFlatMap<std::string_view,
                            JapaneseSettings::ShiftKeyModeStyle>({
         {kJpPrefShiftKeyModeStyleOff,

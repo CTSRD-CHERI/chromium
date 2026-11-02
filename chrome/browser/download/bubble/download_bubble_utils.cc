@@ -140,7 +140,7 @@ DownloadBubbleAccessibleAlertsMap::Alert GetAccessibleAlertForModel(
             model.GetInProgressAccessibleAlertText(),
         };
       }
-      static constexpr auto kMap = base::MakeFixedFlatMap<State, int>({
+      static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMap = base::MakeFixedFlatMap<State, int>({
           {State::INTERRUPTED, IDS_DOWNLOAD_FAILED_ACCESSIBLE_ALERT},
           {State::COMPLETE, IDS_DOWNLOAD_COMPLETE_ACCESSIBLE_ALERT},
           {State::CANCELLED, IDS_DOWNLOAD_CANCELLED_ACCESSIBLE_ALERT},

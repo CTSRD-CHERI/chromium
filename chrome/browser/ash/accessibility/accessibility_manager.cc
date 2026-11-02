@@ -3079,7 +3079,7 @@ void AccessibilityManager::GetTtsDlcContents(
     DlcType dlc,
     TtsVariant variant,
     GetTtsDlcContentsCallback callback) {
-  static constexpr auto kTtsDlcTypeToLocale =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTtsDlcTypeToLocale =
       base::MakeFixedFlatMap<DlcType, const char*>(
           {{DlcType::kTtsBnBd, "bn-bd"}, {DlcType::kTtsCsCz, "cs-cz"},
            {DlcType::kTtsDaDk, "da-dk"}, {DlcType::kTtsDeDe, "de-de"},

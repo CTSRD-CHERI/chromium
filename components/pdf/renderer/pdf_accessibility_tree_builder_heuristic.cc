@@ -144,7 +144,7 @@ class LineHelper {
 // Specification, ISO 32000-1:2008, table 333.
 ax::mojom::Role StructureElementTypeToAccessibilityRole(
     const std::string& element_type) {
-  static constexpr auto kStructureElementTypeToAccessibilityRoleMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kStructureElementTypeToAccessibilityRoleMap =
       base::MakeFixedFlatMap<std::string_view, ax::mojom::Role>(
           {{"Document", ax::mojom::Role::kDocument},
            {"Part", ax::mojom::Role::kDocPart},

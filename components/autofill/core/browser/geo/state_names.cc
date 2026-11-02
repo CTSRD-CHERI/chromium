@@ -20,7 +20,7 @@ namespace autofill::state_names {
 namespace {
 
 // TODO(jhawkins): Add more states/provinces.  See http://crbug.com/45039.
-constexpr auto kStateData =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kStateData =
     base::MakeFixedFlatMap<std::u16string_view, std::u16string_view>(
         {{u"alabama", u"al"},
          {u"alaska", u"ak"},

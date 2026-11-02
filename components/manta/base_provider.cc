@@ -22,7 +22,7 @@ constexpr char kProdEndpointUrl[] = "https://aratea-pa.googleapis.com/generate";
 using manta::proto::ChromeClientInfo;
 
 ChromeClientInfo::Channel ConvertChannel(version_info::Channel channel) {
-  static constexpr auto kChannelMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kChannelMap =
       base::MakeFixedFlatMap<version_info::Channel,
                              manta::proto::ChromeClientInfo::Channel>(
           {{version_info::Channel::UNKNOWN, ChromeClientInfo::UNKNOWN},

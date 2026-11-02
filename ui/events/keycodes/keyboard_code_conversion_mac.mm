@@ -98,7 +98,7 @@ bool IsKeypadOrNumericKeyEvent(NSEvent* event) {
 const char kShiftCharsForNumberKeys[] = ")!@#$%^&*(";
 
 DomKey DomKeyFromKeyCode(unsigned short key_code) {
-  constexpr auto kMap = base::MakeFixedFlatMap<unsigned short, DomKey>({
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMap = base::MakeFixedFlatMap<unsigned short, DomKey>({
       {kVK_ANSI_KeypadEnter, DomKey::ENTER},
       {kVK_Return, DomKey::ENTER},
       {kVK_Tab, DomKey::TAB},
@@ -161,7 +161,7 @@ DomKey DomKeyFromKeyCode(unsigned short key_code) {
 }
 
 DomKey DomKeyFromNsCharCode(char32_t char_code) {
-  constexpr auto kMap = base::MakeFixedFlatMap<char32_t, DomKey>({
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMap = base::MakeFixedFlatMap<char32_t, DomKey>({
       {NSUpArrowFunctionKey, DomKey::ARROW_UP},
       {NSDownArrowFunctionKey, DomKey::ARROW_DOWN},
       {NSLeftArrowFunctionKey, DomKey::ARROW_LEFT},
@@ -292,7 +292,7 @@ int MacKeyCodeForWindowsKeyCode(KeyboardCode keycode,
 
   // TODO(suzhe): This map is not complete, missing entries have mac_keycode ==
   // -1.
-  constexpr auto kMap = base::MakeFixedFlatMap<KeyboardCode, MacKeyCodeInfo>({
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMap = base::MakeFixedFlatMap<KeyboardCode, MacKeyCodeInfo>({
       {VKEY_BACK /* 0x08 */, {kVK_Delete, kBackspaceCharCode}},
       {VKEY_TAB /* 0x09 */, {kVK_Tab, kTabCharCode}},
       {VKEY_BACKTAB /* 0x0A */, {0x21E4, '\031'}},
@@ -533,7 +533,7 @@ int MacKeyCodeForWindowsKeyCode(KeyboardCode keycode,
 }
 
 KeyboardCode KeyboardCodeFromCharCode(unichar char_code) {
-  constexpr auto kMap = base::MakeFixedFlatMap<unichar, KeyboardCode>({
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMap = base::MakeFixedFlatMap<unichar, KeyboardCode>({
       {'a', VKEY_A},
       {'A', VKEY_A},
       {'b', VKEY_B},

@@ -65,7 +65,7 @@ static const TopRowActionKey kLayoutWilcoDrallionTopRowActionKeys[] = {
 };
 
 // Keyboard layout1 map between top row keys to function keys.
-inline constexpr auto kLayout1TopRowKeyToFKeyMap =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kLayout1TopRowKeyToFKeyMap =
     base::MakeFixedFlatMap<KeyboardCode, KeyboardCode>({
         {KeyboardCode::VKEY_BROWSER_BACK, KeyboardCode::VKEY_F1},
         {KeyboardCode::VKEY_BROWSER_FORWARD, KeyboardCode::VKEY_F2},
@@ -80,7 +80,7 @@ inline constexpr auto kLayout1TopRowKeyToFKeyMap =
     });
 
 // Keyboard layout2 map between top row keys to function keys.
-inline constexpr auto kLayout2TopRowKeyToFKeyMap =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kLayout2TopRowKeyToFKeyMap =
     base::MakeFixedFlatMap<KeyboardCode, KeyboardCode>({
         {KeyboardCode::VKEY_BROWSER_BACK, KeyboardCode::VKEY_F1},
         {KeyboardCode::VKEY_BROWSER_REFRESH, KeyboardCode::VKEY_F2},
@@ -98,7 +98,7 @@ inline constexpr auto kLayout2TopRowKeyToFKeyMap =
 // TODO(dpad): Handle privacy screen better on drallion devices.
 // TODO(zhangwenyu): Both F3 and F12 map to VKEY_ZOOM for wilco. Handle edge
 // case when creating the top row accelerator alias for VKEY_ZOOM key.
-inline constexpr auto kLayoutWilcoDrallionTopRowKeyToFKeyMap =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kLayoutWilcoDrallionTopRowKeyToFKeyMap =
     base::MakeFixedFlatMap<KeyboardCode, KeyboardCode>({
         {KeyboardCode::VKEY_BROWSER_BACK, KeyboardCode::VKEY_F1},
         {KeyboardCode::VKEY_BROWSER_REFRESH, KeyboardCode::VKEY_F2},
@@ -112,7 +112,7 @@ inline constexpr auto kLayoutWilcoDrallionTopRowKeyToFKeyMap =
     });
 
 // A map between six pack keys to search system keys.
-inline constexpr auto kSixPackKeyToSearchSystemKeyMap =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSixPackKeyToSearchSystemKeyMap =
     base::MakeFixedFlatMap<KeyboardCode, KeyboardCode>({
         {KeyboardCode::VKEY_DELETE, KeyboardCode::VKEY_BACK},
         {KeyboardCode::VKEY_HOME, KeyboardCode::VKEY_LEFT},
@@ -123,7 +123,7 @@ inline constexpr auto kSixPackKeyToSearchSystemKeyMap =
     });
 
 // A map between six pack keys to function keys.
-inline constexpr auto kSixPackKeyToFnKeyMap =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSixPackKeyToFnKeyMap =
     base::MakeFixedFlatMap<KeyboardCode, KeyboardCode>({
         {KeyboardCode::VKEY_DELETE, KeyboardCode::VKEY_BACK},
         {KeyboardCode::VKEY_HOME, KeyboardCode::VKEY_LEFT},
@@ -133,7 +133,7 @@ inline constexpr auto kSixPackKeyToFnKeyMap =
     });
 
 // A map between six pack keys to alt system keys.
-inline constexpr auto kSixPackKeyToAltSystemKeyMap =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSixPackKeyToAltSystemKeyMap =
     base::MakeFixedFlatMap<KeyboardCode, KeyboardCode>({
         {KeyboardCode::VKEY_DELETE, KeyboardCode::VKEY_BACK},
         {KeyboardCode::VKEY_HOME, KeyboardCode::VKEY_UP},

@@ -411,7 +411,7 @@ class MockTabStripModelObserver : public TabStripModelObserver {
   static std::string_view StringifyActionName(
       TabStripModelObserverAction action) {
     using enum TabStripModelObserverAction;
-    constexpr auto kObserverActionNames =
+    BASE_FIXED_FLAT_MAP_CONSTEXPR auto kObserverActionNames =
         base::MakeFixedFlatMap<TabStripModelObserverAction, std::string_view>({
             {INSERT, "INSERT"},
             {CLOSE, "CLOSE"},

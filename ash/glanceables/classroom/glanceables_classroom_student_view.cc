@@ -63,7 +63,7 @@ constexpr std::array<StudentAssignmentsListType, 4>
         StudentAssignmentsListType::kMissing,
         StudentAssignmentsListType::kDone};
 
-constexpr auto kStudentAssignmentsListTypeToLabel =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kStudentAssignmentsListTypeToLabel =
     base::MakeFixedFlatMap<StudentAssignmentsListType, int>(
         {{StudentAssignmentsListType::kAssigned,
           IDS_GLANCEABLES_CLASSROOM_STUDENT_DUE_SOON_LIST_NAME},

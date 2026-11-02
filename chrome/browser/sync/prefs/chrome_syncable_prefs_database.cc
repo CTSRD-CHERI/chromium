@@ -447,7 +447,7 @@ enum {
 }  // namespace syncable_prefs_ids
 
 // Non-iOS specific list of syncable preferences.
-constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
     std::string_view,
     sync_preferences::SyncablePrefMetadata>({
 #if BUILDFLAG(IS_ANDROID)

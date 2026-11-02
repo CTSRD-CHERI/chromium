@@ -32,7 +32,7 @@ using HeuristicResults =
 using segmentation_platform::processing::ProcessedValue;
 
 // Min number of tabs for each heuristic type before suggesting.
-constexpr auto kReasonToMinTabCount =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kReasonToMinTabCount =
     base::MakeFixedFlatMap<GroupSuggestion::SuggestionReason, unsigned>({
         {GroupSuggestion::SuggestionReason::kRecentlyOpened, 4},
         {GroupSuggestion::SuggestionReason::kSwitchedBetween, 2},

@@ -45,7 +45,7 @@ constexpr int kMaxEmoticonResults = 2;
 
 // These are taken from manifest files in:
 // https://source.chromium.org/chromium/chromium/src/+/2be4329930cac782779c5083389b83e09a8bcb47:chrome/browser/resources/chromeos/input_method/
-constexpr auto kImeToLangCode =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kImeToLangCode =
     base::MakeFixedFlatMap<std::string_view, std::string_view>(
         {{"xkb:us::eng", "en"},           {"xkb:us:intl:eng", "en"},
          {"xkb:us:altgr-intl:eng", "en"}, {"xkb:us:dvorak:eng", "en"},

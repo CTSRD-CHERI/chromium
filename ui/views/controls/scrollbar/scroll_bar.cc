@@ -525,7 +525,7 @@ ScrollBar::ScrollAmount ScrollBar::DetermineScrollAmountByKeyCode(
     return ScrollAmount::kNone;
   }
 
-  static constexpr auto kMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMap =
       base::MakeFixedFlatMap<ui::KeyboardCode, ScrollAmount>({
           {ui::VKEY_LEFT, ScrollAmount::kPrevLine},
           {ui::VKEY_RIGHT, ScrollAmount::kNextLine},

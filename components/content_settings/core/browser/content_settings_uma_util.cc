@@ -19,7 +19,7 @@ namespace {
 // used for histograms, please do not reuse the same value for a different
 // content setting. Always append to the end and increment.
 // LINT.IfChange(kHistogramValue)
-constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
                                                         int>({
     // Cookies was previously logged to bucket 0, which is not a valid bucket
     // for linear histograms.

@@ -15,7 +15,7 @@ using WTE = WebThemeEngine;
 using NT = ui::NativeTheme;
 
 NT::Part NativeThemePart(WTE::Part part) {
-  static constexpr auto kPartMap = base::MakeFixedFlatMap<WTE::Part, NT::Part>(
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kPartMap = base::MakeFixedFlatMap<WTE::Part, NT::Part>(
       {{WTE::kPartScrollbarDownArrow, NT::kScrollbarDownArrow},
        {WTE::kPartScrollbarLeftArrow, NT::kScrollbarLeftArrow},
        {WTE::kPartScrollbarRightArrow, NT::kScrollbarRightArrow},
@@ -38,7 +38,7 @@ NT::Part NativeThemePart(WTE::Part part) {
 }
 
 NT::State NativeThemeState(WTE::State state) {
-  static constexpr auto kStateMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kStateMap =
       base::MakeFixedFlatMap<WTE::State, NT::State>(
           {{WTE::kStateDisabled, NT::kDisabled},
            {WTE::kStateHover, NT::kHovered},
@@ -51,7 +51,7 @@ NT::PreferredColorScheme NativeColorScheme(
     mojom::blink::ColorScheme color_scheme) {
   using MCS = mojom::blink::ColorScheme;
   using NTPCS = NT::PreferredColorScheme;
-  static constexpr auto kColorSchemeMap = base::MakeFixedFlatMap<MCS, NTPCS>(
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kColorSchemeMap = base::MakeFixedFlatMap<MCS, NTPCS>(
       {{MCS::kLight, NTPCS::kLight}, {MCS::kDark, NTPCS::kDark}});
   return kColorSchemeMap.at(color_scheme);
 }
@@ -59,7 +59,7 @@ NT::PreferredColorScheme NativeColorScheme(
 NT::PreferredContrast NativeContrast(mojom::blink::PreferredContrast contrast) {
   using MPC = mojom::blink::PreferredContrast;
   using NTPC = NT::PreferredContrast;
-  static constexpr auto kContrastMap = base::MakeFixedFlatMap<MPC, NTPC>(
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kContrastMap = base::MakeFixedFlatMap<MPC, NTPC>(
       {{MPC::kMore, NTPC::kMore},
        {MPC::kLess, NTPC::kLess},
        {MPC::kNoPreference, NTPC::kNoPreference},

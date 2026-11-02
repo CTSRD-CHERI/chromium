@@ -13,6 +13,13 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_tree.h"
 
+// MakeFixedFlatMap isn't constexpr with libc++ versions before 18.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+#define BASE_FIXED_FLAT_MAP_CONSTEXPR const
+#else
+#define BASE_FIXED_FLAT_MAP_CONSTEXPR constexpr
+#endif
+
 namespace base {
 
 namespace internal {
@@ -103,16 +110,24 @@ using fixed_flat_map = base::
 //   constexpr auto kMap = base::MakeFixedFlatMap<std::string_view, int>(
 //       {{"foo", 1}, {"bar", 2}, {"baz", 3}});
 template <class Key, class Mapped, class Compare = std::less<>, size_t N>
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMap(
+#else
 consteval fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMap(
+#endif
     std::pair<Key, Mapped> (&&data)[N],
     const Compare& comp = Compare()) {
   using FixedFlatMap = fixed_flat_map<Key, Mapped, N, Compare>;
   typename FixedFlatMap::value_compare value_comp{comp};
   if (!internal::is_sorted_and_unique(data, value_comp)) {
     std::ranges::sort(data, value_comp);
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+    DCHECK(internal::is_sorted_and_unique(data, value_comp));
+#else
     if (!internal::is_sorted_and_unique(data, value_comp)) {
       internal::FixedFlatMapInputNotSortedOrNotUnique();
     }
+#endif
   }
   return FixedFlatMap(
       sorted_unique, internal::ToArray<typename FixedFlatMap::value_type>(data),

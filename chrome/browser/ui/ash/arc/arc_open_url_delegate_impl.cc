@@ -70,7 +70,7 @@ namespace {
 
 ArcOpenUrlDelegateImpl* g_instance = nullptr;
 
-constexpr auto kOSSettingsMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kOSSettingsMap =
     base::MakeFixedFlatMap<ChromePage, const char*>({
         {ChromePage::ACCOUNTS,
          chromeos::settings::mojom::kManageOtherPeopleSubpagePathV2},
@@ -125,7 +125,7 @@ constexpr auto kOSSettingsMap =
         {ChromePage::NETWORKS, chromeos::settings::mojom::kNetworkSectionPath},
     });
 
-constexpr auto kBrowserSettingsMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kBrowserSettingsMap =
     base::MakeFixedFlatMap<ChromePage, const char*>({
         {ChromePage::APPEARANCE, chrome::kAppearanceSubPage},
         {ChromePage::AUTOFILL, chrome::kAutofillSubPage},
@@ -140,7 +140,7 @@ constexpr auto kBrowserSettingsMap =
         {ChromePage::SYNCSETUP, chrome::kSyncSetupSubPage},
     });
 
-constexpr auto kAboutPagesMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kAboutPagesMap =
     base::MakeFixedFlatMap<ChromePage, const char*>({
         {ChromePage::ABOUTBLANK, url::kAboutBlankURL},
         {ChromePage::ABOUTDOWNLOADS, "chrome://downloads/"},

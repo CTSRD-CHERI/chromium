@@ -734,7 +734,7 @@ bool WaylandWindowDragController::IsActiveDragAndDropSession() const {
 }
 
 void WaylandWindowDragController::DumpState(std::ostream& out) const {
-  constexpr auto kStateToString = base::MakeFixedFlatMap<State, const char*>(
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kStateToString = base::MakeFixedFlatMap<State, const char*>(
       {{State::kIdle, "idle"},
        {State::kAttached, "attached"},
        {State::kDetached, "detached"},

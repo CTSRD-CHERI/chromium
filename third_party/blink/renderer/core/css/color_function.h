@@ -43,7 +43,7 @@ class ColorFunction {
   static constexpr double kPercentNotApplicable =
       std::numeric_limits<double>::quiet_NaN();
 
-  static constexpr auto kMetadataMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMetadataMap =
       base::MakeFixedFlatMap<MetadataEntry, Metadata>({
           // rgb(); percentage mapping: r,g,b=255
           {MetadataEntry::kLegacyRgb,
@@ -86,7 +86,7 @@ class ColorFunction {
             {kPercentNotApplicable, 100, 100}}},
       });
 
-  static constexpr auto kColorSpaceMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kColorSpaceMap =
       base::MakeFixedFlatMap<Color::ColorSpace, MetadataEntry>({
           {Color::ColorSpace::kSRGBLegacy, MetadataEntry::kLegacyRgb},
           {Color::ColorSpace::kSRGB, MetadataEntry::kColorRgb},

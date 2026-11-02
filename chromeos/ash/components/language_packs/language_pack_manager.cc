@@ -47,7 +47,7 @@ LanguagePackManager* g_instance = nullptr;
 std::optional<std::string_view> GetDlcIdForBasePack(
     const std::string& feature_id) {
   // Map of all features and corresponding Base Pack DLC IDs.
-  static constexpr auto kAllBasePackDlcIds =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kAllBasePackDlcIds =
       base::MakeFixedFlatMap<std::string_view, std::string_view>({
           {kHandwritingFeatureId, "handwriting-base"},
       });

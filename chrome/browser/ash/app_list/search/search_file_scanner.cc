@@ -48,7 +48,7 @@ constexpr std::string_view kTotal = "Total";
 //    When adding new extension to this map, also updates the
 //    `SearchFileExtension` variants in
 //    `tools/metrics/histograms/metadata/apps/histograms.xml`.
-constexpr auto kExtensionMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kExtensionMap =
     base::MakeFixedFlatMap<std::string_view, std::string_view>({
         // Image extensions.
         {".png", "Png"},

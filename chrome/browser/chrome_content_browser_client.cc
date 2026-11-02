@@ -3969,7 +3969,7 @@ bool ShouldDisableForcedColorsForWebContent(content::WebContents* contents,
 blink::mojom::PreferredContrast GetPreferredContrast() {
   using NC = ui::NativeTheme::PreferredContrast;
   using BC = blink::mojom::PreferredContrast;
-  static constexpr auto kContrastMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kContrastMap =
       base::MakeFixedFlatMap<NC, BC>({{NC::kNoPreference, BC::kNoPreference},
                                       {NC::kMore, BC::kMore},
                                       {NC::kLess, BC::kLess},
@@ -5132,7 +5132,7 @@ bool ChromeContentBrowserClient::IsAppContainerDisabled(
     sandbox::mojom::Sandbox sandbox_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  constexpr auto kSandboxPolicyPrefMapping =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSandboxPolicyPrefMapping =
       base::MakeFixedFlatMap<sandbox::mojom::Sandbox, std::string_view>({
           {sandbox::mojom::Sandbox::kRenderer,
            prefs::kRendererAppContainerEnabled},

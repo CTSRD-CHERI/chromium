@@ -35,7 +35,7 @@ BASE_FIXED_FLAT_SET_CONSTEXPR auto kRequestHeadersAllowlist =
         "x-okta-user-agent-extended",
     });
 
-constexpr auto kFixedRequestHeaders =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kFixedRequestHeaders =
     base::MakeFixedFlatMap<std::string_view, std::string_view>({
         {"Ceche-Control", "no-cache"},
         {"Pragma", "no-cache"},

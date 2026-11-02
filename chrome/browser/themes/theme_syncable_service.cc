@@ -53,7 +53,7 @@ struct ThemePrefNames {
   std::string_view non_syncing_pref_name;
 };
 
-constexpr auto kThemePrefsInMigration =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kThemePrefsInMigration =
     base::MakeFixedFlatMap<ThemePrefInMigration, ThemePrefNames>({
         {ThemePrefInMigration::kBrowserColorScheme,
          {prefs::kDeprecatedBrowserColorSchemeDoNotUse,

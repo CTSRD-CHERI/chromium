@@ -202,7 +202,7 @@ std::vector<EmojiSearchEntry> SortEmojiResultsByCost(
 }
 
 std::optional<EmojiLanguageCode> GetLanguageCode(std::string_view code) {
-  static constexpr auto kLangCodeStrToEnum =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kLangCodeStrToEnum =
       base::MakeFixedFlatMap<std::string_view, EmojiLanguageCode>({
           {"da", EmojiLanguageCode::kDa},
           {"de", EmojiLanguageCode::kDe},
@@ -225,7 +225,7 @@ std::optional<EmojiLanguageCode> GetLanguageCode(std::string_view code) {
 
 std::optional<EmojiLanguageResourceIds> GetLanguageResourceIds(
     EmojiLanguageCode code) {
-  static constexpr auto kLanguageToData =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kLanguageToData =
       base::MakeFixedFlatMap<EmojiLanguageCode, EmojiLanguageResourceIds>({
           {EmojiLanguageCode::kDa,
            {

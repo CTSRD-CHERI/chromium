@@ -153,7 +153,7 @@ struct EnumStringsMap;
     static_assert(std::is_enum_v<T>, "Error: " #T " is not an enum.");      \
                                                                             \
     static const auto& Get() {                                              \
-      static constexpr auto kMap =                                          \
+      static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMap =                                          \
           base::MakeFixedFlatMap<T, std::u16string_view>({__VA_ARGS__});    \
       return kMap;                                                          \
     }                                                                       \

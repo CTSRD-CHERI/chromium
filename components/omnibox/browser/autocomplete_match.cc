@@ -109,7 +109,7 @@ int GetDeduplicationProviderPreferenceScore(
   }
   const AutocompleteProvider::Type type = provider->type();
 
-  constexpr auto kProviderPrefMap =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kProviderPrefMap =
       base::MakeFixedFlatMap<AutocompleteProvider::Type, int>({
           // Prefer live remote suggestions. We check provider type instead
           // of match type in order to distinguish live suggestions from the

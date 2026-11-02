@@ -45,7 +45,7 @@ std::vector<std::string> FontNames(FontFamily family) {
 }
 
 // Maps legacy typography tokens to their cros.sys equivalents.
-constexpr auto kTokenEquivalents =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTokenEquivalents =
     base::MakeFixedFlatMap<TypographyToken, TypographyToken>({
         {TypographyToken::kLegacyDisplay1, TypographyToken::kCrosDisplay1},
         {TypographyToken::kLegacyDisplay2, TypographyToken::kCrosDisplay2},

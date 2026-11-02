@@ -40,7 +40,7 @@ NavigationView ConvertToNavigationView(const base::Value& value) {
 void EmitScreenOpenDuration(const NavigationView screen,
                             const base::TimeDelta& time_elapsed) {
   // Map of screens within Diagnostics app to matching duration metric name.
-  constexpr auto kOpenDurationMetrics =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kOpenDurationMetrics =
       base::MakeFixedFlatMap<NavigationView, std::string_view>({
           {NavigationView::kConnectivity,
            "ChromeOS.DiagnosticsUi.Connectivity.OpenDuration"},

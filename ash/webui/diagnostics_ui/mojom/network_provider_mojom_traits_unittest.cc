@@ -57,7 +57,7 @@ class DiagnosticsNetworkProviderMojomTraitsTest : public testing::Test {
 };
 
 TEST_F(DiagnosticsNetworkProviderMojomTraitsTest, SecurityTypeStateMatches) {
-  constexpr auto enums = base::MakeFixedFlatMap<
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto enums = base::MakeFixedFlatMap<
       mojom::SecurityType, network_config_mojom::SecurityType>({
       {mojom::SecurityType::kNone, network_config_mojom::SecurityType::kNone},
       {mojom::SecurityType::kWep8021x,
@@ -77,7 +77,7 @@ TEST_F(DiagnosticsNetworkProviderMojomTraitsTest, SecurityTypeStateMatches) {
 
 TEST_F(DiagnosticsNetworkProviderMojomTraitsTest,
        AuthenticationTypeStateMatches) {
-  constexpr auto enums =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto enums =
       base::MakeFixedFlatMap<mojom::AuthenticationType,
                              network_config_mojom::AuthenticationType>({
           {mojom::AuthenticationType::kNone,

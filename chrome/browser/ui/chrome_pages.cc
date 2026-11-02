@@ -219,7 +219,7 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
   // site_settings_helper once Options is removed from Chrome. Then this list
   // will no longer be needed.
 
-  static constexpr auto kSettingsPathOverrides =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSettingsPathOverrides =
       base::MakeFixedFlatMap<ContentSettingsType, std::string_view>({
           {ContentSettingsType::AUTOMATIC_DOWNLOADS, "automaticDownloads"},
           {ContentSettingsType::BACKGROUND_SYNC, "backgroundSync"},

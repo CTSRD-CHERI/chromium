@@ -15,7 +15,7 @@ using TabGroupColorId = tab_groups::TabGroupColorId;
 
 ui::ColorId GetTabGroupTabStripColorId(TabGroupColorId group_color_id,
                                        bool active_frame) {
-  static constexpr auto group_id_map =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto group_id_map =
       base::MakeFixedFlatMap<TabGroupColorId, std::array<int, 2>>({
           {TabGroupColorId::kGrey,
            {kColorTabGroupTabStripFrameInactiveGrey,
@@ -51,7 +51,7 @@ ui::ColorId GetTabGroupTabStripColorId(TabGroupColorId group_color_id,
 
 ui::ColorId GetThumbnailTabStripTabGroupColorId(TabGroupColorId group_color_id,
                                                 bool active_frame) {
-  static constexpr auto group_id_map =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto group_id_map =
       base::MakeFixedFlatMap<TabGroupColorId, std::array<ui::ColorId, 2>>({
           {TabGroupColorId::kGrey,
            {kColorThumbnailTabStripTabGroupFrameInactiveGrey,
@@ -86,7 +86,7 @@ ui::ColorId GetThumbnailTabStripTabGroupColorId(TabGroupColorId group_color_id,
 }
 
 ui::ColorId GetTabGroupDialogColorId(TabGroupColorId group_color_id) {
-  static constexpr auto group_id_map =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto group_id_map =
       base::MakeFixedFlatMap<TabGroupColorId, int>({
           {TabGroupColorId::kGrey, kColorTabGroupDialogGrey},
           {TabGroupColorId::kBlue, kColorTabGroupDialogBlue},
@@ -103,7 +103,7 @@ ui::ColorId GetTabGroupDialogColorId(TabGroupColorId group_color_id) {
 }
 
 ui::ColorId GetSavedTabGroupForegroundColorId(TabGroupColorId group_color_id) {
-  static constexpr auto group_id_map =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto group_id_map =
       base::MakeFixedFlatMap<TabGroupColorId, int>({
           {TabGroupColorId::kGrey, kColorSavedTabGroupForegroundGrey},
           {TabGroupColorId::kBlue, kColorSavedTabGroupForegroundBlue},
@@ -120,7 +120,7 @@ ui::ColorId GetSavedTabGroupForegroundColorId(TabGroupColorId group_color_id) {
 }
 
 ui::ColorId GetSavedTabGroupOutlineColorId(TabGroupColorId group_color_id) {
-  static constexpr auto group_id_map =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto group_id_map =
       base::MakeFixedFlatMap<TabGroupColorId, int>({
           {TabGroupColorId::kGrey, kColorSavedTabGroupOutlineGrey},
           {TabGroupColorId::kBlue, kColorSavedTabGroupOutlineBlue},
@@ -137,7 +137,7 @@ ui::ColorId GetSavedTabGroupOutlineColorId(TabGroupColorId group_color_id) {
 }
 
 ui::ColorId GetTabGroupContextMenuColorId(TabGroupColorId group_color_id) {
-  static constexpr auto group_id_map =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto group_id_map =
       base::MakeFixedFlatMap<TabGroupColorId, ui::ColorId>({
           {TabGroupColorId::kGrey, kColorTabGroupContextMenuGrey},
           {TabGroupColorId::kBlue, kColorTabGroupContextMenuBlue},
@@ -155,7 +155,7 @@ ui::ColorId GetTabGroupContextMenuColorId(TabGroupColorId group_color_id) {
 
 ui::ColorId GetTabGroupBookmarkColorId(
     tab_groups::TabGroupColorId group_color_id) {
-  static constexpr auto group_id_map =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto group_id_map =
       base::MakeFixedFlatMap<TabGroupColorId, int>({
           {TabGroupColorId::kGrey, kColorTabGroupBookmarkBarGrey},
           {TabGroupColorId::kBlue, kColorTabGroupBookmarkBarBlue},

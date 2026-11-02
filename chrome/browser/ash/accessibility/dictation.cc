@@ -58,7 +58,7 @@ std::string GetSupportedLocale(const std::string& lang_or_locale) {
   // Chrome OS does not support Chinese languages with "cmn", so this
   // map also includes a map from Open Speech API "cmn" languages to
   // their equivalent default locale.
-  static constexpr auto kLangsToDefaultLocales =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kLangsToDefaultLocales =
       base::MakeFixedFlatMap<std::string_view, std::string_view>(
           {{"af", "af-ZA"},
            {"am", "am-ET"},

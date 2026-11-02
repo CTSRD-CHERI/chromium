@@ -63,7 +63,7 @@ size_t GetDepthImageOffset(const mojom::XREye& eye, size_t pixels_per_image) {
 // A map of the resolutions that we support to a gfx::Size, since we ultimately
 // need to send that across mojom, and allows us to properly handle whichever
 // size we get back from the API.
-constexpr auto kResolutionSizeMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kResolutionSizeMap =
     base::MakeFixedFlatMap<XrDepthCameraResolutionANDROID, gfx::Size>(
         {{XR_DEPTH_CAMERA_RESOLUTION_80x80_ANDROID, {80, 80}},
          {XR_DEPTH_CAMERA_RESOLUTION_160x160_ANDROID, {160, 160}},

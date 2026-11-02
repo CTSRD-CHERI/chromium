@@ -32,7 +32,7 @@ namespace synced_set_up {
 
 // Map of cross-device synced prefs considered by Synced Set Up mapped to their
 // corresponding tracked local-state pref.
-inline constexpr auto kCrossDeviceToLocalStatePrefMap =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kCrossDeviceToLocalStatePrefMap =
     base::MakeFixedFlatMap<std::string_view, std::string_view>({
         // keep-sorted start
         {prefs::kCrossDeviceOmniboxIsInBottomPosition,
@@ -42,7 +42,7 @@ inline constexpr auto kCrossDeviceToLocalStatePrefMap =
 
 // Map of cross-device synced prefs considered by Synced Set Up mapped to their
 // corresponding tracked profile pref.
-inline constexpr auto kCrossDeviceToProfilePrefMap =
+inline BASE_FIXED_FLAT_MAP_CONSTEXPR auto kCrossDeviceToProfilePrefMap =
     base::MakeFixedFlatMap<std::string_view, std::string_view>({
         // keep-sorted start
         {prefs::kCrossDeviceMagicStackHomeModuleEnabled,
