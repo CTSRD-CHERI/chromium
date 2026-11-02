@@ -408,7 +408,11 @@ std::vector<uint8_t> DecryptPayloadWithHpke(
       base::as_byte_span(authenticated_info_str);
 
   // No null terminators should have been copied when concatenating the strings.
+#if __cpp_lib_string_contains
   CHECK(!authenticated_info_str.contains('\0'));
+#else
+  CHECK(authenticated_info_str.find('\0') == std::string::npos);
+#endif
 
   bssl::ScopedEVP_HPKE_CTX recipient_context;
   if (!EVP_HPKE_CTX_setup_recipient(
