@@ -192,6 +192,10 @@ blink_modules_sources("peerconnection") {
 
   allow_circular_includes_from =
       [ "//third_party/blink/renderer/modules/mediastream" ]
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 source_set("test_support") {

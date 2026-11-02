@@ -61,6 +61,10 @@ source_set("browser") {
     "//components/paint_preview/public",
     "//components/services/paint_preview_compositor/public/mojom",
   ]
+
+  if (is_bsd) {
+    configs += [ "//build/config/compiler:epoll_shim" ]
+  }
 }
 
 source_set("test_support") {
