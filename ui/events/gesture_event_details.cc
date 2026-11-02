@@ -5,12 +5,11 @@
 #include "ui/events/gesture_event_details.h"
 
 #include <ostream>
-#include <utility>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace ui {
 

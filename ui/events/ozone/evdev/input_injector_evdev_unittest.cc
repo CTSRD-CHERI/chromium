@@ -4,12 +4,10 @@
 
 #include "ui/events/ozone/evdev/input_injector_evdev.h"
 
-#include <utility>
-
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ozone/device/device_manager.h"

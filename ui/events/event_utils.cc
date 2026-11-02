@@ -7,16 +7,15 @@
 #include <limits>
 #include <map>
 #include <string_view>
-#include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "base/to_underlying.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"

@@ -16,7 +16,7 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11_crtc_resizer.h"
