@@ -66,7 +66,7 @@ namespace {
 constexpr size_t kTimestampCacheSize = 128;
 
 std::optional<VideoPixelFormat> GetPixelFormatForBitDepth(uint8_t bit_depth) {
-  constexpr auto kSupportedBitDepthAndVizFormats =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSupportedBitDepthAndVizFormats =
       base::MakeFixedFlatMap<uint8_t, viz::SharedImageFormat>({
           {8u, viz::MultiPlaneFormat::kNV12},
           {10u, viz::MultiPlaneFormat::kP010},

@@ -42,7 +42,7 @@ namespace policy {
 
 namespace {
 
-constexpr auto kPortalStateToStateString =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kPortalStateToStateString =
     base::MakeFixedFlatMap<ash::NetworkState::PortalState, std::string_view>(
         {{ash::NetworkState::PortalState::kNoInternet,
           shill::kStateNoConnectivity},

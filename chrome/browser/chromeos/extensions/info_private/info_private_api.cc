@@ -229,7 +229,7 @@ constexpr std::string_view kPropertyAssistantStatus = "assistantStatus";
 // Assistant.
 constexpr std::string_view kAssistantStatusSupported = "supported";
 
-constexpr auto kPreferencesMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kPreferencesMap =
     base::MakeFixedFlatMap<std::string_view, std::string_view>(
         {{kPropertyLargeCursorEnabled,
           ash::prefs::kAccessibilityLargeCursorEnabled},

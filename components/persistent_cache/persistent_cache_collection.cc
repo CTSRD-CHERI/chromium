@@ -296,7 +296,7 @@ std::optional<char> RotateChar(char c) {
 //
 // Mapping both strings to "`1`1" for example would result in a valid filename
 // but in backing files being shared for two keys which is not correct.
-constexpr auto kCharacterToTokenMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kCharacterToTokenMap =
     base::MakeFixedFlatMap<char, std::string_view>({{'\\', "`1"},
                                                     {'/', "`2"},
                                                     {'|', "`3"},

@@ -676,7 +676,7 @@ std::optional<float> SplitViewController::ComputeAutoSnapRatio(
 
   // Maps the snap ratio of the default window to the snap ratio of the opposite
   // window.
-  static constexpr auto kOppositeRatiosMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kOppositeRatiosMap =
       base::MakeFixedFlatMap<float, float>(
           {{chromeos::kOneThirdSnapRatio, chromeos::kTwoThirdSnapRatio},
            {chromeos::kDefaultSnapRatio, chromeos::kDefaultSnapRatio},

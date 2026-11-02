@@ -13,7 +13,7 @@ namespace test {
 std::string_view ToString(
     permissions::PermissionUiSelector::QuietUiReason ui_reason) {
   using QuietUiReason = ::permissions::PermissionUiSelector::QuietUiReason;
-  static constexpr auto map =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto map =
       base::MakeFixedFlatMap<QuietUiReason, std::string_view>(
           {{QuietUiReason::kEnabledInPrefs, "EnabledInPrefs"},
            {QuietUiReason::kTriggeredByCrowdDeny, "TriggeredByCrowdDeny"},
@@ -35,7 +35,7 @@ std::string_view ToString(
 std::string_view ToString(permissions::RequestType request_type) {
   using RequestType = ::permissions::RequestType;
 
-  static constexpr auto map =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto map =
       base::MakeFixedFlatMap<RequestType, std::string_view>({
           {RequestType::kArSession, "ArSession"},
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -95,7 +95,7 @@ std::string_view ToString(permissions::RequestType request_type) {
 std::string_view ToString(
     permissions::PermissionRequestRelevance request_relevance) {
   using RequestRelevance = ::permissions::PermissionRequestRelevance;
-  static constexpr auto map =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto map =
       base::MakeFixedFlatMap<RequestRelevance, std::string_view>({
           {RequestRelevance::kVeryLow, "VeryLow"},
           {RequestRelevance::kLow, "Low"},

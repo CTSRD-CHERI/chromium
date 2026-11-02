@@ -199,7 +199,7 @@ void EventRewriterDelegateImpl::RecordSixPackEventRewrite(
   // either the alt or search based shortcut variant to emit a "six pack" event.
   // The "Insert" key is omitted since the (Search+Shift+Backspace) rewrite is
   // the only way to emit an "Insert" key event.
-  static constexpr auto kSixPackKeyToPrefMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSixPackKeyToPrefMap =
       base::MakeFixedFlatMap<ui::KeyboardCode, const char*>({
           {ui::KeyboardCode::VKEY_DELETE,
            prefs::kKeyEventRemappedToSixPackDelete},

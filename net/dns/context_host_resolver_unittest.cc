@@ -922,7 +922,7 @@ class NetworkAwareHostResolverProc : public HostResolverProc {
   };
 
   static constexpr int kPort = 100;
-  static constexpr auto kResults =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kResults =
       base::MakeFixedFlatMap<handles::NetworkHandle, IPv4>(
           {{1, IPv4{1, 2, 3, 4}}, {2, IPv4{8, 8, 8, 8}}});
 

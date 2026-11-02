@@ -37,7 +37,7 @@ DEFINE_USER_DATA(TabAlertController);
 
 bool CompareAlerts::operator()(TabAlert first, TabAlert second) const {
   // Alerts are ordered from highest priority to be shown to lowest priority.
-  static constexpr auto tab_alert_priority =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto tab_alert_priority =
       base::MakeFixedFlatMap<TabAlert, int>(
           {{TabAlert::kDesktopCapturing, 17},
            {TabAlert::kTabCapturing, 16},

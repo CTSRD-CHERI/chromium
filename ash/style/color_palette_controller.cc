@@ -80,7 +80,7 @@ ui::ColorProviderKey::SchemeVariant ToVariant(
     style::mojom::ColorScheme scheme) {
   using CS = style::mojom::ColorScheme;
   using SV = ui::ColorProviderKey::SchemeVariant;
-  static constexpr auto kSchemeMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSchemeMap =
       base::MakeFixedFlatMap<CS, SV>({{CS::kStatic, SV::kNeutral},
                                       {CS::kTonalSpot, SV::kTonalSpot},
                                       {CS::kNeutral, SV::kNeutral},

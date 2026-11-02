@@ -44,7 +44,7 @@ constexpr int kSearchTimeoutMs = 100;
 // We still honor the accented characters in |query|, and only enable
 // case-insensitivity for them. E.g. ádd, the result would be *[áÁ]dd*.
 std::string CreateFnmatchQuery(const std::u16string& query_input) {
-  static constexpr auto conversion_map =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto conversion_map =
       base::MakeFixedFlatMap<char16_t, std::u16string_view>({
           {u'a', u"[aAáàâäāåÁÀÂÄĀÅ]"},
           {u'c', u"[cçCÇ]"},

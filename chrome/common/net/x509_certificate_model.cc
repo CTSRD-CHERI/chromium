@@ -374,7 +374,7 @@ std::string OidToNumericString(bssl::der::Input oid) {
   return std::string("OID.") + text.get();
 }
 
-constexpr auto kOidStringMap = base::MakeFixedFlatMap<bssl::der::Input, int>({
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kOidStringMap = base::MakeFixedFlatMap<bssl::der::Input, int>({
     // Distinguished Name fields:
     {bssl::der::Input(bssl::kTypeCommonNameOid), IDS_CERT_OID_AVA_COMMON_NAME},
     {bssl::der::Input(bssl::kTypeStateOrProvinceNameOid),

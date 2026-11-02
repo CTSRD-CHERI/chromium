@@ -175,7 +175,7 @@ constexpr char kTypeIntFieldNumber[] = "4";
 // The field number for the string value in ExperimentStatsV2.
 constexpr char kStringValueFieldNumber[] = "2";
 
-constexpr auto kReservedReservedGroupSectionsMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kReservedReservedGroupSectionsMap =
     base::MakeFixedFlatMap<int, omnibox::GroupSection>(
         {{0, omnibox::SECTION_REMOTE_ZPS_1},
          {1, omnibox::SECTION_REMOTE_ZPS_2},

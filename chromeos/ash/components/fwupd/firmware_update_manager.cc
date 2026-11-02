@@ -58,7 +58,7 @@ namespace ash {
 
 namespace {
 
-static constexpr auto FwupdStatusStringMap =
+static BASE_FIXED_FLAT_MAP_CONSTEXPR auto FwupdStatusStringMap =
     base::MakeFixedFlatMap<FwupdStatus, const char*>(
         {{FwupdStatus::kUnknown, "Unknown state"},
          {FwupdStatus::kIdle, "Idle state"},

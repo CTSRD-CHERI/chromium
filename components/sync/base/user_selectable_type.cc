@@ -191,7 +191,7 @@ const char* GetUserSelectableTypeName(UserSelectableType type) {
 
 std::optional<UserSelectableType> GetUserSelectableTypeFromString(
     const std::string& type) {
-  constexpr auto kTypeMap =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTypeMap =
       base::MakeFixedFlatMap<std::string_view, UserSelectableType>({
           {kBookmarksTypeName, UserSelectableType::kBookmarks},
           {kPreferencesTypeName, UserSelectableType::kPreferences},
@@ -288,7 +288,7 @@ std::string UserSelectableOsTypeSetToString(UserSelectableOsTypeSet types) {
 
 std::optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
     const std::string& type) {
-  constexpr auto kTypeMap =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTypeMap =
       base::MakeFixedFlatMap<std::string_view, UserSelectableOsType>({
           {kOsAppsTypeName, UserSelectableOsType::kOsApps},
           {kOsPreferencesTypeName, UserSelectableOsType::kOsPreferences},

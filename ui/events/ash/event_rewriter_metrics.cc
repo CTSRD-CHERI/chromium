@@ -17,7 +17,7 @@
 namespace ui {
 namespace {
 
-constexpr auto kModifierKeyUsageMappings =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kModifierKeyUsageMappings =
     base::MakeFixedFlatMap<DomCode, ModifierKeyUsageMetric>({
         {DomCode::CONTROL_LEFT, ModifierKeyUsageMetric::kControlLeft},
         {DomCode::CONTROL_RIGHT, ModifierKeyUsageMetric::kControlRight},

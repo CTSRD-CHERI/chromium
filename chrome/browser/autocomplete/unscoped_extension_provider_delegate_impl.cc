@@ -36,11 +36,11 @@ constexpr size_t kMaxSuggestionsPerExtension = 4;
 // they still need to score within top N suggestions to be shown.
 constexpr int kUnscopedExtensionRelevance = 2000;
 
-constexpr auto kReservedGroupIdMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kReservedGroupIdMap =
     base::MakeFixedFlatMap<size_t, omnibox::GroupId>(
         {{0, omnibox::GROUP_UNSCOPED_EXTENSION_1},
          {1, omnibox::GROUP_UNSCOPED_EXTENSION_2}});
-constexpr auto kReservedSectionMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kReservedSectionMap =
     base::MakeFixedFlatMap<size_t, omnibox::GroupSection>(
         {{0, omnibox::SECTION_UNSCOPED_EXTENSION_1},
          {1, omnibox::SECTION_UNSCOPED_EXTENSION_2}});

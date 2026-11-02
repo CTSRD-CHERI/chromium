@@ -20,7 +20,7 @@ std::string_view GetRlzBrandCode(
     std::string_view education_enrolled_brand_code;
     std::string_view enterprise_enrolled_brand_code;
   };
-  static constexpr auto kBrandCodeMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kBrandCodeMap =
       base::MakeFixedFlatMap<std::string_view, BrandCodeValueEntry>(
           // clang-format off
                     {{"ACAC", {"CFZM", "BEUH", "GUTN"}},

@@ -103,7 +103,7 @@ bool HasNonASCII(const std::string& str) {
 }
 
 // The map with pairs scheme -> default_port.
-constexpr auto kDefaultPorts =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kDefaultPorts =
     base::MakeFixedFlatMap<std::string_view, int>({{"ipp", 631},
                                                    {"ipps", 443},
                                                    {"http", 80},

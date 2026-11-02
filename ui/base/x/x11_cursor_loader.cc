@@ -464,7 +464,7 @@ uint16_t XCursorLoader::CursorNamesToChar(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // These cursor names are indexed by their ID in a cursor font.
-  constexpr auto kMap = base::MakeFixedFlatMap<std::string_view, uint16_t>({
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMap = base::MakeFixedFlatMap<std::string_view, uint16_t>({
       {"X_cursor", 0u},
       {"arrow", 1u},
       {"based_arrow_down", 2u},

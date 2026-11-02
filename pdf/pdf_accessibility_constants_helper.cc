@@ -11,7 +11,7 @@ namespace chrome_pdf {
 namespace {
 
 // Please keep the entries in the same order as the `PdfTagType` enum.
-constexpr auto kAXRoleFromPdfTagTypeMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kAXRoleFromPdfTagTypeMap =
     base::MakeFixedFlatMap<PdfTagType, ax::mojom::Role>({
         {PdfTagType::kDocument, ax::mojom::Role::kDocument},
         {PdfTagType::kPart, ax::mojom::Role::kDocPart},
@@ -53,7 +53,7 @@ constexpr auto kAXRoleFromPdfTagTypeMap =
     });
 
 // Please keep the entries in the same order as the `PdfTagType` enum.
-constexpr auto kStringToPdfTagTypeMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kStringToPdfTagTypeMap =
     base::MakeFixedFlatMap<std::string_view, PdfTagType>(
         {{"", PdfTagType::kNone},
          {kPDFStructureTypeDocument, PdfTagType::kDocument},

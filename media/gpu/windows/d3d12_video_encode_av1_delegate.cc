@@ -39,7 +39,7 @@ constexpr std::array<uint8_t, 8> KCdefYSecStrength = {0, 2, 0, 0, 0, 1, 0, 1};
 constexpr std::array<uint8_t, 8> kCdefUVPriStrength = {9, 12, 0, 6, 2, 4, 1, 2};
 constexpr std::array<uint8_t, 8> kCdefUvSecStrength = {0, 2, 0, 0, 0, 1, 0, 1};
 
-constexpr auto kVideoCodecProfileToD3D12Profile =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kVideoCodecProfileToD3D12Profile =
     base::MakeFixedFlatMap<VideoCodecProfile, D3D12_VIDEO_ENCODER_AV1_PROFILE>(
         {{AV1PROFILE_PROFILE_MAIN, D3D12_VIDEO_ENCODER_AV1_PROFILE_MAIN},
          {AV1PROFILE_PROFILE_HIGH, D3D12_VIDEO_ENCODER_AV1_PROFILE_HIGH},

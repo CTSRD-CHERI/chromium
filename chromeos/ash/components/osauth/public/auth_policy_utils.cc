@@ -13,7 +13,7 @@ namespace ash {
 
 // Maps auth factors policy values to their corresponding `AshAuthFactor` enum.
 // LINT.IfChange(LocalAuthFactorsPolicyMap)
-constexpr auto kAuthFactorPolicyMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kAuthFactorPolicyMap =
     base::MakeFixedFlatMap<std::string_view, AuthFactorsSet>(
         {{"ALL",
           {AshAuthFactor::kLocalPassword, AshAuthFactor::kCryptohomePin}},

@@ -18,7 +18,7 @@ namespace media {
 
 namespace {
 
-constexpr auto kAudioCodecToMime =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kAudioCodecToMime =
     base::MakeFixedFlatMap<AudioCodec, std::string_view>({
         {kCodecAAC, R"-(audio/mp4; codecs="mp4a.40.5")-"},
         {kCodecMP3, R"-(audio/mp4; codecs="mp4a.69")-"},

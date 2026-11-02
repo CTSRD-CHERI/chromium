@@ -32,7 +32,7 @@ bool TypeOfFieldIsPossibleType(const AutofillField& field) {
 }
 
 size_t AddressLineIndex(FieldType type) {
-  static constexpr auto kAddressLineIndex =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kAddressLineIndex =
       base::MakeFixedFlatMap<FieldType, size_t>({{ADDRESS_HOME_LINE1, 0},
                                                  {ADDRESS_HOME_LINE2, 1},
                                                  {ADDRESS_HOME_LINE3, 2}});

@@ -555,7 +555,7 @@ static_assert(static_cast<int>(CWSInfoService::CWSViolationType::kUnknown) == 4,
 // static:
 CWSInfoService::CWSViolationType CWSInfoService::GetViolationTypeFromString(
     const std::string& violation_type_str) {
-  static constexpr auto violation_type_str_map =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto violation_type_str_map =
       base::MakeFixedFlatMap<std::string_view,
                              CWSInfoService::CWSViolationType>(
           {{"none", CWSInfoService::CWSViolationType::kNone},

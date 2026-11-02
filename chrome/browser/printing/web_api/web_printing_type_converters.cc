@@ -165,7 +165,7 @@ void ProcessPrintColorMode(const PrinterSemanticCapsAndDefaults& caps,
   }
 }
 
-constexpr auto kIppQualityToWebPrintQualityMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kIppQualityToWebPrintQualityMap =
     base::MakeFixedFlatMap<std::string_view, blink::mojom::WebPrintQuality>({
         {"3", blink::mojom::WebPrintQuality::kDraft},
         {"4", blink::mojom::WebPrintQuality::kNormal},

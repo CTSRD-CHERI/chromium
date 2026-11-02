@@ -22,7 +22,7 @@ namespace {
 // Arbitrarily chosen.
 inline constexpr base::Histogram::Sample32 kMaxSample = 1'000'000'000;
 
-constexpr auto kProcessMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kProcessMap =
     base::MakeFixedFlatMap<std::string_view, std::string_view>(
         {{"", "Browser"},
          {"extension", "Extension"},

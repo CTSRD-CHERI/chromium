@@ -13,7 +13,7 @@ std::string_view ToString(
   using PredictionSource =
       permissions::PermissionPredictionSource;
 
-  static constexpr auto map =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto map =
       base::MakeFixedFlatMap<PredictionSource, std::string_view>(
           {{PredictionSource::kServerSideCpssV3Model, "ServerSideCpssV3Model"},
            {PredictionSource::kOnDeviceAiv1AndServerSideModel,

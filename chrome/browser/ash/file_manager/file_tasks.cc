@@ -495,7 +495,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
 // Converts a string to a TaskType. Returns TASK_TYPE_UNKNOWN on error.
 TaskType StringToTaskType(const std::string& str) {
-  constexpr auto kStringToTaskTypeMapping =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kStringToTaskTypeMapping =
       base::MakeFixedFlatMap<std::string_view, TaskType>({
           // clang-format off
           {kFileBrowserHandlerTaskType, TASK_TYPE_FILE_BROWSER_HANDLER},

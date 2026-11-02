@@ -129,7 +129,7 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
   // Defines the expected query plan for each query. An empty plan indicates
   // that no specific plan is expected (e.g., for INSERT statements), or that
   // the query is a schema-related query that cannot be explained.
-  constexpr auto kAllQueriesAndPlans =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kAllQueriesAndPlans =
       base::MakeFixedFlatMap<Query, std::string_view>(
           {{Query::kOpenEntry_SelectLiveResources,
             "`--SEARCH resources USING "

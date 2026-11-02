@@ -39,7 +39,7 @@ constexpr char kInputEventStylusKey[] = "stylus";
 constexpr char kInputEventTouchKey[] = "touch";
 constexpr char kInputEventKeyboardKey[] = "keyboard";
 
-constexpr auto kInputEventSourceMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kInputEventSourceMap =
     base::MakeFixedFlatMap<std::string_view, InputEventSource>({
         {kInputEventMouseKey, InputEventSource::kMouse},
         {kInputEventStylusKey, InputEventSource::kStylus},

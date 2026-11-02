@@ -1418,7 +1418,7 @@ namespace {
 
 // Matcher validating that the specified `HangWatchDeadline` has no flag set.
 MATCHER(HasNoFlagSet, /*description=*/"") {
-  static constexpr auto kAllFlags =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kAllFlags =
       base::MakeFixedFlatMap<HangWatchDeadline::Flag, std::string_view>({
           {HangWatchDeadline::Flag::kMinValue, "kMinValue"},
           {HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope,

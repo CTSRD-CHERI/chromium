@@ -35,7 +35,7 @@ base::FilePath GetPathWithEnvironmentFallback(int key) {
     return path;
   }
 
-  static constexpr auto kKeyToVariable =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kKeyToVariable =
       base::MakeFixedFlatMap<int, std::wstring_view>(
           {{base::DIR_PROGRAM_FILES, L"PROGRAMFILES"},
            {base::DIR_PROGRAM_FILESX86, L"PROGRAMFILES(X86)"},

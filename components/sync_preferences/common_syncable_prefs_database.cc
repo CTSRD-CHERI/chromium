@@ -170,7 +170,7 @@ enum {
 }  // namespace syncable_prefs_ids
 
 // List of syncable preferences common across platforms.
-constexpr auto kCommonSyncablePrefsAllowlist =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kCommonSyncablePrefsAllowlist =
     base::MakeFixedFlatMap<std::string_view, SyncablePrefMetadata>({
         {autofill::prefs::kAutofillCreditCardEnabled,
          {syncable_prefs_ids::kAutofillCreditCardEnabled, syncer::PREFERENCES,

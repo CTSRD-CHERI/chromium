@@ -22,7 +22,7 @@ enum class SystemWebAppType;
 // These app Id constants need to be kept in sync with java/com/
 // google/chrome/cros/policyconverter/ChromePolicySettingsProcessor.java
 // LINT.IfChange
-constexpr auto kSystemWebAppsMapping =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSystemWebAppsMapping =
     base::MakeFixedFlatMap<std::string_view, ash::SystemWebAppType>(
         {{"file_manager", ash::SystemWebAppType::FILE_MANAGER},
          {"settings", ash::SystemWebAppType::SETTINGS},

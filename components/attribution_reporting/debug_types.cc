@@ -98,7 +98,7 @@ std::string_view SerializeDebugDataType(DebugDataType data_type) {
 
 base::expected<DebugDataType, ParseError> ParseSourceDebugDataType(
     std::string_view str) {
-  static constexpr auto kTypes =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTypes =
       base::MakeFixedFlatMap<std::string_view, DebugDataType>(
           {SOURCE_DEBUG_DATA_TYPES(STR_TO_TYPE)});
 
@@ -111,7 +111,7 @@ base::expected<DebugDataType, ParseError> ParseSourceDebugDataType(
 
 base::expected<DebugDataType, ParseError> ParseTriggerDebugDataType(
     std::string_view str) {
-  static constexpr auto kTypes =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTypes =
       base::MakeFixedFlatMap<std::string_view, DebugDataType>(
           {TRIGGER_DEBUG_DATA_TYPES(STR_TO_TYPE)});
 

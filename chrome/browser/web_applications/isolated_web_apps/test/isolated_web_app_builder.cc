@@ -231,7 +231,7 @@ std::string UrlPatternPartsToString(
 }
 
 base::Value::Dict UrlPatternToValue(const blink::SafeUrlPattern& pattern) {
-  static constexpr auto kFields =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kFields =
       base::MakeFixedFlatMap<std::string_view, std::vector<liburlpattern::Part>
                                                    blink::SafeUrlPattern::*>({
           {"protocol", &blink::SafeUrlPattern::protocol},

@@ -533,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, Open_DnsQueryType) {
       net::OK, base::StringPrintf("MAP %s 98.76.54.32", kHostname.data()));
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
-  constexpr auto kDnsQueryTypeMapping =
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kDnsQueryTypeMapping =
       base::MakeFixedFlatMap<net::DnsQueryType, std::string_view>({
           {net::DnsQueryType::A, "ipv4"},
           {net::DnsQueryType::AAAA, "ipv6"},

@@ -11,7 +11,7 @@ namespace network {
 
 namespace {
 
-constexpr auto kHeaderMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kHeaderMap =
     base::MakeFixedFlatMap<std::string_view, RequestHeader>({
         {"accept", RequestHeader::kAccept},
         {"accept-encoding", RequestHeader::kAcceptEncoding},

@@ -45,7 +45,7 @@ struct ForceKeyboardSettingPersistence {
   bool suppress_meta_fkey_rewrites = false;
 };
 
-static constexpr auto kKeyboardModifierMappings =
+static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kKeyboardModifierMappings =
     base::MakeFixedFlatMap<ui::mojom::ModifierKey, const char*>(
         {{ui::mojom::ModifierKey::kAlt, ::prefs::kLanguageRemapAltKeyTo},
          {ui::mojom::ModifierKey::kControl,
@@ -58,7 +58,7 @@ static constexpr auto kKeyboardModifierMappings =
          {ui::mojom::ModifierKey::kCapsLock,
           ::prefs::kLanguageRemapCapsLockKeyTo}});
 
-static constexpr auto kMetaKeyMapping =
+static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMetaKeyMapping =
     base::MakeFixedFlatMap<ui::mojom::MetaKey, const char*>(
         {{ui::mojom::MetaKey::kSearch, ::prefs::kLanguageRemapSearchKeyTo},
          {ui::mojom::MetaKey::kLauncher, ::prefs::kLanguageRemapSearchKeyTo},

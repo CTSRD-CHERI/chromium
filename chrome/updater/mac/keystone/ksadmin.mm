@@ -163,7 +163,7 @@ std::string SwitchValue(const std::string& arg,
   if (switches.contains(arg)) {
     return switches.at(arg);
   }
-  static constexpr auto kAliases =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kAliases =
       base::MakeFixedFlatMap<std::string_view, std::string_view>(
           {{kCommandBrandKey, "b"},
            {kCommandBrandPath, "B"},

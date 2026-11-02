@@ -37,7 +37,7 @@ namespace fm_tasks = file_manager::file_tasks;
 
 // These virtual task identifiers are supposed to be a subset of tasks listed in
 // chrome/browser/ash/file_manager/virtual_file_tasks.cc
-constexpr auto kVirtualFileTasksMapping =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kVirtualFileTasksMapping =
     base::MakeFixedFlatMap<std::string_view, std::string_view>(
         {{"install-isolated-web-app", fm_tasks::kActionIdInstallIsolatedWebApp},
          {"microsoft-office", fm_tasks::kActionIdOpenInOffice},

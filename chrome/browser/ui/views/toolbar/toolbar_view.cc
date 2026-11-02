@@ -176,7 +176,7 @@ ToolbarView::DisplayMode GetDisplayMode(Browser* browser) {
 }
 
 auto& GetViewCommandMap() {
-  static constexpr auto kViewCommandMap = base::MakeFixedFlatMap<int, int>(
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kViewCommandMap = base::MakeFixedFlatMap<int, int>(
       {{VIEW_ID_BACK_BUTTON, IDC_BACK},
        {VIEW_ID_FORWARD_BUTTON, IDC_FORWARD},
        {VIEW_ID_HOME_BUTTON, IDC_HOME},

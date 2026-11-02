@@ -81,12 +81,12 @@ enum class PollingIntervalLength {
 // between this range. Unreachable printers are more likely see a status change
 // (by turning on or connecting to the network) so they should be queried more
 // often.
-constexpr auto kUnreachableStatePollingIntervalMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kUnreachableStatePollingIntervalMap =
     base::MakeFixedFlatMap<PollingIntervalLength, std::pair<int, int>>(
         {{PollingIntervalLength::kShort, {10, 15}},
          {PollingIntervalLength::kMedium, {25, 30}},
          {PollingIntervalLength::kLong, {45, 60}}});
-constexpr auto kGoodStatePollingIntervalMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kGoodStatePollingIntervalMap =
     base::MakeFixedFlatMap<PollingIntervalLength, std::pair<int, int>>(
         {{PollingIntervalLength::kShort, {25, 30}},
          {PollingIntervalLength::kMedium, {60, 80}},

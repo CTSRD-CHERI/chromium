@@ -12,7 +12,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
-constexpr auto kCategoryStringMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kCategoryStringMap =
     base::MakeFixedFlatMap<std::string_view, int>({
         {"Desserts", IDS_NTP_WALLPAPER_SEARCH_CATEGORY_DESSERTS},
         {"Interiors", IDS_NTP_WALLPAPER_SEARCH_CATEGORY_INTERIORS},
@@ -23,7 +23,7 @@ constexpr auto kCategoryStringMap =
         {"Structures", IDS_NTP_WALLPAPER_SEARCH_CATEGORY_STRUCTURES},
     });
 
-constexpr auto kDescriptorAStringMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kDescriptorAStringMap =
     base::MakeFixedFlatMap<std::string_view, int>({
         {"Asteroid", IDS_NTP_WALLPAPER_SEARCH_SUBJECT_ASTEROID},
         {"Aurora borealis", IDS_NTP_WALLPAPER_SEARCH_SUBJECT_AURORA_BOREALIS},
@@ -87,7 +87,7 @@ constexpr auto kDescriptorAStringMap =
          IDS_NTP_WALLPAPER_SEARCH_SUBJECT_ZION_NATIONAL_PARK},
     });
 
-constexpr auto kDescriptorBStringMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kDescriptorBStringMap =
     base::MakeFixedFlatMap<std::string_view, int>({
         {"Animated", IDS_NTP_WALLPAPER_SEARCH_STYLE_ANIMATED},
         {"Colored Pencil", IDS_NTP_WALLPAPER_SEARCH_STYLE_COLORED_PENCIL},
@@ -104,7 +104,7 @@ constexpr auto kDescriptorBStringMap =
         {"Watercolor", IDS_NTP_WALLPAPER_SEARCH_STYLE_WATERCOLOR},
     });
 
-constexpr auto kDescriptorCStringMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kDescriptorCStringMap =
     base::MakeFixedFlatMap<std::string_view, int>({
         {"Chaotic", IDS_NTP_WALLPAPER_SEARCH_MOOD_CHAOTIC},
         {"Creative", IDS_NTP_WALLPAPER_SEARCH_MOOD_CREATIVE},
@@ -124,7 +124,7 @@ constexpr auto kDescriptorCStringMap =
         {"Wild", IDS_NTP_WALLPAPER_SEARCH_MOOD_WILD},
     });
 
-constexpr auto kInspirationDescriptionStringMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kInspirationDescriptionStringMap =
     base::MakeFixedFlatMap<std::string_view, int>({
         {"DD924B31C087A231A481FEF889BE48EC",
          IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_DESCRIPTION_1},

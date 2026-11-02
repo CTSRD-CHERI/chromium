@@ -313,7 +313,7 @@ base::flat_map<Rule::Restriction, Rule::Level> Rule::GetRestrictions(
 
 // static
 Rule::Restriction Rule::StringToRestriction(const std::string& restriction) {
-  static constexpr auto kMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMap =
       base::MakeFixedFlatMap<std::string_view, Restriction>({
           {kRestrictionClipboard, Restriction::kClipboard},
           {kRestrictionScreenshot, Restriction::kScreenshot},
@@ -338,7 +338,7 @@ Rule::Restriction Rule::StringToRestriction(const std::string& restriction) {
 
 // static
 Rule::Level Rule::StringToLevel(const std::string& level) {
-  static constexpr auto kMap = base::MakeFixedFlatMap<std::string_view, Level>({
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMap = base::MakeFixedFlatMap<std::string_view, Level>({
       {kLevelAllow, Level::kAllow},
       {kLevelBlock, Level::kBlock},
       {kLevelWarn, Level::kWarn},

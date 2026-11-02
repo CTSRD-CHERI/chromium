@@ -38,7 +38,7 @@ base::FilePath GetDebugdPathOfLog(const base::FilePath& log_file_name) {
   // Most of the logs in debugd are stored with their file's base name. However,
   // there are some exceptions. We map the log file's base name in file system
   // and their name in debugd for these exceptional cases.
-  static constexpr auto kDebugdLogNames =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kDebugdLogNames =
       base::MakeFixedFlatMap<std::string_view, std::string_view>(
           {{"arc.log", "cheets_log"},
            {"chrome", "chrome_system_log"},

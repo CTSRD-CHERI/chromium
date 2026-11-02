@@ -91,7 +91,7 @@ class SupportToolUiUtilsTest : public ::testing::Test {
   std::string GetExpectedPIIDefinitionString(
       const redaction::PIIType& pii_type) {
     // PII types with the definition strings.
-    static constexpr auto kExpectedPiiTypeDefinitions =
+    static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kExpectedPiiTypeDefinitions =
         base::MakeFixedFlatMap<redaction::PIIType, int>(
             {{redaction::PIIType::kIPAddress, IDS_SUPPORT_TOOL_IP_ADDRESS},
              {redaction::PIIType::kURL, IDS_SUPPORT_TOOL_URLS},

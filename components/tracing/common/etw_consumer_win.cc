@@ -145,7 +145,7 @@ void EtwConsumer::ProcessEventRecord(EVENT_RECORD* event_record) {
       {0x84, 0xf4, 0x00, 0x00, 0xf8, 0x04, 0x64, 0xe3}};
 
   // A mapping of provider GUIDs to handler member functions.
-  static constexpr auto kGuidToProvider =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kGuidToProvider =
       base::MakeFixedFlatMap<std::reference_wrapper<const GUID>,
                              EventHandlerFunction, IsGuidLess>(
           {{kProcessGuid, &EtwConsumer::HandleProcessEvent},

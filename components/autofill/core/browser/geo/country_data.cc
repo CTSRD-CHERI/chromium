@@ -21,7 +21,7 @@ namespace {
 
 // Alias definitions. A request for the key is served with the `CountryData` for
 // the target.
-constexpr auto kCountryCodeAliases =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kCountryCodeAliases =
     base::MakeFixedFlatMap<std::string_view, std::string_view>({{"UK", "GB"}});
 
 // GetCountryCodes and GetCountryData compute the data for CountryDataMap

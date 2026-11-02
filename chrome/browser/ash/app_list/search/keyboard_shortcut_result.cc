@@ -293,7 +293,7 @@ std::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
 // https://crsrc.org/c/ash/webui/shortcut_customization_ui/resources/js/input_key.ts;l=30.
 std::optional<ash::SearchResultTextItem::IconCode>
 KeyboardShortcutResult::GetIconCodeByKeyString(std::u16string_view key_string) {
-  static constexpr auto kIconCodes = base::MakeFixedFlatMap<std::u16string_view,
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kIconCodes = base::MakeFixedFlatMap<std::u16string_view,
                                                             IconCode>(
       {{u"Accessibility", IconCode::kKeyboardShortcutAccessibility},
        {u"ArrowDown", IconCode::kKeyboardShortcutDown},
@@ -341,7 +341,7 @@ KeyboardShortcutResult::GetIconCodeByKeyString(std::u16string_view key_string) {
        {u"ViewAllApps", IconCode::kKeyboardShortcutAllApps},
        {u"ZoomToggle", IconCode::kKeyboardShortcutZoom}});
 
-  static constexpr auto kRefreshIconCodes =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kRefreshIconCodes =
       base::MakeFixedFlatMap<std::u16string_view, IconCode>(
           {{u"LaunchApplication1",
             IconCode::kKeyboardShortcutMediaLaunchApp1Refresh},

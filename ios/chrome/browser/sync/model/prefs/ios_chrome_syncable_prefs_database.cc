@@ -50,7 +50,7 @@ enum {
 }  // namespace syncable_prefs_ids
 
 // iOS specific list of syncable preferences.
-constexpr auto kIOSChromeSyncablePrefsAllowlist =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kIOSChromeSyncablePrefsAllowlist =
     base::MakeFixedFlatMap<std::string_view,
                            sync_preferences::SyncablePrefMetadata>({
         {prefs::kArticlesForYouEnabled,

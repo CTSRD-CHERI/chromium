@@ -204,7 +204,7 @@ void LogRequestAction(RequestAction action) {
 // |event_name| is an invalid event, returns EventTypes::kInvalidEvent.
 WebRequestEventRouter::EventTypes GetEventTypeFromEventName(
     std::string_view event_name) {
-  constexpr auto kRequestStageMap = base::MakeFixedFlatMap<
+  BASE_FIXED_FLAT_MAP_CONSTEXPR auto kRequestStageMap = base::MakeFixedFlatMap<
       std::string_view, WebRequestEventRouter::EventTypes>(
       {{keys::kOnBeforeRequest,
         WebRequestEventRouter::EventTypes::kOnBeforeRequest},

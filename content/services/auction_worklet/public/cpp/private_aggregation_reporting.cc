@@ -20,7 +20,7 @@ using ReservedErrorEventType = auction_worklet::mojom::ReservedErrorEventType;
 using ReservedNonErrorEventType =
     auction_worklet::mojom::ReservedNonErrorEventType;
 
-constexpr auto kReservedErrorEventTypes =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kReservedErrorEventTypes =
     base::MakeFixedFlatMap<std::string_view, ReservedErrorEventType>(
         {{"reserved.report-success", ReservedErrorEventType::kReportSuccess},
          {"reserved.too-many-contributions",
@@ -33,7 +33,7 @@ constexpr auto kReservedErrorEventTypes =
           ReservedErrorEventType::kInsufficientBudget},
          {"reserved.uncaught-error", ReservedErrorEventType::kUncaughtError}});
 
-constexpr auto kReservedNonErrorEventTypes =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kReservedNonErrorEventTypes =
     base::MakeFixedFlatMap<std::string_view, ReservedNonErrorEventType>(
         {{"reserved.always", ReservedNonErrorEventType::kReservedAlways},
          {"reserved.win", ReservedNonErrorEventType::kReservedWin},
