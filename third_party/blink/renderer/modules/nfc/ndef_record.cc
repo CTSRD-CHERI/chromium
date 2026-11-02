@@ -117,7 +117,11 @@ bool IsValidExternalType(const String& input) {
   static constexpr std::string_view kOtherCharsForCustomType(":!()+,-=@;$_*'.");
   for (wtf_size_t i = 0; i < type.length(); i++) {
     if (!IsASCIIAlphanumeric(type[i]) &&
+#if __cpp_lib_string_contains
         !kOtherCharsForCustomType.contains(type[i])) {
+#else
+        !kOtherCharsForCustomType.find(type[i]) != std::string::npos) {
+#endif
       return false;
     }
   }

@@ -2215,7 +2215,11 @@ bool SetCookie(
     net::CookieOptions::SameSiteCookieContext context,
     base::optional_ref<const net::CookiePartitionKey> cookie_partition_key) {
   if (cookie_partition_key) {
+#if __cpp_lib_string_contains
     DCHECK(base::ToLowerASCII(value).contains(";partitioned"));
+#else
+    DCHECK(base::ToLowerASCII(value).find(";partitioned") != std::string::npos);
+#endif
   }
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
   browser_context->GetDefaultStoragePartition()
