@@ -47,7 +47,11 @@ namespace std {
 template <>
 struct hash<blink::MultiBufferGlobalBlockId> {
   std::size_t operator()(const blink::MultiBufferGlobalBlockId& key) const {
+#if defined(__CHERI_PURE_CAPABILITY__)
+    return base::HashInts(__builtin_cheri_address_get(key.first), key.second);
+#else
     return base::HashInts(reinterpret_cast<uintptr_t>(key.first), key.second);
+#endif
   }
 };
 
