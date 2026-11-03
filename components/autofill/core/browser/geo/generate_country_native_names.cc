@@ -82,7 +82,7 @@ void WriteCountryNativeNamesInlFile(
       "generate_country_native_names.cc.\n"
       "// Do not edit manually.\n"
       "namespace {\n\n"
-      "constexpr auto kCountryNativeNames = "
+      "BASE_FIXED_FLAT_MAP_CONSTEXPR auto kCountryNativeNames = "
       "base::MakeFixedFlatMap<std::u16string_view, "
       "std::string>({\n";
 
