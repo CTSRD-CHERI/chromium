@@ -29,7 +29,11 @@ namespace {{property.namespace}} { class {{property.classname}}; }
 // out there (which would be nearly impossible wrt. circular includes).
 // We static_assert that it's correct in the .cc file.
 // See crbug.com/1450215.
+#if defined(__CHERI_PURE_CAPABILITY__)
+static constexpr size_t kCSSPropertyUnionBytes = 32;
+#else
 static constexpr size_t kCSSPropertyUnionBytes = 16;
+#endif
 
 union alignas(kCSSPropertyUnionBytes) CSSPropertyUnion;
 
