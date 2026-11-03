@@ -31,7 +31,7 @@ static_assert(60 == syncer::GetNumDataTypes(),
 using kSpecificsFieldNumberToDataTypeMap =
     base::fixed_flat_map<int, DataType, syncer::GetNumDataTypes()>;
 
-constexpr kSpecificsFieldNumberToDataTypeMap specifics_field_number2data_type =
+BASE_FIXED_FLAT_MAP_CONSTEXPR kSpecificsFieldNumberToDataTypeMap specifics_field_number2data_type =
     base::MakeFixedFlatMap<int, DataType>({
         {-1, UNSPECIFIED},
         {sync_pb::EntitySpecifics::kBookmarkFieldNumber, BOOKMARKS},
