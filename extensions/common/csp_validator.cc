@@ -192,7 +192,11 @@ bool isNonWildcardTLD(const std::string& url,
 
   std::string host(url, start_of_host, end_of_host - start_of_host);
   // Global wildcards are not allowed.
+#if __cpp_lib_string_contains
   if (host.empty() || host.contains("*")) {
+#else
+  if (host.empty() || host.find("*") != std::string::npos) {
+#endif
     return false;
   }
 
