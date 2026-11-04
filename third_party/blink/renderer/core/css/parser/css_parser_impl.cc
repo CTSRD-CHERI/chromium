@@ -2527,7 +2527,8 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
   fake_parent_rule->EnsureChildRules();
   return MakeGarbageCollected<StyleRuleMixin>(
       name, std::move(*parameters),
-      HeapVector{std::move(*fake_parent_rule->ChildRules())});
+      HeapVector<Member<StyleRuleBase>>(
+          std::move(*fake_parent_rule->ChildRules())));
 }
 
 StyleRule* CSSParserImpl::ConsumeDeclarationListForMixins(
