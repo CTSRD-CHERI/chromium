@@ -14,7 +14,7 @@ use crate::{
 
 // This function will decode a header and apply local transforms if a header is not given.
 // The intended use of passing a header is for the DcGlobal section.
-pub fn decode_modular_subbitstream(
+pub(crate) fn decode_modular_subbitstream(
     buffers: Vec<&mut ModularChannel>,
     stream_id: usize,
     header: Option<GroupHeader>,

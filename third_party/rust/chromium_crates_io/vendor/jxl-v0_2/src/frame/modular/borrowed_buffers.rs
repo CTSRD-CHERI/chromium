@@ -13,7 +13,7 @@ use crate::{
 
 use super::{ModularBufferInfo, ModularChannel};
 
-pub fn with_buffers<T>(
+pub(super) fn with_buffers<T>(
     buffers: &[ModularBufferInfo],
     indices: &[usize],
     grid: usize,
