@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/cheri.gni")
 import("//build/rust/rust_bindgen_generator.gni")
 import("//build/rust/rust_static_library.gni")
 
@@ -203,7 +204,12 @@ rust_static_library("crabbyavif") {
 
   # Required for disable_cfi feature.
   configs -= [ "//build/config/compiler:disallow_unstable_features" ]
-  rustflags = [ "-Zallow-features=no_sanitize" ]
+  if (rustc_version == "rustc 1.72.1-dev") {
+    assert(target_cpu == "arm64" && is_cheri)
+    rustflags = [ "-Zallow-features=cfg_version,exclusive_range_pattern,int_roundings,no_sanitize" ]
+  } else {
+    rustflags = [ "-Zallow-features=cfg_version,no_santize" ]
+  }
 
   public_deps = [ ":header_files" ]
   deps = [
