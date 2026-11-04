@@ -4,8 +4,7 @@
 
 #include "chrome/browser/glic/glic_pref_names.h"
 
-#include <utility>
-
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/common/chrome_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -62,7 +61,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterIntegerPref(
       prefs::kGlicActuationOnWeb,
-      std::to_underlying(GetGlicActuationOnWebPolicyState()));
+      base::to_underlying(GetGlicActuationOnWebPolicyState()));
 
   registry->RegisterListPref(prefs::kGlicActuationOnWebAllowedForURLs);
   registry->RegisterListPref(prefs::kGlicActuationOnWebBlockedForURLs);

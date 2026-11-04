@@ -4,12 +4,11 @@
 
 #include "chrome/browser/actor/actor_policy_checker.h"
 
-#include <utility>
-
 #include "base/base_switches.h"
 #include "base/containers/to_value_list.h"
 #include "base/strings/strcat.h"
 #include "base/test/test_future.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/version.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -249,7 +248,7 @@ IN_PROC_BROWSER_TEST_P(ActorPolicyCheckerBrowserTestNonManagedBrowser,
   // non-managed clients.
   PrefService* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(glic::prefs::kGlicActuationOnWeb,
-                    std::to_underlying(
+                    base::to_underlying(
                         glic::prefs::GlicActuationOnWebPolicyState::kDisabled));
   EXPECT_EQ(ActorKeyedService::Get(browser()->profile())
                 ->GetPolicyChecker()
@@ -357,7 +356,7 @@ class ActorPolicyCheckerBrowserTestManagedBrowser
     policy::PolicyMap policies;
     std::optional<base::Value> value_to_set;
     if (value.has_value()) {
-      value_to_set = base::Value(std::to_underlying(*value));
+      value_to_set = base::Value(base::to_underlying(*value));
     }
     std::optional<base::Value> allow_list_value =
         base::Value(base::ToValueList(url_allowlist));

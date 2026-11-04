@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <string>
-#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -15,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
@@ -128,7 +128,7 @@ class LobsterSystemStateProviderImplBaseTest : public testing::Test {
     pref_.registry()->RegisterBooleanPref(ash::prefs::kLobsterEnabled, true);
     pref_.registry()->RegisterIntegerPref(
         ash::prefs::kLobsterEnterprisePolicySettings,
-        std::to_underlying(
+        base::to_underlying(
             ash::LobsterEnterprisePolicyValue::kAllowedWithModelImprovement));
   }
 
@@ -186,7 +186,7 @@ class LobsterSystemStateProviderImplBaseTest : public testing::Test {
   void SetPolicyValue(
       ash::LobsterEnterprisePolicyValue enterprise_policy_value) {
     pref_.SetInteger(ash::prefs::kLobsterEnterprisePolicySettings,
-                     std::to_underlying(enterprise_policy_value));
+                     base::to_underlying(enterprise_policy_value));
   }
 
   ash::LobsterSystemState GetSystemState(

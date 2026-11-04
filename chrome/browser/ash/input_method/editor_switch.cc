@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/input_method/editor_switch.h"
 
-#include <utility>
-
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/generative_ai_country_restrictions.h"
@@ -14,6 +12,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/json/json_reader.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/input_methods_by_language.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
@@ -312,8 +311,8 @@ bool EditorSwitch::IsFeedbackEnabled() const {
 
   // If managed, check the enablement value.
   return profile_->GetPrefs()->GetInteger(prefs::kHmwManagedSettings) ==
-         std::to_underlying(chromeos::editor_menu::EditorEnterprisePolicy::
-                                kAllowedWithModelImprovement);
+         base::to_underlying(chromeos::editor_menu::EditorEnterprisePolicy::
+                                 kAllowedWithModelImprovement);
 }
 
 bool EditorSwitch::CanShowNoticeBanner() const {
@@ -443,7 +442,7 @@ bool EditorSwitch::CanBeTriggered() const {
          !net::NetworkChangeNotifier::IsOffline() &&
          !context_->InTabletMode() &&
          profile_->GetPrefs()->GetInteger(prefs::kHmwManagedSettings) !=
-             std::to_underlying(
+             base::to_underlying(
                  chromeos::editor_menu::EditorEnterprisePolicy::kDisallowed) &&
          // user pref value
          profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled) &&

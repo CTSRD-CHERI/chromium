@@ -4,12 +4,11 @@
 
 #include "chrome/browser/actor/actor_metrics.h"
 
-#include <utility>
-
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 
@@ -109,7 +108,7 @@ void RecordActionResultCode(actor::mojom::ActionResultCode action_result_code) {
   // histogram here because, the linear histograms are limited to 1000 values in
   // base/metrics/histogram.cc.
   base::UmaHistogramSparse("Actor.ExecutionEngine.Action.ResultCode",
-                           std::to_underlying(action_result_code));
+                           base::to_underlying(action_result_code));
 }
 
 void RecordPageContextApcDuration(base::TimeDelta duration) {

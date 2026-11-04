@@ -23,6 +23,7 @@
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
@@ -382,8 +383,8 @@ template <typename T>
              T::kMaxValue;
            })
 std::optional<T> ToEnum(int value) {
-  if (value >= std::to_underlying(T::kMinValue) &&
-      value <= std::to_underlying(T::kMaxValue)) {
+  if (value >= base::to_underlying(T::kMinValue) &&
+      value <= base::to_underlying(T::kMaxValue)) {
     return static_cast<T>(value);
   }
   return std::nullopt;
@@ -1370,15 +1371,15 @@ void ReadAnythingAppController::OnPinStatusReceived(bool pin_state) {
 }
 
 int ReadAnythingAppController::LetterSpacing() const {
-  return std::to_underlying(model_.letter_spacing());
+  return base::to_underlying(model_.letter_spacing());
 }
 
 int ReadAnythingAppController::LineSpacing() const {
-  return std::to_underlying(model_.line_spacing());
+  return base::to_underlying(model_.line_spacing());
 }
 
 int ReadAnythingAppController::ColorTheme() const {
-  return std::to_underlying(model_.color_theme());
+  return base::to_underlying(model_.color_theme());
 }
 
 double ReadAnythingAppController::SpeechRate() const {
@@ -1407,68 +1408,68 @@ int ReadAnythingAppController::HighlightGranularity() const {
 
 int ReadAnythingAppController::LineFocus() const {
   return IsLineFocusEnabled()
-             ? std::to_underlying(model_.line_focus())
-             : std::to_underlying(read_anything::mojom::LineFocus::kOff);
+             ? base::to_underlying(model_.line_focus())
+             : base::to_underlying(read_anything::mojom::LineFocus::kOff);
 }
 
 int ReadAnythingAppController::StandardLineSpacing() const {
-  return std::to_underlying(read_anything::mojom::LineSpacing::kStandard);
+  return base::to_underlying(read_anything::mojom::LineSpacing::kStandard);
 }
 
 int ReadAnythingAppController::LooseLineSpacing() const {
-  return std::to_underlying(read_anything::mojom::LineSpacing::kLoose);
+  return base::to_underlying(read_anything::mojom::LineSpacing::kLoose);
 }
 
 int ReadAnythingAppController::VeryLooseLineSpacing() const {
-  return std::to_underlying(read_anything::mojom::LineSpacing::kVeryLoose);
+  return base::to_underlying(read_anything::mojom::LineSpacing::kVeryLoose);
 }
 
 int ReadAnythingAppController::StandardLetterSpacing() const {
-  return std::to_underlying(read_anything::mojom::LetterSpacing::kStandard);
+  return base::to_underlying(read_anything::mojom::LetterSpacing::kStandard);
 }
 
 int ReadAnythingAppController::WideLetterSpacing() const {
-  return std::to_underlying(read_anything::mojom::LetterSpacing::kWide);
+  return base::to_underlying(read_anything::mojom::LetterSpacing::kWide);
 }
 
 int ReadAnythingAppController::VeryWideLetterSpacing() const {
-  return std::to_underlying(read_anything::mojom::LetterSpacing::kVeryWide);
+  return base::to_underlying(read_anything::mojom::LetterSpacing::kVeryWide);
 }
 
 int ReadAnythingAppController::DefaultTheme() const {
-  return std::to_underlying(read_anything::mojom::Colors::kDefault);
+  return base::to_underlying(read_anything::mojom::Colors::kDefault);
 }
 
 int ReadAnythingAppController::LightTheme() const {
-  return std::to_underlying(read_anything::mojom::Colors::kLight);
+  return base::to_underlying(read_anything::mojom::Colors::kLight);
 }
 
 int ReadAnythingAppController::DarkTheme() const {
-  return std::to_underlying(read_anything::mojom::Colors::kDark);
+  return base::to_underlying(read_anything::mojom::Colors::kDark);
 }
 
 int ReadAnythingAppController::YellowTheme() const {
-  return std::to_underlying(read_anything::mojom::Colors::kYellow);
+  return base::to_underlying(read_anything::mojom::Colors::kYellow);
 }
 
 int ReadAnythingAppController::BlueTheme() const {
-  return std::to_underlying(read_anything::mojom::Colors::kBlue);
+  return base::to_underlying(read_anything::mojom::Colors::kBlue);
 }
 
 int ReadAnythingAppController::HighContrastTheme() const {
-  return std::to_underlying(read_anything::mojom::Colors::kHighContrast);
+  return base::to_underlying(read_anything::mojom::Colors::kHighContrast);
 }
 
 int ReadAnythingAppController::LowContrastTheme() const {
-  return std::to_underlying(read_anything::mojom::Colors::kLowContrast);
+  return base::to_underlying(read_anything::mojom::Colors::kLowContrast);
 }
 
 int ReadAnythingAppController::SepiaLightTheme() const {
-  return std::to_underlying(read_anything::mojom::Colors::kSepiaLight);
+  return base::to_underlying(read_anything::mojom::Colors::kSepiaLight);
 }
 
 int ReadAnythingAppController::SepiaDarkTheme() const {
-  return std::to_underlying(read_anything::mojom::Colors::kSepiaDark);
+  return base::to_underlying(read_anything::mojom::Colors::kSepiaDark);
 }
 
 bool ReadAnythingAppController::IsHighlightOn() {
@@ -1497,56 +1498,56 @@ int ReadAnythingAppController::NoHighlighting() const {
 }
 
 int ReadAnythingAppController::PauseButtonStopSource() const {
-  return std::to_underlying(ReadAloudAppModel::ReadAloudStopSource::kButton);
+  return base::to_underlying(ReadAloudAppModel::ReadAloudStopSource::kButton);
 }
 
 int ReadAnythingAppController::KeyboardShortcutStopSource() const {
-  return std::to_underlying(
+  return base::to_underlying(
       ReadAloudAppModel::ReadAloudStopSource::kKeyboardShortcut);
 }
 
 int ReadAnythingAppController::EngineInterruptStopSource() const {
-  return std::to_underlying(
+  return base::to_underlying(
       ReadAloudAppModel::ReadAloudStopSource::kEngineInterrupt);
 }
 
 int ReadAnythingAppController::EngineErrorStopSource() const {
-  return std::to_underlying(
+  return base::to_underlying(
       ReadAloudAppModel::ReadAloudStopSource::kEngineError);
 }
 
 int ReadAnythingAppController::ContentFinishedStopSource() const {
-  return std::to_underlying(
+  return base::to_underlying(
       ReadAloudAppModel::ReadAloudStopSource::kFinishContent);
 }
 
 int ReadAnythingAppController::UnexpectedUpdateContentStopSource() const {
-  return std::to_underlying(
+  return base::to_underlying(
       ReadAloudAppModel::ReadAloudStopSource::kUnexpectedUpdateContent);
 }
 
 int ReadAnythingAppController::LineFocusOff() const {
-  return std::to_underlying(read_anything::mojom::LineFocus::kOff);
+  return base::to_underlying(read_anything::mojom::LineFocus::kOff);
 }
 
 int ReadAnythingAppController::LineFocusOneLineWindow() const {
-  return std::to_underlying(read_anything::mojom::LineFocus::kWindow1);
+  return base::to_underlying(read_anything::mojom::LineFocus::kWindow1);
 }
 
 int ReadAnythingAppController::LineFocusThreeLineWindow() const {
-  return std::to_underlying(read_anything::mojom::LineFocus::kWindow3);
+  return base::to_underlying(read_anything::mojom::LineFocus::kWindow3);
 }
 
 int ReadAnythingAppController::LineFocusFiveLineWindow() const {
-  return std::to_underlying(read_anything::mojom::LineFocus::kWindow5);
+  return base::to_underlying(read_anything::mojom::LineFocus::kWindow5);
 }
 
 int ReadAnythingAppController::LineFocusStaticLine() const {
-  return std::to_underlying(read_anything::mojom::LineFocus::kLineStatic);
+  return base::to_underlying(read_anything::mojom::LineFocus::kLineStatic);
 }
 
 int ReadAnythingAppController::LineFocusCursorLine() const {
-  return std::to_underlying(read_anything::mojom::LineFocus::kLineCursor);
+  return base::to_underlying(read_anything::mojom::LineFocus::kLineCursor);
 }
 
 int ReadAnythingAppController::MaxLineWidth() const {
