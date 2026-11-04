@@ -16,6 +16,7 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
 #include "chrome/browser/ash/lobster/lobster_image_fetcher.h"
 #include "chrome/browser/ash/lobster/lobster_image_provider_from_memory.h"
@@ -74,7 +75,7 @@ LobsterService::LobsterService(
                       chromeos::editor_menu::EditorConsentStatus::kDeclined) {
                 pref_service->SetInteger(
                     ash::prefs::kOrcaConsentStatus,
-                    std::to_underlying(
+                    base::to_underlying(
                         chromeos::editor_menu::EditorConsentStatus::kUnset));
               }
             },
@@ -132,8 +133,8 @@ void LobsterService::LoadUI(std::optional<std::string> query,
       /*should_show_feedback=*/
       profile_->GetPrefs()->GetInteger(
           ash::prefs::kLobsterEnterprisePolicySettings) ==
-              std::to_underlying(ash::LobsterEnterprisePolicyValue::
-                                     kAllowedWithModelImprovement) &&
+              base::to_underlying(ash::LobsterEnterprisePolicyValue::
+                                      kAllowedWithModelImprovement) &&
           base::FeatureList::IsEnabled(ash::features::kLobsterFeedback));
 }
 

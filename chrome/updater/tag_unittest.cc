@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/updater/test/unit_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -971,7 +972,7 @@ TEST(TagParserTest, InstallDataIndexValid) {
 
 TEST(TagParserTest, BrowserTypeValid) {
   std::tuple<std::string_view, TagArgs::BrowserType>
-      pairs[std::to_underlying(TagArgs::BrowserType::kMax)] = {
+      pairs[base::to_underlying(TagArgs::BrowserType::kMax)] = {
           {"0", TagArgs::BrowserType::kUnknown},
           {"1", TagArgs::BrowserType::kDefault},
           {"2", TagArgs::BrowserType::kInternetExplorer},

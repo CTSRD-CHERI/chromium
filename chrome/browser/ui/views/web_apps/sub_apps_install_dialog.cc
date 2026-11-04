@@ -5,7 +5,6 @@
 #include <cstddef>
 #include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -17,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/web_apps/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -100,7 +100,7 @@ PermissionsExplanation(int num_sub_apps,
   auto label = std::make_unique<views::StyledLabel>();
   label->SetText(formatted_string);
   label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
-  label->SetID(std::to_underlying(
+  label->SetID(base::to_underlying(
       SubAppsInstallDialogController::SubAppsInstallDialogViewID::
           MANAGE_PERMISSIONS_LINK));
 
@@ -169,8 +169,8 @@ class SubAppsListView : public views::ScrollView {
                              kSubAppIconSize, image_info.bitmaps),
                          gfx::Size(kSubAppIconSize, kSubAppIconSize))));
       sub_app_icon->SetGroup(
-          std::to_underlying(SubAppsInstallDialogController::
-                                 SubAppsInstallDialogViewID::SUB_APP_ICON));
+          base::to_underlying(SubAppsInstallDialogController::
+                                  SubAppsInstallDialogViewID::SUB_APP_ICON));
       icon_views_.push_back(sub_app_icon);
 
       // If any masking needs to happen, do it and update the image in the view
@@ -190,8 +190,8 @@ class SubAppsListView : public views::ScrollView {
       sub_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
       sub_app_label->SetMultiLine(true);
       sub_app_label->SetGroup(
-          std::to_underlying(SubAppsInstallDialogController::
-                                 SubAppsInstallDialogViewID::SUB_APP_LABEL));
+          base::to_underlying(SubAppsInstallDialogController::
+                                  SubAppsInstallDialogViewID::SUB_APP_LABEL));
 
       icon_index++;
     }

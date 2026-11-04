@@ -7,7 +7,6 @@
 #include <limits>
 #include <memory>
 #include <optional>
-#include <utility>
 #include <vector>
 
 #include "ash/birch/coral_util.h"
@@ -33,6 +32,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
@@ -285,15 +285,15 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kEmojiSuggestionEnterpriseAllowed, true);
   registry->RegisterIntegerPref(
       prefs::kHmwManagedSettings,
-      std::to_underlying(chromeos::editor_menu::EditorEnterprisePolicy::
-                             kAllowedWithModelImprovement));
+      base::to_underlying(chromeos::editor_menu::EditorEnterprisePolicy::
+                              kAllowedWithModelImprovement));
   registry->RegisterBooleanPref(prefs::kOrcaEnabled, true);
   registry->RegisterBooleanPref(prefs::kOrcaFeedbackEnabled, true);
   registry->RegisterBooleanPref(prefs::kManagedOrcaEnabled, true);
   registry->RegisterBooleanPref(prefs::kLobsterEnabled, true);
   registry->RegisterIntegerPref(
       prefs::kLobsterEnterprisePolicySettings,
-      std::to_underlying(
+      base::to_underlying(
           ash::LobsterEnterprisePolicyValue::kAllowedWithModelImprovement));
   registry->RegisterBooleanPref(
       prefs::kManagedPhysicalKeyboardAutocorrectAllowed, true);
@@ -301,7 +301,7 @@ void Preferences::RegisterProfilePrefs(
       prefs::kManagedPhysicalKeyboardPredictiveWritingAllowed, true);
   registry->RegisterIntegerPref(
       prefs::kOrcaConsentStatus,
-      std::to_underlying(chromeos::editor_menu::EditorConsentStatus::kUnset));
+      base::to_underlying(chromeos::editor_menu::EditorConsentStatus::kUnset));
   registry->RegisterIntegerPref(prefs::kOrcaConsentWindowDismissCount, 0);
   registry->RegisterBooleanPref(prefs::kEmojiPickerGifSupportEnabled, true);
   registry->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
@@ -598,7 +598,7 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterIntegerPref(
       prefs::kHMRConsentStatus,
-      std::to_underlying(chromeos::HMRConsentStatus::kUnset));
+      base::to_underlying(chromeos::HMRConsentStatus::kUnset));
 
   registry->RegisterIntegerPref(prefs::kHMRConsentWindowDismissCount, 0);
 
@@ -606,7 +606,7 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterIntegerPref(
       prefs::kGenAISmartGroupingSettings,
-      std::to_underlying(coral_util::GenAISmartGroupingSettings::kAllowed));
+      base::to_underlying(coral_util::GenAISmartGroupingSettings::kAllowed));
 
   registry->RegisterBooleanPref(
       prefs::kLauncherResultEverLaunched, false,

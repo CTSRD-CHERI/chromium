@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/lobster/lobster_system_state_provider_impl.h"
 
 #include <array>
-#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -14,6 +13,7 @@
 #include "ash/public/cpp/lobster/lobster_system_state.h"
 #include "ash/public/cpp/lobster/lobster_text_input_context.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
@@ -30,14 +30,15 @@ namespace {
 
 ash::LobsterConsentStatus GetConsentStatusFromInteger(int status_value) {
   switch (status_value) {
-    case std::to_underlying(chromeos::editor_menu::EditorConsentStatus::kUnset):
-    case std::to_underlying(
+    case base::to_underlying(
+        chromeos::editor_menu::EditorConsentStatus::kUnset):
+    case base::to_underlying(
         chromeos::editor_menu::EditorConsentStatus::kPending):
       return ash::LobsterConsentStatus::kUnset;
-    case std::to_underlying(
+    case base::to_underlying(
         chromeos::editor_menu::EditorConsentStatus::kApproved):
       return ash::LobsterConsentStatus::kApproved;
-    case std::to_underlying(
+    case base::to_underlying(
         chromeos::editor_menu::EditorConsentStatus::kDeclined):
       return ash::LobsterConsentStatus::kDeclined;
     default:
@@ -192,7 +193,7 @@ ash::LobsterSystemState LobsterSystemStateProviderImpl::GetSystemState(
   }
 
   if (pref_->GetInteger(ash::prefs::kLobsterEnterprisePolicySettings) ==
-      std::to_underlying(ash::LobsterEnterprisePolicyValue::kDisabled)) {
+      base::to_underlying(ash::LobsterEnterprisePolicyValue::kDisabled)) {
     system_state.status = ash::LobsterStatus::kBlocked;
     system_state.failed_checks.Put(ash::LobsterSystemCheck::kUnsupportedPolicy);
   }

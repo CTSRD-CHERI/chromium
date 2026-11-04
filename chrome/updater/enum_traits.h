@@ -9,9 +9,8 @@
 #include <optional>
 #include <ostream>
 #include <type_traits>
-#include <utility>
 
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace updater {
 

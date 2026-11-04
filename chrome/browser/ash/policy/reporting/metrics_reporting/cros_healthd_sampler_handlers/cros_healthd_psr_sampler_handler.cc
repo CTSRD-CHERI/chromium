@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -108,7 +109,7 @@ void CrosHealthdPsrSamplerHandler::HandleResultImpl(
       default:
         RecordPsrResult(EnterpriseReportingPsrResult::kUnknownSystemResultType);
         LOG(ERROR) << "cros_healthd: Unknown system result type: "
-                   << std::to_underlying(system_result->which());
+                   << base::to_underlying(system_result->which());
         return;
     }
   }

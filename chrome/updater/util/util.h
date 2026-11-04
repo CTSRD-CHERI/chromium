@@ -12,12 +12,11 @@
 #include <ostream>
 #include <string>
 #include <type_traits>
-#include <utility>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/registration_data.h"
