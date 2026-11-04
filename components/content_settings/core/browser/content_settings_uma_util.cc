@@ -171,7 +171,11 @@ BASE_FIXED_FLAT_MAP_CONSTEXPR auto kHistogramValue = base::MakeFixedFlatMap<Cont
 });
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ContentType)
 
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const int kkHistogramValueMax =
+#else
 constexpr int kkHistogramValueMax =
+#endif
     std::ranges::max_element(kHistogramValue,
                              std::ranges::less{},
                              &decltype(kHistogramValue)::value_type::second)
