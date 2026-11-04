@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/syslog_logging.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/buildflag.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -55,7 +56,7 @@ void KioskAppServiceLauncher::CheckAndMaybeLaunchApp(
     case apps::Readiness::kUnknown:
     case apps::Readiness::kTerminated:
       SYSLOG(WARNING) << "Kiosk app not ready yet: "
-                      << std::to_underlying(readiness);
+                      << base::to_underlying(readiness);
       app_registry_observation_.Observe(&app_service_->AppRegistryCache());
       break;
     case apps::Readiness::kReady:
@@ -69,7 +70,7 @@ void KioskAppServiceLauncher::CheckAndMaybeLaunchApp(
     case apps::Readiness::kUninstalledByNonUser:
     case apps::Readiness::kDisabledByLocalSettings:
       SYSLOG(ERROR) << "Kiosk app should not have readiness "
-                    << std::to_underlying(readiness);
+                    << base::to_underlying(readiness);
       if (!app_launched_callback_.is_null()) {
         std::move(app_launched_callback_).Run(false);
       }

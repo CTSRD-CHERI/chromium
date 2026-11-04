@@ -4,13 +4,12 @@
 
 #include "chrome/browser/ui/views/web_apps/sub_apps_install_dialog_controller.h"
 
-#include <utility>
-
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -111,13 +110,14 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
   // Confirm that all sub app names and icons were added to the view.
   std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_labels;
   widget->GetContentsView()->GetViewsInGroup(
-      std::to_underlying(DialogViewIDForTesting::SUB_APP_LABEL),
+      base::to_underlying(DialogViewIDForTesting::SUB_APP_LABEL),
       &sub_app_labels);
   EXPECT_EQ(sub_app_labels.size(), 3u);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_icons;
   widget->GetContentsView()->GetViewsInGroup(
-      std::to_underlying(DialogViewIDForTesting::SUB_APP_ICON), &sub_app_icons);
+      base::to_underlying(DialogViewIDForTesting::SUB_APP_ICON),
+      &sub_app_icons);
   EXPECT_EQ(sub_app_icons.size(), 3u);
 
   widget->CloseNow();
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
 
   std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_labels;
   widget->GetContentsView()->GetViewsInGroup(
-      std::to_underlying(DialogViewIDForTesting::SUB_APP_LABEL),
+      base::to_underlying(DialogViewIDForTesting::SUB_APP_LABEL),
       &sub_app_labels);
   EXPECT_EQ(sub_app_labels.size(), 1u);
   EXPECT_EQ(static_cast<views::Label*>(sub_app_labels[0])->GetText(),
@@ -155,7 +155,8 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
 
   std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_icons;
   widget->GetContentsView()->GetViewsInGroup(
-      std::to_underlying(DialogViewIDForTesting::SUB_APP_ICON), &sub_app_icons);
+      base::to_underlying(DialogViewIDForTesting::SUB_APP_ICON),
+      &sub_app_icons);
   EXPECT_EQ(sub_app_icons.size(), 1u);
   views::ImageView* icon_view =
       static_cast<views::ImageView*>(sub_app_icons[0]);

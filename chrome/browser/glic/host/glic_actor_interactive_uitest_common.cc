@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 #include <string_view>
-#include <utility>
 
 #include "base/base64.h"
 #include "base/functional/callback.h"
@@ -16,6 +15,7 @@
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_policy_checker.h"
@@ -119,7 +119,7 @@ content::WebContents* GlicActorUiTest::GetGlicHost(actor::TaskId& task_id) {
 MultiStep GlicActorUiTest::ExecuteAction(ActionProtoProvider proto_provider,
                                          ExpectedErrorResult expected_result) {
   static constexpr int kResultSuccess =
-      std::to_underlying(actor::mojom::ActionResultCode::kOk);
+      base::to_underlying(actor::mojom::ActionResultCode::kOk);
   static constexpr std::string_view kSuccessString = "<Success>";
 
   const std::string expected_result_string = std::visit(
@@ -481,7 +481,7 @@ MultiStep GlicActorUiTest::WaitForActorTaskState(
                 return state == $2;
               });
               )js",
-        task_id.value(), std::to_underlying(expected_state));
+        task_id.value(), base::to_underlying(expected_state));
     ASSERT_TRUE(content::ExecJs(glic_contents, script));
   }));
 }
@@ -504,7 +504,7 @@ MultiStep GlicActorUiTest::WaitForActorTaskStateChangeToStopped() {
         "window.taskStateObs.waitUntil((state) => { "
         "  return state == $1; "
         "});",
-        std::to_underlying(mojom::ActorTaskState::kStopped));
+       basestd::to_underlying(mojom::ActorTaskState::kStopped));
     ASSERT_TRUE(content::ExecJs(glic_contents, script));
   }));
 }

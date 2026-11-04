@@ -9,7 +9,8 @@
 #include <optional>
 #include <ostream>
 #include <type_traits>
-#include <utility>
+
+#include "base/types/cxx23_to_underlying.h"
 
 #include "base/to_underlying.h"
 

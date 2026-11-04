@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner_helpers.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -100,12 +101,12 @@ void VpnService::VpnConfiguration::OnPlatformMessage(
             platform_message);
 
   if (platform_message ==
-      std::to_underlying(api_vpn::PlatformMessage::kConnected)) {
+      base::to_underlying(api_vpn::PlatformMessage::kConnected)) {
     vpn_service_->SetActiveConfiguration(this);
   } else if (platform_message ==
-                 std::to_underlying(api_vpn::PlatformMessage::kDisconnected) ||
+                 base::to_underlying(api_vpn::PlatformMessage::kDisconnected) ||
              platform_message ==
-                 std::to_underlying(api_vpn::PlatformMessage::kError)) {
+                 base::to_underlying(api_vpn::PlatformMessage::kError)) {
     vpn_service_->SetActiveConfiguration(nullptr);
   }
 
@@ -459,9 +460,9 @@ void VpnService::NotifyConnectionStateChanged(const std::string& extension_id,
   ash::ShillThirdPartyVpnDriverClient::Get()->UpdateConnectionState(
       active_configuration->object_path(),
       connection_success
-          ? std::to_underlying(
+          ? base::to_underlying(
                 extensions::api::vpn_provider::VpnConnectionState::kConnected)
-          : std::to_underlying(
+          : base::to_underlying(
                 extensions::api::vpn_provider::VpnConnectionState::kFailure),
       std::move(success), std::move(failure));
 }

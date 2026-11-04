@@ -4,8 +4,7 @@
 
 #include "chrome/browser/safe_browsing/generated_safe_browsing_pref.h"
 
-#include <utility>
-
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/settings_private.h"
 #include "components/prefs/pref_service.h"
@@ -166,9 +165,9 @@ void GeneratedSafeBrowsingPref::ApplySafeBrowsingManagementState(
 
     pref_object.user_selectable_values.emplace();
     pref_object.user_selectable_values->Append(
-        std::to_underlying(SafeBrowsingState::STANDARD_PROTECTION));
+        base::to_underlying(SafeBrowsingState::STANDARD_PROTECTION));
     pref_object.user_selectable_values->Append(
-        std::to_underlying(SafeBrowsingState::NO_SAFE_BROWSING));
+        base::to_underlying(SafeBrowsingState::NO_SAFE_BROWSING));
   }
 }
 
