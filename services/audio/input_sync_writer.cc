@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/atomic_ref.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
@@ -283,7 +284,7 @@ void InputSyncWriter::ReceiveReadConfirmationsFromConsumer() {
       // The next buffer we expect to read a confirmation from.
       media::AudioInputBuffer* buffer =
           GetSharedInputBuffer(next_read_buffer_index_ % audio_buses_.size());
-      std::atomic_ref<uint32_t> has_unread_data(buffer->params.has_unread_data);
+      base::atomic_ref<uint32_t> has_unread_data(buffer->params.has_unread_data);
       // If this buffer has been read by the consumer side, it will have set the
       // `has_unread_data` flag to 0.
       if (has_unread_data.load(std::memory_order_relaxed)) {
@@ -390,7 +391,7 @@ bool InputSyncWriter::WriteDataToCurrentSegment(
     // Part of the experimental synchronization mechanism. We will not write
     // more data to this buffer until the consumer side has set this flag back
     // to 0.
-    std::atomic_ref<uint32_t> has_unread_data(buffer->params.has_unread_data);
+    base::atomic_ref<uint32_t> has_unread_data(buffer->params.has_unread_data);
     has_unread_data.store(1, std::memory_order_relaxed);
   }
 
