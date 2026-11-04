@@ -19,7 +19,7 @@ use crate::{
 use crate::util::tracing_wrappers::*;
 
 #[instrument(level = "trace", err)]
-pub fn check_squeeze_params(
+pub(super) fn check_squeeze_params(
     channels: &[(usize, ChannelInfo)],
     params: &SqueezeParams,
 ) -> Result<()> {
@@ -41,7 +41,7 @@ pub fn check_squeeze_params(
     Ok(())
 }
 
-pub fn default_squeeze(data_channel_info: &[(usize, ChannelInfo)]) -> Vec<SqueezeParams> {
+pub(super) fn default_squeeze(data_channel_info: &[(usize, ChannelInfo)]) -> Vec<SqueezeParams> {
     let num_meta_channels = data_channel_info
         .iter()
         .take_while(|x| x.1.is_meta())
@@ -443,7 +443,7 @@ fn hsqueeze_scalar(
 simd_function!(
     hsqueeze,
     d: D,
-    pub fn hsqueeze_fwd(
+    pub(super) fn hsqueeze_fwd(
         in_avg: &ImageRect<'_, i32>,
         in_res: &ImageRect<'_, i32>,
         in_next_avg: &Option<ImageRect<'_, i32>>,
@@ -454,7 +454,7 @@ simd_function!(
     }
 );
 
-pub fn do_hsqueeze_step(
+pub(super) fn do_hsqueeze_step(
     in_avg: &ImageRect<'_, i32>,
     in_res: &ImageRect<'_, i32>,
     in_next_avg: &Option<ImageRect<'_, i32>>,
@@ -638,7 +638,7 @@ fn vsqueeze_scalar(
 simd_function!(
     vsqueeze,
     d: D,
-    pub fn vsqueeze_fwd(
+    pub(super) fn vsqueeze_fwd(
         in_avg: &ImageRect<'_, i32>,
         in_res: &ImageRect<'_, i32>,
         in_next_avg: &Option<ImageRect<'_, i32>>,
@@ -649,7 +649,7 @@ simd_function!(
     }
 );
 
-pub fn do_vsqueeze_step(
+pub(super) fn do_vsqueeze_step(
     in_avg: &ImageRect<'_, i32>,
     in_res: &ImageRect<'_, i32>,
     in_next_avg: &Option<ImageRect<'_, i32>>,

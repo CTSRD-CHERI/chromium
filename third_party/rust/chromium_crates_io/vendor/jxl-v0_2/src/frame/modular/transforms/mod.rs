@@ -42,7 +42,7 @@ pub enum RctOp {
 }
 
 #[instrument(level = "trace", skip_all, ret)]
-pub fn make_grids(
+pub(super) fn make_grids(
     frame_header: &FrameHeader,
     transform_steps: Vec<TransformStep>,
     section_buffer_indices: &[Vec<usize>],

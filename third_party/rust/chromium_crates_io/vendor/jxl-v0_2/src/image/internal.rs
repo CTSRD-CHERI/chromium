@@ -18,7 +18,7 @@ use crate::{
 use super::Rect;
 
 #[derive(Debug, Clone, Copy)]
-pub(super) struct RawImageBuffer {
+pub struct RawImageBuffer {
     // Safety invariant:
     //  - uninit data is never written to `buf`.
     //  - `buf` is valid for reads for all bytes in the ranges

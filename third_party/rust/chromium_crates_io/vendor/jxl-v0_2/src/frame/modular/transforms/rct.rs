@@ -119,7 +119,7 @@ simd_function!(
 
 // Applies a RCT in-place to the given buffers.
 #[instrument(level = "debug", skip(buffers), ret)]
-pub fn do_rct_step(buffers: &mut [&mut ModularChannel], op: RctOp, perm: RctPermutation) {
+pub(super) fn do_rct_step(buffers: &mut [&mut ModularChannel], op: RctOp, perm: RctPermutation) {
     let [r, g, b] = buffers else {
         unreachable!("incorrect buffer count for RCT");
     };

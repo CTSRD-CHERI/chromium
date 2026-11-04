@@ -40,7 +40,7 @@ const IMAGE_PADDING: (usize, usize) = (4, 2);
 const IMAGE_OFFSET: (usize, usize) = (2, 2);
 
 #[derive(Clone, PartialEq, Eq, Copy)]
-struct ChannelInfo {
+pub(in crate::frame::modular) struct ChannelInfo {
     // The index of the output channel in the render pipeline, or -1 for non-output channels.
     output_channel_idx: isize,
     // width, height
