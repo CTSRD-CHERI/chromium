@@ -70,7 +70,7 @@ impl TransformStepChunk {
     // Marks that one dependency of this transform is ready, and potentially runs the transform,
     // returning the new buffers that are now ready.
     #[instrument(level = "trace", skip_all)]
-    pub fn dep_ready(
+    pub(in crate::frame::modular) fn dep_ready(
         &mut self,
         frame_header: &FrameHeader,
         buffers: &mut [ModularBufferInfo],
@@ -598,7 +598,7 @@ fn meta_apply_single_transform(
 }
 
 #[instrument(level = "trace", ret)]
-pub fn meta_apply_transforms(
+pub(in crate::frame::modular) fn meta_apply_transforms(
     channels: &[ChannelInfo],
     header: &headers::modular::GroupHeader,
 ) -> Result<(Vec<ModularBufferInfo>, Vec<TransformStep>)> {
@@ -662,7 +662,7 @@ pub fn meta_apply_transforms(
 }
 
 #[derive(Debug)]
-pub enum LocalTransformBuffer<'a> {
+pub(in crate::frame::modular) enum LocalTransformBuffer<'a> {
     // This channel has been consumed by some transform.
     Empty,
     // This channel has not been written to yet.
@@ -714,7 +714,7 @@ impl LocalTransformBuffer<'_> {
 }
 
 #[instrument(level = "trace", ret)]
-pub fn meta_apply_local_transforms<'a, 'b>(
+pub(in crate::frame::modular) fn meta_apply_local_transforms<'a, 'b>(
     channels_in: Vec<&'a mut ModularChannel>,
     buffer_storage: &'b mut Vec<LocalTransformBuffer<'a>>,
     header: &headers::modular::GroupHeader,
@@ -871,7 +871,10 @@ pub fn meta_apply_local_transforms<'a, 'b>(
 impl TransformStep {
     // Marks that one dependency of this transform is ready, and potentially runs the transform,
     // returning the new buffers that are now ready.
-    pub fn local_apply(&self, buffers: &mut [LocalTransformBuffer]) -> Result<()> {
+    pub(in crate::frame::modular) fn local_apply(
+        &self,
+        buffers: &mut [LocalTransformBuffer],
+    ) -> Result<()> {
         match self {
             TransformStep::Rct {
                 buf_in,

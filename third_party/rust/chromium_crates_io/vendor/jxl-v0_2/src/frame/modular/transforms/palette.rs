@@ -166,7 +166,7 @@ fn get_palette_value(
     }
 }
 
-pub fn do_palette_step_general(
+pub(super) fn do_palette_step_general(
     buf_in: &ModularChannel,
     buf_pal: &ModularChannel,
     buf_out: &mut [&mut ModularChannel],
@@ -301,7 +301,7 @@ fn get_prediction_data(
 }
 
 #[allow(clippy::too_many_arguments)]
-pub fn do_palette_step_one_group(
+pub(super) fn do_palette_step_one_group(
     buf_in: &ModularChannel,
     buf_pal: &ModularChannel,
     buf_out: &mut [&mut ModularChannel],
@@ -349,7 +349,7 @@ pub fn do_palette_step_one_group(
 }
 
 #[allow(clippy::too_many_arguments)]
-pub fn do_palette_step_group_row(
+pub(super) fn do_palette_step_group_row(
     buf_in: &[&ModularChannel],
     buf_pal: &ModularChannel,
     buf_out: &mut [&mut ModularChannel],
