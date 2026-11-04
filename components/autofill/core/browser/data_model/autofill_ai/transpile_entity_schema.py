@@ -94,7 +94,7 @@ def generate_cpp_functions(schema):
   yield '}  // namespace'
   yield ''
   yield 'std::optional<EntityType> StringToEntityType(std::string_view entity_type_name) {'
-  yield '  static constexpr auto kMap = base::MakeFixedFlatMap<std::string_view, EntityType>({'
+  yield '  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMap = base::MakeFixedFlatMap<std::string_view, EntityType>({'
   yield ',\n'.join('    ' + f'{{EntityTypeNameToString({name}), EntityType({name})}}'
                    for name in (entity_name(entity['name']) for entity in schema))
   yield '  });'
@@ -106,7 +106,7 @@ def generate_cpp_functions(schema):
   yield '  switch (entity_type.name()) {'
   for entity in schema:
     yield f'    case {entity_name(entity["name"])}: {{'
-    yield '      static constexpr auto kMap = base::MakeFixedFlatMap<std::string_view, AttributeType>({'
+    yield '      static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMap = base::MakeFixedFlatMap<std::string_view, AttributeType>({'
     yield ',\n'.join(f'        {{AttributeTypeNameToString({name}), AttributeType({name})}}'
                      for name in (attribute_name(entity["name"], attribute) for attribute in entity['attributes']))
     yield '      });'
