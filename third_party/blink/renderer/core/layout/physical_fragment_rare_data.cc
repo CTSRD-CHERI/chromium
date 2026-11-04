@@ -166,7 +166,7 @@ PhysicalFragmentRareData::RareField::RareField(
   struct SameSizeAsRareField {
     union {
       std::unique_ptr<int> pointer;
-      LayoutUnit units[4];
+      Vector<LayoutUnit> vector;
     };
     uint8_t type;
   };
