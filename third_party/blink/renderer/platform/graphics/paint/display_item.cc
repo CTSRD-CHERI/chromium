@@ -17,7 +17,7 @@
 namespace blink {
 
 struct SameSizeAsDisplayItem {
-  uintptr_t pointer_as_id;
+  size_t client_id;
   gfx::Rect rect;
   uint32_t i1;
   uint32_t i2;
