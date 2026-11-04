@@ -15,7 +15,11 @@ namespace content::test {
 
 using PrefetchContainerIdForTesting =
     base::StrongAlias<class PrefetchContainerIdForTestingTag, std::string>;
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+inline const PrefetchContainerIdForTesting
+#else
 inline constexpr PrefetchContainerIdForTesting
+#endif
     InvalidPrefetchContainerIdForTesting = PrefetchContainerIdForTesting("");
 
 class TestPrefetchWatcherImpl;
