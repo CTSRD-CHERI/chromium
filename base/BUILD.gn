@@ -2606,7 +2606,7 @@ component("base") {
   }
 
   if (is_bsd) {
-    configs += [ "//build/config/compiler:epoll_shim" ]
+    public_configs = [ "//build/config/compiler:epoll_shim" ]
   }
 }
 
