@@ -171,7 +171,7 @@ class HTMLGeolocationElementTest : public HTMLGeolocationElementTestBase {
                       element->permission_text_span_for_testing()->innerText());
                   quit_closure.Run();
                 },
-                WeakPersistent(element), expected_text,
+                WrapWeakPersistent(element), expected_text,
                 run_loop.QuitClosure()));
     run_loop.Run();
   }
