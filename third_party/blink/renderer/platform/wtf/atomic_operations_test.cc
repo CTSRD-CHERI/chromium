@@ -13,23 +13,25 @@ class AtomicOperationsTest : public ::testing::Test {};
 
 template <size_t buffer_size, size_t alignment, typename CopyMethod>
 void TestCopyImpl(CopyMethod copy) {
+  // Preserve the requested alignment after the leading guard.
+  constexpr size_t kGuardSize =
+      alignment > sizeof(size_t) ? alignment : sizeof(size_t);
   alignas(alignment) unsigned char src[buffer_size];
   for (size_t i = 0; i < buffer_size; ++i)
     UNSAFE_TODO(src[i]) = static_cast<char>(i + 1);
   // Allocating extra memory before and after the buffer to make sure the
   // atomic memcpy doesn't exceed the buffer in any direction.
-  alignas(alignment) unsigned char tgt[buffer_size + (2 * sizeof(size_t))];
-  UNSAFE_TODO(memset(tgt, 0, buffer_size + (2 * sizeof(size_t))));
-  copy(UNSAFE_TODO(tgt + sizeof(size_t)), src);
+  alignas(alignment) unsigned char tgt[buffer_size + (2 * kGuardSize)];
+  UNSAFE_TODO(memset(tgt, 0, buffer_size + (2 * kGuardSize)));
+  copy(UNSAFE_TODO(tgt + kGuardSize), src);
   // Check nothing before the buffer was changed
-  size_t v;
-  UNSAFE_TODO(memcpy(&v, tgt, sizeof(size_t)));
-  EXPECT_EQ(0u, v);
+  for (size_t i = 0; i < kGuardSize; ++i)
+    UNSAFE_TODO(EXPECT_EQ(0u, tgt[i]));
   // Check buffer was copied correctly
-  UNSAFE_TODO(EXPECT_TRUE(!memcmp(src, tgt + sizeof(size_t), buffer_size)));
+  UNSAFE_TODO(EXPECT_TRUE(!memcmp(src, tgt + kGuardSize, buffer_size)));
   // Check nothing after the buffer was changed
-  UNSAFE_TODO(memcpy(&v, tgt + sizeof(size_t) + buffer_size, sizeof(size_t)));
-  EXPECT_EQ(0u, v);
+  for (size_t i = 0; i < kGuardSize; ++i)
+    UNSAFE_TODO(EXPECT_EQ(0u, tgt[kGuardSize + buffer_size + i]));
 }
 
 // Tests for AtomicReadMemcpy
@@ -117,22 +119,24 @@ TEST_F(AtomicOperationsTest, AtomicWriteMemcpy_127Bytes) {
 // Tests for AtomicMemzero
 template <size_t buffer_size, size_t alignment>
 void TestAtomicMemzero() {
+  // Preserve the requested alignment after the leading guard.
+  constexpr size_t kGuardSize =
+      alignment > sizeof(size_t) ? alignment : sizeof(size_t);
   // Allocating extra memory before and after the buffer to make sure the
   // AtomicMemzero doesn't exceed the buffer in any direction.
-  alignas(alignment) unsigned char buf[buffer_size + (2 * sizeof(size_t))];
-  UNSAFE_TODO(memset(buf, ~uint8_t{0}, buffer_size + (2 * sizeof(size_t))));
-  AtomicMemzero<buffer_size, alignment>(UNSAFE_TODO(buf + sizeof(size_t)));
+  alignas(alignment) unsigned char buf[buffer_size + (2 * kGuardSize)];
+  UNSAFE_TODO(memset(buf, ~uint8_t{0}, buffer_size + (2 * kGuardSize)));
+  AtomicMemzero<buffer_size, alignment>(UNSAFE_TODO(buf + kGuardSize));
   // Check nothing before the buffer was changed
-  size_t v;
-  UNSAFE_TODO(memcpy(&v, buf, sizeof(size_t)));
-  EXPECT_EQ(~size_t{0}, v);
+  for (size_t i = 0; i < kGuardSize; ++i)
+    UNSAFE_TODO(EXPECT_EQ(uint8_t{0xff}, buf[i]));
   // Check buffer was copied correctly
   static const unsigned char for_comparison[buffer_size] = {};
   UNSAFE_TODO(
-      EXPECT_TRUE(!memcmp(buf + sizeof(size_t), for_comparison, buffer_size)));
+      EXPECT_TRUE(!memcmp(buf + kGuardSize, for_comparison, buffer_size)));
   // Check nothing after the buffer was changed
-  UNSAFE_TODO(memcpy(&v, buf + sizeof(size_t) + buffer_size, sizeof(size_t)));
-  EXPECT_EQ(~size_t{0}, v);
+  for (size_t i = 0; i < kGuardSize; ++i)
+    UNSAFE_TODO(EXPECT_EQ(uint8_t{0xff}, buf[kGuardSize + buffer_size + i]));
 }
 
 TEST_F(AtomicOperationsTest, AtomicMemzero_UINT8T) {
