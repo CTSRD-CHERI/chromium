@@ -105,8 +105,9 @@ void AtomicMemzeroImpl(void* buf, size_t bytes) {
 
 void AtomicReadMemcpy(void* to, const void* from, size_t bytes) {
 #if defined(ARCH_CPU_64_BITS)
-  const size_t mod_to = reinterpret_cast<size_t>(to) & (sizeof(size_t) - 1);
-  const size_t mod_from = reinterpret_cast<size_t>(from) & (sizeof(size_t) - 1);
+  constexpr size_t kAlignment = alignof(std::atomic<uintptr_t>);
+  const size_t mod_to = reinterpret_cast<uintptr_t>(to) & (kAlignment - 1);
+  const size_t mod_from = reinterpret_cast<uintptr_t>(from) & (kAlignment - 1);
   if (mod_to != 0 || mod_from != 0) {
     AtomicReadMemcpyImpl<uint32_t>(to, from, bytes);
     return;
@@ -117,8 +118,9 @@ void AtomicReadMemcpy(void* to, const void* from, size_t bytes) {
 
 void AtomicWriteMemcpy(void* to, const void* from, size_t bytes) {
 #if defined(ARCH_CPU_64_BITS)
-  const size_t mod_to = reinterpret_cast<size_t>(to) & (sizeof(size_t) - 1);
-  const size_t mod_from = reinterpret_cast<size_t>(from) & (sizeof(size_t) - 1);
+  constexpr size_t kAlignment = alignof(std::atomic<uintptr_t>);
+  const size_t mod_to = reinterpret_cast<uintptr_t>(to) & (kAlignment - 1);
+  const size_t mod_from = reinterpret_cast<uintptr_t>(from) & (kAlignment - 1);
   if (mod_to != 0 || mod_from != 0) {
     AtomicWriteMemcpyImpl<uint32_t>(to, from, bytes);
     return;
@@ -129,7 +131,8 @@ void AtomicWriteMemcpy(void* to, const void* from, size_t bytes) {
 
 void AtomicMemzero(void* buf, size_t bytes) {
 #if defined(ARCH_CPU_64_BITS)
-  const size_t mod = reinterpret_cast<size_t>(buf) & (sizeof(size_t) - 1);
+  constexpr size_t kAlignment = alignof(std::atomic<uintptr_t>);
+  const size_t mod = reinterpret_cast<uintptr_t>(buf) & (kAlignment - 1);
   if (mod != 0) {
     AtomicMemzeroImpl<uint32_t>(buf, bytes);
     return;
