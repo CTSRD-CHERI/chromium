@@ -90,7 +90,7 @@ TEST_F(MediaStreamSetTest, GetAllScreensMediaSingleMediaStreamInitialized) {
                                                   video_component_vector);
   GCedMediaStreamDescriptorVector* descriptors =
       MakeGarbageCollected<GCedMediaStreamDescriptorVector>(
-          std::initializer_list{descriptor});
+          std::initializer_list<MediaStreamDescriptor*>{descriptor});
   base::RunLoop run_loop;
   media_stream_set_ = MakeGarbageCollected<MediaStreamSet>(
       v8_scope.GetExecutionContext(), *descriptors,
@@ -115,8 +115,8 @@ TEST_F(MediaStreamSetTest, GetAllScreensMediaMultipleMediaStreamsInitialized) {
                                                   video_component_vector);
   GCedMediaStreamDescriptorVector* descriptors =
       MakeGarbageCollected<GCedMediaStreamDescriptorVector>(
-          std::initializer_list{descriptor, descriptor, descriptor,
-                                descriptor});
+          std::initializer_list<MediaStreamDescriptor*>{
+              descriptor, descriptor, descriptor, descriptor});
   base::RunLoop run_loop;
   media_stream_set_ = MakeGarbageCollected<MediaStreamSet>(
       v8_scope.GetExecutionContext(), *descriptors,
@@ -165,7 +165,7 @@ TEST_F(MediaStreamSetTest, GetDisplayMediaSingleMediaStreamInitialized) {
                                                   video_component_vector);
   GCedMediaStreamDescriptorVector* descriptors =
       MakeGarbageCollected<GCedMediaStreamDescriptorVector>(
-          std::initializer_list{descriptor});
+          std::initializer_list<MediaStreamDescriptor*>{descriptor});
   base::RunLoop run_loop;
   media_stream_set_ = MakeGarbageCollected<MediaStreamSet>(
       v8_scope.GetExecutionContext(), *descriptors,
