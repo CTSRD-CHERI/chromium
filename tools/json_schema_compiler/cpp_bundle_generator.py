@@ -367,7 +367,7 @@ class _SchemasCCGenerator(object):
     c.Sblock('std::string_view %s::Get(std::string_view name) {' %
              self._bundle._GenerateBundleClass('GeneratedSchemas'))
 
-    c.Append('static constexpr auto kSchemas = '
+    c.Append('static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kSchemas = '
              'base::MakeFixedFlatMap<std::string_view, std::string_view>({')
     c.Sblock()
     namespaces = [
