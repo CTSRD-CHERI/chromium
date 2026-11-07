@@ -1085,7 +1085,11 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
 #else
   partial_expected_contents = "exited_cleanly\":false";
 #endif  // BUILDFLAG(IS_ANDROID)
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  EXPECT_TRUE(beacon_file_contents.find(partial_expected_contents) != std::string::npos);
+#else
   EXPECT_TRUE(beacon_file_contents.contains(partial_expected_contents));
+#endif
 
   // The initial stability log should be generated and persisted in unsent logs.
   MetricsLogStore* test_log_store = service.LogStoreForTest();
