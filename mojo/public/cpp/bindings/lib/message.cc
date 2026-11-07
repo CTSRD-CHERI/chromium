@@ -32,7 +32,12 @@ namespace mojo {
 
 namespace {
 
-BASE_FEATURE(kMojoBindingsInlineSLS, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMojoBindingsInlineSLS,
+#if defined(__CHERI_PURE_CAPABILITY__)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 base::GenericSequenceLocalStorageSlot<internal::MessageDispatchContext*>&
 GetSLSMessageDispatchContext() {
