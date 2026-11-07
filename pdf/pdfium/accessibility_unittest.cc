@@ -291,7 +291,11 @@ TEST_P(AccessibilityTest, GetAccessibilityPageWithTags) {
     uint32_t len;
     std::string tag_type;
   };
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  static const std::array<TestTextRun, 5> kExpectedTextRuns = {
+#else
   static constexpr std::array<TestTextRun, 5> kExpectedTextRuns = {
+#endif
       TestTextRun{/*"Article\r\n"*/ 9, "Art"},
       TestTextRun{/*"BlockQuote\r\n"*/ 12, "BlockQuote"},
       TestTextRun{/*"Paragraph\r\n"*/ 11, "P"},
