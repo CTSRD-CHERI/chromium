@@ -80,7 +80,11 @@ bool ContainsReservedCharacters(const base::FilePath& path) {
   // Extensions are cross-platform.
   // Since FilePath uses backslash '\\' as file path separator on Windows, so we
   // need to check manually.
+#if __cpp_lib_string_contains
+  if (path.value().find('\\') != std::string::npos) {
+#else
   if (path.value().contains('\\')) {
+#endif
     return true;
   }
   return !net::IsSafePortableRelativePath(path);
@@ -770,7 +774,11 @@ bool Extension::LoadExtent(const char* key,
 
     // We do not allow authors to put wildcards in their paths. Instead, we
     // imply one at the end.
+#if __cpp_lib_string_contains
+    if (pattern.path().find('*') != std::string::npos) {
+#else
     if (pattern.path().contains('*')) {
+#endif
       *error = ErrorUtils::FormatErrorMessageUTF16(
           value_error, base::NumberToString(i), errors::kNoWildCardsInPaths);
       return false;
