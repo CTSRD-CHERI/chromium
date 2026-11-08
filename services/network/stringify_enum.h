@@ -22,7 +22,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace network {
 
