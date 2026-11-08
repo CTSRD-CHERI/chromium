@@ -15,7 +15,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 
