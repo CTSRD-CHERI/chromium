@@ -6,12 +6,11 @@
 
 #include <array>
 #include <optional>
-#include <utility>
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace media::cast {
 namespace {

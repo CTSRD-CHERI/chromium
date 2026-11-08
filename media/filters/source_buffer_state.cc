@@ -7,13 +7,12 @@
 #include <algorithm>
 #include <set>
 #include <string_view>
-#include <utility>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_track.h"
