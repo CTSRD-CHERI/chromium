@@ -5,9 +5,8 @@
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 
 #include <memory>
-#include <utility>
 
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/common/webgpu_cmd_format.h"
