@@ -13,7 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
-#include "base/to_underlying.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "media/base/async_destroy_video_encoder.h"
 #include "media/base/encoder_status.h"
 #include "media/base/media_util.h"
