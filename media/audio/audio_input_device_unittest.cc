@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/atomic_ref.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -248,7 +249,7 @@ TEST_P(AudioInputDeviceTest, ConfirmReadsViaShmemFlag) {
 
   // Set the confirmation flag to 1. The AudioInputDevice should reset this to 0
   // after delivering audio.
-  std::atomic_ref<uint32_t> has_unread_data(buffer_->params.has_unread_data);
+  base::atomic_ref<uint32_t> has_unread_data(buffer_->params.has_unread_data);
   has_unread_data.store(1, std::memory_order_release);
   uint32_t buffer_index = 0;
   browser_socket_.Send(base::byte_span_from_ref(buffer_index));

@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/atomic_ref.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span_writer.h"
 #include "base/memory/ptr_util.h"
@@ -221,7 +222,7 @@ class InputSyncWriterTest
     UNSAFE_TODO(ptr += segment_id * segment_length_);
     media::AudioInputBuffer* buffer =
         reinterpret_cast<media::AudioInputBuffer*>(ptr);
-    std::atomic_ref<uint32_t> has_unread_data(buffer->params.has_unread_data);
+    base::atomic_ref<uint32_t> has_unread_data(buffer->params.has_unread_data);
     EXPECT_EQ(has_unread_data.load(std::memory_order_relaxed), 1u);
     has_unread_data.store(0, std::memory_order_release);
     ++current_renderer_side_buffer_;
