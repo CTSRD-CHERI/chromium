@@ -32,7 +32,7 @@ ABSL_NAMESPACE_BEGIN
 
 enum class FormatConversionChar : uint8_t;
 enum class FormatConversionCharSet : uint64_t;
-enum class LengthMod : std::uint8_t { h, hh, l, ll, L, j, z, t, q, none };
+enum class LengthMod : std::uint8_t { h, hh, l, ll, L, j, z, t, p, q, none };
 
 namespace str_format_internal {
 

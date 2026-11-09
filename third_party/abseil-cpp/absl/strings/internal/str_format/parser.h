@@ -73,7 +73,15 @@ bool ParseFormatString(string_view src, Consumer consumer) {
     if (ABSL_PREDICT_FALSE(percent + 1 >= end)) return false;
 
     auto tag = GetTagForChar(percent[1]);
-    if (tag.is_conv()) {
+    bool is_basic_conversion = tag.is_conv();
+#if defined(__CHERI_PURE_CAPABILITY__)
+    // Parse CHERI address conversions as a whole rather than as standalone %p.
+    if ((percent[1] == 'p' || percent[1] == 'P') && end - percent > 2 &&
+        (percent[2] == 'x' || percent[2] == 'X')) {
+      is_basic_conversion = false;
+    }
+#endif
+    if (is_basic_conversion) {
       if (ABSL_PREDICT_FALSE(next_arg < 0)) {
         // This indicates an error in the format string.
         // The only way to get `next_arg < 0` here is to have a positional
