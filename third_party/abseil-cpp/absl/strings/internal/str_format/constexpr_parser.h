@@ -297,6 +297,13 @@ constexpr const char* ConsumeConversion(const char* pos, const char* const end,
     }
   }
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // Accept both spellings; CHERI PRI*PTR macros use uppercase P.
+  if ((c == 'p' || c == 'P') && pos < end && (*pos == 'x' || *pos == 'X')) {
+    ABSL_FORMAT_PARSER_INTERNAL_GET_CHAR();
+  }
+#endif
+
   auto tag = GetTagForChar(c);
 
   if (ABSL_PREDICT_FALSE(c == 'v' && conv->flags != Flags::kBasic)) {

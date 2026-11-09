@@ -38,6 +38,25 @@ using str_format_internal::FormatArgImpl;
 
 using FormatEntryPointTest = ::testing::Test;
 
+#if defined(__CHERI_PURE_CAPABILITY__)
+TEST_F(FormatEntryPointTest, CheriAddressConversions) {
+  uintptr_t value = 0xabcdef;
+
+  EXPECT_EQ("abcdef", absl::StrFormat("%px", value));
+  EXPECT_EQ("ABCDEF", absl::StrFormat("%pX", value));
+  EXPECT_EQ("000000abcdef", absl::StrFormat("%012px", value));
+  EXPECT_EQ("ABCDEF/abcdef", absl::StrFormat("%1$pX/%1$px", value));
+
+  int object = 0;
+  uintptr_t address = reinterpret_cast<uintptr_t>(&object);
+  EXPECT_EQ(absl::StrFormat("%x", address),
+            absl::StrFormat("%px", address));
+
+  // Standalone %p remains supported.
+  EXPECT_FALSE(absl::StrFormat("%p", &object).empty());
+}
+#endif
+
 TEST_F(FormatEntryPointTest, Format) {
   std::string sink;
   EXPECT_TRUE(Format(&sink, "A format %d", 123));
