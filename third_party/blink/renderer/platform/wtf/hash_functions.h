@@ -113,7 +113,15 @@ constexpr unsigned HashInts(unsigned key1, unsigned key2) {
 template <typename T>
   requires(std::integral<T> || std::is_enum_v<T>)
 constexpr unsigned HashInt(T key) {
-  return internal::HashInt(static_cast<internal::IntHashBits<T>>(key));
+#if defined(__CHERI_PURE_CAPABILITY__)
+  if constexpr (std::is_same_v<T, uintptr_t> || std::is_same_v<T, intptr_t>) {
+    return internal::HashInt(
+        static_cast<uint64_t>(__builtin_cheri_address_get(key)));
+  } else
+#endif
+  {
+    return internal::HashInt(static_cast<internal::IntHashBits<T>>(key));
+  }
 }
 
 template <typename T>
