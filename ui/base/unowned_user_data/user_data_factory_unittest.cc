@@ -149,11 +149,18 @@ class TestFeatures {
   static constexpr int kIntVal1 = 3;
   static constexpr int kIntVal2 = 10;
   static constexpr int kSum = kIntVal1 + kIntVal2;
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  inline static const std::string kStringVal1 = "foo";
+  inline static const std::string kStringVal2 = "bar";
+  inline static const std::string kConcat = kStringVal1 + kStringVal2;
+  inline static const std::string kRoundedVal = "12";
+#else
   static constexpr std::string kStringVal1 = "foo";
   static constexpr std::string kStringVal2 = "bar";
   static constexpr std::string kConcat = kStringVal1 + kStringVal2;
-  static constexpr double kDoubleVal = 12.34;
   static constexpr std::string kRoundedVal = "12";
+#endif
+  static constexpr double kDoubleVal = 12.34;
 
   TestFeatures() {
     data1_ = GetDataFactory().CreateInstance<ConcreteScopedUserData1>(
