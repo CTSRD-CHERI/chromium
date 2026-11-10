@@ -62,18 +62,20 @@ constexpr bool kStackTypeArray = true;
   } while (0)
 #endif
 
-inline void WriteKeyNameAsRawPtr(Pickle& pickle, const char* ptr) {
-  pickle.WriteBytes(byte_span_from_ref(kTypeCStr));
-#if defined(__CHERI_PURE_CAPABILITY__)
-  pickle.WriteUIntptr(reinterpret_cast<uintptr_t>(ptr));
-#else
-  pickle.WriteUInt64(static_cast<uint64_t>(reinterpret_cast<uintptr_t>(ptr)));
-#endif  // !__CHERI_PURE_CAPABILITY__
-}
-
 inline void WriteKeyNameWithCopy(Pickle& pickle, std::string_view str) {
   pickle.WriteBytes(byte_span_from_ref(kTypeString));
   pickle.WriteString(str);
+}
+
+inline void WriteKeyNameAsRawPtr(Pickle& pickle, const char* ptr) {
+#if defined(__CHERI_PURE_CAPABILITY__)
+  // Nested pickle payloads can be relocated without preserving capability
+  // alignment or tags. Serialize the key's contents instead.
+  WriteKeyNameWithCopy(pickle, ptr);
+#else
+  pickle.WriteBytes(byte_span_from_ref(kTypeCStr));
+  pickle.WriteUInt64(static_cast<uint64_t>(reinterpret_cast<uintptr_t>(ptr)));
+#endif  // !__CHERI_PURE_CAPABILITY__
 }
 
 std::string ReadKeyName(PickleIterator& pickle_iterator) {
