@@ -4,12 +4,11 @@
 
 #include "device/bluetooth/floss/bluetooth_local_gatt_descriptor_floss.h"
 
-#include <utility>
-
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "device/bluetooth/floss/bluetooth_gatt_characteristic_floss.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 
@@ -293,12 +292,12 @@ GattStatus BluetoothLocalGattDescriptorFloss::HandleCccDescriptor(
 
   auto properties = characteristic_->GetProperties();
   switch (notification_type) {
-    case std::to_underlying(
+    case base::to_underlying(
         device::BluetoothGattCharacteristic::NotificationType::kNone):
       cccd_type_ = device::BluetoothGattCharacteristic::NotificationType::kNone;
       delegate->OnNotificationsStop(device, characteristic);
       break;
-    case std::to_underlying(
+    case base::to_underlying(
         device::BluetoothGattCharacteristic::NotificationType::kNotification):
       if (!(properties &
             device::BluetoothGattCharacteristic::PROPERTY_NOTIFY)) {
@@ -313,7 +312,7 @@ GattStatus BluetoothLocalGattDescriptorFloss::HandleCccDescriptor(
           device::BluetoothGattCharacteristic::NotificationType::kNotification;
       delegate->OnNotificationsStart(device, cccd_type_, characteristic);
       break;
-    case std::to_underlying(
+    case base::to_underlying(
         device::BluetoothGattCharacteristic::NotificationType::kIndication):
       if (!(properties &
             device::BluetoothGattCharacteristic::PROPERTY_INDICATE)) {
