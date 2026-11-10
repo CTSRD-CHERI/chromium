@@ -4,17 +4,44 @@
 
 #include "media/mojo/mojom/stable/native_pixmap_handle_mojom_traits.h"
 
-#include <linux/kcmp.h>
-#include <sys/syscall.h>
 #include <unistd.h>
 
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/process.h"
 #include "base/test/gtest_util.h"
+#include "build/build_config.h"
 #include "media/mojo/mojom/buffer_handle_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_BSD)
+#include <sys/stat.h>
+#else
+#include <linux/kcmp.h>
+#include <sys/syscall.h>
+#endif
+
 namespace media {
+namespace {
+
+void ExpectSameBackingObject(int original_fd, int received_fd) {
+#if BUILDFLAG(IS_BSD)
+  // BSD has no kcmp equivalent here. Verify backing-object identity rather
+  // than whether the descriptors share an open file description.
+  struct stat original_stat {};
+  struct stat received_stat {};
+  ASSERT_EQ(0, fstat(original_fd, &original_stat));
+  ASSERT_EQ(0, fstat(received_fd, &received_stat));
+  EXPECT_EQ(original_stat.st_dev, received_stat.st_dev);
+  EXPECT_EQ(original_stat.st_ino, received_stat.st_ino);
+  EXPECT_EQ(original_stat.st_size, received_stat.st_size);
+#else
+  const auto pid = base::Process::Current().Pid();
+  EXPECT_EQ(0, syscall(SYS_kcmp, pid, pid, KCMP_FILE, original_fd, received_fd));
+#endif
+}
+
+}  // namespace
+
 TEST(NativePixmapHandleMojomTraitsTest, ValidNativePixmapPlane) {
   gfx::NativePixmapPlane native_pixmap_plane;
   native_pixmap_plane.stride = 50;
@@ -49,10 +76,8 @@ TEST(NativePixmapHandleMojomTraitsTest, ValidNativePixmapPlane) {
             deserialized_native_pixmap_plane.offset);
   EXPECT_EQ(native_pixmap_plane.size, deserialized_native_pixmap_plane.size);
   ASSERT_TRUE(deserialized_native_pixmap_plane.fd.is_valid());
-  const auto pid = base::Process::Current().Pid();
-  EXPECT_EQ(syscall(SYS_kcmp, pid, pid, KCMP_FILE, duped_fd.get(),
-                    deserialized_native_pixmap_plane.fd.get()),
-            0);
+  ExpectSameBackingObject(duped_fd.get(),
+                         deserialized_native_pixmap_plane.fd.get());
 }
 
 TEST(NativePixmapHandleMojomTraitsTest, NativePixmapPlaneWithInvalidFd) {
@@ -107,7 +132,6 @@ TEST(NativePixmapHandleMojomTraitsTest, ValidNativePixmapHandle) {
 
   ASSERT_EQ(native_pixmap_handle.planes.size(),
             deserialized_native_pixmap_handle.planes.size());
-  const auto pid = base::Process::Current().Pid();
   for (size_t i = 0; i < native_pixmap_handle.planes.size(); i++) {
     EXPECT_EQ(native_pixmap_handle.planes[i].stride,
               deserialized_native_pixmap_handle.planes[i].stride);
@@ -116,9 +140,9 @@ TEST(NativePixmapHandleMojomTraitsTest, ValidNativePixmapHandle) {
     EXPECT_EQ(native_pixmap_handle.planes[i].size,
               deserialized_native_pixmap_handle.planes[i].size);
     ASSERT_TRUE(deserialized_native_pixmap_handle.planes[i].fd.is_valid());
-    EXPECT_EQ(syscall(SYS_kcmp, pid, pid, KCMP_FILE, duped_fds[i].get(),
-                      deserialized_native_pixmap_handle.planes[i].fd.get()),
-              0);
+    ExpectSameBackingObject(
+        duped_fds[i].get(),
+        deserialized_native_pixmap_handle.planes[i].fd.get());
   }
   EXPECT_EQ(native_pixmap_handle.modifier,
             deserialized_native_pixmap_handle.modifier);
