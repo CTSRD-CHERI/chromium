@@ -206,14 +206,14 @@ struct Arg {
 #if PA_BUILDFLAG(IS_CHERI)
   // TODO(gcjenkinson): For now print intptr_t and uintptr_t as integer
   // addresses rather than as capabilities.
-  Arg(intptr_t j) : type(UINT) {
-    integer.i = __builtin_cheri_address_get(j);
-    integer.width = sizeof(ptraddr_t);
+  Arg(intptr_t j) : type(INT) {
+    integer.i = static_cast<int64_t>(__builtin_cheri_address_get(j));
+    integer.width = sizeof(intptr_t);
   }
 
   Arg(uintptr_t j) : type(UINT) {
-    integer.i = __builtin_cheri_address_get(j);
-    integer.width = sizeof(ptraddr_t);
+    integer.i = static_cast<int64_t>(__builtin_cheri_address_get(j));
+    integer.width = sizeof(uintptr_t);
   }
 #endif // PA_BUILDFLAG(IS_CHERI)
 
