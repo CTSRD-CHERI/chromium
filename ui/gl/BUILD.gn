@@ -389,7 +389,7 @@ component("gl") {
     ]
   }
 
-  if ((is_android || is_chromeos || is_linux) && !is_bsd) {
+  if (is_android || is_chromeos || is_linux || is_bsd) {
     # Windows doesn't support base::FileDescriptor.
     # libsync isn't supported or needed on MacOSX.
     # Fuchsia is excluded due to a libsync dependency and because it's
@@ -400,7 +400,9 @@ component("gl") {
       "gl_fence_android_native_fence_sync.h",
     ]
 
-    deps += [ "//third_party/libsync" ]
+    if (!is_bsd) {
+      deps += [ "//third_party/libsync" ]
+    }
   }
 
   if (is_linux || is_chromeos) {
