@@ -88,7 +88,11 @@ TEST(MediaSerializersTest, AutoPipInfo) {
         << "Could not find: " << expected_json;
 
     // Check that no other flag is set to true.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+    static const std::string true_string = "true";
+#else
     static constexpr std::string true_string = "true";
+#endif
     int counts = 0;
     std::string::size_type position = 0;
     while ((position = serialized_info.find(true_string, position)) !=
