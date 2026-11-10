@@ -4,11 +4,10 @@
 
 #include "remoting/host/linux/x11_util.h"
 
-#include <utility>
-
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "remoting/base/logging.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
@@ -119,7 +118,7 @@ bool IsUsingVideoDummyDriver(x11::Connection* connection) {
             .Sync();
     if (!output_info) {
       LOG(WARNING) << "Cannot get info for output "
-                   << std::to_underlying(output);
+                   << base::to_underlying(output);
       continue;
     }
     auto* output_name = reinterpret_cast<char*>(output_info->name.data());
