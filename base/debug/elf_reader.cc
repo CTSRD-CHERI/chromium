@@ -80,8 +80,15 @@ size_t ReadElfBuildId(const void* elf_mapped_base,
     }
 
     // Look for a NT_GNU_BUILD_ID note with name == "GNU".
+#if BUILDFLAG(IS_CHERI)
+    // Retain the mapped ELF capability's read authority when locating notes.
+    const char* current_section =
+        static_cast<const char*>(__builtin_cheri_address_set(
+            elf_mapped_base, header.p_vaddr + relocation_offset));
+#else
     const char* current_section =
         reinterpret_cast<const char*>(header.p_vaddr + relocation_offset);
+#endif
     const char* section_end = UNSAFE_TODO(current_section + header.p_memsz);
     const Nhdr* current_note = nullptr;
     bool found = false;
