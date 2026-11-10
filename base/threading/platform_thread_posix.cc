@@ -16,9 +16,11 @@
 #include <memory>
 #include <tuple>
 
+#include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory/page_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "base/threading/platform_thread_internal_posix.h"
@@ -142,6 +144,11 @@ bool CreateThread(size_t stack_size,
   }
 
   if (stack_size > 0) {
+#if BUILDFLAG(IS_FREEBSD) && BUILDFLAG(IS_CHERI)
+    // CheriBSD libthr requires the requested size to match the bounds of its
+    // page-rounded stack allocation.
+    stack_size = bits::AlignUp(stack_size, GetPageSize());
+#endif
     pthread_attr_setstacksize(&attributes, stack_size);
   }
 
