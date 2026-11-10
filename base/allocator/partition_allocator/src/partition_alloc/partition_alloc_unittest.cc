@@ -2406,6 +2406,16 @@ TEST_P(PartitionAllocTest, PartialPages) {
 
 // Test correct handling if our mapping collides with another.
 TEST_P(PartitionAllocTest, MappingCollision) {
+  const auto mapping_hint = [](uintptr_t address) -> uintptr_t {
+#if PA_BUILDFLAG(IS_CHERI)
+    // These hints may lie outside the allocation used to compute them. Pass
+    // only the numeric address, rather than that allocation's capability.
+    return __builtin_cheri_address_get(address);
+#else
+    return address;
+#endif
+  };
+
   size_t num_pages_per_slot_span = GetNumPagesPerSlotSpan(kTestAllocSize);
   // The -2 is because the first and last partition pages in a super page are
   // guard pages. We also discount the partition pages used for the tag bitmap.
@@ -2432,14 +2442,15 @@ TEST_P(PartitionAllocTest, MappingCollision) {
   // Map a single system page either side of the mapping for our allocations,
   // with the goal of tripping up alignment of the next mapping.
   uintptr_t map1 =
-      AllocPages(super_page - PageAllocationGranularity(),
+      AllocPages(mapping_hint(super_page - PageAllocationGranularity()),
                  PageAllocationGranularity(), PageAllocationGranularity(),
                  PageAccessibilityConfiguration(
                      PageAccessibilityConfiguration::kInaccessible),
                  PageTag::kPartitionAlloc);
   EXPECT_TRUE(map1);
   uintptr_t map2 =
-      AllocPages(super_page + kSuperPageSize, PageAllocationGranularity(),
+      AllocPages(mapping_hint(super_page + kSuperPageSize),
+                 PageAllocationGranularity(),
                  PageAllocationGranularity(),
                  PageAccessibilityConfiguration(
                      PageAccessibilityConfiguration::kInaccessible),
@@ -2460,13 +2471,14 @@ TEST_P(PartitionAllocTest, MappingCollision) {
   super_page -= PartitionPageSize();
   // Map a single system page either side of the mapping for our allocations,
   // with the goal of tripping up alignment of the next mapping.
-  map1 = AllocPages(super_page - PageAllocationGranularity(),
+  map1 = AllocPages(mapping_hint(super_page - PageAllocationGranularity()),
                     PageAllocationGranularity(), PageAllocationGranularity(),
                     PageAccessibilityConfiguration(
                         PageAccessibilityConfiguration::kReadWriteTagged),
                     PageTag::kPartitionAlloc);
   EXPECT_TRUE(map1);
-  map2 = AllocPages(super_page + kSuperPageSize, PageAllocationGranularity(),
+  map2 = AllocPages(mapping_hint(super_page + kSuperPageSize),
+                    PageAllocationGranularity(),
                     PageAllocationGranularity(),
                     PageAccessibilityConfiguration(
                         PageAccessibilityConfiguration::kReadWriteTagged),
