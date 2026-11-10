@@ -181,6 +181,18 @@ struct Arg {
     integer.width = sizeof(long long);
   }
 
+#if BUILDFLAG(IS_CHERI)
+  Arg(intptr_t j) : type(INT) {
+    integer.i = static_cast<int64_t>(__builtin_cheri_address_get(j));
+    integer.width = sizeof(intptr_t);
+  }
+
+  Arg(uintptr_t j) : type(UINT) {
+    integer.i = static_cast<int64_t>(__builtin_cheri_address_get(j));
+    integer.width = sizeof(uintptr_t);
+  }
+#endif
+
   // A C-style text string.
   Arg(const char* s) : str(s), type(STRING) {}
   Arg(char* s) : str(s), type(STRING) {}
