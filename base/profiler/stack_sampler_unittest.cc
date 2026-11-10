@@ -126,8 +126,8 @@ class DelegateInvokingStackCopier : public StackCopier {
                  RegisterContext* thread_context,
                  Delegate* delegate) override {
     // Returning true means the various out params should be populated.
-    *stack_top = reinterpret_cast<uintptr_t>(stack_buffer->buffer() +
-                                             stack_buffer->size());
+    *stack_top = reinterpret_cast<uintptr_t>(stack_buffer->buffer()) +
+                 stack_buffer->size();
     // Set the stack pointer to be consistent with the copied stack.
     *thread_context = {};
     RegisterContextStackPointer(thread_context) =
@@ -410,7 +410,8 @@ TEST_F(StackSamplerTest, CopyStackTimestamp) {
 
 TEST_F(StackSamplerTest, UnwinderInvokedWhileRecordingStackFrames) {
   base::test::TestFuture<void> sample_completed;
-  std::unique_ptr<StackBuffer> stack_buffer = std::make_unique<StackBuffer>(10);
+  std::unique_ptr<StackBuffer> stack_buffer =
+      std::make_unique<StackBuffer>(10 * sizeof(uintptr_t));
   auto owned_unwinder = std::make_unique<CallRecordingUnwinder>();
   CallRecordingUnwinder* unwinder = owned_unwinder.get();
   auto unwind_data = base::MakeRefCounted<StackUnwindData>(
@@ -440,7 +441,8 @@ TEST_F(StackSamplerTest, UnwinderInvokedWhileRecordingStackFrames) {
 
 TEST_F(StackSamplerTest, MAYBE_AuxUnwinderInvokedWhileRecordingStackFrames) {
   base::test::TestFuture<void> sample_completed;
-  std::unique_ptr<StackBuffer> stack_buffer = std::make_unique<StackBuffer>(10);
+  std::unique_ptr<StackBuffer> stack_buffer =
+      std::make_unique<StackBuffer>(10 * sizeof(uintptr_t));
   auto unwind_data = base::MakeRefCounted<StackUnwindData>(
       std::make_unique<TestProfileBuilder>(&module_cache_));
   std::unique_ptr<StackSampler> stack_sampler = StackSampler::CreateForTesting(
