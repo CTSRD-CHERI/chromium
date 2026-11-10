@@ -13,6 +13,10 @@
 #include "base/debug/elf_reader.h"
 #include "build/build_config.h"
 
+#if BUILDFLAG(IS_FREEBSD) && BUILDFLAG(IS_CHERI)
+#include <link.h>
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 extern "C" {
 // &__executable_start is the start address of the current module.
@@ -162,11 +166,25 @@ std::unique_ptr<const ModuleCache::Module> ModuleCache::CreateModuleForAddress(
     return nullptr;
   }
 
+  const void* readable_module_base = info.dli_fbase;
+#if BUILDFLAG(IS_FREEBSD) && BUILDFLAG(IS_CHERI)
+  // CheriBSD deliberately strips permissions from dli_fbase. Obtain read
+  // authority from the loader instead. dlpi_addr is a relocation base, so use
+  // dli_fbase's address to locate the ELF header within that capability.
+  struct dl_phdr_info phdr_info {};
+  if (!_rtld_addr_phdr(reinterpret_cast<const void*>(address), &phdr_info)) {
+    return nullptr;
+  }
+  readable_module_base = __builtin_cheri_address_set(
+      reinterpret_cast<const void*>(phdr_info.dlpi_addr),
+      __builtin_cheri_address_get(info.dli_fbase));
+#endif
+
   return std::make_unique<PosixModule>(
       reinterpret_cast<uintptr_t>(info.dli_fbase),
-      GetUniqueBuildId(info.dli_fbase),
-      GetDebugBasenameForModule(info.dli_fbase, info.dli_fname),
-      GetLastExecutableOffset(info.dli_fbase));
+      GetUniqueBuildId(readable_module_base),
+      GetDebugBasenameForModule(readable_module_base, info.dli_fname),
+      GetLastExecutableOffset(readable_module_base));
 }
 
 }  // namespace base
