@@ -4,21 +4,20 @@
 
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 
-#include <utility>
-
 #include "base/logging.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace chromeos::editor_menu {
 
 EditorConsentStatus GetConsentStatusFromInteger(int status_value) {
   switch (status_value) {
-    case std::to_underlying(EditorConsentStatus::kUnset):
+    case base::to_underlying(EditorConsentStatus::kUnset):
       return EditorConsentStatus::kUnset;
-    case std::to_underlying(EditorConsentStatus::kApproved):
+    case base::to_underlying(EditorConsentStatus::kApproved):
       return EditorConsentStatus::kApproved;
-    case std::to_underlying(EditorConsentStatus::kDeclined):
+    case base::to_underlying(EditorConsentStatus::kDeclined):
       return EditorConsentStatus::kDeclined;
-    case std::to_underlying(EditorConsentStatus::kPending):
+    case base::to_underlying(EditorConsentStatus::kPending):
       return EditorConsentStatus::kPending;
     default:
       LOG(ERROR) << "Invalid consent status: " << status_value;
