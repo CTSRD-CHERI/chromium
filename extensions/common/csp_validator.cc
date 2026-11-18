@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -192,11 +193,7 @@ bool isNonWildcardTLD(const std::string& url,
 
   std::string host(url, start_of_host, end_of_host - start_of_host);
   // Global wildcards are not allowed.
-#if __cpp_lib_string_contains
-  if (host.empty() || host.contains("*")) {
-#else
-  if (host.empty() || host.find("*") != std::string::npos) {
-#endif
+  if (host.empty() || base::Contains(host, "*")) {
     return false;
   }
 
