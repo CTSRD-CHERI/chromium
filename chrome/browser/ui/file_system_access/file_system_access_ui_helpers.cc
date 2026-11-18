@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/string_contains.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "content/public/browser/file_system_access_permission_context.h"
@@ -72,10 +73,11 @@ std::u16string GetElidedPathForDisplayAsTitle(
   // containing a space will bump to the next line if the file name + preceding
   // text in the title is too long, which is still easy to read because the file
   // name is contiguous.
-  int scalar_numerators = GetPathForDisplayAsPath(path_info).value().contains(
-                              FILE_PATH_LITERAL(" "))
-                              ? 2
-                              : 3;
+  int scalar_numerators =
+      base::StringContains(GetPathForDisplayAsPath(path_info).value(),
+                           FILE_PATH_LITERAL(" "))
+          ? 2
+          : 3;
   std::optional<int> preferred_width;
 #if defined(TOOLKIT_VIEWS)
   // views::LayoutProvider::Get() may be null in tests.

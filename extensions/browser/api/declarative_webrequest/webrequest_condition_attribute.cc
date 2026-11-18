@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/string_contains.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "extensions/browser/api/declarative/deduping_factory.h"
@@ -426,7 +427,7 @@ bool HeaderMatcher::StringMatchTest::Matches(
                                    CaseInsensitiveCompareASCII<char>())
                    .begin() != str.end();
       } else {
-        return str.contains(data_);
+        return base::StringContains(str, data_);
       }
   }
   // We never get past the "switch", but the compiler worries about no return.

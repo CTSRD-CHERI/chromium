@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/string_contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/common/read_anything/read_anything_util.h"
@@ -52,7 +53,8 @@ const ui::AXNode* GetUnignoredParentForSelection(const ui::AXNode* node) {
       // displayed as siblings, to avoid misnumbering.
       const std::string_view display =
           node->GetStringAttribute(ax::mojom::StringAttribute::kDisplay);
-      return display.contains("inline") || display.contains("list-item");
+      return base::StringContains(display, "inline") ||
+             base::StringContains(display, "list-item");
     };
     if (!should_skip(ancestor)) {
       return ancestor;

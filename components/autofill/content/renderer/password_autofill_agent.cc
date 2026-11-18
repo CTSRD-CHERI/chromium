@@ -27,6 +27,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/string_contains.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -832,8 +833,8 @@ void PasswordAutofillAgent::NotifyPasswordManagerAboutUserFieldModification(
 
   GetPasswordManagerDriver().UserModifiedNonPasswordField(
       GetFieldRendererId(element), element_value,
-      autocomplete_attribute.contains(
-          password_manager::constants::kAutocompleteUsername),
+      base::StringContains(autocomplete_attribute,
+                           password_manager::constants::kAutocompleteUsername),
       is_likely_otp);
 }
 

@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/string_contains.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
@@ -44,7 +45,7 @@ std::optional<apps::IconInfo> GetTrustedIconsFromManifest(
 
     for (IconPurpose purpose : icon.purpose) {
       if (base::Contains(icon.sizes, gfx::Size()) &&
-          icon.src.spec().contains(".svg")) {
+          base::StringContains(icon.src.spec(), ".svg")) {
         svg_icons_no_size[purpose] = icon.src;
       }
 

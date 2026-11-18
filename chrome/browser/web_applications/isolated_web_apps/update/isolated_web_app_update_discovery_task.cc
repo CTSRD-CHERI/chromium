@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/values_util.h"
+#include "base/string_contains.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -378,7 +379,8 @@ void IsolatedWebAppUpdateDiscoveryTask::CheckIntegrityBundleForRotatedKey(
   // potentially big, bundle if it is not signed by the appropriate rotated key.
   if (initial_bytes &&
       initial_bytes->rfind("📦") != initial_bytes->find("📦") &&
-      !initial_bytes.value().contains(base::as_string_view(rotated_key))) {
+      !base::StringContains(initial_bytes.value(),
+                            base::as_string_view(rotated_key))) {
     FailWith(Error::kUpdateManifestNoApplicableVersion);
     return;
   }

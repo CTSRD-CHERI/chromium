@@ -24,6 +24,7 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/string_contains.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -958,7 +959,7 @@ EnterpriseSearchAggregatorProvider::ParseResultList(
         // Check for existing size parameters (e.g., -s128, =w256, -h64).
         RE2 size_regex("=(?:[swh]\\d+|[^=]*?-[swh]\\d+)");
         if (!RE2::PartialMatch(image_url, size_regex)) {
-          image_url += image_url.contains("=") ? "-s64" : "=s64";
+          image_url += base::StringContains(image_url, "=") ? "-s64" : "=s64";
         }
       }
       icon_url = template_url_->favicon_url().spec();

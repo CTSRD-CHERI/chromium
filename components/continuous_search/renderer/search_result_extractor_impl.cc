@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/string_contains.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/continuous_search/common/title_validator.h"
@@ -138,8 +139,8 @@ bool ExtractRelatedSearches(blink::WebDocument document,
   for (blink::WebElement anchor = anchors.FirstItem(); !anchor.IsNull();
        anchor = anchors.NextItem()) {
     if (!anchor.HasAttribute("class") ||
-        !anchor.GetAttribute("class").Utf8().contains(
-            GetConfig().related_searches_anchor_classname)) {
+        !base::StringContains(anchor.GetAttribute("class").Utf8(),
+                              GetConfig().related_searches_anchor_classname)) {
       continue;
     }
 
@@ -162,8 +163,8 @@ bool ExtractRelatedSearches(blink::WebDocument document,
     for (blink::WebElement inner_div = inner_divs.FirstItem();
          !inner_div.IsNull(); inner_div = inner_divs.NextItem()) {
       if (!inner_div.HasAttribute("class") ||
-          !inner_div.GetAttribute("class").Utf8().contains(
-              GetConfig().related_searches_title_classname)) {
+          !base::StringContains(inner_div.GetAttribute("class").Utf8(),
+                                GetConfig().related_searches_title_classname)) {
         continue;
       }
       title = inner_div.TextContent().Utf16();

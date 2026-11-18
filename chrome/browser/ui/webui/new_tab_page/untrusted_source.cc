@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/string_contains.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
@@ -299,7 +300,8 @@ bool UntrustedSource::ShouldServiceRequest(
   return path == "one-google-bar" || path == "one_google_bar.js" ||
          path == "one_google_bar_api.js" || path == "image" ||
          path == "background_image" || path == "custom_background_image" ||
-         path == "background_image.js" || path.contains("background.jpg");
+         path == "background_image.js" ||
+         base::StringContains(path, "background.jpg");
 }
 
 void UntrustedSource::OnOneGoogleBarDataUpdated() {

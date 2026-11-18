@@ -20,6 +20,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/string_contains.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -572,8 +573,9 @@ bool ShouldSkipValidation(const base::FilePath& locales_path,
   if (subdir.empty())
     return true;  // Non-ASCII.
 
-  if (subdir.contains('.'))
+  if (base::StringContains(subdir, '.')) {
     return true;
+  }
 
   // On case-insensitive file systems we will load messages by matching them
   // with locale names (see LoadMessageCatalogs). Reversed comparison must still

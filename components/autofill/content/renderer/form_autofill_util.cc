@@ -35,6 +35,7 @@
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/string_contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -2228,8 +2229,9 @@ std::optional<InferredLabel> InferredLabel::BuildIfValid(std::u16string label,
     // U+2014: "—"  (Em Dash)
     // U+2212: "−"  (Minus Sign)
     // U+FF0D: "－" (Fullwidth Hyphen-Minus)
-    return !kInvalidChars.contains(c) &&
-           !(std::u16string_view(base::kWhitespaceUTF16)).contains(c);
+    return !base::StringContains(kInvalidChars, c) &&
+           !base::StringContains(std::u16string_view(base::kWhitespaceUTF16),
+                                 c);
   };
   auto is_from_extended_hyphen_like_list = [](char16_t c) {
     return c == u'\u2014' || c == u'\u2212' || c == u'\uFF0D';

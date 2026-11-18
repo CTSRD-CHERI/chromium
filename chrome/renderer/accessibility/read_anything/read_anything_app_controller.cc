@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
+#include "base/string_contains.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
@@ -1782,7 +1783,8 @@ std::string ReadAnythingAppController::GetValidatedFontName(
   if (font == "Serif" || font == "Sans-serif") {
     return base::ToLowerASCII(font);
   }
-  return font.contains(' ') ? base::StrCat({"\"", font, "\""}) : font;
+  return base::StringContains(font, ' ') ? base::StrCat({"\"", font, "\""})
+                                         : font;
 }
 
 std::vector<std::string> ReadAnythingAppController::GetAllFonts() const {

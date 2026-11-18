@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/string_contains.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -191,8 +192,9 @@ SidePanelUI* AboutThisSideSidePanelCoordinator::GetSidePanelUI() {
 
 GURL AboutThisSideSidePanelCoordinator::GetOpenInNewTabUrl() {
   DCHECK(last_url_info_.has_value());
-  DCHECK(!last_url_info_.value().new_tab_url.query().contains(
-      page_info::AboutThisSiteRenderModeParameterName));
+  DCHECK(
+      !base::StringContains(last_url_info_.value().new_tab_url.query(),
+                            page_info::AboutThisSiteRenderModeParameterName));
   return last_url_info_.value().new_tab_url;
 }
 

@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
+#include "base/string_contains.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -227,11 +228,13 @@ bool OnDeviceTailModelExecutor::Init(
     if (!file_path.empty()) {
       std::string file_path_str =
           optimization_guide::FilePathToString(file_path);
-      if (file_path_str.contains(kVocabFileNameKeyword)) {
+      if (base::StringContains(file_path_str, kVocabFileNameKeyword)) {
         vocab_filepath = file_path;
-      } else if (file_path_str.contains(kBadwordHashesFileNameKeyword)) {
+      } else if (base::StringContains(file_path_str,
+                                      kBadwordHashesFileNameKeyword)) {
         badword_hashes_filepath = file_path;
-      } else if (file_path_str.contains(kBadSubstringDenyListFileNameKeyword)) {
+      } else if (base::StringContains(file_path_str,
+                                      kBadSubstringDenyListFileNameKeyword)) {
         bad_substrings_filepath = file_path;
       }
     }
@@ -424,7 +427,7 @@ bool OnDeviceTailModelExecutor::IsSuggestionBad(const std::string& suggestion) {
   }
 
   for (const std::string& substring : bad_substrings_) {
-    if (suggestion.contains(substring)) {
+    if (base::StringContains(suggestion, substring)) {
       return true;
     }
   }

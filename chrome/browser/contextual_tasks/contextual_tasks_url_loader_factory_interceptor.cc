@@ -5,6 +5,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_url_loader_factory_interceptor.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/string_contains.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -47,7 +48,7 @@ const char kOneGoogleIdentifier[] = "onegoogle";
 bool ShouldAddAuthHeader(const GURL& url) {
   // Don't add the Authorization header to OGB URLs, since they don't support
   // OAuth. Attaching an OAuth token can result in 403 errors.
-  if (url.spec().contains(kOneGoogleIdentifier)) {
+  if (base::StringContains(url.spec(), kOneGoogleIdentifier)) {
     return false;
   }
 
