@@ -539,7 +539,8 @@ void ComposeSession::RequestWithSession(
   // execution in case request fails.
   compose::LogComposeRequestReason(request_reason);
 
-  optimization_guide::ModelExecutionCallbackWithLogging callback =
+  optimization_guide::ModelExecutionCallbackWithLogging<
+      optimization_guide::proto::ComposeLoggingData> callback =
       base::BindOnce(&ComposeSession::ModelExecutionCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(request_timer),
                      request_id_, request_reason, is_input_edited);
