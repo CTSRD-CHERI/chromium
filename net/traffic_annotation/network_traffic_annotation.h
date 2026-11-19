@@ -18,8 +18,13 @@
 
 namespace net::internal {
 
+// Older Clang can try to emit a runtime call to the immediate hash helper.
 template <size_t N>
+#if defined(__clang__) && __clang_major__ < 18
+constexpr int32_t ComputeAnnotationHash(const char (&str)[N]) {
+#else
 consteval int32_t ComputeAnnotationHash(const char (&str)[N]) {
+#endif
   uint32_t ret = 0;
   // - 1 to not include NUL
   for (size_t i = 0; i < N - 1; ++i) {
@@ -33,7 +38,11 @@ struct StringLiteralToHash {
   int32_t hash_value;
 
   template <size_t N>
+#if defined(__clang__) && __clang_major__ < 18
+  constexpr StringLiteralToHash(const char (&str)[N]) {
+#else
   consteval StringLiteralToHash(const char (&str)[N]) {
+#endif
     hash_value = ComputeAnnotationHash(str);
   }
 };
