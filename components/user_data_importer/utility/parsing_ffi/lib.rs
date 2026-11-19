@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.88")), feature(let_chains))]
+
 mod history;
 mod json;
 mod models;

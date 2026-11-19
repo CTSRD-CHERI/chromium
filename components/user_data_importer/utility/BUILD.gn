@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/rust.gni")
 import("//build/config/zip.gni")
 import("//build/rust/rust_static_library.gni")
 
@@ -62,6 +63,12 @@ source_set("safari_data_importer") {
 }
 
 rust_static_library("zip_ffi_glue") {
+  configs -= [ "//build/config/compiler:disallow_unstable_features" ]
+  if (rustc_version == "rustc 1.72.1-dev") {
+    rustflags = [ "-Zallow-features=cfg_version,let_chains" ]
+  } else {
+    rustflags = [ "-Zallow-features=cfg_version" ]
+  }
   allow_unsafe = true
   crate_root = "parsing_ffi/lib.rs"
   sources = [
