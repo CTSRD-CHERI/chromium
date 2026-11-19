@@ -424,7 +424,7 @@ struct PickleTraits<T> {
       // This handles non-contiguous containers and values that need to be
       // written one at a time.
       for (const auto& v : value) {
-        WriteToPickle(pickle, v);
+        WriteToPickle<Value>(pickle, v);
       }
     }
   }
