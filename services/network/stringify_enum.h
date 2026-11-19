@@ -166,7 +166,13 @@ class ExtractStringView {
   }
 
  private:
+#if defined(__clang__) && __clang_major__ < 18
+  // Older Clang requires the backing storage of an empty array to be
+  // initialized when the array is copied into a constexpr tuple.
+  std::array<char, size> storage_{};
+#else
   std::array<char, size> storage_;
+#endif
 };
 
 // Storage for an array of value names for `Enum`, with `size` entries.
