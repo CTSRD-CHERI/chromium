@@ -11,7 +11,8 @@
 
 namespace ash {
 
-constexpr static auto kAcceleratorActionToName = base::MakeFixedFlatMap<
+static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kAcceleratorActionToName =
+    base::MakeFixedFlatMap<
     AcceleratorAction,
     const char*>({
     {AcceleratorAction::kBrightnessDown, "BrightnessDown"},

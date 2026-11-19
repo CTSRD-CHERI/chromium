@@ -42,12 +42,13 @@ bool IsPinStateManagedByPrefs(actions::ActionId action_id) {
 // Helper function to get the pref name for a given action id.
 // Only valid for actions that have their pin state managed by prefs.
 std::string_view GetPrefForActionId(actions::ActionId action_id) {
-  static constexpr base::fixed_flat_map<actions::ActionId, std::string_view, 3>
-      action_id_to_pref =
-          base::MakeFixedFlatMap<actions::ActionId, std::string_view>(
-              {{kActionSplitTab, prefs::kPinSplitTabButton},
-               {kActionForward, prefs::kShowForwardButton},
-               {kActionHome, prefs::kShowHomeButton}});
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR
+      base::fixed_flat_map<actions::ActionId, std::string_view, 3>
+          action_id_to_pref =
+              base::MakeFixedFlatMap<actions::ActionId, std::string_view>(
+                  {{kActionSplitTab, prefs::kPinSplitTabButton},
+                   {kActionForward, prefs::kShowForwardButton},
+                   {kActionHome, prefs::kShowHomeButton}});
 
   return action_id_to_pref.at(action_id);
 }

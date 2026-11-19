@@ -281,8 +281,8 @@ void TabAlertController::OnDiscardContents(TabInterface* tab_interface,
 void TabAlertController::OnCapabilityTypesChanged(
     content::WebContentsCapabilityType capability_type,
     bool used) {
-  static constexpr base::fixed_flat_map<content::WebContentsCapabilityType,
-                                        TabAlert, 5>
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR base::fixed_flat_map<
+      content::WebContentsCapabilityType, TabAlert, 5>
       capability_type_to_alert =
           base::MakeFixedFlatMap<content::WebContentsCapabilityType, TabAlert>(
               {{content::WebContentsCapabilityType::kBluetoothConnected,

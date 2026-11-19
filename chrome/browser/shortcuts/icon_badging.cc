@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <tuple>
 #include <vector>
 
 #include "base/check_op.h"
@@ -120,6 +121,7 @@ BadgeSize GetBadgeSizeFromShortcutSize(ShortcutSize icon_size) {
 
 constexpr int resource_map_size = static_cast<int>(BadgeSize::kMaxValue) + 1;
 
+// Check the backing array size even when the map is initialized at runtime.
 using SizeToResourceMap = base::fixed_flat_map<BadgeSize, int, 5>;
 
 // At very low pixels < 16, there is probably no need to recreate the
@@ -127,28 +129,28 @@ using SizeToResourceMap = base::fixed_flat_map<BadgeSize, int, 5>;
 // work just as better, without the need to increase the chrome binary
 // size.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-constexpr SizeToResourceMap kStableResourceMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kStableResourceMap =
     base::MakeFixedFlatMap<BadgeSize, int>(
         {{BadgeSize::k8, IDR_PRODUCT_LOGO_16_STABLE_SHORTCUTS},
          {BadgeSize::k16, IDR_PRODUCT_LOGO_16_STABLE_SHORTCUTS},
          {BadgeSize::k24, IDR_PRODUCT_LOGO_24_STABLE_SHORTCUTS},
          {BadgeSize::k64, IDR_PRODUCT_LOGO_64_STABLE_SHORTCUTS},
          {BadgeSize::k128, IDR_PRODUCT_LOGO_128_STABLE_SHORTCUTS}});
-constexpr SizeToResourceMap kCanaryResourceMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kCanaryResourceMap =
     base::MakeFixedFlatMap<BadgeSize, int>(
         {{BadgeSize::k8, IDR_PRODUCT_LOGO_CANARY_16_SHORTCUTS},
          {BadgeSize::k16, IDR_PRODUCT_LOGO_CANARY_16_SHORTCUTS},
          {BadgeSize::k24, IDR_PRODUCT_LOGO_CANARY_24_SHORTCUTS},
          {BadgeSize::k64, IDR_PRODUCT_LOGO_CANARY_64_SHORTCUTS},
          {BadgeSize::k128, IDR_PRODUCT_LOGO_CANARY_128_SHORTCUTS}});
-constexpr SizeToResourceMap kBetaResourceMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kBetaResourceMap =
     base::MakeFixedFlatMap<BadgeSize, int>(
         {{BadgeSize::k8, IDR_PRODUCT_LOGO_BETA_16_SHORTCUTS},
          {BadgeSize::k16, IDR_PRODUCT_LOGO_BETA_16_SHORTCUTS},
          {BadgeSize::k24, IDR_PRODUCT_LOGO_BETA_24_SHORTCUTS},
          {BadgeSize::k64, IDR_PRODUCT_LOGO_BETA_64_SHORTCUTS},
          {BadgeSize::k128, IDR_PRODUCT_LOGO_BETA_128_SHORTCUTS}});
-constexpr SizeToResourceMap kDevResourceMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kDevResourceMap =
     base::MakeFixedFlatMap<BadgeSize, int>(
         {{BadgeSize::k8, IDR_PRODUCT_LOGO_DEV_16_SHORTCUTS},
          {BadgeSize::k16, IDR_PRODUCT_LOGO_DEV_16_SHORTCUTS},
@@ -156,21 +158,25 @@ constexpr SizeToResourceMap kDevResourceMap =
          {BadgeSize::k64, IDR_PRODUCT_LOGO_DEV_64_SHORTCUTS},
          {BadgeSize::k128, IDR_PRODUCT_LOGO_DEV_128_SHORTCUTS}});
 
-static_assert(static_cast<int>(kStableResourceMap.size()) == resource_map_size,
+static_assert(std::tuple_size_v<decltype(kStableResourceMap)::container_type> ==
+                  resource_map_size,
               "Ensure icon resources are filled for all entries in BadgeSize "
               "for stable resource map");
-static_assert(static_cast<int>(kCanaryResourceMap.size()) == resource_map_size,
+static_assert(std::tuple_size_v<decltype(kCanaryResourceMap)::container_type> ==
+                  resource_map_size,
               "Ensure icon resources are filled for all entries in BadgeSize "
               "for canary resource map");
-static_assert(static_cast<int>(kBetaResourceMap.size()) == resource_map_size,
+static_assert(std::tuple_size_v<decltype(kBetaResourceMap)::container_type> ==
+                  resource_map_size,
               "Ensure icon resources are filled for all entries in BadgeSize "
               "for beta resource map");
-static_assert(static_cast<int>(kDevResourceMap.size()) == resource_map_size,
+static_assert(std::tuple_size_v<decltype(kDevResourceMap)::container_type> ==
+                  resource_map_size,
               "Ensure icon resources are filled for all entries in BadgeSize "
               "for dev resource map");
 
 #elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
-constexpr SizeToResourceMap kChromeForTestingBrandedResourceMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kChromeForTestingBrandedResourceMap =
     base::MakeFixedFlatMap<BadgeSize, int>(
         {{BadgeSize::k8, IDR_PRODUCT_LOGO_16_CFT_SHORTCUTS},
          {BadgeSize::k16, IDR_PRODUCT_LOGO_16_CFT_SHORTCUTS},
@@ -178,12 +184,14 @@ constexpr SizeToResourceMap kChromeForTestingBrandedResourceMap =
          {BadgeSize::k64, IDR_PRODUCT_LOGO_64_CFT_SHORTCUTS},
          {BadgeSize::k128, IDR_PRODUCT_LOGO_128_CFT_SHORTCUTS}});
 
-static_assert(static_cast<int>(kChromeForTestingBrandedResourceMap.size()) ==
-                  resource_map_size,
-              "Ensure icon resources are filled for all entries in BadgeSize "
-              "for Chrome for testing resource map");
+static_assert(
+    std::tuple_size_v<
+        decltype(kChromeForTestingBrandedResourceMap)::container_type> ==
+        resource_map_size,
+    "Ensure icon resources are filled for all entries in BadgeSize "
+    "for Chrome for testing resource map");
 #else
-constexpr SizeToResourceMap kChromiumResourceMap =
+BASE_FIXED_FLAT_MAP_CONSTEXPR auto kChromiumResourceMap =
     base::MakeFixedFlatMap<BadgeSize, int>(
         {{BadgeSize::k8, IDR_PRODUCT_LOGO_16_SHORTCUTS},
          {BadgeSize::k16, IDR_PRODUCT_LOGO_16_SHORTCUTS},
@@ -191,10 +199,11 @@ constexpr SizeToResourceMap kChromiumResourceMap =
          {BadgeSize::k64, IDR_PRODUCT_LOGO_64_SHORTCUTS},
          {BadgeSize::k128, IDR_PRODUCT_LOGO_128_SHORTCUTS}});
 
-static_assert(static_cast<int>(kChromiumResourceMap.size()) ==
-                  resource_map_size,
-              "Ensure icon resources are filled for all entries in BadgeSize "
-              "for chromium resource map");
+static_assert(
+    std::tuple_size_v<decltype(kChromiumResourceMap)::container_type> ==
+        resource_map_size,
+    "Ensure icon resources are filled for all entries in BadgeSize "
+    "for chromium resource map");
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 SizeToResourceMap GetResourceMapForCurrentChannel() {

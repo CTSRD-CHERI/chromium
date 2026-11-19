@@ -44,7 +44,7 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
        kColorTabBackgroundInactiveFrameInactive},
   };
   // These are the default tab fore/background color mappings.
-  static constexpr const auto kBgColorMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kBgColorMap =
       base::MakeFixedFlatMap<ChromeColorIds, int>(
           {{kColorTabBackgroundActiveFrameActive, kColorToolbar},
            {kColorTabBackgroundActiveFrameInactive,
@@ -52,7 +52,7 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
            {kColorTabBackgroundInactiveFrameActive, ui::kColorFrameActive},
            {kColorTabBackgroundInactiveFrameInactive,
             ui::kColorFrameInactive}});
-  static constexpr const auto kFgColorMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kFgColorMap =
       base::MakeFixedFlatMap<ChromeColorIds, ChromeColorIds>(
           {{kColorTabForegroundActiveFrameActive, kColorToolbarText},
            {kColorTabForegroundActiveFrameInactive,
@@ -60,7 +60,7 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
            {kColorTabForegroundInactiveFrameActive, kColorToolbarText},
            {kColorTabForegroundInactiveFrameInactive,
             kColorTabForegroundInactiveFrameActive}});
-  static constexpr const auto kTabFgToBgMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTabFgToBgMap =
       base::MakeFixedFlatMap<ChromeColorIds, ChromeColorIds>(
           {{kColorTabForegroundActiveFrameActive,
             kColorTabBackgroundActiveFrameActive},
@@ -74,7 +74,7 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
   // colors when no system colors are involved, except for the inactive tab/
   // inactive frame case, which has been raised from 4.48 to 4.5 to meet
   // accessibility guidelines.
-  static constexpr const auto kTabFgToContrastMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTabFgToContrastMap =
       base::MakeFixedFlatMap<ChromeColorIds, float>(
           {{kColorTabForegroundActiveFrameActive, 10.46f},
            {kColorTabForegroundActiveFrameInactive, 5.0f},

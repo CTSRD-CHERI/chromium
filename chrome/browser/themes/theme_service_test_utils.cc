@@ -26,7 +26,7 @@ std::ostream& operator<<(std::ostream& os, PrintableSkColor printable_color) {
 std::string ColorIdToString(ui::ColorId id) {
 #define E_CPONLY(color_id, ...) {color_id, #color_id},
 
-  static constexpr const auto kMap =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kMap =
       base::MakeFixedFlatMap<ui::ColorId, const char*>({CHROME_COLOR_IDS});
 
 #undef E_CPONLY

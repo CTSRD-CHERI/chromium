@@ -80,19 +80,22 @@ constexpr bool AreKeysDisjoint(const Map1& map1, const Map2& map2) {
   }
   return true;
 }
-// Compile-time check to ensure that hotkeys defined as static (in
-// kHotkeyToStaticAcceleratorsMap) are not also defined as configurable (in
-// kHotkeyToPrefMap).
-static_assert(
-    AreKeysDisjoint(kHotkeyToStaticAcceleratorsMap, kHotkeyToPrefMap),
-    "A hotkey cannot be defined in both kHotkeyToStaticAcceleratorsMap and "
-    "kHotkeyToPrefMap. Check definitions.");
 }  // namespace
 
 LocalHotkeyManager::LocalHotkeyManager(base::WeakPtr<Panel> panel,
                                        std::unique_ptr<Delegate> delegate)
     : panel_(panel), delegate_(std::move(delegate)) {
   CHECK(delegate_);
+
+  // Static and configurable hotkeys must have distinct keys.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  CHECK(AreKeysDisjoint(kHotkeyToStaticAcceleratorsMap, kHotkeyToPrefMap))
+      << "A hotkey cannot be both static and configurable";
+#else
+  static_assert(
+      AreKeysDisjoint(kHotkeyToStaticAcceleratorsMap, kHotkeyToPrefMap),
+      "A hotkey cannot be both static and configurable");
+#endif
   CHECK(g_browser_process);
   pref_registrar_.Init(g_browser_process->local_state());
   for (Hotkey hotkey : delegate_->GetSupportedHotkeys()) {

@@ -37,7 +37,7 @@ class ChromeColorProviderUtilsCallbacks
 bool ChromeColorProviderUtilsCallbacks::ColorIdName(
     ui::ColorId color_id,
     std::string_view* color_name) {
-  static constexpr const auto chrome_color_id_map =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto chrome_color_id_map =
       base::MakeFixedFlatMap<ui::ColorId, const char*>({CHROME_COLOR_IDS});
   auto i = chrome_color_id_map.find(color_id);
   if (i != chrome_color_id_map.cend()) {

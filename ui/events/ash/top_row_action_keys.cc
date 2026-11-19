@@ -15,7 +15,7 @@ const char* GetTopRowActionKeyName(TopRowActionKey action) {
   // Define the mapping between an TopRowActionKey and its string name.
   // Example:
   //   TopRowActionKey::kDictation -> "Dictation".
-  constexpr static auto kTopRowActionKeyToName =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kTopRowActionKeyToName =
       base::MakeFixedFlatMap<TopRowActionKey, const char*>({
 #define TOP_ROW_ACTION_KEYS_ENTRY(action) {TopRowActionKey::k##action, #action},
 #define TOP_ROW_ACTION_KEYS_LAST_ENTRY(action) \

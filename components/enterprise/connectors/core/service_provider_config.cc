@@ -98,7 +98,7 @@ const ServiceProviderConfig* GetServiceProviderConfig() {
   // when one is added to this dictionary it also needs to be added to the
   // corresponding policy definitions.
   // LINT.IfChange
-  static constexpr ServiceProviderConfig kServiceProviderConfig =
+  static BASE_FIXED_FLAT_MAP_CONSTEXPR auto kServiceProviderConfig =
       base::MakeFixedFlatMap<std::string_view, ServiceProvider>({
           {
               "google",

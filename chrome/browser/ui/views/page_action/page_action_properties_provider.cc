@@ -227,8 +227,8 @@ BASE_FIXED_FLAT_MAP_CONSTEXPR auto kPageActionProperties =
         },
     });
 
-constexpr bool CheckIgnoreFlagUsage() {
-  for (const auto& [action_id, properties] : kPageActionProperties) {
+constexpr bool CheckIgnoreFlagUsage(const auto& properties_map) {
+  for (const auto& [action_id, properties] : properties_map) {
     if (properties.exempt_from_omnibox_suppression &&
         action_id != kActionAiMode) {
       return false;
@@ -237,17 +237,20 @@ constexpr bool CheckIgnoreFlagUsage() {
   return true;
 }
 
-// AI Mode page action is designed to be displayed by itself. Other page actions
-// should avoid using this property unless there is a strong reason.
-static_assert(
-    CheckIgnoreFlagUsage(),
-    "ignore_should_hide_page_actions should only be used by kActionAiMode");
-
 }  // namespace
 
 namespace page_actions {
 
-PageActionPropertiesProvider::PageActionPropertiesProvider() = default;
+PageActionPropertiesProvider::PageActionPropertiesProvider() {
+  // AI Mode page action is designed to be displayed by itself.
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  CHECK(CheckIgnoreFlagUsage(kPageActionProperties))
+      << "Only kActionAiMode may be exempt from omnibox suppression";
+#else
+  static_assert(CheckIgnoreFlagUsage(kPageActionProperties),
+                "Only kActionAiMode may be exempt from omnibox suppression");
+#endif
+}
 PageActionPropertiesProvider::~PageActionPropertiesProvider() = default;
 
 bool PageActionPropertiesProvider::Contains(actions::ActionId action_id) const {
