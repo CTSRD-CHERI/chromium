@@ -72,10 +72,14 @@ inline constexpr char kXSRFTokenQueryParamKey[] = "sxsrf";
 inline constexpr char kSecActQueryParamKey[] = "sec_act";
 
 // The list of query parameters to ignore when comparing search URLs.
-inline constexpr std::string kIgnoredSearchUrlQueryParameters[] = {
-    kViewportWidthQueryParamKey, kViewportHeightQueryParamKey,
-    kXSRFTokenQueryParamKey,     kSecActQueryParamKey,
-    kModeParameterKey,           kToolbeltModeParameterKey};
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+inline const std::string kIgnoredSearchUrlQueryParameters[] =
+#else
+inline constexpr std::string kIgnoredSearchUrlQueryParameters[] =
+#endif
+    {kViewportWidthQueryParamKey, kViewportHeightQueryParamKey,
+     kXSRFTokenQueryParamKey,     kSecActQueryParamKey,
+     kModeParameterKey,           kToolbeltModeParameterKey};
 
 // Query parameter for the Lens footprint.
 inline constexpr char kLensFootprintParameterKey[] = "lns_fp";

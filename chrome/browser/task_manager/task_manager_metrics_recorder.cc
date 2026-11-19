@@ -43,8 +43,12 @@ void RecordTabSwitchEvent(CategoryRecord record,
 void RecordEndProcessEvent(const base::TimeTicks& start_time,
                            const base::TimeTicks& end_time,
                            size_t end_process_count) {
-  constexpr static std::array<std::string, 5> kEndProcessCountToString = {
-      "First", "Second", "Third", "Fourth", "Fifth"};
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  static const std::array<std::string, 5> kEndProcessCountToString =
+#else
+  constexpr static std::array<std::string, 5> kEndProcessCountToString =
+#endif
+      {"First", "Second", "Third", "Fourth", "Fifth"};
 
   // Only record the first five end process events per task manager session.
   if (end_process_count > 0 &&

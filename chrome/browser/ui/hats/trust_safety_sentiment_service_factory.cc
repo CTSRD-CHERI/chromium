@@ -15,8 +15,12 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"
 
-inline constexpr std::string kSurveyLocales[] = {"en", "en-AU", "en-CA",
-                                                 "en-GB", "en-US"};
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+inline const std::string kSurveyLocales[] =
+#else
+inline constexpr std::string kSurveyLocales[] =
+#endif
+    {"en", "en-AU", "en-CA", "en-GB", "en-US"};
 
 TrustSafetySentimentServiceFactory::TrustSafetySentimentServiceFactory()
     : ProfileKeyedServiceFactory(

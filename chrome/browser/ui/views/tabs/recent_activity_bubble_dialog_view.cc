@@ -78,7 +78,12 @@ using collaboration::messaging::TabMessageMetadata;
 namespace {
 
 // Unicode value for a bullet point.
-constexpr std::u16string kBulletPoint = u"\u2022";
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const std::u16string kBulletPoint =
+#else
+constexpr std::u16string kBulletPoint =
+#endif
+    u"\u2022";
 constexpr int bubble_content_margin_px = 20;
 
 // Returns the correct user that should be used for a given log item.

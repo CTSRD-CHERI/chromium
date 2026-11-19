@@ -28,7 +28,12 @@ using optimization_guide::proto::Passage;
 
 namespace {
 
-static constexpr std::string kPassageIdToken = "ID";
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+static const std::string kPassageIdToken =
+#else
+static constexpr std::string kPassageIdToken =
+#endif
+    "ID";
 // Estimated token count of the preamble text in prompt.
 static constexpr size_t kPreambleTokenBufferSize = 100u;
 // Estimated token count of overhead text per passage.

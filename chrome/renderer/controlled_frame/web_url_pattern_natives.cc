@@ -20,7 +20,12 @@ namespace {
 
 // This is for when there's no path, it gets inferred as wildcard,
 // but also comes with a match group name equal to "0" that we need to ignore.
-constexpr std::string kInferredWildcardPartName = "0";
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const std::string kInferredWildcardPartName =
+#else
+constexpr std::string kInferredWildcardPartName =
+#endif
+    "0";
 constexpr const char* kAllowedProtocols[] = {"http", "https", "ws", "wss"};
 
 bool WouldBeValidMatchPattern(const blink::SafeUrlPattern& safe_url_pattern) {

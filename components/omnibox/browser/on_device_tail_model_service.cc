@@ -28,7 +28,12 @@
 
 namespace {
 // Constants for TFlite model validation.
-constexpr std::string kTestPrefix = "google m";
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const std::string kTestPrefix =
+#else
+constexpr std::string kTestPrefix =
+#endif
+    "google m";
 constexpr std::string_view kModelValidationSwitchName =
     "omnibox-on-device-tail-model-validation";
 
