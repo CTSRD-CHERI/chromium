@@ -9,7 +9,7 @@ desc: <<EOD
 "@@FULLDESC@@"
 EOD
 arch: "@@ARCHITECTURE@@"
-abi: "@@ABI@@"
+abi: "@@PKG_ABI@@"
 deps: {
   "at-spi2-core":{"origin":"accessibility/at-spi2-core","version":"2.48.0"},
   "bash":{"origin":"shells/bash","version":"5.2.15"},

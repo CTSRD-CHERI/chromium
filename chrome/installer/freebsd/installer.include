@@ -91,7 +91,7 @@ process_template() (
     -e "s#@@PREDEPENDS@@#${PREDEPENDS}#g" \
     -e "s#@@DEPENDS@@#${DEPENDS}#g" \
     -e "s#@@PROVIDES@@#${PROVIDES}#g" \
-    -e "s#@@ABI@@#${ABI}#g" \
+    -e "s#@@PKG_ABI@@#${PKG_ABI}#g" \
     -e "s#@@ARCHITECTURE@@#${ARCHITECTURE}#g" \
     -e "s#@@MAINTNAME@@#${MAINTNAME}#g" \
     -e "s#@@MAINTMAIL@@#${MAINTMAIL}#g" \

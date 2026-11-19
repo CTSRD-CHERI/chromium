@@ -149,6 +149,7 @@ exec_script_whitelist =
       "//build_overrides/build.gni",
 
       "//chrome/android/webapk/shell_apk/prepare_upload_dir/BUILD.gn",
+      "//chrome/installer/freebsd/BUILD.gn",
       "//chrome/version.gni",
 
       # TODO(dgn): Layer violation but breaks the build otherwise, see

@@ -20,6 +20,30 @@ assert(is_freebsd)
 assert(!use_custom_libcxx)
 assert(!enable_nacl)
 
+if (current_cpu == "x86") {
+  pkg_arch = "i386"
+} else if (current_cpu == "x64") {
+  pkg_arch = "amd64"
+} else if (current_cpu == "arm") {
+  pkg_arch = "armhf"
+} else if (current_cpu == "arm64") {
+  if (is_cheri) {
+    pkg_arch = "aarch64c"
+  } else {
+    pkg_arch = "arm64"
+  }
+} else if (current_cpu == "mipsel") {
+  pkg_arch = "mipsel"
+} else if (current_cpu == "mips64el") {
+  pkg_arch = "mips64el"
+} else if (current_cpu == "loong64") {
+  pkg_arch = "loongarch64"
+} else {
+  assert(false, "FreeBSD installer not configured for this architecture.")
+}
+
+generated_sh_env = "$target_gen_dir/pkg_abi_env.sh"
+
 packaging_files_executables = [
   "$root_out_dir/chrome",
 ]
@@ -201,54 +225,69 @@ group("installer_deps") {
   }
 }
 
+param_header = "/usr/include/sys/param.h"
+pkg_abi_args = [
+  "--pkg-arch",
+  pkg_arch,
+]
+if (sysroot != "") {
+  param_header = "$sysroot$param_header"
+  pkg_abi_args += [
+    "--sysroot",
+    rebase_path(sysroot),
+  ]
+}
+if (is_cheri) {
+  pkg_abi_args += [ "--is-cheri" ]
+}
+
 action("freebsd_package") {
   visibility = [ ":*" ]
-  package = "chromium-browser"
-
-  #pkg_target_name = "${target_name}_deb"
-    
   script = "//build/gn_run_binary.py"
-    
-  inputs = packaging_files
-  outputs = [ "$root_out_dir/${package}_${chrome_version_full}-1_${current_cpu}.pkg" ]
 
-  if (current_cpu == "x86") {
-    pkg_arch = "i386"
-  } else if (current_cpu == "x64") {
-    pkg_arch = "amd64"
-  } else if (current_cpu == "arm") {
-    pkg_arch = "armhf"
-  } else if (current_cpu == "arm64") {
-    pkg_arch = "arm64"
-  } else if (current_cpu == "mipsel") {
-    pkg_arch = "mipsel"
-  } else if (current_cpu == "mips64el") {
-    pkg_arch = "mips64el"
-  } else if (current_cpu == "loong64") {
-    pkg_arch = "loongarch64"
-  } else {
-    assert(false, "FreeBSD installer not configured for this architecture.")
-  }
-  if (pkg_arch == "arm64" && is_cheri) {
-    pkg_abi = "CheriBSD:20250301:aarch64c"
-  } else {
-    pkg_abi = "FreeBSD:13:*"
-  }
+  # GN needs the ABI when declaring the package output. Track the header so a
+  # sysroot update regenerates Ninja files with the new name.
+  pkg_abi = exec_script("extract_pkg_abi.py",
+                        pkg_abi_args,
+                        "trim string",
+                        [ param_header ])
+  filename_abi = string_replace(pkg_abi, ":", "-")
+  package_filename = "chromium-${chrome_version_full}-${filename_abi}.pkg"
+
+  inputs = packaging_files + [ generated_sh_env ]
+  outputs = [ "$root_out_dir/$package_filename" ]
 
   args = [
     rebase_path("$root_out_dir/installer/freebsd/build.sh", root_build_dir),
     "-a",
     pkg_arch,
     "-b",
-    pkg_abi,
+    rebase_path(generated_sh_env, root_build_dir),
     "-d",
     branding_path_component,
     "-o",
     rebase_path(root_out_dir, root_build_dir),
+    "-p",
+    package_filename,
     "-t",
     target_os,
   ]
+  if (use_egl) {
+    args += [ "-e" ]
+  }
+
   deps = [
+    ":extract_pkg_abi",
     ":installer_deps",
   ]
+}
+
+action("extract_pkg_abi") {
+  script = "extract_pkg_abi.py"
+  outputs = [ "$generated_sh_env" ]
+  inputs = [ param_header ]
+  args = pkg_abi_args + [
+           "--output-sh",
+           rebase_path(generated_sh_env, root_build_dir),
+         ]
 }

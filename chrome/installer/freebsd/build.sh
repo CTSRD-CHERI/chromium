@@ -110,7 +110,7 @@ stage_install_freebsd() {
   fi
 
   # ANGLE
-  if [ -f "${OUTPUTDIR}/libEGL.so" ]; then
+  if [ "${PACKAGE_EGL}" -eq 1 ]; then
     for file in libEGL.so libGLESv2.so; do
       strippedfile="${OUTPUTDIR}/${file}.stripped"
       install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
@@ -220,9 +220,6 @@ stage_install_freebsd() {
   process_template "${OUTPUTDIR}/installer/freebsd/manifest.template" \
     "${STAGEDIR}/manifest"
 
-  # Create the pkg-plist
-  find "${STAGEDIR}/usr/local" -type f,l -printf "%P\n" -mindepth 1 | tr ' ' '\n' > "${STAGEDIR}/pkg-plist"
-
   # Check to make sure all the ELF binaries are stripped.
   UNSTRIPPED=$(find "${STAGEDIR}/${INSTALLDIR}/" -type f | xargs file |
       grep ELF | grep -c "not stripped" || true)
@@ -302,14 +299,68 @@ stage_install_freebsd() {
   done
 }
 
-# Generate the package file
+# Validate required files and write paths relative to the package prefix.
+write_packing_list() {
+  local required_files=(
+    "${INSTALLDIR}/${PROGNAME}"
+    "${INSTALLDIR}/${PACKAGE}"
+    "${INSTALLDIR}/resources.pak"
+    "${INSTALLDIR}/locales/en-US.pak"
+    "${PREFIX}/share/applications/${PACKAGE}.desktop"
+    "${PREFIX}/share/man/man1/${PACKAGE}.1.gz"
+    "${PREFIX}/share/metainfo/${PACKAGE}.appdata.xml"
+  )
+  if [ "${PACKAGE_EGL}" -eq 1 ]; then
+    required_files+=("${INSTALLDIR}/libEGL.so" "${INSTALLDIR}/libGLESv2.so")
+  fi
+
+  local path
+  for path in "${required_files[@]}" "${PREFIX}/bin/${PACKAGE}"; do
+    if [ ! -f "${STAGEDIR}${path}" ] && [ ! -L "${STAGEDIR}${path}" ]; then
+      echo "Missing required package file: ${path}" >&2
+      return 1
+    fi
+  done
+
+  find "${STAGEDIR}${PREFIX}" \
+    \( -type f -o -type l \) -printf '%P\n' |
+    LC_ALL=C sort > "${STAGEDIR}/pkg-plist"
+}
+
+# Generate and verify the archive before publishing it.
 do_package() {
+  local package_dir="${STAGEDIR}/package-output"
+  local package_file="${PACKAGE}-${VERSION}.pkg"
+  local archive="${package_dir}/${package_file}"
+  mkdir "${package_dir}"
+
   log_cmd echo "Packaging ${ARCHITECTURE}..."
   /local/scratch/gcj21/pkg/src/pkg create \
-    -M ${STAGEDIR}/manifest \
-    -p ${STAGEDIR}/pkg-plist \
-    -r ${STAGEDIR} \
-    -o ${OUTPUTDIR} ${PACKAGE}
+    -M "${STAGEDIR}/manifest" \
+    -p "${STAGEDIR}/pkg-plist" \
+    -r "${STAGEDIR}" \
+    -o "${package_dir}" "${PACKAGE}"
+
+  # pkg stores payload entries as installation paths.
+  tar -P -tf "${archive}" > "${package_dir}/archive-paths"
+  local path relative_path
+  while IFS= read -r path; do
+    relative_path="${path#./}"
+    relative_path="${relative_path#/}"
+    if [[ "${relative_path}" = "${PREFIX#/}/"* ]]; then
+      printf '%s\n' "${relative_path#"${PREFIX#/}/"}"
+    fi
+  done < "${package_dir}/archive-paths" |
+    LC_ALL=C sort -u > "${package_dir}/archive-plist"
+  LC_ALL=C comm -23 "${STAGEDIR}/pkg-plist" "${package_dir}/archive-plist" \
+    > "${package_dir}/missing-files"
+  if [ -s "${package_dir}/missing-files" ]; then
+    echo "Files missing from ${package_file}:" >&2
+    cat "${package_dir}/missing-files" >&2
+    return 1
+  fi
+
+  mv -f "${archive}" "${OUTPUTDIR}/${PACKAGE_OUTPUT_NAME}"
 }
 
 cleanup() {
@@ -322,25 +373,30 @@ usage() {
   echo "                      [-f] [-o 'dir'] -s 'dir' -t target_os"
   echo "-a arch      pkg package architecture"
   echo "-d brand     either chromium or google_chrome"
+  echo "-e           include ANGLE EGL and GLES libraries"
   echo "-f           indicates that this is an official build"
   echo "-h           this help message"
   echo "-o dir       package output directory [${OUTPUTDIR}]"
+  echo "-p name      package output filename"
   echo "-s dir       /path/to/sysroot"
   echo "-t platform  target platform"
 }
 
 process_opts() {
-  while getopts ":a:b:d:fho:s:t:" OPTNAME
+  while getopts ":a:b:d:efho:p:s:t:" OPTNAME
   do
     case $OPTNAME in
       a )
         ARCHITECTURE="$OPTARG"
         ;;
       b )
-        ABI="$OPTARG"
+        PKG_ABI_ENV_FILE="$OPTARG"
         ;;
       d )
         BRANDING="$OPTARG"
+        ;;
+      e )
+        PACKAGE_EGL=1
         ;;
       f )
         IS_OFFICIAL_BUILD=1
@@ -352,6 +408,9 @@ process_opts() {
       o )
         OUTPUTDIR=$(readlink -f "${OPTARG}")
         mkdir -p "${OUTPUTDIR}"
+        ;;
+      p )
+        PACKAGE_OUTPUT_NAME="$OPTARG"
         ;;
       s )
         SYSROOT="$OPTARG"
@@ -380,20 +439,34 @@ process_opts() {
 SCRIPTDIR=$(readlink -f "$(dirname "$0")")
 OUTPUTDIR="${PWD}"
 
-# call cleanup() on exit
-trap cleanup 0
+PACKAGE_EGL=0
 process_opts "$@"
 
-STAGEDIR="${OUTPUTDIR}/pkg-staging"
-mkdir -p "${STAGEDIR}"
+# Check and import the generated pkg abi file
+if [ -f "$PKG_ABI_ENV_FILE" ]; then
+    source "$PKG_ABI_ENV_FILE"
+else
+    echo "Error: PKG ABI file not found at $PKG_ABI_ENV_FILE"
+    exit 1
+fi
 
-source ${OUTPUTDIR}/installer/freebsd/installer.include
+source "${OUTPUTDIR}/installer/freebsd/installer.include"
+
+STAGEDIR=$(mktemp -d "${OUTPUTDIR}/pkg-staging.XXXXXXXX")
+trap cleanup EXIT
 
 get_version_info
 VERSIONFULL="${VERSION}-${PACKAGE_RELEASE}"
 
 source "${OUTPUTDIR}/installer/freebsd/chromium-browser.info"
 
-stage_install_freebsd
+expected_package_name="${PACKAGE}-${VERSION}-${PKG_ABI//:/-}.pkg"
+PACKAGE_OUTPUT_NAME="${PACKAGE_OUTPUT_NAME:-${expected_package_name}}"
+if [ "${PACKAGE_OUTPUT_NAME}" != "${expected_package_name}" ]; then
+  echo "Package filename mismatch: expected ${expected_package_name}, got ${PACKAGE_OUTPUT_NAME}" >&2
+  exit 1
+fi
 
+stage_install_freebsd
+write_packing_list
 do_package
