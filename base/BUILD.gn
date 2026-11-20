@@ -627,7 +627,6 @@ component("base") {
     "sequence_token.h",
     "state_transitions.h",
     "stl_util.h",
-    "string_contains.h",
     "strings/abseil_string_number_conversions.cc",
     "strings/abseil_string_number_conversions.h",
     "strings/cstring_view.h",
