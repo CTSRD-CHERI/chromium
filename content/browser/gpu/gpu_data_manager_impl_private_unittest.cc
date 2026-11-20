@@ -468,8 +468,8 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGraphiteFeatureFlag) {
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 }
 
-// On Mac-ARM graphite should fallback to Swiftshader immediately. On other
-// platforms graphite should fallback to Ganesh/GL.
+// On Mac-ARM, Graphite falls back to software rendering if available. On
+// other platforms it falls back to Ganesh/GL.
 TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphite) {
 #if BUILDFLAG(ENABLE_SWIFTSHADER)
   base::test::ScopedFeatureList feature_list;
@@ -484,7 +484,11 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphite) {
 
   manager->FallBackToNextGpuMode();
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(ENABLE_SWIFTSHADER)
   EXPECT_EQ(gpu::GpuMode::SOFTWARE_GL, manager->GetGpuMode());
+#else
+  EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
+#endif
 #else
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 #endif
@@ -507,7 +511,9 @@ TEST_F(GpuDataManagerImplPrivateTest, NoDefaultFallbackToSwiftShaderForGanesh) {
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({}, {
+#if BUILDFLAG(ENABLE_SWIFTSHADER)
                                         features::kAllowSwiftShaderFallback,
+#endif  // BUILDFLAG(ENABLE_SWIFTSHADER)
 #if BUILDFLAG(IS_WIN)
                                         features::kAllowD3D11WarpFallback,
 #endif  // BUILDFLAG(IS_WIN)
@@ -520,6 +526,7 @@ TEST_F(GpuDataManagerImplPrivateTest, NoDefaultFallbackToSwiftShaderForGanesh) {
   EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
 }
 
+#if BUILDFLAG(ENABLE_SWIFTSHADER)
 TEST_F(GpuDataManagerImplPrivateTest, ExplicitFallbackToSwiftShaderForGanesh) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableSkiaGraphite);
@@ -532,6 +539,7 @@ TEST_F(GpuDataManagerImplPrivateTest, ExplicitFallbackToSwiftShaderForGanesh) {
   manager->FallBackToNextGpuMode();
   EXPECT_EQ(gpu::GpuMode::SOFTWARE_GL, manager->GetGpuMode());
 }
+#endif  // BUILDFLAG(ENABLE_SWIFTSHADER)
 
 TEST_F(GpuDataManagerImplPrivateTest,
        FallbackWithSwiftShaderDisabledByFlagsForGanesh) {
@@ -551,6 +559,7 @@ TEST_F(GpuDataManagerImplPrivateTest,
   EXPECT_EQ(expected_mode, manager->GetGpuMode());
 }
 
+#if BUILDFLAG(ENABLE_SWIFTSHADER)
 TEST_F(GpuDataManagerImplPrivateTest,
        FallbackWithSwiftShaderDisabledByFeaturesForGanesh) {
   // Make sure that we don't fall back to SwiftShader when it's disabled with
@@ -571,6 +580,7 @@ TEST_F(GpuDataManagerImplPrivateTest,
   gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
   EXPECT_EQ(expected_mode, manager->GetGpuMode());
 }
+#endif  // BUILDFLAG(ENABLE_SWIFTSHADER)
 
 TEST_F(GpuDataManagerImplPrivateTest,
        FallbackFromGraphiteWithSwiftShaderDisabled) {
@@ -594,6 +604,7 @@ TEST_F(GpuDataManagerImplPrivateTest,
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_SWIFTSHADER)
 TEST_F(GpuDataManagerImplPrivateTest,
        ExplicitFallbackToSwiftShaderForGraphite) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -612,6 +623,7 @@ TEST_F(GpuDataManagerImplPrivateTest,
 
   EXPECT_EQ(gpu::GpuMode::SOFTWARE_GL, manager->GetGpuMode());
 }
+#endif  // BUILDFLAG(ENABLE_SWIFTSHADER)
 
 TEST_F(GpuDataManagerImplPrivateTest,
        FallbackWithSwiftShaderDisabledByFlagsForGraphite) {
@@ -637,6 +649,7 @@ TEST_F(GpuDataManagerImplPrivateTest,
   EXPECT_EQ(expected_mode, manager->GetGpuMode());
 }
 
+#if BUILDFLAG(ENABLE_SWIFTSHADER)
 TEST_F(GpuDataManagerImplPrivateTest,
        FallbackWithSwiftShaderDisabledByFeaturesForGraphite) {
   // Make sure that we don't fall back to SwiftShader when it's disabled with
@@ -662,13 +675,16 @@ TEST_F(GpuDataManagerImplPrivateTest,
   gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
   EXPECT_EQ(expected_mode, manager->GetGpuMode());
 }
+#endif  // BUILDFLAG(ENABLE_SWIFTSHADER)
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if !defined(CAST_AUDIO_ONLY) && !BUILDFLAG(IS_FUCHSIA)
 TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGpuDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({}, {
+#if BUILDFLAG(ENABLE_SWIFTSHADER)
                                         features::kAllowSwiftShaderFallback,
+#endif  // BUILDFLAG(ENABLE_SWIFTSHADER)
 #if BUILDFLAG(IS_WIN)
                                         features::kAllowD3D11WarpFallback,
 #endif  // BUILDFLAG(IS_WIN)
@@ -767,7 +783,9 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanWithGLDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kVulkan},
                                 {
+#if BUILDFLAG(ENABLE_SWIFTSHADER)
                                     features::kAllowSwiftShaderFallback,
+#endif  // BUILDFLAG(ENABLE_SWIFTSHADER)
 #if BUILDFLAG(IS_WIN)
                                     features::kAllowD3D11WarpFallback,
 #endif  // BUILDFLAG(IS_WIN)
