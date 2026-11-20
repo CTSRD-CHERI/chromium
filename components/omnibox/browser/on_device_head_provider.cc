@@ -6,13 +6,13 @@
 
 #include <limits>
 
+#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
-#include "base/string_contains.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -369,7 +369,7 @@ bool OnDeviceHeadProvider::ShouldFetchTailSuggestions(
     // Determines if the prefix contains multiple words by checking if it has
     // whitespaces; Note this does not work when the prefix is not using
     // whitespace as delimiter, e.g. CJK languages.
-    bool is_single_word_prefix = !base::StringContains(sanitized_input, " ");
+    bool is_single_word_prefix = !base::Contains(sanitized_input, " ");
     if (is_single_word_prefix) {
       return false;
     }

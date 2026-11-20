@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -1085,11 +1086,7 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
 #else
   partial_expected_contents = "exited_cleanly\":false";
 #endif  // BUILDFLAG(IS_ANDROID)
-#if __cpp_lib_string_contains
-  EXPECT_TRUE(beacon_file_contents.find(partial_expected_contents) != std::string::npos);
-#else
-  EXPECT_TRUE(beacon_file_contents.contains(partial_expected_contents));
-#endif
+  EXPECT_TRUE(base::Contains(beacon_file_contents, partial_expected_contents));
 
   // The initial stability log should be generated and persisted in unsent logs.
   MetricsLogStore* test_log_store = service.LogStoreForTest();

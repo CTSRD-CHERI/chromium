@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -403,29 +404,14 @@ class ProtoExtrasGenerator : public google::protobuf::compiler::CodeGenerator {
     CHECK(file);
 
     ProtoExtrasGeneratorOptions generator_options{
-        .generate_to_value_serialization =
-#if __cpp_lib_string_contains
-            command_line_options.contains("generate_to_value_serialization"),
-#else
-            command_line_options.find("generate_to_value_serialization") != std::string::npos,
-#endif
+        .generate_to_value_serialization = base::Contains(
+            command_line_options, "generate_to_value_serialization"),
         .generate_stream_operator =
-#if __cpp_lib_string_contains
-            command_line_options.contains("generate_stream_operator"),
-#else
-            command_line_options.find("generate_stream_operator") != std::string::npos,
-#endif
-#if __cpp_lib_string_contains
-        .generate_equality = command_line_options.contains("generate_equality"),
-#else
-        .generate_equality = command_line_options.find("generate_equality") != std::string::npos,
-#endif
+            base::Contains(command_line_options, "generate_stream_operator"),
+        .generate_equality =
+            base::Contains(command_line_options, "generate_equality"),
         .protobuf_full_support =
-#if __cpp_lib_string_contains
-            command_line_options.contains("protobuf_full_support"),
-#else
-            command_line_options.find("protobuf_full_support") != std::string::npos,
-#endif
+            base::Contains(command_line_options, "protobuf_full_support"),
     };
     // The current design of this library assumes that only one of the
     // serialization options is enabled.

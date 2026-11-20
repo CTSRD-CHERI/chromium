@@ -11,10 +11,10 @@
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
-#include "base/string_contains.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -228,13 +228,12 @@ bool OnDeviceTailModelExecutor::Init(
     if (!file_path.empty()) {
       std::string file_path_str =
           optimization_guide::FilePathToString(file_path);
-      if (base::StringContains(file_path_str, kVocabFileNameKeyword)) {
+      if (base::Contains(file_path_str, kVocabFileNameKeyword)) {
         vocab_filepath = file_path;
-      } else if (base::StringContains(file_path_str,
-                                      kBadwordHashesFileNameKeyword)) {
+      } else if (base::Contains(file_path_str, kBadwordHashesFileNameKeyword)) {
         badword_hashes_filepath = file_path;
-      } else if (base::StringContains(file_path_str,
-                                      kBadSubstringDenyListFileNameKeyword)) {
+      } else if (base::Contains(file_path_str,
+                                kBadSubstringDenyListFileNameKeyword)) {
         bad_substrings_filepath = file_path;
       }
     }
@@ -427,7 +426,7 @@ bool OnDeviceTailModelExecutor::IsSuggestionBad(const std::string& suggestion) {
   }
 
   for (const std::string& substring : bad_substrings_) {
-    if (base::StringContains(suggestion, substring)) {
+    if (base::Contains(suggestion, substring)) {
       return true;
     }
   }
@@ -439,7 +438,7 @@ bool OnDeviceTailModelExecutor::IsSuggestionBad(const std::string& suggestion) {
 
     for (const std::string& word : words) {
       auto hash_value = base::PersistentHash(word);
-      if (badword_hashes_.contains(hash_value)) {
+      if (base::Contains(badword_hashes_, hash_value)) {
         return true;
       }
     }
