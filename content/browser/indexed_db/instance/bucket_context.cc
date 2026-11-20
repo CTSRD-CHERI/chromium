@@ -24,6 +24,7 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -650,7 +651,7 @@ void BucketContext::DeleteDatabase(
     }
   }
 
-  if (!databases_.contains(name)) {
+  if (!base::Contains(databases_, name)) {
     // This adds `Database` in an uninitialized state.
     CreateAndAddDatabase(name);
   }
@@ -708,7 +709,7 @@ void BucketContext::BindMockFailureSingletonForTesting(
 }
 
 Database* BucketContext::CreateAndAddDatabase(const std::u16string& name) {
-  CHECK(!databases_.contains(name));
+  CHECK(!base::Contains(databases_, name));
   auto database =
       std::make_unique<Database>(next_database_id_for_locks_++, name, *this);
   return databases_.emplace(name, std::move(database)).first->second.get();

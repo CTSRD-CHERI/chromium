@@ -369,9 +369,9 @@ class BtmNavigationFlowDetectorPATApiTest
               if (request.relative_url != "/issue") {
                 return nullptr;
               }
-              if (!request.headers.contains("Sec-Private-State-Token") ||
-                  !request.headers.contains(
-                      "Sec-Private-State-Token-Crypto-Version")) {
+              if (!base::Contains(request.headers, "Sec-Private-State-Token") ||
+                  !base::Contains(request.headers,
+                                  "Sec-Private-State-Token-Crypto-Version")) {
                 return MakeTrustTokenFailureResponse();
               }
 

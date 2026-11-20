@@ -2160,11 +2160,8 @@ bool FileSystemAccessManagerImpl::IsSafePathComponent(
     // Check for both '/' and '\' as path separators, regardless of what OS
     // we're running on.
     return component16 != u"." && component16 != u".." &&
-#if __cpp_lib_string_contains
-           !component16.contains('/') && !component16.contains('\\');
-#else
-           component16.find('/') == std::string::npos && component16.find('\\') == std::string::npos;
-#endif
+           !base::Contains(component16, '/') &&
+           !base::Contains(component16, '\\');
   }
 
   // base::i18n::IsFilenameLegal blocks names that start with '.', so strip out
