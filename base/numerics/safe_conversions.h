@@ -61,9 +61,11 @@ struct IsValueInRangeFastOp<Dst, Src> {
   }
 };
 
-// Signed to unsigned range comparison.
+// Signed to unsigned range comparison. Capability integers use the generic
+// check, which tests the source sign before converting to an unsigned type.
 template <typename Dst, typename Src>
   requires(std::unsigned_integral<Dst> && std::signed_integral<Src> &&
+           !base::IsIntcap<Dst> && !base::IsIntcap<Src> &&
            !kIsTypeInRangeForNumericType<Dst, Src>)
 struct IsValueInRangeFastOp<Dst, Src> {
   static constexpr bool is_supported = true;

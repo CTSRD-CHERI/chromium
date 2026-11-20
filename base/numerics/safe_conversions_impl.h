@@ -199,8 +199,16 @@ struct NarrowingRange {
                                     ? (DstLimits::digits - SrcLimits::digits)
                                     : 0;
 
+  // Adjust capability integer bounds using an address-sized integer with
+  // matching signedness so the precision mask operates on ordinary integers.
+  using AdjustmentType = std::conditional_t<
+      base::IsIntcap<Dst>,
+      std::conditional_t<std::is_signed_v<Dst>, std::make_signed_t<size_t>,
+                         size_t>,
+      Dst>;
+
   template <typename T>
-    requires(std::same_as<T, Dst> &&
+    requires(std::same_as<T, AdjustmentType> &&
              ((std::integral<T> && kShift < DstLimits::digits) ||
               (std::floating_point<T> && kShift == 0)))
   // Masks out the integer bits that are beyond the precision of the
@@ -217,28 +225,13 @@ struct NarrowingRange {
     }
   }
 
-#if defined(__CHERI_PURE_CAPABILITY__)
-  template <typename T>
-    requires(std::same_as<ptraddr_t, T> &&
-            (std::same_as<unsigned __intcap, Dst> || std::same_as<__intcap, Dst>))
-  static constexpr T Adjust(T value) {
-     return value;
-  }
-#endif  // !__CHERI_PURE_CAPABILITY__
-
   static constexpr Dst max() {
-    if constexpr (base::IsIntcap<Dst>) {
-      return static_cast<Dst>(Adjust(Bounds<size_t>::max()));
-    } else {
-      return Adjust(Bounds<Dst>::max());
-    }
+    return static_cast<Dst>(Adjust(Bounds<AdjustmentType>::max()));
   }
+
   static constexpr Dst lowest() {
-    if constexpr (base::IsIntcap<Dst>) {
-      return static_cast<Dst>(Adjust(Bounds<size_t>::lowest()));
-    } else {
-      return Adjust(Bounds<Dst>::lowest()); }
-    }
+    return static_cast<Dst>(Adjust(Bounds<AdjustmentType>::lowest()));
+  }
 };
 
 // The following templates are for ranges that must be verified at runtime. We
