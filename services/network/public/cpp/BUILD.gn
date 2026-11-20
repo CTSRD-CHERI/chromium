@@ -855,7 +855,7 @@ source_set("tests") {
     "x_frame_options_parser_unittest.cc",
   ]
 
-  if (is_linux) {
+  if (is_linux && !is_bsd) {
     sources += [ "network_interface_change_listener_mojom_traits_unittest.cc" ]
   }
 
