@@ -20,9 +20,17 @@ constexpr char kTopLevelHost[] = "publisher";
 constexpr char kTrustedBiddingSignalsSlotSizeParam[] =
     "trusted_bidding_signals_slot_size_param=foo";
 constexpr uint16_t kExperimentId = 123;
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const std::string kInterestGroup = "ig1";
+#else
 constexpr std::string kInterestGroup = "ig1";
+#endif
 const std::vector<std::string> kKeys{"key1"};
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const std::string kInterestGroup2 = "ig2";
+#else
 constexpr std::string kInterestGroup2 = "ig2";
+#endif
 const std::vector<std::string> kKeys2{"key1", "key2"};
 constexpr size_t kMaxSignalsLength = 1000;
 

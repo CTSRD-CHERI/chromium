@@ -14,7 +14,11 @@ namespace content {
 
 namespace {
 
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const std::string kEmptyFilter = "";
+#else
 constexpr std::string kEmptyFilter = "";
+#endif
 
 }  // namespace
 

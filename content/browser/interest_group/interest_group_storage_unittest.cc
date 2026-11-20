@@ -5679,10 +5679,17 @@ TEST_F(InterestGroupStorageTest, SetGetBiddingAndAuctionKeys) {
 TEST_F(InterestGroupStorageTest, WriteAndLoadCachedKAnonKeys) {
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  const std::string kKey1 = "key1";
+  const std::string kKey2 = "key2";
+  const std::string kKey3 = "key3";
+  const std::string kKey4 = "key4";
+#else
   constexpr std::string kKey1 = "key1";
   constexpr std::string kKey2 = "key2";
   constexpr std::string kKey3 = "key3";
   constexpr std::string kKey4 = "key4";
+#endif
 
   base::test::ScopedFeatureList scoped_feature_to_enforce_limit;
   scoped_feature_to_enforce_limit.InitAndEnableFeatureWithParameters(
