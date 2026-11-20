@@ -15,7 +15,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/string_contains.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "extensions/browser/api/declarative/deduping_factory.h"
