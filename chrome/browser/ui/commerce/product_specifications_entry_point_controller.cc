@@ -103,7 +103,8 @@ void LogClusterUKM(const TabStripModel* tab_strip_model,
     }
     bool comparable_by_server =
         entry_point_info.has_value() &&
-        entry_point_info->similar_candidate_products.contains(current_url);
+        base::Contains(entry_point_info->similar_candidate_products,
+                       current_url);
     ukm::builders::Shopping_Compare_ClusterIdenfitiedByClient(
         contents->GetPrimaryMainFrame()->GetPageUkmSourceId())
         .SetCompareEventID(tab_strip_event_id)
@@ -197,7 +198,7 @@ void ProductSpecificationsEntryPointController::OnEntryPointExecuted() {
       current_entry_point_info_->similar_candidate_products;
   for (const auto& url_info :
        shopping_service_->GetUrlInfosForActiveWebWrappers()) {
-    if (candidate_products.contains(url_info.url)) {
+    if (base::Contains(candidate_products, url_info.url)) {
       urls.insert(url_info.url);
     }
   }
@@ -274,7 +275,7 @@ bool ProductSpecificationsEntryPointController::ShouldExecuteEntryPointShow() {
                          ->GetLastCommittedURL();
   std::map<GURL, uint64_t> candidate_products =
       current_entry_point_info_->similar_candidate_products;
-  return candidate_products.contains(current_url);
+  return base::Contains(candidate_products, current_url);
 }
 
 void ProductSpecificationsEntryPointController::OnClusterFinishedForNavigation(

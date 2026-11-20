@@ -9,7 +9,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#include "base/string_contains.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
@@ -45,7 +44,7 @@ std::optional<apps::IconInfo> GetTrustedIconsFromManifest(
 
     for (IconPurpose purpose : icon.purpose) {
       if (base::Contains(icon.sizes, gfx::Size()) &&
-          base::StringContains(icon.src.spec(), ".svg")) {
+          base::Contains(icon.src.spec(), ".svg")) {
         svg_icons_no_size[purpose] = icon.src;
       }
 
@@ -97,7 +96,7 @@ std::optional<apps::IconInfo> GetTrustedIconsFromManifest(
   // if the manifest has icons of an empty size specified) with the same
   // behavior applied above.
   if (kPreferMaskableIcons &&
-      svg_icons_no_size.contains(IconPurpose::MASKABLE)) {
+      base::Contains(svg_icons_no_size, IconPurpose::MASKABLE)) {
     apps::IconInfo primary_icon_info;
     primary_icon_info.square_size_px = kIconSizeForSVGNoIntrinsicSize;
     primary_icon_info.purpose = apps::IconInfo::Purpose::kMaskable;
@@ -105,7 +104,7 @@ std::optional<apps::IconInfo> GetTrustedIconsFromManifest(
     return primary_icon_info;
   }
 
-  if (svg_icons_no_size.contains(IconPurpose::ANY)) {
+  if (base::Contains(svg_icons_no_size, IconPurpose::ANY)) {
     apps::IconInfo primary_icon_info;
     primary_icon_info.square_size_px = kIconSizeForSVGNoIntrinsicSize;
     primary_icon_info.purpose = apps::IconInfo::Purpose::kAny;

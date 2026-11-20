@@ -297,7 +297,7 @@ const std::u16string ToolbarActionsModel::GetExtensionName(
 }
 
 bool ToolbarActionsModel::HasAction(const ActionId& action_id) const {
-  return action_ids_.contains(action_id);
+  return base::Contains(action_ids_, action_id);
 }
 
 bool ToolbarActionsModel::CanShowActionsInToolbar(
@@ -377,7 +377,7 @@ bool ToolbarActionsModel::IsActionPinned(const ActionId& action_id) const {
 bool ToolbarActionsModel::IsActionForcePinned(const ActionId& action_id) const {
   auto* management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
-  return management->GetForcePinnedList().contains(action_id);
+  return base::Contains(management->GetForcePinnedList(), action_id);
 }
 
 void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,

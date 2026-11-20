@@ -481,24 +481,26 @@ void CustomizeChromePageHandler::SetMostVisitedSettings(
 
   // Disable shortcuts auto-removal upon user interaction.
   DisableShortcutsAutoRemoval(profile_);
-  if ((current_tile_types.contains(ntp_tiles::TileType::kCustomLinks) !=
-           types_set.contains(ntp_tiles::TileType::kCustomLinks) ||
-       (current_tile_types.contains(ntp_tiles::TileType::kTopSites) !=
-        types_set.contains(ntp_tiles::TileType::kTopSites)))) {
-    UpdatePrefAndLogEvent(ntp_prefs::kNtpCustomLinksVisible,
-                          types_set.contains(ntp_tiles::TileType::kCustomLinks),
-                          NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE);
+  if ((base::Contains(current_tile_types, ntp_tiles::TileType::kCustomLinks) !=
+           base::Contains(types_set, ntp_tiles::TileType::kCustomLinks) ||
+       (base::Contains(current_tile_types, ntp_tiles::TileType::kTopSites) !=
+        base::Contains(types_set, ntp_tiles::TileType::kTopSites)))) {
+    UpdatePrefAndLogEvent(
+        ntp_prefs::kNtpCustomLinksVisible,
+        base::Contains(types_set, ntp_tiles::TileType::kCustomLinks),
+        NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE);
   }
 
-  if (current_tile_types.contains(ntp_tiles::TileType::kEnterpriseShortcuts) !=
-      types_set.contains(ntp_tiles::TileType::kEnterpriseShortcuts)) {
+  if (base::Contains(current_tile_types,
+                     ntp_tiles::TileType::kEnterpriseShortcuts) !=
+      base::Contains(types_set, ntp_tiles::TileType::kEnterpriseShortcuts)) {
     // If enterprise shortcuts are disabled or the policy is not set, skip this
     // update.
     if (base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) &&
         !IsEnterpriseShortcutsEmpty()) {
       UpdatePrefAndLogEvent(
           ntp_prefs::kNtpEnterpriseShortcutsVisible,
-          types_set.contains(ntp_tiles::TileType::kEnterpriseShortcuts),
+          base::Contains(types_set, ntp_tiles::TileType::kEnterpriseShortcuts),
           NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_TOGGLE_VISIBILITY);
     }
   }
@@ -607,12 +609,13 @@ void CustomizeChromePageHandler::SetModuleDisabled(const std::string& module_id,
   DisableModuleAutoRemoval(profile_, module_id);
   ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
   base::Value::List& list = update.Get();
+  base::Value module_id_value(module_id);
   if (disabled) {
-    if (!list.contains(module_id)) {
-      list.Append(module_id);
+    if (!base::Contains(list, module_id_value)) {
+      list.Append(std::move(module_id_value));
     }
   } else {
-    list.EraseValue(base::Value(module_id));
+    list.EraseValue(module_id_value);
   }
 }
 

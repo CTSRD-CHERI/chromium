@@ -557,7 +557,7 @@ void ConvertSiteGroupMapToList(
       origin_object.Set(kIsInstalled, is_installed);
 
       origin_object.Set(kHasPermissionSettings,
-                        origin_permission_set.contains(origin));
+                        base::Contains(origin_permission_set, origin));
       origin_list.Append(std::move(origin_object));
     }
     site_group.Set(kHasInstalledPWA, has_installed_pwa);

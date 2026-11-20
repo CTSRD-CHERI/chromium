@@ -2633,8 +2633,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
       content::EvalJs(GetActiveWebContents(), "document.body.textContent")
           .ExtractString();
 
-  EXPECT_TRUE(body.contains("This page has been blocked by an extension"));
-  EXPECT_TRUE(body.contains("Try disabling your extensions."));
+  EXPECT_TRUE(
+      base::Contains(body, "This page has been blocked by an extension"));
+  EXPECT_TRUE(base::Contains(body, "Try disabling your extensions."));
 }
 
 // Test an extension with multiple static rulesets.
@@ -3353,9 +3354,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     std::map<GURL, net::test_server::HttpRequest> seen_requests =
         GetAndResetRequestsToServer();
     EXPECT_EQ(!expect_script_redirected,
-              seen_requests.contains(requested_script_url));
+              base::Contains(seen_requests, requested_script_url));
     EXPECT_EQ(expect_script_redirected,
-              seen_requests.contains(redirected_script_url));
+              base::Contains(seen_requests, redirected_script_url));
 
     ExtensionActionRunner* runner =
         ExtensionActionRunner::GetForWebContents(GetActiveWebContents());
@@ -5578,14 +5579,14 @@ class DeclarativeNetRequestAllowAllRequestsBrowserTest
 
     for (const auto& path : paths_seen) {
       GURL expected_request_url = embedded_test_server()->GetURL(path);
-      EXPECT_TRUE(requests_seen.contains(expected_request_url))
+      EXPECT_TRUE(base::Contains(requests_seen, expected_request_url))
           << expected_request_url.spec()
           << " was not requested from the server.";
     }
 
     for (const auto& path : paths_not_seen) {
       GURL expected_request_url = embedded_test_server()->GetURL(path);
-      EXPECT_FALSE(requests_seen.contains(expected_request_url))
+      EXPECT_FALSE(base::Contains(requests_seen, expected_request_url))
           << expected_request_url.spec() << " request seen unexpectedly.";
     }
   }

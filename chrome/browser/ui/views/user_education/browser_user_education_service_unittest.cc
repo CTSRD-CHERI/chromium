@@ -62,7 +62,7 @@ TEST(BrowserUserEducationServiceTest, CheckFeaturePromoHistograms) {
   MaybeRegisterChromeFeaturePromos(registry);
   const auto& iph_specifications = registry.feature_data();
   for (const auto& [feature, spec] : iph_specifications) {
-    if (!iph_features->contains(feature->name)) {
+    if (!base::Contains(*iph_features, feature->name)) {
       missing_features.emplace_back(feature->name);
     }
   }
@@ -93,7 +93,7 @@ TEST(BrowserUserEducationServiceTest, CheckFeaturePromoActions) {
     if (feature_name.starts_with("IPH_")) {
       feature_name = feature_name.substr(4);
     }
-    if (!iph_variants[0].contains(feature_name)) {
+    if (!base::Contains(iph_variants[0], feature_name)) {
       missing_features.emplace_back(feature->name);
     }
   }
@@ -118,7 +118,7 @@ TEST(BrowserUserEducationServiceTest, CheckNewBadgeHistograms) {
   MaybeRegisterChromeNewBadges(registry);
   const auto& new_badge_specifications = registry.feature_data();
   for (const auto& [feature, spec] : new_badge_specifications) {
-    if (!new_badge_features->contains(feature->name)) {
+    if (!base::Contains(*new_badge_features, feature->name)) {
       missing_features.emplace_back(feature->name);
     }
   }
@@ -154,7 +154,7 @@ TEST(BrowserUserEducationServiceTest, CheckTutorialHistograms) {
       histogram_collisions.emplace_back(
           identifier, known_histograms[identifier], variant_name);
     }
-    if (!tutorial_features->contains(variant_name)) {
+    if (!base::Contains(*tutorial_features, variant_name)) {
       missing_features.emplace_back(variant_name);
     }
   }

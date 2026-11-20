@@ -202,7 +202,7 @@ void AccessCodeCastHandler::AddSink(
 }
 
 bool AccessCodeCastHandler::IsCastModeAvailable(MediaCastMode mode) const {
-  return cast_mode_set_.contains(mode);
+  return base::Contains(cast_mode_set_, mode);
 }
 
 // Discovery is not complete until the sink is in QRM. This is because any

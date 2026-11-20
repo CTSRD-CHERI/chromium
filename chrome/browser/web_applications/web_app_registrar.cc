@@ -312,7 +312,7 @@ std::optional<webapps::AppId> WebAppRegistrar::LookupPlaceholderAppId(
       continue;
     }
 
-    if (it->second.install_urls.contains(install_url) &&
+    if (base::Contains(it->second.install_urls, install_url) &&
         it->second.is_placeholder) {
       return web_app.app_id();
     }
@@ -523,7 +523,8 @@ bool WebAppRegistrar::HasExternalAppWithInstallSource(
   }
 
   const WebApp* web_app = GetAppById(app_id);
-  return web_app && web_app->management_to_external_config_map().contains(
+  return web_app &&
+         base::Contains(web_app->management_to_external_config_map(),
                         ConvertExternalInstallSourceToSource(install_source));
 }
 
@@ -925,7 +926,7 @@ std::optional<webapps::AppId> WebAppRegistrar::LookUpAppIdByInstallUrl(
     const GURL& install_url) const {
   for (const WebApp& web_app : GetApps()) {
     for (const auto& it : web_app.management_to_external_config_map()) {
-      if (it.second.install_urls.contains(install_url)) {
+      if (base::Contains(it.second.install_urls, install_url)) {
         return web_app.app_id();
       }
     }
@@ -941,7 +942,7 @@ const WebApp* WebAppRegistrar::LookUpAppByInstallSourceInstallUrl(
         app.management_to_external_config_map();
     auto it = config_map.find(install_source);
     if (it != config_map.end()) {
-      if (it->second.install_urls.contains(install_url)) {
+      if (base::Contains(it->second.install_urls, install_url)) {
         return &app;
       }
     }
@@ -1236,15 +1237,15 @@ bool WebAppRegistrar::IsAllowedLaunchProtocol(
     const std::string& protocol_scheme) const {
   const WebApp* web_app = GetAppById(app_id);
   return web_app &&
-         web_app->allowed_launch_protocols().contains(protocol_scheme);
+         base::Contains(web_app->allowed_launch_protocols(), protocol_scheme);
 }
 
 bool WebAppRegistrar::IsDisallowedLaunchProtocol(
     const webapps::AppId& app_id,
     const std::string& protocol_scheme) const {
   const WebApp* web_app = GetAppById(app_id);
-  return web_app &&
-         web_app->disallowed_launch_protocols().contains(protocol_scheme);
+  return web_app && base::Contains(web_app->disallowed_launch_protocols(),
+                                   protocol_scheme);
 }
 
 bool WebAppRegistrar::IsRegisteredLaunchProtocol(
