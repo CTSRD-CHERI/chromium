@@ -2401,10 +2401,17 @@ TEST_F(TextfieldModelTest, Clipboard_WhiteSpaceStringTest) {
 }
 
 TEST_F(TextfieldModelTest, Transpose) {
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+  const std::u16string ltr = u"12";
+  const std::u16string rtl = u"\x0634\x0632";
+  const std::u16string ltr_transposed = u"21";
+  const std::u16string rtl_transposed = u"\x0632\x0634";
+#else
   constexpr std::u16string ltr = u"12";
   constexpr std::u16string rtl = u"\x0634\x0632";
   constexpr std::u16string ltr_transposed = u"21";
   constexpr std::u16string rtl_transposed = u"\x0632\x0634";
+#endif
 
   // This is a string with an 'a' between two emojis.
   const std::u16string surrogate_pairs({0xD83D, 0xDE07, 'a', 0xD83D, 0xDE0E});
