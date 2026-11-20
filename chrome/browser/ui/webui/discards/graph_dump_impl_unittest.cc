@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -124,7 +125,7 @@ class TestChangeStream : public discards::mojom::GraphChangeStream {
   size_t num_changes() const { return num_changes_; }
 
  private:
-  bool HasId(int64_t id) { return id_set_.contains(id); }
+  bool HasId(int64_t id) { return base::Contains(id_set_, id); }
   bool HasIdIfValid(int64_t id) { return id == 0u || HasId(id); }
 
   FrameMap frame_map_;
@@ -313,7 +314,7 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
   // Main frame navigation results in a notification for the url.
   expected_changes += 1;
   EXPECT_EQ(expected_changes, change_stream.num_changes());
-  EXPECT_FALSE(change_stream.id_set().contains(child_frame_id));
+  EXPECT_FALSE(base::Contains(change_stream.id_set(), child_frame_id));
 
   const auto main_page_it = change_stream.page_map().find(
       impl_raw->GetNodeIdForTesting(mock_graph.page.get()));

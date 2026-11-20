@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -27,7 +28,7 @@ static FlagNameToExpirationMap* GetFlagExpirationOverrideMap() {
 }
 
 int ExpirationMilestoneForFlag(const char* flag) {
-  if (GetFlagExpirationOverrideMap()->contains(flag)) {
+  if (base::Contains(*GetFlagExpirationOverrideMap(), flag)) {
     return GetFlagExpirationOverrideMap()->at(flag);
   }
 
@@ -110,7 +111,7 @@ bool IsFlagExpired(const flags_ui::FlagsStorage* storage,
   // unexpiry happens during FeatureList initialization.
   // TODO(ellyjones): what might we do about that?
   std::set<int> unexpired_milestones = UnexpiredMilestonesFromStorage(storage);
-  if (unexpired_milestones.contains(mstone)) {
+  if (base::Contains(unexpired_milestones, mstone)) {
     return false;
   }
 

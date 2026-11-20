@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -288,7 +289,7 @@ UsbChooserContext::GetGrantedObjects(const url::Origin& origin) {
         // always be called after device initialization in UsbChooserController
         // which always returns after the device list initialization in this
         // class.
-        DCHECK(devices_.contains(guid));
+        DCHECK(base::Contains(devices_, guid));
         objects.push_back(std::make_unique<Object>(
             origin, DeviceInfoToValue(*devices_[guid]),
             content_settings::SettingSource::kUser, is_incognito_));
@@ -358,7 +359,7 @@ UsbChooserContext::GetAllGrantedObjects() {
       continue;
 
     for (const std::string& guid : map_entry.second) {
-      DCHECK(devices_.contains(guid));
+      DCHECK(base::Contains(devices_, guid));
       objects.push_back(std::make_unique<Object>(
           origin, DeviceInfoToValue(*devices_[guid]),
           content_settings::SettingSource::kUser, is_incognito_));
@@ -420,7 +421,7 @@ void UsbChooserContext::RevokeObjectPermission(
 void UsbChooserContext::RevokeDevicePermissionWebInitiated(
     const url::Origin& origin,
     const device::mojom::UsbDeviceInfo& device) {
-  DCHECK(devices_.contains(device.guid));
+  DCHECK(base::Contains(devices_, device.guid));
   RevokeObjectPermissionInternal(origin, DeviceInfoToValue(device),
                                  /*revoked_by_website=*/true);
 }
@@ -505,7 +506,8 @@ bool UsbChooserContext::HasDevicePermission(
     return false;
 
   auto it = ephemeral_devices_.find(origin);
-  if (it != ephemeral_devices_.end() && it->second.contains(device_info.guid)) {
+  if (it != ephemeral_devices_.end() &&
+      base::Contains(it->second, device_info.guid)) {
     return true;
   }
 
@@ -590,7 +592,7 @@ void UsbChooserContext::OnDeviceAdded(
     device::mojom::UsbDeviceInfoPtr device_info) {
   DCHECK(device_info);
   // Update the device list.
-  DCHECK(!devices_.contains(device_info->guid));
+  DCHECK(!base::Contains(devices_, device_info->guid));
   if (!ShouldExposeDevice(*device_info))
     return;
   devices_.insert(std::make_pair(device_info->guid, device_info->Clone()));
@@ -605,12 +607,12 @@ void UsbChooserContext::OnDeviceRemoved(
   DCHECK(device_info);
 
   if (!ShouldExposeDevice(*device_info)) {
-    DCHECK(!devices_.contains(device_info->guid));
+    DCHECK(!base::Contains(devices_, device_info->guid));
     return;
   }
 
   // Update the device list.
-  DCHECK(devices_.contains(device_info->guid));
+  DCHECK(base::Contains(devices_, device_info->guid));
   devices_.erase(device_info->guid);
 
   // Notify all device observers.

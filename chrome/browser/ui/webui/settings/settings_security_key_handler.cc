@@ -12,6 +12,7 @@
 
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
@@ -891,7 +892,7 @@ void SecurityKeysBioEnrollmentHandler::OnHavePostEnrollmentEnumeration(
   DCHECK(!callback_id_.empty());
   state_ = State::kReady;
   if (code != device::CtapDeviceResponseCode::kSuccess || !enrollments ||
-      !enrollments->contains(enrolled_template_id)) {
+      !base::Contains(*enrollments, enrolled_template_id)) {
     OnError(device::BioEnrollmentHandler::Error::kAuthenticatorResponseInvalid);
     return;
   }

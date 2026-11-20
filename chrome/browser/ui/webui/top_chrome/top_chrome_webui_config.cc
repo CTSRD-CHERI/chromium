@@ -6,6 +6,7 @@
 
 #include <set>
 
+#include "base/containers/contains.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"

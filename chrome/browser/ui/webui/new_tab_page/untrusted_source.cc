@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ref_counted_memory.h"
@@ -301,7 +302,7 @@ bool UntrustedSource::ShouldServiceRequest(
          path == "one_google_bar_api.js" || path == "image" ||
          path == "background_image" || path == "custom_background_image" ||
          path == "background_image.js" ||
-         base::StringContains(path, "background.jpg");
+         base::Contains(path, "background.jpg");
 }
 
 void UntrustedSource::OnOneGoogleBarDataUpdated() {

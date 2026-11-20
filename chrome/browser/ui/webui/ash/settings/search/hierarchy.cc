@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/ash/settings/constants/constants_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
@@ -346,7 +347,7 @@ std::ostream& operator<<(std::ostream& os, const Hierarchy& h) {
     subpage_subpage.insert({subpage_id, {}});
     subpage_setting.insert({subpage_id, {}});
 
-    if (!h.subpage_map_.contains(subpage_id)) {
+    if (!base::Contains(h.subpage_map_, subpage_id)) {
       none_exist_subpage.push_back(subpage_id);
       continue;
     }
@@ -361,7 +362,7 @@ std::ostream& operator<<(std::ostream& os, const Hierarchy& h) {
   }
 
   for (auto& setting_id : AllSettings()) {
-    if (!h.setting_map_.contains(setting_id)) {
+    if (!base::Contains(h.setting_map_, setting_id)) {
       none_exist_setting.push_back(setting_id);
       continue;
     }

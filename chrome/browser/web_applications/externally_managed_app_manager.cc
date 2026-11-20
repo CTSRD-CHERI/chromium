@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check_is_test.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/stl_util.h"
@@ -182,7 +183,7 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
       }));
   // Only one concurrent SynchronizeInstalledApps() expected per
   // ExternalInstallSource.
-  CHECK(!synchronize_requests_.contains(install_source));
+  CHECK(!base::Contains(synchronize_requests_, install_source));
   provider_->scheduler().ScheduleCallback<AllAppsLock>(
       "ExternallyManagedAppManager::SynchronizeInstalledApps",
       AllAppsLockDescription(),

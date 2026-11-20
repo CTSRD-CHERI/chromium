@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/contains.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/settings_secure_dns_handler.h"
 
 #include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
@@ -118,7 +119,7 @@ bool FindDropdownItem(const base::Value::List& resolvers,
   dict.Set("value", value);
   dict.Set("policy", policy);
 
-  return resolvers.contains(dict);
+  return base::Contains(resolvers, dict);
 }
 
 }  // namespace

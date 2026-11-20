@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -273,7 +274,7 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, BasicFieldsPopulated) {
   // Verify icon metadata and bitmaps populated correctly.
   EXPECT_EQ(1u, web_app_info->manifest_icons.size());
   EXPECT_EQ(icon_url_.spec(), web_app_info->manifest_icons[0].url);
-  EXPECT_TRUE(web_app_info->icon_bitmaps.any.contains(kIconSize));
+  EXPECT_TRUE(base::Contains(web_app_info->icon_bitmaps.any, kIconSize));
   EXPECT_THAT(web_app_info->icon_bitmaps.any[kIconSize],
               gfx::test::EqualsBitmap(GetBasicIconBitmap()));
 
@@ -392,13 +393,14 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, IconParsingCorrectly) {
   EXPECT_EQ(1, purpose_to_count[IconPurpose::MASKABLE]);
 
   // Verify icon bitmaps populated correctly.
-  EXPECT_TRUE(web_app_info->icon_bitmaps.maskable.contains(kIconSize));
+  EXPECT_TRUE(base::Contains(web_app_info->icon_bitmaps.maskable, kIconSize));
   EXPECT_THAT(web_app_info->icon_bitmaps.maskable[kIconSize],
               gfx::test::EqualsBitmap(GetBasicIconBitmap()));
-  EXPECT_TRUE(web_app_info->icon_bitmaps.any.contains(kIconSize));
+  EXPECT_TRUE(base::Contains(web_app_info->icon_bitmaps.any, kIconSize));
   EXPECT_THAT(web_app_info->icon_bitmaps.any[kIconSize],
               gfx::test::EqualsBitmap(GetBasicIconBitmap()));
-  EXPECT_TRUE(web_app_info->icon_bitmaps.monochrome.contains(monochrome_size));
+  EXPECT_TRUE(
+      base::Contains(web_app_info->icon_bitmaps.monochrome, monochrome_size));
   EXPECT_THAT(web_app_info->icon_bitmaps.monochrome[monochrome_size],
               gfx::test::EqualsBitmap(monochrome_icon));
 }
@@ -481,8 +483,8 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, ShortcutItems) {
   EXPECT_EQ(icon_url, web_app_shortcut_icon.url);
 
   EXPECT_FALSE(web_app_info->shortcuts_menu_icon_bitmaps.empty());
-  EXPECT_TRUE(web_app_info->shortcuts_menu_icon_bitmaps[0].any.contains(
-      shortcut_icon_size));
+  EXPECT_TRUE(base::Contains(web_app_info->shortcuts_menu_icon_bitmaps[0].any,
+                             shortcut_icon_size));
   EXPECT_THAT(
       web_app_info->shortcuts_menu_icon_bitmaps[0].any[shortcut_icon_size],
       gfx::test::EqualsBitmap(shortcut_bitmap));
@@ -623,8 +625,10 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, HomeTabAndFileHandlingIcons) {
   // Verify bitmaps are populated correctly.
   auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
   EXPECT_EQ(2u, web_app_info->other_icon_bitmaps.size());
-  EXPECT_TRUE(web_app_info->other_icon_bitmaps.contains(tab_strip_icon_url));
-  EXPECT_TRUE(web_app_info->other_icon_bitmaps.contains(file_handler_icon_url));
+  EXPECT_TRUE(
+      base::Contains(web_app_info->other_icon_bitmaps, tab_strip_icon_url));
+  EXPECT_TRUE(
+      base::Contains(web_app_info->other_icon_bitmaps, file_handler_icon_url));
   EXPECT_THAT(web_app_info->other_icon_bitmaps[tab_strip_icon_url][0],
               gfx::test::EqualsBitmap(tab_strip_icon));
   EXPECT_THAT(web_app_info->other_icon_bitmaps[file_handler_icon_url][0],

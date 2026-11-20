@@ -1380,11 +1380,11 @@ void NewTabPageUI::UpdateMostVisitedTileTypes() {
     most_visited_page_handler_->EnableTileTypes(
         ntp_tiles::MostVisitedSites::EnableTileTypesOptions()
             .with_top_sites(
-                enabled_types.contains(ntp_tiles::TileType::kTopSites))
-            .with_custom_links(
-                enabled_types.contains(ntp_tiles::TileType::kCustomLinks))
-            .with_enterprise_shortcuts(enabled_types.contains(
-                ntp_tiles::TileType::kEnterpriseShortcuts)));
+                base::Contains(enabled_types, ntp_tiles::TileType::kTopSites))
+            .with_custom_links(base::Contains(
+                enabled_types, ntp_tiles::TileType::kCustomLinks))
+            .with_enterprise_shortcuts(base::Contains(
+                enabled_types, ntp_tiles::TileType::kEnterpriseShortcuts)));
   }
 }
 

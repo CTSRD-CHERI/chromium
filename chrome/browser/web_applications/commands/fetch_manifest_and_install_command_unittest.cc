@@ -638,7 +638,7 @@ TEST_F(FetchManifestAndInstallCommandTest, WriteDataToDisk) {
 
     for (SquareSizePx size_px : purpose_info.sizes_px) {
       SCOPED_TRACE(size_px);
-      ASSERT_TRUE(pngs.contains(size_px));
+      ASSERT_TRUE(base::Contains(pngs, size_px));
 
       SkBitmap icon_bitmap = pngs[size_px];
       EXPECT_EQ(icon_bitmap.width(), icon_bitmap.height());
@@ -937,7 +937,7 @@ class UniversalInstallComboTest
     std::string icons_name_part = "Absent";
     if (std::get<5>(config)) {
       std::string filename = std::get<5>(config)->src.ExtractFileName();
-      if (filename.contains(".")) {
+      if (base::Contains(filename, ".")) {
         icons_name_part = filename.substr(0, filename.find('.'));
       }
     }
@@ -992,7 +992,7 @@ class UniversalInstallComboTest
 
   bool IsInstallableOtherThanDisplay() {
     return GetAppName() && GetStartUrl() && GetIcon() &&
-           !GetIcon()->src.spec().contains("not_found");
+           !base::Contains(GetIcon()->src.spec(), "not_found");
   }
 
   bool IsCraftedApp() {
@@ -1013,7 +1013,7 @@ class UniversalInstallComboTest
   }
 
   SkBitmap GenerateExpected256Icon() {
-    if (GetIcon() && !GetIcon()->src.spec().contains("not_found")) {
+    if (GetIcon() && !base::Contains(GetIcon()->src.spec(), "not_found")) {
       return CreateSquareIcon(icon_size::k256, kIconColor);
     } else if (IsDiyApp()) {
       if (GetFaviconColor()) {
@@ -1079,7 +1079,7 @@ class UniversalInstallComboTest
       manifest->icons = {GetIcon().value()};
       GURL url = GetIcon()->src;
       auto& icon_state = web_contents_manager().GetOrCreateIconState(url);
-      if (url.spec().contains("not_found")) {
+      if (base::Contains(url.spec(), "not_found")) {
         icon_state.bitmaps = {};
         icon_state.http_status_code = 404;
       } else {
@@ -1140,7 +1140,8 @@ class UniversalInstallComboTest
 #endif
     // Note: These should be static test images instead of dynamically
     // generating these using the same production code.
-    if (GetIcon().has_value() && !GetIcon()->src.spec().contains("not_found")) {
+    if (GetIcon().has_value() &&
+        !base::Contains(GetIcon()->src.spec(), "not_found")) {
       return CreateSquareIcon(width, kIconColor);
     }
     if (GetFaviconColor()) {

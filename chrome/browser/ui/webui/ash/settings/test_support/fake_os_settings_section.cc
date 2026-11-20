@@ -8,6 +8,7 @@
 #include <sstream>
 
 #include "ash/webui/settings/public/constants/routes.mojom-shared.h"
+#include "base/containers/contains.h"
 #include "chrome/grit/generated_resources.h"
 
 namespace ash::settings {
@@ -27,7 +28,7 @@ void FakeOsSettingsSection::AddSubpageAndSetting(
     std::optional<chromeos::settings::mojom::Subpage> subpage,
     std::optional<chromeos::settings::mojom::Setting> setting) {
   if (subpage) {
-    if (!subpages_.contains(subpage.value())) {
+    if (!base::Contains(subpages_, subpage.value())) {
       // This is a new `subpage` and settings on this subpage.
       subpages_.insert({subpage.value(), {}});
     }

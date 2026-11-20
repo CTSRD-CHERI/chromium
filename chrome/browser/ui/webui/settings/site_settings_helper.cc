@@ -15,6 +15,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/no_destructor.h"

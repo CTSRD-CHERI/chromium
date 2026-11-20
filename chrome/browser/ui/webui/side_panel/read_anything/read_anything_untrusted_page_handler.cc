@@ -833,7 +833,7 @@ void ReadAnythingUntrustedPageHandler::OnLanguagePrefChange(
   ScopedListPrefUpdate update(
       prefs, prefs::kAccessibilityReadAnythingLanguagesEnabled);
   if (enabled) {
-    if (!update.Get().contains(lang)) {
+    if (!base::Contains(update.Get(), lang)) {
       update->Append(lang);
     }
   } else {
