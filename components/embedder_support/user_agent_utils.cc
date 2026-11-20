@@ -15,6 +15,7 @@
 #include "base/android/device_info.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -793,11 +794,7 @@ std::string GetCpuBitness() {
   }
   return std::string();
 #elif BUILDFLAG(IS_POSIX)
-#if __cpp_lib_string_contains
-  return BuildCpuInfo().contains("64") ? "64" : "32";
-#else
-  return BuildCpuInfo().find("64") != std::string::npos ? "64" : "32";
-#endif
+  return base::Contains(BuildCpuInfo(), "64") ? "64" : "32";
 #else
 #error Unsupported platform
 #endif

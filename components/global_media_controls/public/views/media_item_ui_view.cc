@@ -4,6 +4,7 @@
 
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "components/global_media_controls/public/constants.h"
@@ -248,9 +249,11 @@ void MediaItemUIView::OnVisibleActionsChanged(
     const base::flat_set<media_session::mojom::MediaSessionAction>& actions) {
   has_many_actions_ =
       (actions.size() >= kMinVisibleActionsForExpanding ||
-       actions.contains(
+       base::Contains(
+           actions,
            media_session::mojom::MediaSessionAction::kEnterPictureInPicture) ||
-       actions.contains(
+       base::Contains(
+           actions,
            media_session::mojom::MediaSessionAction::kExitPictureInPicture));
   ForceExpandedState();
 

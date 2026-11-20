@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/i18n/char_iterator.h"
@@ -229,7 +230,7 @@ void LogFillingMetrics(const FormStructure& form,
       autofilled_field_types.insert_all(field->Type().GetTypes());
     }
   }
-  if (form.GetFormTypes().contains(FormType::kCreditCardForm)) {
+  if (base::Contains(form.GetFormTypes(), FormType::kCreditCardForm)) {
     AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
         autofilled_field_types);
   }

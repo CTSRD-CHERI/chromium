@@ -11,6 +11,7 @@
 #include <array>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_split.h"
@@ -213,7 +214,7 @@ TEST_F(ResourceMetadataStorageTest, Iterator) {
 
   EXPECT_EQ(keys.size(), found_entries.size());
   for (const std::string& key : keys)
-    EXPECT_TRUE(found_entries.contains(key));
+    EXPECT_TRUE(base::Contains(found_entries, key));
 }
 
 TEST_F(ResourceMetadataStorageTest, GetIdByResourceId) {
