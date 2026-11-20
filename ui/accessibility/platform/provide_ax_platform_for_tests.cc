@@ -5,6 +5,7 @@
 #include "ui/accessibility/platform/provide_ax_platform_for_tests.h"
 
 #include "build/build_config.h"
+#include "ui/base/buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <tuple>
@@ -44,7 +45,7 @@ void ProvideAXPlatformForTests::OnTestEnd(
          "explicitly using facilities such as IAccessible, then you may have "
          "just found a bug in ui/accessibility/platform. Contact a member of "
          "ui/accessibility/OWNERS for guidance.";
-#elif BUILDFLAG(IS_LINUX)
+#elif BUILDFLAG(IS_LINUX) || (BUILDFLAG(IS_BSD) && BUILDFLAG(USE_ATK))
   // The `AuraLinuxApplication` singleton is never destroyed, so one node is
   // leaked in all unit tests that create a ViewAXPlatformNodeDelegate. It's not
   // possible to distinguish between a leak of an arbitrary node and a leak of
