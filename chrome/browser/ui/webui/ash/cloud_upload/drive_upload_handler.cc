@@ -44,14 +44,16 @@ const int kAlternateUrlPollInterval = 200;
 
 std::string GetTargetAppName(base::FilePath file_path) {
   const std::string extension = base::ToLowerASCII(file_path.FinalExtension());
-  if (file_manager::file_tasks::WordGroupExtensions().contains(extension)) {
+  if (base::Contains(file_manager::file_tasks::WordGroupExtensions(),
+                     extension)) {
     return l10n_util::GetStringUTF8(IDS_OFFICE_FILE_HANDLER_APP_GOOGLE_DOCS);
   }
-  if (file_manager::file_tasks::ExcelGroupExtensions().contains(extension)) {
+  if (base::Contains(file_manager::file_tasks::ExcelGroupExtensions(),
+                     extension)) {
     return l10n_util::GetStringUTF8(IDS_OFFICE_FILE_HANDLER_APP_GOOGLE_SHEETS);
   }
-  if (file_manager::file_tasks::PowerPointGroupExtensions().contains(
-          extension)) {
+  if (base::Contains(file_manager::file_tasks::PowerPointGroupExtensions(),
+                     extension)) {
     return l10n_util::GetStringUTF8(IDS_OFFICE_FILE_HANDLER_APP_GOOGLE_SLIDES);
   }
   return l10n_util::GetStringUTF8(IDS_OFFICE_FILE_HANDLER_APP_GOOGLE_DOCS);

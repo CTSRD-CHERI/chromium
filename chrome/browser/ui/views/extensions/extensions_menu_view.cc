@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_deref.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
@@ -419,7 +420,7 @@ void ExtensionsMenuView::SanityCheck() {
   // guarantees that we have a view per item in |action_ids| as well).
   for (ExtensionMenuItemView* item : extensions_menu_items_) {
     DCHECK(Contains(item));
-    DCHECK(action_ids.contains(item->view_model()->GetId()));
+    DCHECK(base::Contains(action_ids, item->view_model()->GetId()));
   }
 #endif
 }

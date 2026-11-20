@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/media_router/cast_modes_with_media_sources.h"
 
+#include "base/containers/contains.h"
 
 namespace media_router {
 
@@ -32,8 +33,8 @@ void CastModesWithMediaSources::RemoveSource(MediaCastMode cast_mode,
 
 bool CastModesWithMediaSources::HasSource(MediaCastMode cast_mode,
                                           const MediaSource& source) const {
-  return cast_modes_.contains(cast_mode)
-             ? cast_modes_.at(cast_mode).contains(source)
+  return base::Contains(cast_modes_, cast_mode)
+             ? base::Contains(cast_modes_.at(cast_mode), source)
              : false;
 }
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -200,7 +201,7 @@ bool ToolbarIconContainerView::GetHighlighted() const {
       return true;
     }
     // The container should also be highlighted if a dialog is anchored to.
-    if (highlighted_buttons_.contains(button)) {
+    if (base::Contains(highlighted_buttons_, button)) {
       return true;
     }
   }

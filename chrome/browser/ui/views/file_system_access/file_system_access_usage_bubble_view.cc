@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/raw_ptr.h"
@@ -339,12 +340,12 @@ void FileSystemAccessUsageBubbleView::ShowBubble(
   std::set<base::FilePath> writable_directories(
       usage.writable_directories.begin(), usage.writable_directories.end());
   std::erase_if(usage.readable_directories, [&](const base::FilePath& path) {
-    return writable_directories.contains(path);
+    return base::Contains(writable_directories, path);
   });
   std::set<base::FilePath> writable_files(usage.writable_files.begin(),
                                           usage.writable_files.end());
   std::erase_if(usage.readable_files, [&](const base::FilePath& path) {
-    return writable_files.contains(path);
+    return base::Contains(writable_files, path);
   });
 
   // TODO(crbug.com/376282751): An action ID should be created and used here

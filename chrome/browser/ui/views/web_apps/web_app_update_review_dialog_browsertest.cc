@@ -121,18 +121,18 @@ class WebAppUpdateReviewDialog : public DialogBrowserTest {
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     // Modify the update configuration based on the test name.
-    if (name.contains("NameChange")) {
+    if (base::Contains(name, "NameChange")) {
       update_.new_title =
           u"Definitely a longer title that is really really really really "
           u"long.";
     }
-    if (name.contains("IconChange")) {
+    if (base::Contains(name, "IconChange")) {
       update_.new_icon = gfx::Image::CreateFrom1xBitmap(new_icon_);
     }
-    if (name.contains("UrlChange")) {
+    if (base::Contains(name, "UrlChange")) {
       update_.new_start_url = GURL("http://other.test.com");
     }
-    if (name.contains("ForcedMigration")) {
+    if (base::Contains(name, "ForcedMigration")) {
       update_.new_start_url = GURL("http://other.test.com");
       update_.is_forced_migration = true;
     }

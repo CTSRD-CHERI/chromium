@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
 
+#include "base/containers/contains.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
@@ -40,7 +41,7 @@ DownloadBubbleRowListView::~DownloadBubbleRowListView() {
 void DownloadBubbleRowListView::AddRow(
     const DownloadBubbleRowViewInfo& row_info) {
   const ContentId& id = row_info.model()->GetContentId();
-  CHECK(!rows_by_id_.contains(id));
+  CHECK(!base::Contains(rows_by_id_, id));
   auto* child = AddChildView(std::make_unique<DownloadBubbleRowView>(
       row_info, bubble_controller_, navigation_handler_, browser_,
       fixed_width_));

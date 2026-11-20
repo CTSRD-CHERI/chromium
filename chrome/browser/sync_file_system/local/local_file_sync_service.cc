@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sync_file_system/local/local_file_sync_service.h"
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
@@ -68,7 +69,7 @@ bool LocalFileSyncService::OriginChangeMap::NextOriginToProcess(GURL* origin) {
       next_ = change_count_map_.begin();
     DCHECK_NE(0, next_->second);
     *origin = next_++->first;
-    if (!disabled_origins_.contains(*origin)) {
+    if (!base::Contains(disabled_origins_, *origin)) {
       return true;
     }
   } while (next_ != begin);
@@ -79,7 +80,7 @@ int64_t LocalFileSyncService::OriginChangeMap::GetTotalChangeCount() const {
   int64_t num_changes = 0;
   for (auto iter = change_count_map_.begin(); iter != change_count_map_.end();
        ++iter) {
-    if (disabled_origins_.contains(iter->first)) {
+    if (base::Contains(disabled_origins_, iter->first)) {
       continue;
     }
     num_changes += iter->second;
@@ -166,7 +167,7 @@ void LocalFileSyncService::ProcessLocalChange(SyncFileCallback callback) {
     return;
   }
   DCHECK(!origin.is_empty());
-  DCHECK(origin_to_contexts_.contains(origin));
+  DCHECK(base::Contains(origin_to_contexts_, origin));
 
   DVLOG(1) << "Starting ProcessLocalChange";
 
@@ -189,7 +190,7 @@ void LocalFileSyncService::SetLocalChangeProcessorCallback(
 void LocalFileSyncService::HasPendingLocalChanges(
     const FileSystemURL& url,
     HasPendingLocalChangeCallback callback) {
-  if (!origin_to_contexts_.contains(url.origin().GetURL())) {
+  if (!base::Contains(origin_to_contexts_, url.origin().GetURL())) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   SYNC_FILE_ERROR_INVALID_URL, false));
@@ -220,7 +221,7 @@ void LocalFileSyncService::PromoteDemotedChanges(
 void LocalFileSyncService::GetLocalFileMetadata(
     const FileSystemURL& url,
     SyncFileMetadataCallback callback) {
-  DCHECK(origin_to_contexts_.contains(url.origin().GetURL()));
+  DCHECK(base::Contains(origin_to_contexts_, url.origin().GetURL()));
   sync_context_->GetFileMetadata(origin_to_contexts_[url.origin().GetURL()],
                                  url, std::move(callback));
 }
@@ -230,7 +231,7 @@ void LocalFileSyncService::PrepareForProcessRemoteChange(
     PrepareChangeCallback callback) {
   DVLOG(1) << "PrepareForProcessRemoteChange: " << url.DebugString();
 
-  if (!origin_to_contexts_.contains(url.origin().GetURL())) {
+  if (!base::Contains(origin_to_contexts_, url.origin().GetURL())) {
     // This could happen if a remote sync is triggered for the app that hasn't
     // been initialized in this service.
     DCHECK(profile_);
@@ -264,7 +265,7 @@ void LocalFileSyncService::PrepareForProcessRemoteChange(
     return;
   }
 
-  DCHECK(origin_to_contexts_.contains(url.origin().GetURL()));
+  DCHECK(base::Contains(origin_to_contexts_, url.origin().GetURL()));
   sync_context_->PrepareForSync(
       origin_to_contexts_[url.origin().GetURL()], url,
       LocalFileSyncContext::SYNC_EXCLUSIVE,
@@ -276,7 +277,7 @@ void LocalFileSyncService::ApplyRemoteChange(const FileChange& change,
                                              const base::FilePath& local_path,
                                              const FileSystemURL& url,
                                              SyncStatusCallback callback) {
-  DCHECK(origin_to_contexts_.contains(url.origin().GetURL()));
+  DCHECK(base::Contains(origin_to_contexts_, url.origin().GetURL()));
   util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
             "[Remote -> Local] ApplyRemoteChange: %s on %s",
             change.DebugString().c_str(), url.DebugString().c_str());
@@ -291,7 +292,7 @@ void LocalFileSyncService::FinalizeRemoteSync(
     const FileSystemURL& url,
     bool clear_local_changes,
     base::OnceClosure completion_callback) {
-  DCHECK(origin_to_contexts_.contains(url.origin().GetURL()));
+  DCHECK(base::Contains(origin_to_contexts_, url.origin().GetURL()));
   sync_context_->FinalizeExclusiveSync(
       origin_to_contexts_[url.origin().GetURL()], url, clear_local_changes,
       std::move(completion_callback));
@@ -300,7 +301,7 @@ void LocalFileSyncService::FinalizeRemoteSync(
 void LocalFileSyncService::RecordFakeLocalChange(const FileSystemURL& url,
                                                  const FileChange& change,
                                                  SyncStatusCallback callback) {
-  DCHECK(origin_to_contexts_.contains(url.origin().GetURL()));
+  DCHECK(base::Contains(origin_to_contexts_, url.origin().GetURL()));
   sync_context_->RecordFakeLocalChange(
       origin_to_contexts_[url.origin().GetURL()], url, change,
       std::move(callback));
@@ -311,7 +312,7 @@ void LocalFileSyncService::OnChangesAvailableInOrigins(
   bool need_notification = false;
   for (auto iter = origins.begin(); iter != origins.end(); ++iter) {
     const GURL& origin = *iter;
-    if (!origin_to_contexts_.contains(origin)) {
+    if (!base::Contains(origin_to_contexts_, origin)) {
       // This could happen if this is called for apps/origins that haven't
       // been initialized yet, or for apps/origins that are disabled.
       // (Local change tracker could call this for uninitialized origins
@@ -336,7 +337,7 @@ void LocalFileSyncService::OnChangesAvailableInOrigins(
 }
 
 void LocalFileSyncService::SetOriginEnabled(const GURL& origin, bool enabled) {
-  if (!origin_to_contexts_.contains(origin)) {
+  if (!base::Contains(origin_to_contexts_, origin)) {
     return;
   }
   origin_change_map_.SetOriginEnabled(origin, enabled);
@@ -469,7 +470,7 @@ void LocalFileSyncService::ProcessNextChangeForURL(
 
   const FileSystemURL& url = sync_file_info.url;
   if (status != SYNC_STATUS_OK || changes.empty()) {
-    DCHECK(origin_to_contexts_.contains(url.origin().GetURL()));
+    DCHECK(base::Contains(origin_to_contexts_, url.origin().GetURL()));
     sync_context_->FinalizeSnapshotSync(
         origin_to_contexts_[url.origin().GetURL()], url, status,
         base::BindOnce(std::move(callback), status, url));

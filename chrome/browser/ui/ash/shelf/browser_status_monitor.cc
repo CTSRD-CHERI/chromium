@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/shelf_types.h"
+#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
@@ -254,12 +255,12 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
   BrowserWindowInterface* const browser =
       GetBrowserWithTabStripModel(tab_strip_model);
 #if DCHECK_IS_ON()
-  DCHECK(known_browsers_.contains(browser));
+  DCHECK(base::Contains(known_browsers_, browser));
 #endif
 
   if (change.type() == TabStripModelChange::kInserted) {
     for (const auto& contents : change.GetInsert()->contents) {
-      if (webcontents_to_observer_map_.contains(contents.contents)) {
+      if (base::Contains(webcontents_to_observer_map_, contents.contents)) {
 #if DCHECK_IS_ON()
         {
           // The tab must be in the set of tabs in transit.
@@ -270,7 +271,7 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
         OnTabMoved(tab_strip_model, contents.contents);
       } else {
 #if DCHECK_IS_ON()
-        DCHECK(!tabs_in_transit_.contains(contents.contents));
+        DCHECK(!base::Contains(tabs_in_transit_, contents.contents));
 #endif
         OnTabInserted(tab_strip_model, contents.contents);
       }
@@ -283,7 +284,7 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
         case TabStripModelChange::RemoveReason::kDeleted:
         case TabStripModelChange::RemoveReason::kInsertedIntoSidePanel:
 #if DCHECK_IS_ON()
-          DCHECK(!tabs_in_transit_.contains(contents.contents));
+          DCHECK(!base::Contains(tabs_in_transit_, contents.contents));
 #endif
           OnTabClosing(contents.contents);
           break;

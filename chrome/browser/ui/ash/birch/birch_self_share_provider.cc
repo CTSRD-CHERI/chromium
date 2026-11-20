@@ -41,8 +41,9 @@ BirchSelfShareProvider::~BirchSelfShareProvider() = default;
 void BirchSelfShareProvider::RequestBirchDataFetch() {
   const auto* const pref_service = profile_->GetPrefs();
   if (!pref_service ||
-      !pref_service->GetList(prefs::kContextualGoogleIntegrationsConfiguration)
-           .contains(prefs::kChromeSyncIntegrationName)) {
+      !base::Contains(pref_service->GetList(
+                          prefs::kContextualGoogleIntegrationsConfiguration),
+                      prefs::kChromeSyncIntegrationName)) {
     // ChromeSync integration is disabled by policy.
     Shell::Get()->birch_model()->SetSelfShareItems({});
     return;

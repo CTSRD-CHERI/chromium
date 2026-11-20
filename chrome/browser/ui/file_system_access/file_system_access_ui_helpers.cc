@@ -7,8 +7,8 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/string_contains.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "content/public/browser/file_system_access_permission_context.h"
@@ -74,8 +74,8 @@ std::u16string GetElidedPathForDisplayAsTitle(
   // text in the title is too long, which is still easy to read because the file
   // name is contiguous.
   int scalar_numerators =
-      base::StringContains(GetPathForDisplayAsPath(path_info).value(),
-                           FILE_PATH_LITERAL(" "))
+      base::Contains(GetPathForDisplayAsPath(path_info).value(),
+                     FILE_PATH_LITERAL(" "))
           ? 2
           : 3;
   std::optional<int> preferred_width;

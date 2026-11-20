@@ -12,6 +12,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -1369,7 +1370,7 @@ void MetadataDatabase::MaybeAddTrackersForNewFile(
       if (!parent_tracker.active())
         continue;
 
-      if (parents_to_exclude.contains(parent_tracker.tracker_id())) {
+      if (base::Contains(parents_to_exclude, parent_tracker.tracker_id())) {
         continue;
       }
 

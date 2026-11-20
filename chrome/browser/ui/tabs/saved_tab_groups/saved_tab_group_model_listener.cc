@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -154,7 +155,7 @@ void SavedTabGroupModelListener::TabGroupedStateChanged(
 
   // Add it to its new group.
   if (new_local_group_id.has_value() &&
-      local_tab_group_listeners_.contains(new_local_group_id.value())) {
+      base::Contains(local_tab_group_listeners_, new_local_group_id.value())) {
     LocalTabGroupListener& listener =
         local_tab_group_listeners_.at(new_local_group_id.value());
     const Browser* const browser = SavedTabGroupUtils::GetBrowserWithTabGroupId(
@@ -220,7 +221,7 @@ void SavedTabGroupModelListener::WillCloseAllTabs(
 
   for (const tab_groups::TabGroupId& group_id :
        tab_strip_model->group_model()->ListTabGroups()) {
-    if (local_tab_group_listeners_.contains(group_id)) {
+    if (base::Contains(local_tab_group_listeners_, group_id)) {
       DisconnectLocalTabGroup(group_id, ClosingSource::kCloseAllTabs);
     }
   }
@@ -262,7 +263,7 @@ void SavedTabGroupModelListener::ConnectToLocalTabGroup(
 
 void SavedTabGroupModelListener::PauseTrackingLocalTabGroup(
     const tab_groups::TabGroupId& group_id) {
-  if (!local_tab_group_listeners_.contains(group_id)) {
+  if (!base::Contains(local_tab_group_listeners_, group_id)) {
     return;
   }
   local_tab_group_listeners_.at(group_id).PauseTracking();
@@ -270,7 +271,7 @@ void SavedTabGroupModelListener::PauseTrackingLocalTabGroup(
 
 void SavedTabGroupModelListener::ResumeTrackingLocalTabGroup(
     const tab_groups::TabGroupId& group_id) {
-  if (!local_tab_group_listeners_.contains(group_id)) {
+  if (!base::Contains(local_tab_group_listeners_, group_id)) {
     return;
   }
   local_tab_group_listeners_.at(group_id).ResumeTracking();
@@ -299,7 +300,7 @@ void SavedTabGroupModelListener::DisconnectLocalTabGroup(
 
 void SavedTabGroupModelListener::RemoveLocalGroupFromSync(
     tab_groups::TabGroupId local_group_id) {
-  if (local_tab_group_listeners_.contains(local_group_id)) {
+  if (base::Contains(local_tab_group_listeners_, local_group_id)) {
     // Prevent further observations for `local_group_id` as we attempt to close
     // the tab group.
     DisconnectLocalTabGroup(local_group_id, ClosingSource::kDeletedFromSync);
@@ -311,7 +312,7 @@ void SavedTabGroupModelListener::RemoveLocalGroupFromSync(
 
 void SavedTabGroupModelListener::UpdateLocalGroupFromSync(
     tab_groups::TabGroupId local_group_id) {
-  if (!local_tab_group_listeners_.contains(local_group_id)) {
+  if (!base::Contains(local_tab_group_listeners_, local_group_id)) {
     return;
   }
 

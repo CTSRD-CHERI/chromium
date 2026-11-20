@@ -18,6 +18,7 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -415,7 +416,7 @@ std::string FocusListToString(views::View* view) {
   base::flat_set<views::View*> seen_views;
 
   while (view) {
-    if (seen_views.contains(view)) {
+    if (base::Contains(seen_views, view)) {
       result << "*CYCLE TO " << view->GetClassName() << "*";
       break;
     }
@@ -434,7 +435,7 @@ void CheckFocusListForCycles(views::View* const start_view) {
   base::flat_set<views::View*> seen_views;
 
   while (view) {
-    DCHECK(!seen_views.contains(view)) << FocusListToString(start_view);
+    DCHECK(!base::Contains(seen_views, view)) << FocusListToString(start_view);
     seen_views.insert(view);
 
     views::View* next_view = view->GetNextFocusableView();

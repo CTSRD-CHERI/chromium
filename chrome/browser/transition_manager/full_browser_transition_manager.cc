@@ -4,6 +4,7 @@
 
 #include "chrome/browser/transition_manager/full_browser_transition_manager.h"
 
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -37,7 +38,7 @@ void FullBrowserTransitionManager::OnProfileCreated(Profile* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   SimpleFactoryKey* key = profile->GetProfileKey();
-  DCHECK(!simple_key_to_profile_.contains(key));
+  DCHECK(!base::Contains(simple_key_to_profile_, key));
 
   // Register the mapping so that it can be used if deferred callbacks are added
   // later.

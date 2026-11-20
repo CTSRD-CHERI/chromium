@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_item.h"
+#include "base/containers/contains.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
@@ -56,7 +57,7 @@ void TabClusterUIClient::OnTabStripModelChanged(
       // Remove the items corresponding to the removed web contents.
       for (const auto& contents : change.GetRemove()->contents) {
         content::WebContents* web_contents = contents.contents;
-        DCHECK(contents_item_map_.contains(web_contents));
+        DCHECK(base::Contains(contents_item_map_, web_contents));
         ash::TabClusterUIItem* item = contents_item_map_[web_contents];
         contents_item_map_.erase(web_contents);
         controller_->RemoveTabItem(item);
@@ -66,7 +67,7 @@ void TabClusterUIClient::OnTabStripModelChanged(
       // Update the item whose corresponding contents are replaced.
       {
         auto* replace = change.GetReplace();
-        DCHECK(contents_item_map_.contains(replace->old_contents));
+        DCHECK(base::Contains(contents_item_map_, replace->old_contents));
         auto* item = contents_item_map_[replace->old_contents].get();
 
         item->Init(GenerateTabItemInfo(replace->new_contents));
@@ -83,7 +84,7 @@ void TabClusterUIClient::OnTabStripModelChanged(
   }
   if (selection.active_tab_changed() && !tab_strip_model->empty()) {
     auto* old_active_item =
-        contents_item_map_.contains(selection.old_contents)
+        base::Contains(contents_item_map_, selection.old_contents)
             ? contents_item_map_[selection.old_contents].get()
             : nullptr;
     auto* new_active_item = contents_item_map_[selection.new_contents].get();
@@ -97,7 +98,7 @@ void TabClusterUIClient::OnTabChangedAt(tabs::TabInterface* tab,
   content::WebContents* contents = tab->GetContents();
   // Some tests may manually add tabs to browser such that the newly added tabs
   // may start loading before being inserted into the tab strip.
-  if (!contents_item_map_.contains(contents)) {
+  if (!base::Contains(contents_item_map_, contents)) {
     return;
   }
   auto* item = contents_item_map_[contents].get();

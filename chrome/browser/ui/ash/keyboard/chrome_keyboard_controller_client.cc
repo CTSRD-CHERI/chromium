@@ -13,6 +13,7 @@
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -183,7 +184,7 @@ void ChromeKeyboardControllerClient::ClearEnableFlag(
 
 bool ChromeKeyboardControllerClient::IsEnableFlagSet(
     const keyboard::KeyboardEnableFlag& flag) {
-  return keyboard_enable_flags_.contains(flag);
+  return base::Contains(keyboard_enable_flags_, flag);
 }
 
 void ChromeKeyboardControllerClient::ReloadKeyboardIfNeeded() {

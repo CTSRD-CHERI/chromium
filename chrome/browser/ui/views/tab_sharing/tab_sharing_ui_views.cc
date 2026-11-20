@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -467,7 +468,7 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
   // active, create an observer that will inform us when its compliance state
   // changes.
   if (capturer_restricted_to_same_origin_ && is_share_instead_button_possible &&
-      !same_origin_observers_.contains(contents)) {
+      !base::Contains(same_origin_observers_, contents)) {
     // We explicitly remove all infobars and clear all policy observers before
     // destruction, so base::Unretained is safe here.
     same_origin_observers_[contents] = std::make_unique<SameOriginObserver>(

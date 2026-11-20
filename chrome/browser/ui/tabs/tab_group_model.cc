@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/types/pass_key.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -31,7 +32,7 @@ void TabGroupModel::AddTabGroup(TabGroup* group, base::PassKey<TabStripModel>) {
 }
 
 bool TabGroupModel::ContainsTabGroup(const tab_groups::TabGroupId& id) const {
-  return groups_.contains(id);
+  return base::Contains(groups_, id);
 }
 
 TabGroup* TabGroupModel::GetTabGroup(const tab_groups::TabGroupId& id) const {

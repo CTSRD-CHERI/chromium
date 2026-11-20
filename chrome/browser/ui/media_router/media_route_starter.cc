@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -99,8 +100,9 @@ MediaRouteStarter::~MediaRouteStarter() {
     bool presentation_sinks_available = std::ranges::any_of(
         GetQueryResultManager()->GetSinksWithCastModes(),
         [](const MediaSinkWithCastModes& sink) {
-          return sink.cast_modes.contains(MediaCastMode::PRESENTATION) ||
-                 sink.cast_modes.contains(MediaCastMode::REMOTE_PLAYBACK);
+          return base::Contains(sink.cast_modes, MediaCastMode::PRESENTATION) ||
+                 base::Contains(sink.cast_modes,
+                                MediaCastMode::REMOTE_PLAYBACK);
         });
     if (presentation_sinks_available) {
       start_presentation_context_->InvokeErrorCallback(
@@ -365,7 +367,7 @@ url::Origin MediaRouteStarter::GetFrameOrigin() const {
 
 bool MediaRouteStarter::IsCastModeAvailable(const CastModeSet& modes,
                                             MediaCastMode mode) {
-  return modes.contains(mode);
+  return base::Contains(modes, mode);
 }
 
 }  // namespace media_router

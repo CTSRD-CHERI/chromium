@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -37,7 +38,7 @@ void EduCoexistenceStateTracker::SetEduConsentCallback(
     const content::WebUI* web_ui,
     const std::string& account_email,
     base::OnceCallback<void(bool)> consent_logged_callback) {
-  DCHECK(state_tracker_.contains(web_ui));
+  DCHECK(base::Contains(state_tracker_, web_ui));
   FlowState& state = state_tracker_[web_ui];
 
   if (state.received_consent) {
@@ -52,7 +53,7 @@ void EduCoexistenceStateTracker::SetEduConsentCallback(
 }
 
 void EduCoexistenceStateTracker::OnDialogClosed(const content::WebUI* web_ui) {
-  if (!state_tracker_.contains(web_ui)) {
+  if (!base::Contains(state_tracker_, web_ui)) {
     return;
   }
 
@@ -77,7 +78,7 @@ void EduCoexistenceStateTracker::OnDialogClosed(const content::WebUI* web_ui) {
 
 void EduCoexistenceStateTracker::OnDialogCreated(const content::WebUI* web_ui,
                                                  bool is_onboarding) {
-  DCHECK(!state_tracker_.contains(web_ui));
+  DCHECK(!base::Contains(state_tracker_, web_ui));
 
   FlowState& state = state_tracker_[web_ui];
 
@@ -89,7 +90,7 @@ void EduCoexistenceStateTracker::OnDialogCreated(const content::WebUI* web_ui,
 void EduCoexistenceStateTracker::OnConsentLogged(
     const content::WebUI* web_ui,
     const std::string& account_email) {
-  DCHECK(state_tracker_.contains(web_ui));
+  DCHECK(base::Contains(state_tracker_, web_ui));
 
   // Update the webui state that consent was logged.
   OnWebUiStateChanged(web_ui, FlowResult::kConsentLogged);
@@ -108,14 +109,14 @@ void EduCoexistenceStateTracker::OnConsentLogged(
 void EduCoexistenceStateTracker::OnWebUiStateChanged(
     const content::WebUI* web_ui,
     FlowResult result) {
-  DCHECK(state_tracker_.contains(web_ui));
+  DCHECK(base::Contains(state_tracker_, web_ui));
   state_tracker_[web_ui].flow_result = result;
 }
 
 const EduCoexistenceStateTracker::FlowState*
 EduCoexistenceStateTracker::GetInfoForWebUIForTest(
     const content::WebUI* web_ui) const {
-  if (!state_tracker_.contains(web_ui)) {
+  if (!base::Contains(state_tracker_, web_ui)) {
     return nullptr;
   }
   return &state_tracker_.at(web_ui);

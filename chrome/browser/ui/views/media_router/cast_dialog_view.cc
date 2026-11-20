@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notreached.h"
@@ -430,15 +431,15 @@ std::optional<MediaCastMode> CastDialogView::GetCastModeToUse(
   // supported and selected.
   switch (selected_source_) {
     case SourceType::kTab:
-      if (sink.cast_modes.contains(PRESENTATION)) {
+      if (base::Contains(sink.cast_modes, PRESENTATION)) {
         return std::make_optional<MediaCastMode>(PRESENTATION);
       }
-      if (sink.cast_modes.contains(TAB_MIRROR)) {
+      if (base::Contains(sink.cast_modes, TAB_MIRROR)) {
         return std::make_optional<MediaCastMode>(TAB_MIRROR);
       }
       break;
     case SourceType::kDesktop:
-      if (sink.cast_modes.contains(DESKTOP_MIRROR)) {
+      if (base::Contains(sink.cast_modes, DESKTOP_MIRROR)) {
         return std::make_optional<MediaCastMode>(DESKTOP_MIRROR);
       }
       break;
