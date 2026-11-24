@@ -5,6 +5,7 @@
 import("//gpu/vulkan/features.gni")
 import("//skia/features.gni")
 import("//testing/test.gni")
+import("//third_party/dawn/scripts/dawn_features.gni")
 
 # Fuchsia doesn't support GL rendering so there is no need to run tests for
 # that code path.
@@ -17,9 +18,11 @@ enable_vulkan_backend_tests =
     enable_vulkan &&
     ((is_linux && !is_castos && !is_cfi) || (is_fuchsia && target_cpu == "x64"))
 
+# BSD defaults to Dawn's Vulkan backend for Graphite.
 enable_skia_graphite_tests =
     (skia_use_dawn || skia_use_metal) &&
-    (is_mac || is_win || is_linux || (is_ios && use_blink))
+    (is_mac || is_win || is_linux || (is_ios && use_blink)) &&
+    (!is_bsd || dawn_enable_vulkan)
 
 # TODO(crbug.com/1336055): Determine whether is_cast_android needs this.
 enable_cast_overlay_strategy = is_castos || is_cast_android
