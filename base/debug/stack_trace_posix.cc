@@ -35,6 +35,13 @@
 #include "base/strings/cstring_view.h"
 #include "build/build_config.h"
 
+#if BUILDFLAG(IS_FREEBSD) && defined(USE_SYMBOLIZE)
+#include <link.h>
+#include <sys/sysctl.h>
+
+#include "base/posix/sysctl.h"
+#endif
+
 // Controls whether `dladdr(...)` is used to print the callstack. This is
 // only used on iOS Official build where `backtrace_symbols(...)` prints
 // misleading symbols (as the binary is stripped).
@@ -732,7 +739,7 @@ class SandboxSymbolizeHelper {
     return fd;
   }
 
-  // Searches for the object file (from /proc/self/maps) that contains
+  // Searches the cached mappings for the object file that contains
   // the specified pc.  If found, sets |start_address| to the start address
   // of where this object file is mapped in memory, sets the module base
   // address into |base_address|, copies the object file name into
@@ -878,11 +885,53 @@ class SandboxSymbolizeHelper {
   }
 #endif
 
-  // Parses /proc/self/maps in order to compile a list of all object file names
-  // for the modules that are loaded in the current process.
-  // Returns true on success.
+  // Caches the mapped object files before the symbolizer can run in a signal
+  // handler.
   bool CacheMemoryRegions() {
-#if BUILDFLAG(IS_BSD)
+#if BUILDFLAG(IS_FREEBSD)
+    dl_iterate_phdr(
+        [](dl_phdr_info* info, size_t, void* data) {
+          auto& regions = *static_cast<std::vector<MappedMemoryRegion>*>(data);
+          std::string path = info->dlpi_name ? info->dlpi_name : "";
+          if (path.empty()) {
+            path = StringSysctl({CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1})
+                       .value_or("");
+          }
+          if (path.empty()) {
+            return 0;
+          }
+
+          // Use numeric addresses for the ELF lookup, including on purecap.
+          const uint64_t load_bias = static_cast<uint64_t>(info->dlpi_addr);
+          auto headers = UNSAFE_BUFFERS(
+              base::span(info->dlpi_phdr, info->dlpi_phnum));
+          for (const auto& header : headers) {
+            if (header.p_type != PT_LOAD || !(header.p_flags & PF_X)) {
+              continue;
+            }
+            MappedMemoryRegion& region = regions.emplace_back();
+            region.start = load_bias + header.p_vaddr;
+            region.end = load_bias + header.p_vaddr + header.p_memsz;
+            region.offset = header.p_offset;
+            region.base = load_bias;
+            region.permissions = MappedMemoryRegion::EXECUTE;
+            if (header.p_flags & PF_R) {
+              region.permissions |= MappedMemoryRegion::READ;
+            }
+            if (header.p_flags & PF_W) {
+              region.permissions |= MappedMemoryRegion::WRITE;
+            }
+            region.dev_major = 0;
+            region.dev_minor = 0;
+            region.inode = 0;
+            region.path = path;
+          }
+          return 0;
+        },
+        &regions_);
+    is_initialized_ = !regions_.empty();
+    return is_initialized_;
+#elif BUILDFLAG(IS_BSD)
     return false;
 #else
     // Reads /proc/self/maps.
@@ -983,8 +1032,7 @@ class SandboxSymbolizeHelper {
   std::map<std::string, base::ScopedFD> modules_;
 #endif  // !defined(OFFICIAL_BUILD) || !defined(NO_UNWIND_TABLES)
 
-  // Cache for the process memory regions.  Produced by parsing the contents
-  // of /proc/self/maps cache.
+  // Cached process memory regions.
   std::vector<MappedMemoryRegion> regions_;
 };
 #endif  // USE_SYMBOLIZE
