@@ -6293,13 +6293,22 @@ TEST_P(PartitionAllocTest, SortActiveSlotSpans) {
     bucket.Init(16);
     bucket.active_slot_spans_head = nullptr;
 
-    std::vector<SlotSpan> slot_spans;
+    // Match the metadata slot spacing used by PartitionPageMetadata so that
+    // pointers in packed slot spans remain aligned on CHERI.
+    struct alignas(kPageMetadataSize) SlotSpanStorage {
+      explicit SlotSpanStorage(PartitionBucket* bucket) : slot_span(bucket) {}
+
+      SlotSpan slot_span;
+    };
+    static_assert(sizeof(SlotSpanStorage) == kPageMetadataSize);
+
+    std::vector<SlotSpanStorage> slot_spans;
     slot_spans.reserve(count);
 
     // Add slot spans with random freelist length.
     for (size_t i = 0; i < count; i++) {
       slot_spans.emplace_back(&bucket);
-      auto& slot_span = slot_spans.back();
+      auto& slot_span = slot_spans.back().slot_span;
       slot_span.num_unprovisioned_slots =
           partition_alloc::internal::base::RandGenerator(
               bucket.get_slots_per_span() / 2);
