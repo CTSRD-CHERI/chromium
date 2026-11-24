@@ -412,7 +412,7 @@ bool StackTrace::ShouldSuppressOutput() {
 }
 
 std::ostream& operator<<(std::ostream& os, const StackTrace& s) {
-#if !defined(__UCLIBC__) && !defined(_AIX) && !BUILDFLAG(IS_BSD)
+#if !defined(__UCLIBC__) && !defined(_AIX)
   s.OutputToStream(&os);
 #else
   os << "StackTrace::OutputToStream not implemented.";
