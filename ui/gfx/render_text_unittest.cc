@@ -7996,9 +7996,9 @@ TEST_F(RenderTextTest, SubpixelRenderingSuppressed) {
 
   DrawVisualText();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_FUCHSIA)
-  // On Linux, whether subpixel AA is supported is determined by the platform
-  // FontConfig. Force it into a particular style after computing runs. Other
+    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_BSD)
+  // These platforms determine whether subpixel AA is supported at runtime.
+  // Force it into a particular style after computing runs. Other
   // platforms use a known default FontRenderParams from a static local.
   GetHarfBuzzRunList()
       ->runs()[0]
@@ -8012,8 +8012,8 @@ TEST_F(RenderTextTest, SubpixelRenderingSuppressed) {
   render_text->set_subpixel_rendering_suppressed(true);
   DrawVisualText();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_FUCHSIA)
-  // For Linux, runs shouldn't be re-calculated, and the suppression of the
+    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_BSD)
+  // The runs shouldn't be re-calculated, and the suppression of the
   // SUBPIXEL_RENDERING_RGB set above should now take effect. But, after
   // checking, apply the override anyway to be explicit that it is suppressed.
   EXPECT_NE(GetRendererFont().getEdging(), SkFont::Edging::kSubpixelAntiAlias);
