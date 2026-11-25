@@ -122,6 +122,10 @@ int64_t ConvertTimespecResultToMicros(uint32_t tv_sec_hi,
 }
 
 bool MinSupportedKernelForLinuxDrmSyncobj() {
+#if BUILDFLAG(IS_BSD)
+  // BSD does not forward acquire fences in the Wayland frame path.
+  return false;
+#else
   int major, minor, build;
   base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &build);
   // We use drm_syncobj_eventfd_ioctl and DRM_SYNCOBJ_WAIT_FLAGS_WAIT_AVAILABLE
@@ -131,6 +135,7 @@ bool MinSupportedKernelForLinuxDrmSyncobj() {
   // kernel version to 6.11 to avoid using buggy implementation that may cause
   // stability issues.
   return major > 6 || (major == 6 && minor >= 11);
+#endif
 }
 
 }  // namespace

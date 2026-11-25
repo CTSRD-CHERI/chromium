@@ -509,9 +509,6 @@ std::optional<bool> WaylandFrameManager::ApplySurfaceConfigure(
       case WaylandBufferHandle::SyncMethod::kDMAFence:
         [[fallthrough]];
       case WaylandBufferHandle::SyncMethod::kImplicit:
-#if BUILDFLAG(IS_BSD)
-        LOG(WARNING) << "WaylandBufferHandle::SyncMethod::kSyncobj is not supported!";
-#endif
         buffer_handle->set_buffer_released_callback(
             base::BindOnce(&WaylandFrameManager::OnWlBufferRelease,
                            weak_factory_.GetWeakPtr(), surface),
