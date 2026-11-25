@@ -466,8 +466,23 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
       PrintToStderr(" <unknown> ");
     }
   }
-  if (signal == SIGBUS || signal == SIGFPE || signal == SIGILL ||
-      signal == SIGSEGV) {
+  bool has_fault_address = signal == SIGBUS || signal == SIGFPE ||
+                           signal == SIGILL || signal == SIGSEGV;
+#if BUILDFLAG(IS_FREEBSD) && defined(__CHERI_PURE_CAPABILITY__)
+  // FreeBSD's generic signal codes start at SI_USER.
+  if (signal == SIGPROT && info->si_code > SI_NOINFO &&
+      info->si_code < SI_USER) {
+    PrintToStderr(" SIGPROT code=");
+    internal::itoa_r(info->si_code, 10, 0, buf);
+    PrintToStderr(buf);
+    PrintToStderr(" capability register=");
+    internal::itoa_r(info->si_capreg, 10, 0, buf);
+    PrintToStderr(buf);
+    PrintToStderr(" address=");
+    has_fault_address = true;
+  }
+#endif
+  if (has_fault_address) {
     internal::itoa_r(reinterpret_cast<intptr_t>(info->si_addr), 16, 12, buf);
     PrintToStderr(buf);
   }
@@ -1067,6 +1082,9 @@ bool EnableInProcessStackDumping() {
   success &= (sigaction(SIGFPE, &action, nullptr) == 0);
   success &= (sigaction(SIGBUS, &action, nullptr) == 0);
   success &= (sigaction(SIGSEGV, &action, nullptr) == 0);
+#if BUILDFLAG(IS_FREEBSD) && defined(__CHERI_PURE_CAPABILITY__)
+  success &= (sigaction(SIGPROT, &action, nullptr) == 0);
+#endif
 // On Linux, SIGSYS is reserved by the kernel for seccomp-bpf sandboxing.
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
   success &= (sigaction(SIGSYS, &action, nullptr) == 0);

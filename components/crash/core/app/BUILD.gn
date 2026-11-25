@@ -74,6 +74,14 @@ static_library("app") {
     sources -= [ "crashpad.cc" ]
   }
 
+  if (is_freebsd && current_cpu == "arm64") {
+    sources += [
+      "breakpad_freebsd.cc",
+      "breakpad_freebsd.h",
+    ]
+    include_dirs = [ "//third_party/breakpad/breakpad/src" ]
+  }
+
   defines = [ "CRASH_IMPLEMENTATION" ]
 
   public_deps = [ ":lib" ]

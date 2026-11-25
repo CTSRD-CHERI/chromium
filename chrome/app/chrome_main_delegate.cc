@@ -69,6 +69,10 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/crash/core/app/crash_reporter_client.h"
+#if BUILDFLAG(IS_FREEBSD) && defined(__CHERI_PURE_CAPABILITY__) && \
+    defined(ARCH_CPU_ARM64)
+#include "components/crash/core/app/breakpad_freebsd.h"
+#endif
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "components/devtools/devtools_pipe/devtools_pipe.h"
@@ -1330,6 +1334,15 @@ void ChromeMainDelegate::PreSandboxStartup() {
       command_line.GetSwitchValueASCII(switches::kProcessType);
 
   crash_reporter::InitializeCrashKeys();
+
+#if BUILDFLAG(IS_FREEBSD) && defined(__CHERI_PURE_CAPABILITY__) && \
+    defined(ARCH_CPU_ARM64) && !defined(OFFICIAL_BUILD)
+  if (!command_line.HasSwitch(switches::kDisableInProcessStackTraces) &&
+      !command_line.HasSwitch(switches::kDisableCrashpadForTesting) &&
+      process_type != switches::kZygoteProcess) {
+    crash_reporter::InitializeFreeBSDMinidumps();
+  }
+#endif
 
 #if BUILDFLAG(IS_POSIX)
   ChromeCrashReporterClient::Create();
