@@ -551,7 +551,7 @@ void PrintDialogGtk::OnResponse(GtkWidget* dialog, int response_id) {
       }
       page_setup_ = gtk_print_unix_dialog_get_page_setup(
           GTK_PRINT_UNIX_DIALOG(dialog_.get()));
-      g_object_ref(page_setup_);
+      g_object_ref(page_setup_.get());
 
       // Handle page ranges.
       PageRanges ranges_vector;
