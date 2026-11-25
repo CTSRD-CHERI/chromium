@@ -295,7 +295,7 @@ vars = {
   'download_libvpx_testdata': False,
 
   'android_git': 'https://android.googlesource.com',
-  'aomedia_git': 'https://aomedia.googlesource.com',
+  'aomedia_git': 'https://github.com/CTSRD-CHERI',
   'boringssl_git': 'https://github.com/CTSRD-CHERI',
   'chrome_git': 'https://chrome-internal.googlesource.com',
   'chromium_git': 'https://chromium.googlesource.com',
@@ -2347,7 +2347,7 @@ deps = {
     Var('chromium_git') + '/external/libaddressinput.git' + '@' + 'e20690c8d5178bb282641d5eb06ef0298ff4cbc5',
 
   'src/third_party/libaom/source/libaom':
-    Var('aomedia_git') + '/aom.git' + '@' +  'e3d6ba6e5e9888a7ca69eb114c6eb913275f253c',
+    Var('aomedia_git') + '/libaom.git' + '@' +  '1f8ad26139eece99a385a6c73ce0b166a20e6caa',
 
   'src/third_party/crabbyavif/src':
     Var('chromium_cheri_git') + '/CrabbyAvif.git' + '@' + Var('crabbyavif_revision'),
