@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "net/http/http_util.h"
@@ -204,7 +205,7 @@ HTTPHeaderSet ExtractCorsExposedHeaderNamesList(
   parser.Parse(header_set);
 
   if (credentials_mode != network::mojom::CredentialsMode::kInclude &&
-      header_set.contains("*")) {
+      base::Contains(header_set, "*")) {
     header_set.clear();
     for (const auto& header : response.HttpHeaderFields())
       header_set.insert(header.key.Ascii());
@@ -226,7 +227,7 @@ bool IsCorsSafelistedResponseHeader(const String& name) {
                                       "last-modified",
                                       "pragma",
                                   }));
-  return allowed_cross_origin_response_headers.contains(name.Ascii());
+  return base::Contains(allowed_cross_origin_response_headers, name.Ascii());
 }
 
 // In the spec, https://fetch.spec.whatwg.org/#ref-for-concept-request-mode,
