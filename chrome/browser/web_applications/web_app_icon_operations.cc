@@ -8,6 +8,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/stringprintf.h"

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <set>
 
+#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -56,7 +57,7 @@ std::vector<base::FilePath> GetFilesFromPrevSessions(
   for (base::FilePath current = file_enumerator.Next(); !current.empty();
        current = file_enumerator.Next()) {
     // Exclude any new file created in this session.
-    if (!registered_names.contains(current.BaseName())) {
+    if (!base::Contains(registered_names, current.BaseName())) {
       files.push_back(std::move(current));
     }
   }

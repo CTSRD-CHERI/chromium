@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -178,7 +179,7 @@ base::Value::Dict AssemblePrinterSettings(
 #if BUILDFLAG(IS_CHROMEOS)
   printer_info.Set(
       kCUPSEnterprisePrinter,
-      basic_info.options.contains(kCUPSEnterprisePrinter) &&
+      base::Contains(basic_info.options, kCUPSEnterprisePrinter) &&
           basic_info.options.at(kCUPSEnterprisePrinter) == kValueTrue);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

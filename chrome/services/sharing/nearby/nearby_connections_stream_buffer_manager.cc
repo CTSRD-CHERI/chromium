@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "components/cross_device/logging/logging.h"
 #include "third_party/nearby/src/internal/platform/exception.h"
 #include "third_party/nearby/src/internal/platform/input_stream.h"
@@ -34,7 +35,7 @@ void NearbyConnectionsStreamBufferManager::StartTrackingPayload(
 
 bool NearbyConnectionsStreamBufferManager::IsTrackingPayload(
     int64_t payload_id) const {
-  return id_to_payload_with_buffer_map_.contains(payload_id);
+  return base::Contains(id_to_payload_with_buffer_map_, payload_id);
 }
 
 void NearbyConnectionsStreamBufferManager::StopTrackingFailedPayload(

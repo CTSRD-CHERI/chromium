@@ -19,6 +19,7 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "base/containers/extend.h"
 #include "base/containers/map_util.h"
@@ -387,12 +388,12 @@ bool AreNewFileHandlersASubsetOfOld(const apps::FileHandlers& old_handlers,
 
   for (const apps::FileHandler& new_handler : new_handlers) {
     for (const auto& new_handler_accept : new_handler.accept) {
-      if (!mime_types_set.contains(new_handler_accept.mime_type)) {
+      if (!base::Contains(mime_types_set, new_handler_accept.mime_type)) {
         return false;
       }
 
       for (const auto& new_extension : new_handler_accept.file_extensions) {
-        if (!extensions_set.contains(new_extension)) {
+        if (!base::Contains(extensions_set, new_extension)) {
           return false;
         }
       }

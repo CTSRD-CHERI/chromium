@@ -4,6 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/condition_variable.h"
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -51,7 +52,7 @@ class ConditionVariableTest : public testing::Test {
   bool HasSuccessfullyRunWithAttemptId(
       const base::UnguessableToken& attempt_id) {
     base::AutoLock al(coordination_lock_);
-    return successful_run_attempts_.contains(attempt_id);
+    return base::Contains(successful_run_attempts_, attempt_id);
   }
 
   void NotifyConditionVariable() {

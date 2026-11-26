@@ -4,6 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/recursive_mutex.h"
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -48,7 +49,7 @@ class RecursiveMutexTest : public testing::Test {
   bool HasSuccessfullyLockedWithAttemptId(
       const base::UnguessableToken& attempt_id) {
     base::AutoLock al(lock_);
-    return successful_mutex_attempts_.contains(attempt_id);
+    return base::Contains(successful_mutex_attempts_, attempt_id);
   }
 
   RecursiveMutex& mutex() { return mutex_; }

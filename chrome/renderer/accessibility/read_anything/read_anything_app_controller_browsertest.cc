@@ -887,10 +887,10 @@ TEST_F(ReadAnythingAppControllerTest, OnLanguagePrefChange) {
   controller().OnLanguagePrefChange(disabled_lang, false);
 
   EXPECT_CALL(page_handler_, OnLanguagePrefChange).Times(3);
-  ASSERT_TRUE(
-      read_aloud_model().languages_enabled_in_pref().contains(enabled_lang));
-  ASSERT_FALSE(
-      read_aloud_model().languages_enabled_in_pref().contains(disabled_lang));
+  ASSERT_TRUE(base::Contains(read_aloud_model().languages_enabled_in_pref(),
+                             enabled_lang));
+  ASSERT_FALSE(base::Contains(read_aloud_model().languages_enabled_in_pref(),
+                              disabled_lang));
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetStoredVoice_ReturnsLatestVoice) {
@@ -1813,10 +1813,10 @@ TEST_F(ReadAnythingAppControllerTest,
   update.tree_data.sel_is_backward = false;
 
   AccessibilityEventReceived({std::move(update)});
-  EXPECT_TRUE(model().selection_node_ids().contains(1));
-  EXPECT_TRUE(model().selection_node_ids().contains(2));
-  EXPECT_TRUE(model().selection_node_ids().contains(3));
-  EXPECT_TRUE(model().selection_node_ids().contains(4));
+  EXPECT_TRUE(base::Contains(model().selection_node_ids(), 1));
+  EXPECT_TRUE(base::Contains(model().selection_node_ids(), 2));
+  EXPECT_TRUE(base::Contains(model().selection_node_ids(), 3));
+  EXPECT_TRUE(base::Contains(model().selection_node_ids(), 4));
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -1830,10 +1830,10 @@ TEST_F(ReadAnythingAppControllerTest,
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = true;
   AccessibilityEventReceived({std::move(update)});
-  EXPECT_TRUE(model().selection_node_ids().contains(1));
-  EXPECT_TRUE(model().selection_node_ids().contains(2));
-  EXPECT_TRUE(model().selection_node_ids().contains(3));
-  EXPECT_TRUE(model().selection_node_ids().contains(4));
+  EXPECT_TRUE(base::Contains(model().selection_node_ids(), 1));
+  EXPECT_TRUE(base::Contains(model().selection_node_ids(), 2));
+  EXPECT_TRUE(base::Contains(model().selection_node_ids(), 3));
+  EXPECT_TRUE(base::Contains(model().selection_node_ids(), 4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, DisplayNodeIdsContains_ContentNodes) {
@@ -1849,19 +1849,19 @@ TEST_F(ReadAnythingAppControllerTest, DisplayNodeIdsContains_ContentNodes) {
   ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);
   AccessibilityEventReceived({std::move(update)}, {std::move(load_complete)});
   controller().OnAXTreeDistilled(tree_id_, {3});
-  EXPECT_TRUE(model().display_node_ids().contains(1));
-  EXPECT_FALSE(model().display_node_ids().contains(2));
-  EXPECT_TRUE(model().display_node_ids().contains(3));
+  EXPECT_TRUE(base::Contains(model().display_node_ids(), 1));
+  EXPECT_FALSE(base::Contains(model().display_node_ids(), 2));
+  EXPECT_TRUE(base::Contains(model().display_node_ids(), 3));
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
        DisplayNodeIdsContains_NoSelectionOrContentNodes) {
   controller().OnAXTreeDistilled(tree_id_, {});
-  EXPECT_FALSE(model().display_node_ids().contains(1));
-  EXPECT_FALSE(model().display_node_ids().contains(2));
-  EXPECT_FALSE(model().display_node_ids().contains(3));
-  EXPECT_FALSE(model().display_node_ids().contains(4));
+  EXPECT_FALSE(base::Contains(model().display_node_ids(), 1));
+  EXPECT_FALSE(base::Contains(model().display_node_ids(), 2));
+  EXPECT_FALSE(base::Contains(model().display_node_ids(), 3));
+  EXPECT_FALSE(base::Contains(model().display_node_ids(), 4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, DoesNotCrashIfContentNodeNotFoundInTree) {
@@ -1878,10 +1878,10 @@ TEST_F(ReadAnythingAppControllerTest, Draw_RecomputeDisplayNodes) {
   model().Reset({3, 4});
   controller().Draw(/* recompute_display_nodes= */ true);
 
-  EXPECT_TRUE(model().display_node_ids().contains(1));
-  EXPECT_FALSE(model().display_node_ids().contains(2));
-  EXPECT_TRUE(model().display_node_ids().contains(3));
-  EXPECT_TRUE(model().display_node_ids().contains(4));
+  EXPECT_TRUE(base::Contains(model().display_node_ids(), 1));
+  EXPECT_FALSE(base::Contains(model().display_node_ids(), 2));
+  EXPECT_TRUE(base::Contains(model().display_node_ids(), 3));
+  EXPECT_TRUE(base::Contains(model().display_node_ids(), 4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, Draw_DoNotRecomputeDisplayNodesForDocs) {
@@ -1902,9 +1902,9 @@ TEST_F(ReadAnythingAppControllerTest, Draw_DoNotRecomputeDisplayNodesForDocs) {
   controller().OnAXTreeDistilled(tree_id_, {3});
   controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
   EXPECT_TRUE(controller().IsGoogleDocs());
-  EXPECT_TRUE(model().display_node_ids().contains(1));
-  EXPECT_FALSE(model().display_node_ids().contains(2));
-  EXPECT_TRUE(model().display_node_ids().contains(3));
+  EXPECT_TRUE(base::Contains(model().display_node_ids(), 1));
+  EXPECT_FALSE(base::Contains(model().display_node_ids(), 2));
+  EXPECT_TRUE(base::Contains(model().display_node_ids(), 3));
   Mock::VerifyAndClearExpectations(distiller_);
 
   ui::AXNodeData node1;
@@ -1915,10 +1915,10 @@ TEST_F(ReadAnythingAppControllerTest, Draw_DoNotRecomputeDisplayNodesForDocs) {
   SendUpdateWithNodes({std::move(node1)});
   model().Reset({3, 4});
   controller().Draw(/* recompute_display_nodes= */ true);
-  EXPECT_FALSE(model().display_node_ids().contains(1));
-  EXPECT_FALSE(model().display_node_ids().contains(2));
-  EXPECT_FALSE(model().display_node_ids().contains(3));
-  EXPECT_FALSE(model().display_node_ids().contains(4));
+  EXPECT_FALSE(base::Contains(model().display_node_ids(), 1));
+  EXPECT_FALSE(base::Contains(model().display_node_ids(), 2));
+  EXPECT_FALSE(base::Contains(model().display_node_ids(), 3));
+  EXPECT_FALSE(base::Contains(model().display_node_ids(), 4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceived) {
@@ -3001,13 +3001,13 @@ TEST_F(ReadAnythingAppControllerTest, DisplayNodes_WithMultipleTrees) {
 
   // Check the display nodes.
   const auto& display_node_ids = model().display_node_ids();
-  EXPECT_TRUE(display_node_ids.contains(kId1));
-  EXPECT_TRUE(display_node_ids.contains(kId2));
-  EXPECT_TRUE(display_node_ids.contains(kId3));
+  EXPECT_TRUE(base::Contains(display_node_ids, kId1));
+  EXPECT_TRUE(base::Contains(display_node_ids, kId2));
+  EXPECT_TRUE(base::Contains(display_node_ids, kId3));
 
   // The ad content from the child tree should not be in the display nodes.
-  EXPECT_FALSE(display_node_ids.contains(kAdChildNodeId));
-  EXPECT_FALSE(display_node_ids.contains(kAdChildRootId));
+  EXPECT_FALSE(base::Contains(display_node_ids, kAdChildNodeId));
+  EXPECT_FALSE(base::Contains(display_node_ids, kAdChildRootId));
 
   // The text content for the duplicate id returns the actual content, not the
   // ad content.
@@ -3861,10 +3861,10 @@ TEST_F(ReadAnythingAppControllerV8SegmentationTest,
   controller().Draw(/* recompute_display_nodes= */ true);
 
   EXPECT_FALSE(controller().IsSpeechTreeInitialized());
-  EXPECT_TRUE(model().display_node_ids().contains(1));
-  EXPECT_FALSE(model().display_node_ids().contains(2));
-  EXPECT_TRUE(model().display_node_ids().contains(3));
-  EXPECT_TRUE(model().display_node_ids().contains(4));
+  EXPECT_TRUE(base::Contains(model().display_node_ids(), 1));
+  EXPECT_FALSE(base::Contains(model().display_node_ids(), 2));
+  EXPECT_TRUE(base::Contains(model().display_node_ids(), 3));
+  EXPECT_TRUE(base::Contains(model().display_node_ids(), 4));
 }
 
 TEST_F(ReadAnythingAppControllerV8SegmentationTest,

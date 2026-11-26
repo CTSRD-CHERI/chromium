@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/test/fake_environment.h"
 
+#include "base/containers/contains.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
@@ -19,7 +20,7 @@ void FakeEnvironment::Set(base::cstring_view name, const std::string& value) {
 std::optional<std::string> FakeEnvironment::GetVar(
     base::cstring_view variable_name) {
   const std::string key(variable_name);
-  if (!variables_.contains(key)) {
+  if (!base::Contains(variables_, key)) {
     return std::nullopt;
   }
   return variables_[key];

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace bluetooth {
@@ -183,8 +184,8 @@ void FakeAdapter::ConnectToServiceInsecurely(
     const device::BluetoothUUID& service_uuid,
     bool should_unbond_on_error,
     ConnectToServiceInsecurelyCallback callback) {
-  if (!allowed_connections_for_address_and_uuid_pair_.contains(
-          std::make_pair(address, service_uuid))) {
+  if (!base::Contains(allowed_connections_for_address_and_uuid_pair_,
+                      std::make_pair(address, service_uuid))) {
     std::move(callback).Run(/*result=*/nullptr);
     return;
   }
@@ -221,8 +222,8 @@ void FakeAdapter::CreateRfcommServiceInsecurely(
     const std::string& service_name,
     const device::BluetoothUUID& service_uuid,
     CreateRfcommServiceInsecurelyCallback callback) {
-  if (!allowed_connections_for_service_name_and_uuid_pair_.contains(
-          std::make_pair(service_name, service_uuid))) {
+  if (!base::Contains(allowed_connections_for_service_name_and_uuid_pair_,
+                      std::make_pair(service_name, service_uuid))) {
     std::move(callback).Run(/*server_socket=*/mojo::NullRemote());
     return;
   }

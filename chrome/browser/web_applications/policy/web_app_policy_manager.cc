@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
@@ -277,10 +278,10 @@ void WebAppPolicyManager::SetPreinstalledWebAppsMappingForTesting(  // IN-TEST
 bool WebAppPolicyManager::IsPreinstalledWebAppPolicyId(
     std::string_view policy_id) {
   if (auto& mapping = GetPreinstalledWebAppsMappingForTesting()) {  // IN-TEST
-    return mapping->contains(policy_id);
+    return base::Contains(*mapping, policy_id);
   }
 #if BUILDFLAG(IS_CHROMEOS)
-  return kPreinstalledWebAppsMapping.contains(policy_id);
+  return base::Contains(kPreinstalledWebAppsMapping, policy_id);
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -387,7 +388,7 @@ void WebAppPolicyManager::OnDisableListPolicyChanged() {
       provider_->registrar_unsafe().GetAppIds();
   WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile_);
   for (const auto& id : app_ids) {
-    const bool is_disabled = disabled_web_apps_.contains(id);
+    const bool is_disabled = base::Contains(disabled_web_apps_, id);
     provider->scheduler().SetAppIsDisabled(id, is_disabled, base::DoNothing());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -409,7 +410,8 @@ WebAppPolicyManager::GetDisabledSystemWebApps() const {
 bool WebAppPolicyManager::IsDisabledAppsModeHidden(
     std::optional<ash::SystemWebAppType> system_app_type) const {
   if (system_app_type.has_value() &&
-      disabled_system_apps_not_hidden_.contains(system_app_type.value())) {
+      base::Contains(disabled_system_apps_not_hidden_,
+                     system_app_type.value())) {
     return false;
   }
   PrefService* const local_state = g_browser_process->local_state();
@@ -422,7 +424,7 @@ bool WebAppPolicyManager::IsDisabledAppsModeHidden(
 
 bool WebAppPolicyManager::IsWebAppInDisabledList(
     const webapps::AppId& app_id) const {
-  return disabled_web_apps_.contains(app_id);
+  return base::Contains(disabled_web_apps_, app_id);
 }
 
 void WebAppPolicyManager::RefreshPolicyInstalledApps(
@@ -782,10 +784,11 @@ void WebAppPolicyManager::MaybeOverrideManifest(
     base::flat_map<webapps::AppId, base::flat_set<GURL>> policy_installed_apps =
         provider_->registrar_unsafe().GetExternallyInstalledApps(
             ExternalInstallSource::kExternalPolicy);
-    if (policy_installed_apps.contains(app_id)) {
+    if (base::Contains(policy_installed_apps, app_id)) {
       DCHECK_GT(policy_installed_apps[app_id].size(), 0UL);
       for (const GURL& policy_install_url : policy_installed_apps[app_id]) {
-        if (custom_manifest_values_by_url_.contains(policy_install_url)) {
+        if (base::Contains(custom_manifest_values_by_url_,
+                           policy_install_url)) {
           OverrideManifest(policy_install_url, manifest);
         }
       }
@@ -802,7 +805,7 @@ void WebAppPolicyManager::MaybeOverrideManifest(
   if (!pre_redirect)
     return;
   GURL install_url = pre_redirect->last_url();
-  if (custom_manifest_values_by_url_.contains(install_url)) {
+  if (base::Contains(custom_manifest_values_by_url_, install_url)) {
     OverrideManifest(install_url, manifest);
   }
 }

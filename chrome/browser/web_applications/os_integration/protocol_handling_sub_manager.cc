@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -70,8 +71,8 @@ void ProtocolHandlingSubManager::Configure(
   DCHECK(web_app);
 
   for (const auto& protocol_handler : web_app->protocol_handlers()) {
-    if (web_app->disallowed_launch_protocols().contains(
-            protocol_handler.protocol)) {
+    if (base::Contains(web_app->disallowed_launch_protocols(),
+                       protocol_handler.protocol)) {
       continue;
     }
 

@@ -11,6 +11,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/file_manager/url_constants.h"
 #endif
+#include "base/containers/contains.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -64,8 +65,8 @@ bool ChromeContentSettingsAgentDelegate::IsPluginTemporarilyAllowed(
     const std::string& identifier) {
   // If the empty string is in here, it means all plugins are allowed.
   // TODO(bauerb): Remove this once we only pass in explicit identifiers.
-  return temporarily_allowed_plugins_.contains(identifier) ||
-         temporarily_allowed_plugins_.contains(std::string());
+  return base::Contains(temporarily_allowed_plugins_, identifier) ||
+         base::Contains(temporarily_allowed_plugins_, std::string());
 }
 
 void ChromeContentSettingsAgentDelegate::AllowPluginTemporarily(

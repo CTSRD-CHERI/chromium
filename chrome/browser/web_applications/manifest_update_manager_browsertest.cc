@@ -17,6 +17,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -2568,7 +2569,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   EXPECT_EQ(1u, old_file_handler.accept.size());
   auto old_extensions = old_file_handler.accept[0].file_extensions;
   EXPECT_EQ(1u, old_extensions.size());
-  EXPECT_TRUE(old_extensions.contains(".txt"));
+  EXPECT_TRUE(base::Contains(old_extensions, ".txt"));
 
   OverrideManifest(kFileHandlerManifestTemplate, {".md", kInstallableIconList});
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
@@ -2580,7 +2581,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   EXPECT_EQ(1u, new_file_handler.accept.size());
   auto new_extensions = new_file_handler.accept[0].file_extensions;
   EXPECT_EQ(1u, new_extensions.size());
-  EXPECT_TRUE(new_extensions.contains(".md"));
+  EXPECT_TRUE(base::Contains(new_extensions, ".md"));
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
@@ -2616,7 +2617,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   const WebApp* web_app = GetProvider().registrar_unsafe().GetAppById(app_id);
   const auto& old_file_handler = web_app->file_handlers()[0];
   auto old_extensions = old_file_handler.accept[0].file_extensions;
-  EXPECT_TRUE(old_extensions.contains(".txt"));
+  EXPECT_TRUE(base::Contains(old_extensions, ".txt"));
   const GURL url = GetAppURL();
   const GURL origin = url.DeprecatedGetOriginAsURL();
 
@@ -2634,8 +2635,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   OverrideManifest(kFileHandlerManifestTemplate, {".md\", \".txt", "red"});
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated, GetResultAfterPageLoad(url));
   auto new_extensions = web_app->file_handlers()[0].accept[0].file_extensions;
-  EXPECT_TRUE(new_extensions.contains(".md"));
-  EXPECT_TRUE(new_extensions.contains(".txt"));
+  EXPECT_TRUE(base::Contains(new_extensions, ".md"));
+  EXPECT_TRUE(base::Contains(new_extensions, ".txt"));
 
   // Set back to allowed.
   EXPECT_EQ(ApiApprovalState::kRequiresPrompt,
@@ -2651,8 +2652,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   OverrideManifest(kFileHandlerManifestTemplate, {".md\", \".txt", "blue"});
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated, GetResultAfterPageLoad(url));
   new_extensions = web_app->file_handlers()[0].accept[0].file_extensions;
-  EXPECT_TRUE(new_extensions.contains(".md"));
-  EXPECT_TRUE(new_extensions.contains(".txt"));
+  EXPECT_TRUE(base::Contains(new_extensions, ".md"));
+  EXPECT_TRUE(base::Contains(new_extensions, ".txt"));
 
   EXPECT_EQ(ApiApprovalState::kAllowed,
             GetProvider().registrar_unsafe().GetAppFileHandlerUserApprovalState(
@@ -2665,8 +2666,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   OverrideManifest(kFileHandlerManifestTemplate, {".txt", "blue"});
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated, GetResultAfterPageLoad(url));
   new_extensions = web_app->file_handlers()[0].accept[0].file_extensions;
-  EXPECT_FALSE(new_extensions.contains(".md"));
-  EXPECT_TRUE(new_extensions.contains(".txt"));
+  EXPECT_FALSE(base::Contains(new_extensions, ".md"));
+  EXPECT_TRUE(base::Contains(new_extensions, ".txt"));
   EXPECT_EQ(ApiApprovalState::kAllowed,
             GetProvider().registrar_unsafe().GetAppFileHandlerUserApprovalState(
                 app_id));
@@ -2725,7 +2726,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   const auto& old_file_handler = web_app->file_handlers()[0];
   ASSERT_FALSE(old_file_handler.accept.empty());
   auto old_extensions = old_file_handler.accept[0].file_extensions;
-  EXPECT_TRUE(old_extensions.contains(".txt"));
+  EXPECT_TRUE(base::Contains(old_extensions, ".txt"));
   const GURL url = GetAppURL();
   const GURL origin = url.DeprecatedGetOriginAsURL();
 

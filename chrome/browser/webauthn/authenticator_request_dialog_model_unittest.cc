@@ -385,8 +385,9 @@ void UpdateModelBeforeStartFlow(AuthenticatorRequestDialogModel* model,
       tai.attestation_conveyance_preference;
   model->ble_adapter_is_powered =
       tai.ble_status == device::FidoRequestHandlerBase::BleStatus::kOn;
-  model->show_security_key_on_qr_sheet = tai.available_transports.contains(
-      device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
+  model->show_security_key_on_qr_sheet =
+      base::Contains(tai.available_transports,
+                     device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
   model->is_off_the_record = is_off_the_record;
   model->platform_has_biometrics = tai.platform_has_biometrics;
 }
@@ -1030,10 +1031,10 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
 #endif
 
     TransportAvailabilityInfo transports_info;
-    if (test.params.contains(TransportAvailabilityParam::kBleDisabled)) {
+    if (base::Contains(test.params, TransportAvailabilityParam::kBleDisabled)) {
       transports_info.ble_status = BleStatus::kOff;
-    } else if (test.params.contains(
-                   TransportAvailabilityParam::kBleAccessDenied)) {
+    } else if (base::Contains(test.params,
+                              TransportAvailabilityParam::kBleAccessDenied)) {
       transports_info.ble_status = BleStatus::kPermissionDenied;
     } else {
       transports_info.ble_status = BleStatus::kOn;
@@ -1045,18 +1046,20 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
     }
     transports_info.available_transports = test.transports;
     transports_info.user_verification_requirement =
-        test.params.contains(TransportAvailabilityParam::kUVRequired)
+        base::Contains(test.params, TransportAvailabilityParam::kUVRequired)
             ? device::UserVerificationRequirement::kRequired
-            : (test.params.contains(TransportAvailabilityParam::kUVPreferred)
+            : (base::Contains(test.params,
+                              TransportAvailabilityParam::kUVPreferred)
                    ? device::UserVerificationRequirement::kPreferred
                    : device::UserVerificationRequirement::kDiscouraged);
 
-    if (test.params.contains(
-            TransportAvailabilityParam::kHasPlatformCredential)) {
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kHasPlatformCredential)) {
       transports_info.has_platform_authenticator_credential =
           device::FidoRequestHandlerBase::RecognizedCredential::
               kHasRecognizedCredential;
-    } else if (test.params.contains(
+    } else if (base::Contains(
+                   test.params,
                    TransportAvailabilityParam::kMaybeHasPlatformCredential)) {
       transports_info.has_platform_authenticator_credential =
           device::FidoRequestHandlerBase::RecognizedCredential::kUnknown;
@@ -1067,7 +1070,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
 
     device::DiscoverableCredentialMetadata cred1;
     device::DiscoverableCredentialMetadata cred2;
-    if (test.params.contains(
+    if (base::Contains(
+            test.params,
             TransportAvailabilityParam::kHasWinNativeAuthenticator)) {
       cred1 = kWinCred1;
       cred2 = kWinCred2;
@@ -1076,8 +1080,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       cred2 = kCred2;
     }
     device::DiscoverableCredentialMetadata touchid_cred1 = kTouchIDCred1;
-    if (test.params.contains(
-            TransportAvailabilityParam::kHasICloudKeychainCreds)) {
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kHasICloudKeychainCreds)) {
       transports_info.has_icloud_keychain_credential =
           device::FidoRequestHandlerBase::RecognizedCredential::
               kHasRecognizedCredential;
@@ -1088,30 +1092,35 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
           FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
     }
 
-    if (test.params.contains(TransportAvailabilityParam::kEnclaveCred)) {
+    if (base::Contains(test.params, TransportAvailabilityParam::kEnclaveCred)) {
       transports_info.recognized_credentials.emplace_back(kEnclaveCred1);
     }
 
-    if (test.params.contains(TransportAvailabilityParam::kOneRecognizedCred)) {
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kOneRecognizedCred)) {
       transports_info.recognized_credentials = {std::move(cred1)};
-    } else if (test.params.contains(
+    } else if (base::Contains(
+                   test.params,
                    TransportAvailabilityParam::kTwoRecognizedCreds)) {
       transports_info.recognized_credentials = {std::move(cred1),
                                                 std::move(cred2)};
-    } else if (test.params.contains(
+    } else if (base::Contains(
+                   test.params,
                    TransportAvailabilityParam::kOneTouchIDRecognizedCred)) {
       transports_info.recognized_credentials = {std::move(touchid_cred1)};
     }
 
-    transports_info.has_icloud_keychain =
-        test.params.contains(TransportAvailabilityParam::kHasICloudKeychain);
-    transports_info.has_empty_allow_list =
-        test.params.contains(TransportAvailabilityParam::kEmptyAllowList);
-    if (test.params.contains(TransportAvailabilityParam::kOnlyInternal)) {
+    transports_info.has_icloud_keychain = base::Contains(
+        test.params, TransportAvailabilityParam::kHasICloudKeychain);
+    transports_info.has_empty_allow_list = base::Contains(
+        test.params, TransportAvailabilityParam::kEmptyAllowList);
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kOnlyInternal)) {
       transports_info.request_is_internal_only = true;
       transports_info.transport_list_did_include_hybrid = false;
       transports_info.transport_list_did_include_security_key = false;
-    } else if (test.params.contains(
+    } else if (base::Contains(
+                   test.params,
                    TransportAvailabilityParam::kOnlyHybridOrInternal)) {
       transports_info.transport_list_did_include_hybrid = true;
       transports_info.transport_list_did_include_security_key = false;
@@ -1121,23 +1130,26 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
     }
     transports_info.transport_list_did_include_internal = true;
 
-    if (test.params.contains(
+    if (base::Contains(
+            test.params,
             TransportAvailabilityParam::kHasWinNativeAuthenticator)) {
       transports_info.has_win_native_api_authenticator = true;
       transports_info.win_native_ui_shows_resident_credential_notice = true;
       transports_info.win_is_uvpaa = true;
     }
     transports_info.resident_key_requirement =
-        test.params.contains(TransportAvailabilityParam::kRequireResidentKey)
+        base::Contains(test.params,
+                       TransportAvailabilityParam::kRequireResidentKey)
             ? device::ResidentKeyRequirement::kRequired
             : device::ResidentKeyRequirement::kDiscouraged;
-    if (test.params.contains(TransportAvailabilityParam::kAttachmentAny)) {
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kAttachmentAny)) {
       CHECK(transports_info.request_type == RequestType::kMakeCredential);
       transports_info.make_credential_attachment =
           device::AuthenticatorAttachment::kAny;
     }
-    if (test.params.contains(
-            TransportAvailabilityParam::kAttachmentCrossPlatform)) {
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kAttachmentCrossPlatform)) {
       CHECK(transports_info.request_type == RequestType::kMakeCredential);
       CHECK(!transports_info.make_credential_attachment.has_value());
       transports_info.make_credential_attachment =
@@ -1155,23 +1167,23 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
     FakeEnclaveController enclave_controller(model.get());
 
     std::optional<bool> has_v2_cable_extension;
-    if (test.params.contains(
-            TransportAvailabilityParam::kHasCableV1Extension)) {
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kHasCableV1Extension)) {
       has_v2_cable_extension = false;
     }
-    if (test.params.contains(TransportAvailabilityParam::kEnclaveCred)) {
+    if (base::Contains(test.params, TransportAvailabilityParam::kEnclaveCred)) {
       model->EnclaveEnabledStatusChanged(EnclaveEnabledStatus::kEnabled);
     }
 
-    if (test.params.contains(
-            TransportAvailabilityParam::kHasCableV2Extension)) {
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kHasCableV2Extension)) {
       CHECK(!has_v2_cable_extension.has_value());
       has_v2_cable_extension = true;
     }
 
     controller.set_allow_icloud_keychain(transports_info.has_icloud_keychain);
-    if (test.params.contains(
-            TransportAvailabilityParam::kCreateInICloudKeychain)) {
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kCreateInICloudKeychain)) {
       controller.set_should_create_in_icloud_keychain(true);
     }
 #if BUILDFLAG(IS_MAC)
@@ -1180,15 +1192,17 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
 #endif
 
     std::optional<device::FidoTransportProtocol> hint_transport;
-    if (test.params.contains(TransportAvailabilityParam::kHintSecurityKeys)) {
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kHintSecurityKeys)) {
       CHECK(!hint_transport.has_value());
       hint_transport = device::FidoTransportProtocol::kUsbHumanInterfaceDevice;
     }
-    if (test.params.contains(TransportAvailabilityParam::kHintHybrid)) {
+    if (base::Contains(test.params, TransportAvailabilityParam::kHintHybrid)) {
       CHECK(!hint_transport.has_value());
       hint_transport = device::FidoTransportProtocol::kHybrid;
     }
-    if (test.params.contains(TransportAvailabilityParam::kHintClientDevice)) {
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kHintClientDevice)) {
       CHECK(!hint_transport.has_value());
       hint_transport = device::FidoTransportProtocol::kInternal;
     }
@@ -1199,7 +1213,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       controller.SetHints(hints);
     }
 
-    if (test.params.contains(TransportAvailabilityParam::kEnclaveNeedsSignIn)) {
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kEnclaveNeedsSignIn)) {
       controller.EnclaveEnabledStatusChanged(
           EnclaveEnabledStatus::kEnabledAndReauthNeeded);
     }
@@ -1208,14 +1223,15 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
         [](device::DiscoverableCredentialMetadata cred) {}));
 
     if (has_v2_cable_extension.has_value() ||
-        test.transports.contains(device::FidoTransportProtocol::kHybrid)) {
+        base::Contains(test.transports,
+                       device::FidoTransportProtocol::kHybrid)) {
       std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
       controller.set_cable_transport_info(has_v2_cable_extension,
                                           std::nullopt);
     }
 
-    const bool is_autofill =
-        test.params.contains(TransportAvailabilityParam::kIsConditionalUI);
+    const bool is_autofill = base::Contains(
+        test.params, TransportAvailabilityParam::kIsConditionalUI);
     controller.SetUIPresentation(is_autofill ? UIPresentation::kAutofill
                                              : UIPresentation::kModal);
     UpdateModelBeforeStartFlow(model.get(), transports_info,

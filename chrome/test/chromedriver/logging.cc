@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/logging/logging_settings.h"
@@ -371,7 +372,8 @@ Status CreateLogs(
         logs.push_back(std::make_unique<WebDriverLog>(type, Log::kAll));
         devtools_listeners.push_back(std::make_unique<PerformanceLogger>(
             logs.back().get(), session, capabilities.perf_logging_prefs,
-            capabilities.window_types.contains(WebViewInfo::kServiceWorker)));
+            base::Contains(capabilities.window_types,
+                           WebViewInfo::kServiceWorker)));
         PerformanceLogger* perf_log =
             static_cast<PerformanceLogger*>(devtools_listeners.back().get());
         // We use a proxy for |perf_log|'s |CommandListener| interface.

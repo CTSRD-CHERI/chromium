@@ -5,6 +5,7 @@
 #include "chrome/test/base/chromeos/crosier/annotations.h"
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -54,7 +55,7 @@ bool BoardHasUseFlag(const char* flag) {
   std::string use_flags;
   CHECK(base::ReadFileToString(
       base::FilePath("/usr/local/etc/tast_use_flags.txt"), &use_flags));
-  return use_flags.contains(flag);
+  return base::Contains(use_flags, flag);
 }
 
 }  // namespace

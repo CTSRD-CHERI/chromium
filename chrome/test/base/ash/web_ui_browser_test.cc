@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -254,7 +255,7 @@ void BaseWebUIBrowserTest::PreLoadJavascriptLibraries(
   // process.
   auto global_frame_routing_id = preload_frame->GetGlobalId();
   ASSERT_FALSE(
-      libraries_preloaded_for_frames_.contains(global_frame_routing_id));
+      base::Contains(libraries_preloaded_for_frames_, global_frame_routing_id));
 
   RunJavascriptUsingHandler("preloadJavascriptLibraries",
                             base::Value::List()
@@ -450,8 +451,8 @@ bool BaseWebUIBrowserTest::RunJavascriptUsingHandler(
   auto* frame_for_libraries = preload_frame
                                   ? preload_frame
                                   : test_handler_->GetRenderFrameHostForTest();
-  if (!libraries_preloaded_for_frames_.contains(
-          frame_for_libraries->GetGlobalId())) {
+  if (!base::Contains(libraries_preloaded_for_frames_,
+                      frame_for_libraries->GetGlobalId())) {
     if (!BuildJavascriptLibraries(&libraries)) {
       ADD_FAILURE() << "Failed to build JavaScript libraries";
       return false;

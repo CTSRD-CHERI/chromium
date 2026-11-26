@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/sampling_metrics_provider.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -102,7 +103,7 @@ void MaybeEmitUkmMetricsForTab(tabs::TabInterface* tab, IdSet& emitted_ids) {
   }
 
   // We only emit UKM metrics a single time for a given AppId.
-  if (emitted_ids.contains(*app_id)) {
+  if (base::Contains(emitted_ids, *app_id)) {
     return;
   }
 
@@ -143,7 +144,7 @@ void MaybeEmitUkmMetricsForPromotable(
     const webapps::WebAppBannerData& banner_data,
     IdSet& emitted_ids) {
   const GURL& url = banner_data.manifest().start_url;
-  if (emitted_ids.contains(url.spec())) {
+  if (base::Contains(emitted_ids, url.spec())) {
     return;
   }
 
