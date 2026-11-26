@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_url_loader.h"
 
+#include <string>
 #include <variant>
 
 #include "base/check.h"
@@ -66,7 +67,11 @@ namespace {
 constexpr char kTestURL[] = "http://example.com/";
 constexpr char kRedirectedURL[] = "http://example.com/redirected";
 constexpr int kMaxBufferedBytesPerProcess = 1000;
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 180000
+const std::string kTestBodyString = "test data.";
+#else
 constexpr std::string kTestBodyString = "test data.";
+#endif
 
 using MaybeStartFunction =
     CrossThreadOnceFunction<bool(network::mojom::URLResponseHeadPtr&,
