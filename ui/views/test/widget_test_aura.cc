@@ -135,7 +135,8 @@ gfx::Size WidgetTest::GetNativeWidgetMinimumContentSize(Widget* widget) {
   // the window manager is interested in knowing the size constraints. On
   // ChromeOS, it's handled internally. Elsewhere, the size constraints need to
   // be pushed to the window server when they change.
-#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
   return widget->GetNativeWindow()->delegate()->GetMinimumSize();
 #else
   NOTREACHED();
