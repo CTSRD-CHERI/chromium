@@ -4,6 +4,7 @@
 
 #include "media/mojo/clients/mojo_audio_decoder.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -197,6 +198,7 @@ class MojoAudioDecoderTest : public ::testing::Test {
 
   void Decode() {
     auto buffer = base::MakeRefCounted<DecoderBuffer>(100);
+    std::ranges::fill(buffer->writable_span(), 0);
     mojo_audio_decoder_->Decode(
         buffer, base::BindRepeating(&MojoAudioDecoderTest::OnDecoded,
                                     base::Unretained(this)));
