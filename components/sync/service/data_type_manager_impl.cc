@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/barrier_callback.h"
+#include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -364,7 +365,7 @@ TypeStatusMapForDebugging DataTypeManagerImpl::GetTypeStatusMapForDebugging(
     TypeStatusForDebugging& type_status = result[type];
     type_status.state = DataTypeController::StateToString(controller->state());
 
-    if (data_type_error_map.contains(type)) {
+    if (base::Contains(data_type_error_map, type)) {
       const SyncError& error = data_type_error_map.at(type);
       switch (error.error_type()) {
         case SyncError::MODEL_ERROR:
@@ -445,7 +446,7 @@ void DataTypeManagerImpl::GetAllNodesForDebugging(
       continue;
     }
 
-    CHECK(controllers_.contains(type));
+    CHECK(base::Contains(controllers_, type));
     const std::unique_ptr<DataTypeController>& controller =
         controllers_.at(type);
 
@@ -467,7 +468,7 @@ void DataTypeManagerImpl::GetEntityCountsForDebugging(
 }
 
 DataTypeController* DataTypeManagerImpl::GetControllerForTest(DataType type) {
-  CHECK(controllers_.contains(type));
+  CHECK(base::Contains(controllers_, type));
   return controllers_.at(type).get();
 }
 
@@ -1028,7 +1029,7 @@ void DataTypeManagerImpl::RecordMemoryUsageAndCountsHistograms() {
       continue;
     }
 
-    CHECK(controllers_.contains(type));
+    CHECK(base::Contains(controllers_, type));
     controllers_.at(type)->RecordMemoryUsageAndCountsHistograms();
   }
 }

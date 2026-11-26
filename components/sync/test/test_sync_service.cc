@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"

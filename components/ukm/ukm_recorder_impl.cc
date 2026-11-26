@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -436,7 +437,7 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
         continue;
       }
       // Omit entryless sources from the report.
-      if (!source_ids_seen.contains(kv.first)) {
+      if (!base::Contains(source_ids_seen, kv.first)) {
         continue;
       }
 
@@ -558,7 +559,7 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
   // having any events in this reporting cycle.
   int num_sources_entryless = 0;
   for (const auto& kv : recordings_.sources) {
-    if (!source_ids_seen.contains(kv.first)) {
+    if (!base::Contains(source_ids_seen, kv.first)) {
       num_sources_entryless++;
     }
   }
@@ -580,7 +581,7 @@ int UkmRecorderImpl::PruneData(std::set<SourceId>& source_ids_seen) {
   // existing sources that were seen in this report.
   auto it = source_ids_seen.begin();
   while (it != source_ids_seen.end()) {
-    if (!recordings_.sources.contains(*it)) {
+    if (!base::Contains(recordings_.sources, *it)) {
       it = source_ids_seen.erase(it);
     } else {
       it++;
@@ -686,7 +687,7 @@ void UkmRecorderImpl::UpdateSourceURL(SourceId source_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(GetSourceIdType(source_id) != SourceIdType::NO_URL_ID);
 
-  if (recordings_.sources.contains(source_id))
+  if (base::Contains(recordings_.sources, source_id))
     return;
 
   const GURL sanitized_url = SanitizeURL(unsanitized_url);
@@ -724,7 +725,7 @@ void UkmRecorderImpl::RecordNavigation(
     SourceId source_id,
     const UkmSource::NavigationData& unsanitized_navigation_data) {
   DCHECK(GetSourceIdType(source_id) == SourceIdType::NAVIGATION_ID);
-  DCHECK(!recordings_.sources.contains(source_id));
+  DCHECK(!base::Contains(recordings_.sources, source_id));
   // TODO(csharrison): Consider changing this behavior so the Source isn't even
   // recorded at all if the final URL in |unsanitized_navigation_data| should
   // not be recorded.

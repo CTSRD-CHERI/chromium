@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -134,11 +135,7 @@ bool IsValidInstallerAttributePart(const std::string& part,
   return part.size() >= min_length && part.size() <= max_length &&
          std::ranges::all_of(part, [&special_chars](char ch) {
            return base::IsAsciiAlpha(ch) || base::IsAsciiDigit(ch) ||
-#if __cpp_lib_string_contains
-                  special_chars.contains(ch);
-#else
-                  special_chars.find(ch) != std::string::npos;
-#endif
+                  base::Contains(special_chars, ch);
          });
 }
 

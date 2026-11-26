@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -218,7 +219,7 @@ bool IsAlwaysAllowedHost(const GURL& effective_url) {
        "myaccount.google.com", "ogs.google.com", "policies.google.com",
        "support.google.com", "myactivity.google.com", "families.google"});
 
-  return kAllowedHosts.contains(effective_url.host());
+  return base::Contains(kAllowedHosts, effective_url.host());
 }
 
 bool IsAlwaysAllowedUrlPrefix(const GURL& effective_url) {
@@ -318,12 +319,14 @@ bool HostHasTrivialSubdomainConflict(const std::string& pattern,
   std::string subdomain_replacement =
       has_www_subdomain ? std::string() : kWwwSubdomain.data();
 
-  return host_list.contains(subdomain_replacement +
-                            removed_subdomain_pattern) ||
-         host_list.contains(kHttpProtocol.data() + subdomain_replacement +
-                            removed_subdomain_pattern) ||
-         host_list.contains(kHttpsProtocol.data() + subdomain_replacement +
-                            removed_subdomain_pattern);
+  return base::Contains(host_list,
+                        subdomain_replacement + removed_subdomain_pattern) ||
+         base::Contains(host_list, kHttpProtocol.data() +
+                                       subdomain_replacement +
+                                       removed_subdomain_pattern) ||
+         base::Contains(host_list, kHttpsProtocol.data() +
+                                       subdomain_replacement +
+                                       removed_subdomain_pattern);
 }
 
 using FilteringSubdomainConflictType =
