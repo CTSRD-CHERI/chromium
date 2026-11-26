@@ -1532,12 +1532,12 @@ TEST_F(TextfieldTest, InsertionDeletionTest) {
   SendWordEvent(ui::VKEY_BACK, shift);
   EXPECT_EQ(u"one two three ", textfield_->GetText());
 
-  // Delete to a line break on Linux and ChromeOS, to a word break on Windows
-  // and Mac.
+  // Delete to a line break on Linux, ChromeOS, and BSD, and to a word break
+  // on Windows and Mac.
   SendWordEvent(ui::VKEY_LEFT, shift);
   shift = true;
   SendWordEvent(ui::VKEY_BACK, shift);
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
   EXPECT_EQ(u"three ", textfield_->GetText());
 #else
   EXPECT_EQ(u"one three ", textfield_->GetText());
@@ -1553,12 +1553,12 @@ TEST_F(TextfieldTest, InsertionDeletionTest) {
 #else  // Non-Windows: delete word does NOT include space/punctuation.
   EXPECT_EQ(u" two three four", textfield_->GetText());
 #endif
-  // Delete to a line break on Linux and ChromeOS, to a word break on Windows
-  // and Mac.
+  // Delete to a line break on Linux, ChromeOS, and BSD, and to a word break
+  // on Windows and Mac.
   SendWordEvent(ui::VKEY_RIGHT, shift);
   shift = true;
   SendWordEvent(ui::VKEY_DELETE, shift);
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
   EXPECT_EQ(u" two", textfield_->GetText());
 #elif BUILDFLAG(IS_WIN)
   EXPECT_EQ(u"two four", textfield_->GetText());

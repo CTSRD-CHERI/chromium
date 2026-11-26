@@ -977,7 +977,7 @@ TEST_F(RootViewTest, AnnounceTextAsTest) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(node_data.role, ax::mojom::Role::kStaticText);
-#elif BUILDFLAG(IS_LINUX)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
   EXPECT_EQ(node_data.role, ax::mojom::Role::kAlert);
 #else
   EXPECT_EQ(node_data.role, ax::mojom::Role::kStatus);
