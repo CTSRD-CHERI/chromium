@@ -361,7 +361,7 @@ TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest, RespectSizeAndColorSpace) {
 }
 
 // Verifies that the requires_cpu_access flag controls gfx::BufferUsage in
-// RenderableGpuMemoryBufferVideoFramePool allocations. On Linux,
+// RenderableGpuMemoryBufferVideoFramePool allocations. On Linux and BSD,
 // setting the flag to false avoids GBM linear allocations by switching
 // from SCANOUT_CPU_READ_WRITE to SCANOUT. Ensures that the expected
 // buffer usage value propagates to the shared image creation code path.
@@ -422,7 +422,7 @@ TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest,
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   gfx::BufferUsage expected_usage2 = gfx::BufferUsage::SCANOUT_VEA_CPU_READ;
-#elif BUILDFLAG(IS_LINUX)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD)
   gfx::BufferUsage expected_usage2 = gfx::BufferUsage::SCANOUT;
 #else
   gfx::BufferUsage expected_usage2 = gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
